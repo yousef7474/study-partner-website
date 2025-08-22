@@ -1,22 +1,259 @@
-11: [
-                { name: "Advanced Mathematics", nameAr: "الرياضيات المتقدمة", emoji: "📊" },
-                { name: "Physics", nameAr: "الفيزياء", emoji: "⚛️" },
-                { name: "Chemistry", nameAr: "الكيمياء", emoji: "🧪" },
-                { name: "Biology", nameAr: "الأحياء", emoji: "🧬" },
-                { name: "English Literature", nameAr: "الأدب الإنجليزي", emoji: "📚" },
-                { name: "Arabic Literature", nameAr: "الأدب العربي", emoji: "✍️" },
-                { name: "Computer Science", nameAr: "علوم الحاسوب", emoji: "💻" },
-                { name: "Economics", nameAr: "الاقتصاد", emoji: "💰" }
+<button class="nav-item" data-nav="about">
+                        <span class="nav-item-icon">ℹ️</span>
+                        <span>About</span>
+                    </button>
+                </div>
+            </nav>
+            
+            <div class="user-profile">
+                <div class="user-info">
+                    <div id="sidebar-user-avatar" class="user-avatar"></div>
+                    <div class="user-details">
+                        <h4 id="sidebar-user-name">User</h4>
+                        <p id="sidebar-user-grade">Grade 10</p>
+                    </div>
+                </div>
+                <div class="sidebar-controls">
+                    <button class="control-btn" onclick="toggleTheme()" title="Toggle Theme">
+                        <span id="theme-icon">🌙</span>
+                    </button>
+                    <button class="control-btn" onclick="toggleLanguage()" title="Language">
+                        <span id="lang-icon">ع</span>
+                    </button>
+                    <button class="control-btn" onclick="logout()" title="Logout">
+                        <span>🚪</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="main-content">
+            <div class="content-header">
+                <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+                <h1 class="header-title" id="page-title">Dashboard</h1>
+            </div>
+            
+            <div class="content-body">
+                <!-- Dashboard -->
+                <div id="dashboard-content" class="screen active">
+                    <div class="action-grid">
+                        <div class="action-card" onclick="navigateTo('study-rooms')">
+                            <div class="action-icon">👥</div>
+                            <h3 class="action-title">Study Rooms</h3>
+                            <p class="action-desc">Join or create virtual study rooms with your classmates</p>
+                            <button class="btn">Enter Study Rooms</button>
+                        </div>
+                        
+                        <div class="action-card" onclick="navigateTo('library')">
+                            <div class="action-icon">📚</div>
+                            <h3 class="action-title">Digital Library</h3>
+                            <p class="action-desc">Access study materials, notes, and resources for your grade</p>
+                            <button class="btn btn-secondary">Browse Library</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Study Rooms -->
+                <div id="study-rooms-content" class="screen">
+                    <div class="action-grid">
+                        <div class="action-card" onclick="createRoom()">
+                            <div class="action-icon">➕</div>
+                            <h3 class="action-title">Create Study Room</h3>
+                            <p class="action-desc">Start a new study session and invite your friends</p>
+                            <button class="btn">Create Now</button>
+                        </div>
+                        
+                        <div class="action-card" onclick="showJoinForm()">
+                            <div class="action-icon">🚪</div>
+                            <h3 class="action-title">Join Study Room</h3>
+                            <p class="action-desc">Enter a room code to join an existing study session</p>
+                            <button class="btn btn-secondary">Join Now</button>
+                        </div>
+                    </div>
+                    
+                    <div id="join-form" class="join-form">
+                        <label class="form-label">Enter Room Code</label>
+                        <input type="text" id="room-code-input" class="room-code-input" placeholder="XXXXXX" maxlength="6">
+                        <button class="btn btn-block" onclick="joinRoom()">Join Room</button>
+                        <div id="join-message"></div>
+                    </div>
+                </div>
+
+                <!-- Room Screen -->
+                <div id="room-content" class="screen">
+                    <div class="room-header">
+                        <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">Room Code</p>
+                        <div id="current-room-code" class="room-code">------</div>
+                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem;">
+                            <button class="btn" onclick="copyRoomCode()">Copy Code</button>
+                            <button class="btn btn-secondary" onclick="shareRoom()">Share Link</button>
+                            <button class="btn btn-secondary" onclick="leaveRoom()">Leave Room</button>
+                        </div>
+                    </div>
+
+                    <div class="tabs">
+                        <button class="tab active" data-tab="chat">💬 Chat</button>
+                        <button class="tab" data-tab="participants">👥 Participants</button>
+                        <button class="tab" data-tab="timer">⏱️ Timer</button>
+                    </div>
+
+                    <!-- Chat Tab -->
+                    <div id="chat-content" class="tab-content active">
+                        <div class="chat-box">
+                            <div id="chat-messages" class="chat-messages">
+                                <div class="loading">
+                                    <div class="loading-spinner"></div>
+                                    <span>Loading chat...</span>
+                                </div>
+                            </div>
+                            <div class="chat-input-area">
+                                <input type="text" id="chat-input" class="chat-input" placeholder="Type your message..." maxlength="500">
+                                <button class="btn" onclick="sendMessage()">Send</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Participants Tab -->
+                    <div id="participants-content" class="tab-content">
+                        <div id="participants-list">
+                            <div class="loading">
+                                <div class="loading-spinner"></div>
+                                <span>Loading participants...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timer Tab -->
+                    <div id="timer-content" class="tab-content">
+                        <div style="text-align: center; background: var(--bg-secondary); padding: 3rem; border-radius: 20px;">
+                            <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap;">
+                                <button class="btn" data-timer="25">25 min Focus</button>
+                                <button class="btn" data-timer="5">5 min Break</button>
+                                <button class="btn" data-timer="15">15 min Break</button>
+                            </div>
+                            
+                            <div id="timer-display" style="font-size: 4rem; font-weight: 700; color: var(--primary-color); margin: 2rem 0; font-family: 'Courier New', monospace;">25:00</div>
+                            
+                            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                                <button id="start-timer-btn" class="btn" onclick="startTimer()">Start</button>
+                                <button id="pause-timer-btn" class="btn btn-secondary" onclick="pauseTimer()" style="display: none;">Pause</button>
+                                <button class="btn btn-secondary" onclick="resetTimer()">Reset</button>
+                            </div>
+                            
+                            <div id="timer-status" style="margin-top: 1.5rem; font-size: 1.1rem; color: var(--text-secondary);"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Library Screen -->
+                <div id="library-content" class="screen">
+                    <div style="text-align: center; padding: 4rem 2rem;">
+                        <div style="font-size: 4rem; margin-bottom: 2rem;">🚧</div>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--text-primary);">Coming Soon!</h3>
+                        <p style="color: var(--text-secondary); font-size: 1.1rem;">The digital library feature is under development. Stay tuned!</p>
+                    </div>
+                </div>
+
+                <!-- Profile Screen -->
+                <div id="profile-content" class="screen">
+                    <div style="max-width: 600px; margin: 0 auto;">
+                        <h2 style="margin-bottom: 2rem;">User Profile</h2>
+                        <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 20px; border: 1px solid var(--border-color);">
+                            <div style="text-align: center; margin-bottom: 2rem;">
+                                <div id="profile-avatar" class="user-avatar" style="width: 80px; height: 80px; font-size: 2rem; margin: 0 auto 1rem;"></div>
+                                <h3 id="profile-name">User Name</h3>
+                                <p id="profile-grade-subject" style="color: var(--text-secondary); margin-top: 0.5rem;">Grade & Subject</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Screen -->
+                <div id="settings-content" class="screen">
+                    <div style="max-width: 600px; margin: 0 auto;">
+                        <h2 style="margin-bottom: 2rem;">Settings</h2>
+                        <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 20px; border: 1px solid var(--border-color);">
+                            <div style="margin-bottom: 2rem;">
+                                <h4 style="margin-bottom: 1rem;">Appearance</h4>
+                                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                                    <button class="btn btn-secondary" onclick="toggleTheme()">
+                                        <span id="theme-text">Dark Mode</span>
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="toggleLanguage()">
+                                        <span id="lang-text">العربية</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Screen -->
+                <div id="about-content" class="screen">
+                    <div style="max-width: 600px; margin: 0 auto;">
+                        <h2 style="margin-bottom: 2rem;">About StudyTogether</h2>
+                        <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 20px; border: 1px solid var(--border-color);">
+                            <div style="text-align: center; margin-bottom: 2rem;">
+                                <div style="font-size: 4rem; margin-bottom: 1rem;">📚</div>
+                                <h3>StudyTogether</h3>
+                                <p style="color: var(--text-secondary); margin-top: 0.5rem;">Version 2.0</p>
+                            </div>
+                            
+                            <div style="line-height: 1.6; color: var(--text-secondary);">
+                                <p style="margin-bottom: 1rem;">StudyTogether is a collaborative learning platform designed to help students connect, study together, and achieve their academic goals.</p>
+                                
+                                <h4 style="color: var(--text-primary); margin: 1.5rem 0 0.5rem;">Features</h4>
+                                <ul style="margin-left: 1.5rem;">
+                                    <li>Virtual study rooms with real-time chat</li>
+                                    <li>Pomodoro timer for focused study sessions</li>
+                                    <li>Grade and subject-based organization</li>
+                                    <li>Multi-language support</li>
+                                    <li>Dark and light theme options</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // Subject data
+        const subjectsByGrade = {
+            10: [
+                { name: "Mathematics", emoji: "🔢" },
+                { name: "Physics", emoji: "⚛️" },
+                { name: "Chemistry", emoji: "🧪" },
+                { name: "Biology", emoji: "🧬" },
+                { name: "English", emoji: "🇬🇧" },
+                { name: "Arabic", emoji: "📝" },
+                { name: "History", emoji: "🏛️" },
+                { name: "Geography", emoji: "🌍" }
+            ],
+            11: [
+                { name: "Advanced Mathematics", emoji: "📊" },
+                { name: "Physics", emoji: "⚛️" },
+                { name: "Chemistry", emoji: "🧪" },
+                { name: "Biology", emoji: "🧬" },
+                { name: "English Literature", emoji: "📚" },
+                { name: "Arabic Literature", emoji: "✍️" },
+                { name: "Computer Science", emoji: "💻" },
+                { name: "Economics", emoji: "💰" }
             ],
             12: [
-                { name: "Calculus", nameAr: "التفاضل والتكامل", emoji: "∫" },
-                { name: "Advanced Physics", nameAr: "الفيزياء المتقدمة", emoji: "🚀" },
-                { name: "Organic Chemistry", nameAr: "الكيمياء العضوية", emoji: "⚗️" },
-                { name: "Advanced Biology", nameAr: "الأحياء المتقدمة", emoji: "🔬" },
-                { name: "English Composition", nameAr: "التأليف الإنجليزي", emoji: "✏️" },
-                { name: "Philosophy", nameAr: "الفلسفة", emoji: "🤔" },
-                { name: "Statistics", nameAr: "الإحصاء", emoji: "📈" },
-                { name: "Psychology", nameAr: "علم النفس", emoji: "🧠" }
+                { name: "Calculus", emoji: "∫" },
+                { name: "Advanced Physics", emoji: "🚀" },
+                { name: "Organic Chemistry", emoji: "⚗️" },
+                { name: "Advanced Biology", emoji: "🔬" },
+                { name: "English Composition", emoji: "✏️" },
+                { name: "Philosophy", emoji: "🤔" },
+                { name: "Statistics", emoji: "📈" },
+                { name: "Psychology", emoji: "🧠" }
             ]
         };
 
@@ -52,331 +289,6 @@
                 );
                 console.log('Supabase initialized');
             } catch (error) {
-                console.error('Load participants error:', error);
-                document.getElementById('participants-list').innerHTML = `<div class="loading">${currentLanguage === 'ar' ? 'خطأ في تحميل المشاركين' : 'Error loading participants'}</div>`;
-            }
-        }
-
-        async function sendSystemMessage(content) {
-            if (!currentRoom || !supabase) return;
-            
-            try {
-                await supabase
-                    .from('messages')
-                    .insert([{
-                        room_id: currentRoom.id,
-                        user_id: currentUser.id,
-                        content: content,
-                        message_type: 'system'
-                    }]);
-            } catch (error) {
-                console.error('Send system message error:', error);
-            }
-        }
-
-        async function loadMessages() {
-            if (!currentRoom || !supabase) return;
-            
-            try {
-                const { data: messages, error } = await supabase
-                    .from('messages')
-                    .select(`
-                        *,
-                        users (name, avatar_color)
-                    `)
-                    .eq('room_id', currentRoom.id)
-                    .order('created_at', { ascending: true })
-                    .limit(50);
-
-                if (error) throw error;
-
-                const container = document.getElementById('chat-messages');
-                container.innerHTML = '';
-
-                if (messages.length === 0) {
-                    container.innerHTML = `<div class="loading">${currentLanguage === 'ar' ? 'لا توجد رسائل بعد. ابدأ المحادثة!' : 'No messages yet. Start the conversation!'}</div>`;
-                    return;
-                }
-
-                messages.forEach(message => {
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = `chat-message ${message.user_id === currentUser.id ? 'own' : ''}`;
-                    
-                    if (message.message_type === 'system') {
-                        messageDiv.innerHTML = `
-                            <div style="text-align: center; font-style: italic; color: var(--text-secondary);">
-                                ${escapeHtml(message.content)}
-                            </div>
-                        `;
-                        messageDiv.style.background = 'var(--bg-tertiary)';
-                        messageDiv.style.color = 'var(--text-secondary)';
-                    } else {
-                        const time = new Date(message.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                        messageDiv.innerHTML = `
-                            <div style="font-size: 0.85rem; opacity: 0.7; margin-bottom: 0.5rem;">${escapeHtml(message.users.name)} • ${time}</div>
-                            <div>${escapeHtml(message.content)}</div>
-                        `;
-                    }
-                    
-                    container.appendChild(messageDiv);
-                });
-
-                container.scrollTop = container.scrollHeight;
-                
-            } catch (error) {
-                console.error('Load messages error:', error);
-            }
-        }
-
-        async function sendMessage() {
-            const input = document.getElementById('chat-input');
-            const content = input.value.trim();
-            
-            if (!content || !currentRoom || !supabase) return;
-
-            try {
-                await supabase
-                    .from('messages')
-                    .insert([{
-                        room_id: currentRoom.id,
-                        user_id: currentUser.id,
-                        content: content,
-                        message_type: 'chat'
-                    }]);
-
-                input.value = '';
-                
-            } catch (error) {
-                console.error('Send message error:', error);
-            }
-        }
-
-        // Timer functions
-        function setTimerMinutes(minutes) {
-            timerSeconds = minutes * 60;
-            updateTimerDisplay();
-            resetTimer();
-        }
-
-        function startTimer() {
-            if (timerRunning) return;
-            
-            timerRunning = true;
-            document.getElementById('start-timer-btn').style.display = 'none';
-            document.getElementById('pause-timer-btn').style.display = 'inline-block';
-            document.getElementById('timer-status').textContent = currentLanguage === 'ar' ? 
-                'المؤقت يعمل... ركز! 🎯' : 'Timer running... Stay focused! 🎯';
-            
-            timerInterval = setInterval(() => {
-                timerSeconds--;
-                updateTimerDisplay();
-                
-                if (timerSeconds <= 0) {
-                    timerComplete();
-                }
-            }, 1000);
-        }
-
-        function pauseTimer() {
-            timerRunning = false;
-            clearInterval(timerInterval);
-            document.getElementById('start-timer-btn').style.display = 'inline-block';
-            document.getElementById('pause-timer-btn').style.display = 'none';
-            document.getElementById('timer-status').textContent = currentLanguage === 'ar' ? 'المؤقت متوقف' : 'Timer paused';
-        }
-
-        function resetTimer() {
-            timerRunning = false;
-            clearInterval(timerInterval);
-            document.getElementById('start-timer-btn').style.display = 'inline-block';
-            document.getElementById('pause-timer-btn').style.display = 'none';
-            document.getElementById('timer-status').textContent = '';
-            updateTimerDisplay();
-        }
-
-        function updateTimerDisplay() {
-            const minutes = Math.floor(timerSeconds / 60);
-            const seconds = timerSeconds % 60;
-            document.getElementById('timer-display').textContent = 
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        function timerComplete() {
-            resetTimer();
-            document.getElementById('timer-status').textContent = currentLanguage === 'ar' ? 
-                'انتهى المؤقت! عمل رائع! 🎉' : 'Timer completed! Great work! 🎉';
-            
-            if (Notification.permission === 'granted') {
-                new Notification(currentLanguage === 'ar' ? 'انتهى مؤقت الدراسة!' : 'Study Timer Complete!', {
-                    body: currentLanguage === 'ar' ? 'عمل رائع! حان وقت الاستراحة.' : 'Great job! Time for a break.',
-                    icon: '📚'
-                });
-            } else {
-                alert(currentLanguage === 'ar' ? 'انتهى المؤقت! عمل رائع! 🎉' : 'Timer completed! Great work! 🎉');
-            }
-        }
-
-        // UI helpers
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.getElementById(tabName + '-content').classList.add('active');
-
-            if (tabName === 'chat') {
-                loadMessages();
-            } else if (tabName === 'participants') {
-                loadParticipants();
-            }
-        }
-
-        function showMessage(element, text, type) {
-            element.innerHTML = `<div class="message ${type}">${text}</div>`;
-            if (type === 'success' || type === 'error') {
-                setTimeout(() => {
-                    element.innerHTML = '';
-                }, 5000);
-            }
-        }
-
-        function copyRoomCode() {
-            const code = document.getElementById('current-room-code').textContent;
-            
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(code).then(() => {
-                    alert(currentLanguage === 'ar' ? 'تم نسخ رمز الغرفة!' : 'Room code copied!');
-                }).catch(() => {
-                    prompt(currentLanguage === 'ar' ? 'انسخ رمز الغرفة:' : 'Copy room code:', code);
-                });
-            } else {
-                prompt(currentLanguage === 'ar' ? 'انسخ رمز الغرفة:' : 'Copy room code:', code);
-            }
-        }
-
-        function shareRoom() {
-            const code = document.getElementById('current-room-code').textContent;
-            const link = `${window.location.origin}${window.location.pathname}?room=${code}`;
-            
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(link).then(() => {
-                    alert(currentLanguage === 'ar' ? 'تم نسخ رابط الدعوة!' : 'Invite link copied!');
-                }).catch(() => {
-                    prompt(currentLanguage === 'ar' ? 'انسخ رابط الدعوة:' : 'Copy invite link:', link);
-                });
-            } else {
-                prompt(currentLanguage === 'ar' ? 'انسخ رابط الدعوة:' : 'Copy invite link:', link);
-            }
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // Theme and Language
-        function toggleTheme() {
-            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-            localStorage.setItem('studyTogether_theme', currentTheme);
-            applyTheme();
-        }
-
-        function applyTheme() {
-            document.body.setAttribute('data-theme', currentTheme);
-            document.getElementById('theme-icon').textContent = currentTheme === 'light' ? '🌙' : '☀️';
-            
-            const themeText = document.getElementById('theme-text');
-            if (themeText) {
-                themeText.textContent = currentLanguage === 'ar' ? 
-                    (currentTheme === 'light' ? 'الوضع المظلم' : 'الوضع الفاتح') :
-                    (currentTheme === 'light' ? 'Dark Mode' : 'Light Mode');
-            }
-        }
-
-        function toggleLanguage() {
-            currentLanguage = currentLanguage === 'en' ? 'ar' : 'en';
-            localStorage.setItem('studyTogether_language', currentLanguage);
-            updateLanguage();
-        }
-
-        function updateLanguage() {
-            const isArabic = currentLanguage === 'ar';
-            
-            // Update document direction and lang
-            document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
-            document.documentElement.lang = currentLanguage;
-            
-            // Update language toggle button
-            document.getElementById('lang-icon').textContent = isArabic ? 'EN' : 'ع';
-            
-            const langText = document.getElementById('lang-text');
-            if (langText) {
-                langText.textContent = isArabic ? 'English' : 'العربية';
-            }
-            
-            // Update all translatable elements
-            document.querySelectorAll('[data-translate]').forEach(element => {
-                const key = element.getAttribute('data-translate');
-                if (translations[currentLanguage][key]) {
-                    element.textContent = translations[currentLanguage][key];
-                }
-            });
-            
-            // Update placeholders
-            document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
-                const key = element.getAttribute('data-translate-placeholder');
-                if (translations[currentLanguage][key]) {
-                    element.placeholder = translations[currentLanguage][key];
-                }
-            });
-            
-            // Update subjects if grade is selected
-            if (selectedGrade) {
-                showSubjects(selectedGrade);
-            }
-            
-            // Update page title
-            const titles = {
-                'dashboard': currentLanguage === 'ar' ? 'لوحة التحكم' : 'Dashboard',
-                'study-rooms': currentLanguage === 'ar' ? 'غرف الدراسة' : 'Study Rooms',
-                'library': currentLanguage === 'ar' ? 'المكتبة الرقمية' : 'Digital Library',
-                'profile': currentLanguage === 'ar' ? 'الملف الشخصي' : 'Profile',
-                'settings': currentLanguage === 'ar' ? 'الإعدادات' : 'Settings',
-                'about': currentLanguage === 'ar' ? 'حول التطبيق' : 'About',
-                'room': currentLanguage === 'ar' ? 'غرفة الدراسة' : 'Study Room'
-            };
-            
-            const titleElement = document.getElementById('page-title');
-            if (titleElement) {
-                titleElement.textContent = titles[currentPage] || titles['dashboard'];
-            }
-            
-            // Update user display
-            updateUserDisplay();
-            updateProfileDisplay();
-        }
-
-        // Request notification permission
-        if ('Notification' in window && Notification.permission === 'default') {
-            Notification.requestPermission();
-        }
-
-        // Handle window resize
-        window.addEventListener('resize', function() {
-            if (window.innerWidth > 768) {
-                document.getElementById('sidebar').classList.remove('show');
-            }
-        });
-
-        console.log('StudyTogether fully loaded');
-    </script>
-</body>
-</html>
                 console.error('Supabase initialization failed:', error);
             }
             
@@ -392,8 +304,7 @@
             // Check for saved user
             checkSavedUser();
             
-            // Apply initial language and theme
-            updateLanguage();
+            // Apply initial settings
             applyTheme();
             
             console.log('App initialized successfully');
@@ -423,9 +334,8 @@
                 // Show auto-join banner
                 const banner = document.getElementById('auto-join-banner');
                 banner.style.display = 'block';
-                banner.style.paddingTop = '1rem';
                 
-                // Adjust body padding to account for banner
+                // Adjust body padding
                 document.body.style.paddingTop = '80px';
             }
         }
@@ -435,7 +345,6 @@
                 // User needs to register first
                 hideAutoJoinBanner();
                 showWelcomeScreen();
-                // After registration, auto-join will happen
                 return;
             }
             
@@ -541,10 +450,9 @@
                     selectedSubject = subject;
                 };
                 
-                const subjectName = currentLanguage === 'ar' ? subject.nameAr : subject.name;
                 subjectCard.innerHTML = `
                     <div class="subject-emoji">${subject.emoji}</div>
-                    <div class="subject-name">${subjectName}</div>
+                    <div class="subject-name">${subject.name}</div>
                 `;
                 
                 grid.appendChild(subjectCard);
@@ -575,7 +483,7 @@
                         showApp();
                     }
                     
-                    // If there's an invitation, auto-join after user is loaded
+                    // If there's an invitation, auto-join after delay
                     if (inviteRoomCode) {
                         setTimeout(() => autoJoinRoom(), 1000);
                     }
@@ -632,13 +540,13 @@
             
             // Update page title
             const titles = {
-                'dashboard': currentLanguage === 'ar' ? 'لوحة التحكم' : 'Dashboard',
-                'study-rooms': currentLanguage === 'ar' ? 'غرف الدراسة' : 'Study Rooms',
-                'library': currentLanguage === 'ar' ? 'المكتبة الرقمية' : 'Digital Library',
-                'profile': currentLanguage === 'ar' ? 'الملف الشخصي' : 'Profile',
-                'settings': currentLanguage === 'ar' ? 'الإعدادات' : 'Settings',
-                'about': currentLanguage === 'ar' ? 'حول التطبيق' : 'About',
-                'room': currentLanguage === 'ar' ? 'غرفة الدراسة' : 'Study Room'
+                'dashboard': 'Dashboard',
+                'study-rooms': 'Study Rooms',
+                'library': 'Digital Library',
+                'profile': 'Profile',
+                'settings': 'Settings',
+                'about': 'About',
+                'room': 'Study Room'
             };
             
             document.getElementById('page-title').textContent = titles[page] || titles['dashboard'];
@@ -654,21 +562,7 @@
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('main-content');
-            
             sidebar.classList.toggle('show');
-            if (window.innerWidth <= 768) {
-                // On mobile, don't adjust main content margin
-                return;
-            }
-            
-            if (sidebar.classList.contains('hidden')) {
-                sidebar.classList.remove('hidden');
-                mainContent.classList.remove('sidebar-hidden');
-            } else {
-                sidebar.classList.add('hidden');
-                mainContent.classList.add('sidebar-hidden');
-            }
         }
 
         // Registration
@@ -677,26 +571,26 @@
             const messageDiv = document.getElementById('registration-message');
             
             if (!name) {
-                showMessage(messageDiv, currentLanguage === 'ar' ? 'يرجى إدخال اسمك' : 'Please enter your name', 'error');
+                showMessage(messageDiv, 'Please enter your name', 'error');
                 return;
             }
             
             if (!selectedGrade) {
-                showMessage(messageDiv, currentLanguage === 'ar' ? 'يرجى اختيار صفك الدراسي' : 'Please select your grade', 'error');
+                showMessage(messageDiv, 'Please select your grade', 'error');
                 return;
             }
             
             if (!selectedSubject) {
-                showMessage(messageDiv, currentLanguage === 'ar' ? 'يرجى اختيار مادتك' : 'Please select your subject', 'error');
+                showMessage(messageDiv, 'Please select your subject', 'error');
                 return;
             }
 
             if (!supabase) {
-                showMessage(messageDiv, currentLanguage === 'ar' ? 'خطأ في الاتصال بقاعدة البيانات' : 'Database connection error', 'error');
+                showMessage(messageDiv, 'Database connection error', 'error');
                 return;
             }
 
-            showMessage(messageDiv, currentLanguage === 'ar' ? 'جاري إنشاء ملفك الشخصي...' : 'Creating your profile...', 'info');
+            showMessage(messageDiv, 'Creating your profile...', 'info');
 
             try {
                 const userData = {
@@ -721,7 +615,7 @@
                 localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
                 
                 showApp();
-                showMessage(messageDiv, currentLanguage === 'ar' ? 'تم إنشاء الملف الشخصي بنجاح!' : 'Profile created successfully!', 'success');
+                showMessage(messageDiv, 'Profile created successfully!', 'success');
                 
                 // If there's an invitation, auto-join
                 if (inviteRoomCode) {
@@ -730,7 +624,7 @@
                 
             } catch (error) {
                 console.error('Registration error:', error);
-                let errorMessage = currentLanguage === 'ar' ? 'فشل في إنشاء الملف الشخصي' : 'Failed to create profile';
+                let errorMessage = 'Failed to create profile';
                 if (error.message) {
                     errorMessage += ': ' + error.message;
                 }
@@ -748,11 +642,7 @@
                 sidebarAvatar.textContent = currentUser.name.charAt(0).toUpperCase();
                 sidebarAvatar.style.background = currentUser.avatar_color;
                 sidebarName.textContent = currentUser.name;
-                
-                const gradeText = currentLanguage === 'ar' ? 
-                    `الصف ${currentUser.grade}` : 
-                    `Grade ${currentUser.grade}`;
-                sidebarGrade.textContent = gradeText;
+                sidebarGrade.textContent = `Grade ${currentUser.grade}`;
             }
         }
 
@@ -765,11 +655,7 @@
                 profileAvatar.textContent = currentUser.name.charAt(0).toUpperCase();
                 profileAvatar.style.background = currentUser.avatar_color;
                 profileName.textContent = currentUser.name;
-                
-                const gradeSubject = currentLanguage === 'ar' ? 
-                    `الصف ${currentUser.grade} - ${currentUser.subject}` : 
-                    `Grade ${currentUser.grade} - ${currentUser.subject}`;
-                profileGradeSubject.textContent = gradeSubject;
+                profileGradeSubject.textContent = `Grade ${currentUser.grade} - ${currentUser.subject}`;
             }
         }
 
@@ -810,12 +696,12 @@
 
         async function createRoom() {
             if (!supabase) {
-                alert(currentLanguage === 'ar' ? 'خطأ في الاتصال بقاعدة البيانات' : 'Database connection error');
+                alert('Database connection error');
                 return;
             }
             
             if (!currentUser || !currentUser.id) {
-                alert(currentLanguage === 'ar' ? 'يرجى تسجيل الدخول أولاً' : 'Please login first');
+                alert('Please login first');
                 showWelcomeScreen();
                 return;
             }
@@ -825,64 +711,13 @@
                 
                 const { data: room, error } = await supabase
                     .from('rooms')
-                    .insert([{
-                        room_code: roomCode,
-                        host_id: currentUser.id,
-                        name: `${currentUser.name}'s Study Room`
-                    }])
-                    .select()
-                    .single();
-
-                if (error) {
-                    console.error('Room creation error:', error);
-                    throw error;
-                }
-
-                await joinRoomById(room.id, roomCode);
-                
-            } catch (error) {
-                console.error('Create room error:', error);
-                alert(currentLanguage === 'ar' ? 'فشل في إنشاء الغرفة: ' + error.message : 'Failed to create room: ' + error.message);
-            }
-        }
-
-        function showJoinForm() {
-            const form = document.getElementById('join-form');
-            form.classList.toggle('show');
-            if (form.classList.contains('show')) {
-                document.getElementById('room-code-input').focus();
-            }
-        }
-
-        async function joinRoom() {
-            const input = document.getElementById('room-code-input');
-            const code = input.value.toUpperCase().trim();
-            await joinRoomByCode(code);
-        }
-
-        async function joinRoomByCode(code) {
-            const messageDiv = document.getElementById('join-message');
-            
-            if (!code) {
-                showMessage(messageDiv, currentLanguage === 'ar' ? 'يرجى إدخال رمز الغرفة' : 'Please enter room code', 'error');
-                return;
-            }
-
-            if (!supabase) {
-                showMessage(messageDiv, currentLanguage === 'ar' ? 'خطأ في الاتصال بقاعدة البيانات' : 'Database connection error', 'error');
-                return;
-            }
-
-            try {
-                const { data: room, error } = await supabase
-                    .from('rooms')
                     .select('*')
                     .eq('room_code', code)
                     .eq('is_active', true)
                     .single();
 
                 if (error || !room) {
-                    showMessage(messageDiv, currentLanguage === 'ar' ? 'الغرفة غير موجودة' : 'Room not found', 'error');
+                    showMessage(messageDiv, 'Room not found', 'error');
                     return;
                 }
 
@@ -890,7 +725,7 @@
                 
             } catch (error) {
                 console.error('Join room error:', error);
-                showMessage(messageDiv, currentLanguage === 'ar' ? 'فشل في الانضمام للغرفة' : 'Failed to join room', 'error');
+                showMessage(messageDiv, 'Failed to join room', 'error');
             }
         }
 
@@ -1009,8 +844,8 @@
 
                 if (!error && user) {
                     if (Notification.permission === 'granted') {
-                        new Notification(currentLanguage === 'ar' ? 'انضم مشارك جديد!' : 'New participant joined!', {
-                            body: currentLanguage === 'ar' ? `${user.name} انضم لغرفة الدراسة` : `${user.name} joined the study room`,
+                        new Notification('New participant joined!', {
+                            body: `${user.name} joined the study room`,
                             icon: '👥'
                         });
                     }
@@ -1019,19 +854,17 @@
                     notification.style.cssText = `
                         position: fixed;
                         top: 90px;
-                        ${currentLanguage === 'ar' ? 'left' : 'right'}: 20px;
+                        right: 20px;
                         background: var(--success-color);
                         color: white;
                         padding: 1rem 1.5rem;
                         border-radius: 12px;
-                        box-shadow: var(--shadow-medium);
+                        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
                         z-index: 1000;
                         font-weight: 600;
                         max-width: 300px;
                     `;
-                    notification.textContent = currentLanguage === 'ar' ? 
-                        `${user.name} انضم للغرفة! 👋` : 
-                        `${user.name} joined the room! 👋`;
+                    notification.textContent = `${user.name} joined the room! 👋`;
                     document.body.appendChild(notification);
                     
                     setTimeout(() => {
@@ -1083,7 +916,7 @@
                 container.innerHTML = '';
 
                 if (participants.length === 0) {
-                    container.innerHTML = `<div class="loading">${currentLanguage === 'ar' ? 'لا يوجد مشاركون' : 'No participants found'}</div>`;
+                    container.innerHTML = '<div class="loading">No participants found</div>';
                     return;
                 }
 
@@ -1100,9 +933,7 @@
                     `;
                     
                     const isYou = participant.user_id === currentUser.id;
-                    const gradeSubject = currentLanguage === 'ar' ? 
-                        `الصف ${user.grade} - ${user.subject}` : 
-                        `Grade ${user.grade} - ${user.subject}`;
+                    const gradeSubject = `Grade ${user.grade} - ${user.subject}`;
                     
                     participantDiv.innerHTML = `
                         <div style="
@@ -1121,7 +952,7 @@
                             ${user.name.charAt(0).toUpperCase()}
                         </div>
                         <div style="font-weight: 600; margin-bottom: 0.5rem;">
-                            ${escapeHtml(user.name)}${isYou ? ` (${currentLanguage === 'ar' ? 'أنت' : 'You'})` : ''}
+                            ${escapeHtml(user.name)}${isYou ? ' (You)' : ''}
                         </div>
                         <div style="color: var(--text-secondary); font-size: 0.9rem;">
                             ${gradeSubject}
@@ -1131,513 +962,347 @@
                     container.appendChild(participantDiv);
                 });
                 
-            } catch (error) {                <div class="welcome-content">
-                    <h1 class="title" data-translate="welcome">Welcome to StudyTogether</h1>
-                    <p class="subtitle" data-translate="welcomeDesc">Create your profile and start studying with your classmates</p>
-                    
-                    <div class="form-section">
-                        <!-- Name Input -->
-                        <div class="form-group">
-                            <label class="form-label" data-translate="yourName">Your Name</label>
-                            <input type="text" id="student-name" class="form-input" data-translate-placeholder="enterName" placeholder="Enter your full name" required>
-                        </div>
-
-                        <!-- Avatar Selection -->
-                        <div class="form-group">
-                            <label class="form-label" data-translate="chooseAvatar">Choose Your Avatar Color</label>
-                            <div class="avatar-grid">
-                                <div class="avatar-choice selected" data-color="#667eea" style="background: #667eea;">A</div>
-                                <div class="avatar-choice" data-color="#dc2626" style="background: #dc2626;">A</div>
-                                <div class="avatar-choice" data-color="#16a34a" style="background: #16a34a;">A</div>
-                                <div class="avatar-choice" data-color="#ea580c" style="background: #ea580c;">A</div>
-                                <div class="avatar-choice" data-color="#7c3aed" style="background: #7c3aed;">A</div>
-                                <div class="avatar-choice" data-color="#1f2937" style="background: #1f2937;">A</div>
-                            </div>
-                        </div>
-
-                        <!-- Grade Selection -->
-                        <div class="form-group">
-                            <label class="form-label" data-translate="selectGrade">Select Your Grade</label>
-                            <div class="grade-grid">
-                                <div class="grade-card" data-grade="10">
-                                    <div class="grade-icon">🎓</div>
-                                    <h3 class="grade-title" data-translate="grade10">Grade 10</h3>
-                                    <p class="grade-desc" data-translate="grade10Desc">First year of high school</p>
-                                </div>
-                                <div class="grade-card" data-grade="11">
-                                    <div class="grade-icon">📖</div>
-                                    <h3 class="grade-title" data-translate="grade11">Grade 11</h3>
-                                    <p class="grade-desc" data-translate="grade11Desc">Second year of high school</p>
-                                </div>
-                                <div class="grade-card" data-grade="12">
-                                    <div class="grade-icon">🎯</div>
-                                    <h3 class="grade-title" data-translate="grade12">Grade 12</h3>
-                                    <p class="grade-desc" data-translate="grade12Desc">Final year preparation</p>
-                                </div>
-                            </div>
-
-                            <!-- Subject Selection -->
-                            <div id="subjects-container" class="subjects-container">
-                                <h4 class="form-label" data-translate="selectSubject">Select Your Subject</h4>
-                                <div id="subjects-grid" class="subjects-grid">
-                                    <!-- Subjects will be populated here -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <button class="btn btn-large btn-block" onclick="completeRegistration()" data-translate="joinPlatform">Join Study Platform</button>
-                        
-                        <div id="registration-message"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- App Container (with Sidebar) -->
-    <div id="app-container" class="app-container screen">
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-logo">
-                    <div class="sidebar-logo-icon">📚</div>
-                    <span data-translate="appName">StudyTogether</span>
-                </div>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <div class="nav-section">
-                    <div class="nav-section-title" data-translate="main">Main</div>
-                    <button class="nav-item active" data-nav="dashboard">
-                        <span class="nav-item-icon">🏠</span>
-                        <span data-translate="dashboard">Dashboard</span>
-                    </button>
-                    <button class="nav-item" data-nav="study-rooms">
-                        <span class="nav-item-icon">👥</span>
-                        <span data-translate="studyRooms">Study Rooms</span>
-                    </button>
-                    <button class="nav-item" data-nav="library">
-                        <span class="nav-item-icon">📚</span>
-                        <span data-translate="digitalLibrary">Digital Library</span>
-                    </button>
-                </div>
-                
-                <div class="nav-section">
-                    <div class="nav-section-title" data-translate="account">Account</div>
-                    <button class="nav-item" data-nav="profile">
-                        <span class="nav-item-icon">👤</span>
-                        <span data-translate="profile">Profile</span>
-                    </button>
-                    <button class="nav-item" data-nav="settings">
-                        <span class="nav-item-icon">⚙️</span>
-                        <span data-translate="settings">Settings</span>
-                    </button>
-                    <button class="nav-item" data-nav="about">
-                        <span class="nav-item-icon">ℹ️</span>
-                        <span data-translate="about">About</span>
-                    </button>
-                </div>
-            </nav>
-            
-            <div class="user-profile">
-                <div class="user-info">
-                    <div id="sidebar-user-avatar" class="user-avatar"></div>
-                    <div class="user-details">
-                        <h4 id="sidebar-user-name">User</h4>
-                        <p id="sidebar-user-grade">Grade 10</p>
-                    </div>
-                </div>
-                <div class="sidebar-controls">
-                    <button class="control-btn" onclick="toggleTheme()" title="Toggle Theme">
-                        <span id="theme-icon">🌙</span>
-                    </button>
-                    <button class="control-btn" onclick="toggleLanguage()" title="Language">
-                        <span id="lang-icon">ع</span>
-                    </button>
-                    <button class="control-btn" onclick="logout()" title="Logout">
-                        <span>🚪</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="main-content" id="main-content">
-            <div class="content-header">
-                <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
-                <h1 class="header-title" id="page-title" data-translate="dashboard">Dashboard</h1>
-                <div class="header-actions">
-                    <!-- Header actions can go here -->
-                </div>
-            </div>
-            
-            <div class="content-body">
-                <!-- Dashboard -->
-                <div id="dashboard-content" class="screen active">
-                    <div class="action-grid">
-                        <div class="action-card" onclick="navigateTo('study-rooms')">
-                            <div class="action-icon">👥</div>
-                            <h3 class="action-title" data-translate="studyRooms">Study Rooms</h3>
-                            <p class="action-desc" data-translate="studyRoomsDesc">Join or create virtual study rooms with your classmates</p>
-                            <button class="btn" data-translate="enterRooms">Enter Study Rooms</button>
-                        </div>
-                        
-                        <div class="action-card" onclick="navigateTo('library')">
-                            <div class="action-icon">📚</div>
-                            <h3 class="action-title" data-translate="digitalLibrary">Digital Library</h3>
-                            <p class="action-desc" data-translate="libraryDesc">Access study materials, notes, and resources for your grade</p>
-                            <button class="btn btn-secondary" data-translate="browseLibrary">Browse Library</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Study Rooms -->
-                <div id="study-rooms-content" class="screen">
-                    <div class="action-grid">
-                        <div class="action-card" onclick="createRoom()">
-                            <div class="action-icon">➕</div>
-                            <h3 class="action-title" data-translate="createRoom">Create Study Room</h3>
-                            <p class="action-desc" data-translate="createRoomDesc">Start a new study session and invite your friends</p>
-                            <button class="btn" data-translate="createNow">Create Now</button>
-                        </div>
-                        
-                        <div class="action-card" onclick="showJoinForm()">
-                            <div class="action-icon">🚪</div>
-                            <h3 class="action-title" data-translate="joinRoom">Join Study Room</h3>
-                            <p class="action-desc" data-translate="joinRoomDesc">Enter a room code to join an existing study session</p>
-                            <button class="btn btn-secondary" data-translate="joinNow">Join Now</button>
-                        </div>
-                    </div>
-                    
-                    <div id="join-form" class="join-form">
-                        <label class="form-label" data-translate="enterRoomCode">Enter Room Code</label>
-                        <input type="text" id="room-code-input" class="room-code-input" data-translate-placeholder="roomCodePlaceholder" placeholder="XXXXXX" maxlength="6">
-                        <button class="btn btn-block" onclick="joinRoom()" data-translate="joinRoom">Join Room</button>
-                        <div id="join-message"></div>
-                    </div>
-                </div>
-
-                <!-- Room Screen -->
-                <div id="room-content" class="screen">
-                    <div class="room-header">
-                        <p style="color: var(--text-secondary); margin-bottom: 0.5rem;" data-translate="roomCode">Room Code</p>
-                        <div id="current-room-code" class="room-code">------</div>
-                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem;">
-                            <button class="btn" onclick="copyRoomCode()" data-translate="copyCode">Copy Code</button>
-                            <button class="btn btn-secondary" onclick="shareRoom()" data-translate="shareLink">Share Link</button>
-                            <button class="btn btn-secondary" onclick="leaveRoom()" data-translate="leaveRoom">Leave Room</button>
-                        </div>
-                    </div>
-
-                    <div class="tabs">
-                        <button class="tab active" data-tab="chat">💬 <span data-translate="chat">Chat</span></button>
-                        <button class="tab" data-tab="participants">👥 <span data-translate="participants">Participants</span></button>
-                        <button class="tab" data-tab="timer">⏱️ <span data-translate="timer">Timer</span></button>
-                    </div>
-
-                    <!-- Chat Tab -->
-                    <div id="chat-content" class="tab-content active">
-                        <div class="chat-box">
-                            <div id="chat-messages" class="chat-messages">
-                                <div class="loading">
-                                    <div class="loading-spinner"></div>
-                                    <span data-translate="loadingChat">Loading chat...</span>
-                                </div>
-                            </div>
-                            <div class="chat-input-area">
-                                <input type="text" id="chat-input" class="chat-input" data-translate-placeholder="typeMessage" placeholder="Type your message..." maxlength="500">
-                                <button class="btn" onclick="sendMessage()" data-translate="send">Send</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Participants Tab -->
-                    <div id="participants-content" class="tab-content">
-                        <div id="participants-list">
-                            <div class="loading">
-                                <div class="loading-spinner"></div>
-                                <span data-translate="loadingParticipants">Loading participants...</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Timer Tab -->
-                    <div id="timer-content" class="tab-content">
-                        <div style="text-align: center; background: var(--bg-secondary); padding: 3rem; border-radius: 20px;">
-                            <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap;">
-                                <button class="btn" data-timer="25">25 <span data-translate="minFocus">min Focus</span></button>
-                                <button class="btn" data-timer="5">5 <span data-translate="minBreak">min Break</span></button>
-                                <button class="btn" data-timer="15">15 <span data-translate="minBreak">min Break</span></button>
-                            </div>
-                            
-                            <div id="timer-display" style="font-size: 4rem; font-weight: 700; color: var(--primary-color); margin: 2rem 0; font-family: 'Courier New', monospace;">25:00</div>
-                            
-                            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                                <button id="start-timer-btn" class="btn" onclick="startTimer()" data-translate="start">Start</button>
-                                <button id="pause-timer-btn" class="btn btn-secondary" onclick="pauseTimer()" style="display: none;" data-translate="pause">Pause</button>
-                                <button class="btn btn-secondary" onclick="resetTimer()" data-translate="reset">Reset</button>
-                            </div>
-                            
-                            <div id="timer-status" style="margin-top: 1.5rem; font-size: 1.1rem; color: var(--text-secondary);"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Library Screen -->
-                <div id="library-content" class="screen">
-                    <div style="text-align: center; padding: 4rem 2rem;">
-                        <div style="font-size: 4rem; margin-bottom: 2rem;">🚧</div>
-                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--text-primary);" data-translate="comingSoon">Coming Soon!</h3>
-                        <p style="color: var(--text-secondary); font-size: 1.1rem;" data-translate="libraryComingSoon">The digital library feature is under development. Stay tuned for access to study materials and resources!</p>
-                    </div>
-                </div>
-
-                <!-- Profile Screen -->
-                <div id="profile-content" class="screen">
-                    <div style="max-width: 600px; margin: 0 auto;">
-                        <h2 style="margin-bottom: 2rem;" data-translate="userProfile">User Profile</h2>
-                        <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 20px; border: 1px solid var(--border-color);">
-                            <div style="text-align: center; margin-bottom: 2rem;">
-                                <div id="profile-avatar" class="user-avatar" style="width: 80px; height: 80px; font-size: 2rem; margin: 0 auto 1rem;"></div>
-                                <h3 id="profile-name">User Name</h3>
-                                <p id="profile-grade-subject" style="color: var(--text-secondary); margin-top: 0.5rem;">Grade & Subject</p>
-                            </div>
-                            
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
-                                <div style="background: var(--bg-primary); padding: 1.5rem; border-radius: 12px; text-align: center;">
-                                    <div style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">0</div>
-                                    <div style="color: var(--text-secondary); font-size: 0.9rem;" data-translate="studyHours">Study Hours</div>
-                                </div>
-                                <div style="background: var(--bg-primary); padding: 1.5rem; border-radius: 12px; text-align: center;">
-                                    <div style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">0</div>
-                                    <div style="color: var(--text-secondary); font-size: 0.9rem;" data-translate="roomsJoined">Rooms Joined</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Settings Screen -->
-                <div id="settings-content" class="screen">
-                    <div style="max-width: 600px; margin: 0 auto;">
-                        <h2 style="margin-bottom: 2rem;" data-translate="settings">Settings</h2>
-                        <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 20px; border: 1px solid var(--border-color);">
-                            <div style="margin-bottom: 2rem;">
-                                <h4 style="margin-bottom: 1rem;" data-translate="appearance">Appearance</h4>
-                                <div style="display: flex; gap: 1rem; align-items: center;">
-                                    <button class="btn btn-secondary" onclick="toggleTheme()">
-                                        <span id="theme-text" data-translate="darkMode">Dark Mode</span>
-                                    </button>
-                                    <button class="btn btn-secondary" onclick="toggleLanguage()">
-                                        <span id="lang-text" data-translate="arabic">العربية</span>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <h4 style="margin-bottom: 1rem;" data-translate="notifications">Notifications</h4>
-                                <p style="color: var(--text-secondary);" data-translate="notificationsDesc">Browser notifications are enabled for room invitations and timer completions.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- About Screen -->
-                <div id="about-content" class="screen">
-                    <div style="max-width: 600px; margin: 0 auto;">
-                        <h2 style="margin-bottom: 2rem;" data-translate="aboutApp">About StudyTogether</h2>
-                        <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 20px; border: 1px solid var(--border-color);">
-                            <div style="text-align: center; margin-bottom: 2rem;">
-                                <div style="font-size: 4rem; margin-bottom: 1rem;">📚</div>
-                                <h3 data-translate="appName">StudyTogether</h3>
-                                <p style="color: var(--text-secondary); margin-top: 0.5rem;">Version 2.0</p>
-                            </div>
-                            
-                            <div style="line-height: 1.6; color: var(--text-secondary);">
-                                <p style="margin-bottom: 1rem;" data-translate="aboutDesc">StudyTogether is a collaborative learning platform designed to help students connect, study together, and achieve their academic goals through virtual study rooms, shared resources, and real-time collaboration tools.</p>
-                                
-                                <h4 style="color: var(--text-primary); margin: 1.5rem 0 0.5rem;" data-translate="features">Features</h4>
-                                <ul style="margin-left: 1.5rem;">
-                                    <li data-translate="feature1">Virtual study rooms with real-time chat</li>
-                                    <li data-translate="feature2">Pomodoro timer for focused study sessions</li>
-                                    <li data-translate="feature3">Grade and subject-based organization</li>
-                                    <li data-translate="feature4">Multi-language support (English/Arabic)</li>
-                                    <li data-translate="feature5">Dark and light theme options</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <script>
-        // Translations
-        const translations = {
-            en: {
-                appName: "StudyTogether",
-                welcome: "Welcome to StudyTogether",
-                welcomeDesc: "Create your profile and start studying with your classmates",
-                yourName: "Your Name",
-                enterName: "Enter your full name",
-                chooseAvatar: "Choose Your Avatar Color",
-                selectGrade: "Select Your Grade",
-                grade10: "Grade 10",
-                grade10Desc: "First year of high school",
-                grade11: "Grade 11", 
-                grade11Desc: "Second year of high school",
-                grade12: "Grade 12",
-                grade12Desc: "Final year preparation",
-                selectSubject: "Select Your Subject",
-                joinPlatform: "Join Study Platform",
-                main: "Main",
-                dashboard: "Dashboard",
-                studyRooms: "Study Rooms",
-                digitalLibrary: "Digital Library",
-                account: "Account",
-                profile: "Profile",
-                settings: "Settings",
-                about: "About",
-                studyRoomsDesc: "Join or create virtual study rooms with your classmates",
-                enterRooms: "Enter Study Rooms",
-                libraryDesc: "Access study materials, notes, and resources for your grade",
-                browseLibrary: "Browse Library",
-                createRoom: "Create Study Room",
-                createRoomDesc: "Start a new study session and invite your friends",
-                createNow: "Create Now",
-                joinRoom: "Join Study Room",
-                joinRoomDesc: "Enter a room code to join an existing study session",
-                joinNow: "Join Now",
-                dismiss: "Dismiss",
-                enterRoomCode: "Enter Room Code",
-                roomCodePlaceholder: "XXXXXX",
-                roomCode: "Room Code",
-                copyCode: "Copy Code",
-                shareLink: "Share Link",
-                leaveRoom: "Leave Room",
-                chat: "Chat",
-                participants: "Participants",
-                timer: "Timer",
-                loadingChat: "Loading chat...",
-                typeMessage: "Type your message...",
-                send: "Send",
-                loadingParticipants: "Loading participants...",
-                minFocus: "min Focus",
-                minBreak: "min Break",
-                start: "Start",
-                pause: "Pause",
-                reset: "Reset",
-                comingSoon: "Coming Soon!",
-                libraryComingSoon: "The digital library feature is under development. Stay tuned for access to study materials and resources!",
-                userProfile: "User Profile",
-                studyHours: "Study Hours",
-                roomsJoined: "Rooms Joined",
-                appearance: "Appearance",
-                darkMode: "Dark Mode",
-                arabic: "العربية",
-                notifications: "Notifications",
-                notificationsDesc: "Browser notifications are enabled for room invitations and timer completions.",
-                aboutApp: "About StudyTogether",
-                aboutDesc: "StudyTogether is a collaborative learning platform designed to help students connect, study together, and achieve their academic goals through virtual study rooms, shared resources, and real-time collaboration tools.",
-                features: "Features",
-                feature1: "Virtual study rooms with real-time chat",
-                feature2: "Pomodoro timer for focused study sessions", 
-                feature3: "Grade and subject-based organization",
-                feature4: "Multi-language support (English/Arabic)",
-                feature5: "Dark and light theme options"
-            },
-            ar: {
-                appName: "ادرس معاً",
-                welcome: "مرحباً بك في منصة ادرس معاً",
-                welcomeDesc: "أنشئ ملفك الشخصي وابدأ الدراسة مع زملائك",
-                yourName: "اسمك",
-                enterName: "أدخل اسمك الكامل",
-                chooseAvatar: "اختر لون الصورة الرمزية",
-                selectGrade: "اختر صفك الدراسي",
-                grade10: "الصف العاشر",
-                grade10Desc: "السنة الأولى من المرحلة الثانوية",
-                grade11: "الصف الحادي عشر",
-                grade11Desc: "السنة الثانية من المرحلة الثانوية", 
-                grade12: "الصف الثاني عشر",
-                grade12Desc: "سنة التحضير للامتحانات النهائية",
-                selectSubject: "اختر مادتك",
-                joinPlatform: "انضم للمنصة",
-                main: "الرئيسية",
-                dashboard: "لوحة التحكم",
-                studyRooms: "غرف الدراسة",
-                digitalLibrary: "المكتبة الرقمية",
-                account: "الحساب",
-                profile: "الملف الشخصي",
-                settings: "الإعدادات",
-                about: "حول التطبيق",
-                studyRoomsDesc: "انضم أو أنشئ غرف دراسة افتراضية مع زملائك",
-                enterRooms: "ادخل غرف الدراسة",
-                libraryDesc: "الوصول إلى المواد الدراسية والملاحظات والموارد لصفك",
-                browseLibrary: "تصفح المكتبة",
-                createRoom: "أنشئ غرفة دراسة",
-                createRoomDesc: "ابدأ جلسة دراسة جديدة وادع أصدقاءك",
-                createNow: "أنشئ الآن",
-                joinRoom: "انضم لغرفة دراسة",
-                joinRoomDesc: "أدخل رمز الغرفة للانضمام إلى جلسة دراسة موجودة",
-                joinNow: "انضم الآن",
-                dismiss: "إغلاق",
-                enterRoomCode: "أدخل رمز الغرفة",
-                roomCodePlaceholder: "XXXXXX",
-                roomCode: "رمز الغرفة",
-                copyCode: "نسخ الرمز",
-                shareLink: "مشاركة الرابط",
-                leaveRoom: "مغادرة الغرفة",
-                chat: "المحادثة",
-                participants: "المشاركون",
-                timer: "المؤقت",
-                loadingChat: "جاري تحميل المحادثة...",
-                typeMessage: "اكتب رسالتك...",
-                send: "إرسال",
-                loadingParticipants: "جاري تحميل المشاركين...",
-                minFocus: "دقيقة تركيز",
-                minBreak: "دقيقة استراحة",
-                start: "ابدأ",
-                pause: "توقف",
-                reset: "إعادة تعيين",
-                comingSoon: "قريباً!",
-                libraryComingSoon: "ميزة المكتبة الرقمية قيد التطوير. ترقبوا الوصول إلى المواد الدراسية والموارد!",
-                userProfile: "الملف الشخصي",
-                studyHours: "ساعات الدراسة",
-                roomsJoined: "الغرف المنضم إليها",
-                appearance: "المظهر",
-                darkMode: "الوضع المظلم",
-                arabic: "English",
-                notifications: "الإشعارات",
-                notificationsDesc: "إشعارات المتصفح مُفعلة لدعوات الغرف وإنجاز المؤقت.",
-                aboutApp: "حول ادرس معاً",
-                aboutDesc: "ادرس معاً هي منصة تعلم تعاونية مصممة لمساعدة الطلاب على التواصل والدراسة معاً وتحقيق أهدافهم الأكاديمية من خلال غرف الدراسة الافتراضية والموارد المشتركة وأدوات التعاون في الوقت الفعلي.",
-                features: "الميزات",
-                feature1: "غرف دراسة افتراضية مع محادثة فورية",
-                feature2: "مؤقت بومودورو لجلسات دراسة مركزة",
-                feature3: "تنظيم حسب الصف والمادة",
-                feature4: "دعم متعدد اللغات (إنجليزي/عربي)",
-                feature5: "خيارات الوضع المظلم والفاتح"
+            } catch (error) {
+                console.error('Load participants error:', error);
+                document.getElementById('participants-list').innerHTML = '<div class="loading">Error loading participants</div>';
             }
-        };
+        }
 
-        // Subject data
-        const subjectsByGrade = {
-            10: [
-                { name: "Mathematics", nameAr: "الرياضيات", emoji: "🔢" },
-                { name: "Physics", nameAr: "الفيزياء", emoji: "⚛️" },
-                { name: "Chemistry", nameAr: "الكيمياء", emoji: "🧪" },
-                { name: "Biology", nameAr: "الأحياء", emoji: "🧬" },
-                { name: "English", nameAr: "اللغة الإنجليزية", emoji: "🇬🇧" },
-                { name: "Arabic", nameAr: "اللغة العربية", emoji: "📝" },
-                { name: "History", nameAr: "التاريخ", emoji: "🏛️" },
-                { name: "Geography", nameAr: "الجغرافيا", emoji: "🌍" }
-            ],
-            11: [
-                { name: "Advanced Mathematics", nameAr: "الريا<!DOCTYPE html>
+        async function sendSystemMessage(content) {
+            if (!currentRoom || !supabase) return;
+            
+            try {
+                await supabase
+                    .from('messages')
+                    .insert([{
+                        room_id: currentRoom.id,
+                        user_id: currentUser.id,
+                        content: content,
+                        message_type: 'system'
+                    }]);
+            } catch (error) {
+                console.error('Send system message error:', error);
+            }
+        }
+
+        async function loadMessages() {
+            if (!currentRoom || !supabase) return;
+            
+            try {
+                const { data: messages, error } = await supabase
+                    .from('messages')
+                    .select(`
+                        *,
+                        users (name, avatar_color)
+                    `)
+                    .eq('room_id', currentRoom.id)
+                    .order('created_at', { ascending: true })
+                    .limit(50);
+
+                if (error) throw error;
+
+                const container = document.getElementById('chat-messages');
+                container.innerHTML = '';
+
+                if (messages.length === 0) {
+                    container.innerHTML = '<div class="loading">No messages yet. Start the conversation!</div>';
+                    return;
+                }
+
+                messages.forEach(message => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `chat-message ${message.user_id === currentUser.id ? 'own' : ''}`;
+                    
+                    if (message.message_type === 'system') {
+                        messageDiv.innerHTML = `
+                            <div style="text-align: center; font-style: italic; color: var(--text-secondary);">
+                                ${escapeHtml(message.content)}
+                            </div>
+                        `;
+                        messageDiv.style.background = 'var(--bg-tertiary)';
+                        messageDiv.style.color = 'var(--text-secondary)';
+                    } else {
+                        const time = new Date(message.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        messageDiv.innerHTML = `
+                            <div style="font-size: 0.85rem; opacity: 0.7; margin-bottom: 0.5rem;">${escapeHtml(message.users.name)} • ${time}</div>
+                            <div>${escapeHtml(message.content)}</div>
+                        `;
+                    }
+                    
+                    container.appendChild(messageDiv);
+                });
+
+                container.scrollTop = container.scrollHeight;
+                
+            } catch (error) {
+                console.error('Load messages error:', error);
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const content = input.value.trim();
+            
+            if (!content || !currentRoom || !supabase) return;
+
+            try {
+                await supabase
+                    .from('messages')
+                    .insert([{
+                        room_id: currentRoom.id,
+                        user_id: currentUser.id,
+                        content: content,
+                        message_type: 'chat'
+                    }]);
+
+                input.value = '';
+                
+            } catch (error) {
+                console.error('Send message error:', error);
+            }
+        }
+
+        // Timer functions
+        function setTimerMinutes(minutes) {
+            timerSeconds = minutes * 60;
+            updateTimerDisplay();
+            resetTimer();
+        }
+
+        function startTimer() {
+            if (timerRunning) return;
+            
+            timerRunning = true;
+            document.getElementById('start-timer-btn').style.display = 'none';
+            document.getElementById('pause-timer-btn').style.display = 'inline-block';
+            document.getElementById('timer-status').textContent = 'Timer running... Stay focused! 🎯';
+            
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                updateTimerDisplay();
+                
+                if (timerSeconds <= 0) {
+                    timerComplete();
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            timerRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('start-timer-btn').style.display = 'inline-block';
+            document.getElementById('pause-timer-btn').style.display = 'none';
+            document.getElementById('timer-status').textContent = 'Timer paused';
+        }
+
+        function resetTimer() {
+            timerRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('start-timer-btn').style.display = 'inline-block';
+            document.getElementById('pause-timer-btn').style.display = 'none';
+            document.getElementById('timer-status').textContent = '';
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timer-display').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function timerComplete() {
+            resetTimer();
+            document.getElementById('timer-status').textContent = 'Timer completed! Great work! 🎉';
+            
+            if (Notification.permission === 'granted') {
+                new Notification('Study Timer Complete!', {
+                    body: 'Great job! Time for a break.',
+                    icon: '📚'
+                });
+            } else {
+                alert('Timer completed! Great work! 🎉');
+            }
+        }
+
+        // UI helpers
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName + '-content').classList.add('active');
+
+            if (tabName === 'chat') {
+                loadMessages();
+            } else if (tabName === 'participants') {
+                loadParticipants();
+            }
+        }
+
+        function showMessage(element, text, type) {
+            element.innerHTML = `<div class="message ${type}">${text}</div>`;
+            if (type === 'success' || type === 'error') {
+                setTimeout(() => {
+                    element.innerHTML = '';
+                }, 5000);
+            }
+        }
+
+        function copyRoomCode() {
+            const code = document.getElementById('current-room-code').textContent;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(code).then(() => {
+                    alert('Room code copied!');
+                }).catch(() => {
+                    prompt('Copy room code:', code);
+                });
+            } else {
+                prompt('Copy room code:', code);
+            }
+        }
+
+        function shareRoom() {
+            const code = document.getElementById('current-room-code').textContent;
+            const link = `${window.location.origin}${window.location.pathname}?room=${code}`;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(link).then(() => {
+                    alert('Invite link copied!');
+                }).catch(() => {
+                    prompt('Copy invite link:', link);
+                });
+            } else {
+                prompt('Copy invite link:', link);
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Theme and Language
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('studyTogether_theme', currentTheme);
+            applyTheme();
+        }
+
+        function applyTheme() {
+            document.body.setAttribute('data-theme', currentTheme);
+            document.getElementById('theme-icon').textContent = currentTheme === 'light' ? '🌙' : '☀️';
+            
+            const themeText = document.getElementById('theme-text');
+            if (themeText) {
+                themeText.textContent = currentTheme === 'light' ? 'Dark Mode' : 'Light Mode';
+            }
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'ar' : 'en';
+            localStorage.setItem('studyTogether_language', currentLanguage);
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const isArabic = currentLanguage === 'ar';
+            
+            // Update document direction
+            document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+            document.documentElement.lang = currentLanguage;
+            
+            // Update language toggle
+            document.getElementById('lang-icon').textContent = isArabic ? 'EN' : 'ع';
+            
+            const langText = document.getElementById('lang-text');
+            if (langText) {
+                langText.textContent = isArabic ? 'English' : 'العربية';
+            }
+            
+            // Update subjects if grade is selected
+            if (selectedGrade) {
+                showSubjects(selectedGrade);
+            }
+            
+            // Update user display
+            updateUserDisplay();
+            updateProfileDisplay();
+        }
+
+        // Request notification permission
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                document.getElementById('sidebar').classList.remove('show');
+            }
+        });
+
+        console.log('StudyTogether fully loaded');
+    </script>
+</body>
+</html>
+                    .insert([{
+                        room_code: roomCode,
+                        host_id: currentUser.id,
+                        name: `${currentUser.name}'s Study Room`
+                    }])
+                    .select()
+                    .single();
+
+                if (error) {
+                    console.error('Room creation error:', error);
+                    throw error;
+                }
+
+                await joinRoomById(room.id, roomCode);
+                
+            } catch (error) {
+                console.error('Create room error:', error);
+                alert('Failed to create room: ' + error.message);
+            }
+        }
+
+        function showJoinForm() {
+            const form = document.getElementById('join-form');
+            form.classList.toggle('show');
+            if (form.classList.contains('show')) {
+                document.getElementById('room-code-input').focus();
+            }
+        }
+
+        async function joinRoom() {
+            const input = document.getElementById('room-code-input');
+            const code = input.value.toUpperCase().trim();
+            await joinRoomByCode(code);
+        }
+
+        async function joinRoomByCode(code) {
+            const messageDiv = document.getElementById('join-message');
+            
+            if (!code) {
+                showMessage(messageDiv, 'Please enter room code', 'error');
+                return;
+            }
+
+            if (!supabase) {
+                showMessage(messageDiv, 'Database connection error', 'error');
+                return;
+            }
+
+            try {
+                const { data: room, error } = await supabase
+                    .from('rooms')<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
@@ -1646,8 +1311,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Light theme colors */
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --primary-color: #667eea;
             --secondary-color: #764ba2;
             --accent-color: #4f46e5;
@@ -1658,17 +1321,12 @@
             --text-secondary: #64748b;
             --text-muted: #94a3b8;
             --border-color: #e2e8f0;
-            --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.05);
-            --shadow-medium: 0 10px 25px rgba(0, 0, 0, 0.1);
-            --shadow-heavy: 0 20px 40px rgba(0, 0, 0, 0.15);
             --success-color: #10b981;
             --error-color: #ef4444;
-            --warning-color: #f59e0b;
             --sidebar-width: 280px;
         }
 
         [data-theme="dark"] {
-            /* Dark theme colors */
             --bg-primary: #0f172a;
             --bg-secondary: #1e293b;
             --bg-tertiary: #334155;
@@ -1676,9 +1334,6 @@
             --text-secondary: #cbd5e1;
             --text-muted: #64748b;
             --border-color: #334155;
-            --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.3);
-            --shadow-medium: 0 10px 25px rgba(0, 0, 0, 0.3);
-            --shadow-heavy: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
         * {
@@ -1693,14 +1348,12 @@
             color: var(--text-primary);
             min-height: 100vh;
             transition: all 0.3s ease;
-            overflow-x: hidden;
         }
 
         body[dir="rtl"] {
             font-family: 'Tajawal', 'Inter', sans-serif;
         }
 
-        /* Background Animation */
         .bg-animation {
             position: fixed;
             top: 0;
@@ -1708,28 +1361,268 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             opacity: 0.03;
         }
 
-        .bg-animation::before {
-            content: '';
-            position: absolute;
+        /* Auto Join Banner */
+        .auto-join-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            text-align: center;
+            position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 20%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(79, 70, 229, 0.05) 0%, transparent 50%);
-            animation: bgMove 20s ease-in-out infinite;
+            right: 0;
+            z-index: 2000;
+            display: none;
         }
 
-        @keyframes bgMove {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-30px) rotate(0.5deg); }
-            66% { transform: translateY(20px) rotate(-0.5deg); }
+        .auto-join-banner .btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin: 0 0.5rem;
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .welcome-card {
+            background: var(--bg-primary);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            padding: 3rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            font-size: 1.1rem;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Avatar Grid */
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .avatar-choice {
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
+            border: 3px solid transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-choice:hover {
+            transform: scale(1.05);
+        }
+
+        .avatar-choice.selected {
+            border-color: var(--accent-color);
+            transform: scale(1.1);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
+        }
+
+        /* Grade Grid */
+        .grade-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .grade-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .grade-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        .grade-card.selected {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-5px);
+        }
+
+        .grade-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .grade-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .grade-desc {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        /* Subject Container */
+        .subjects-container {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+            display: none;
+        }
+
+        .subjects-container.show {
+            display: block;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .subject-card {
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-color);
+        }
+
+        .subject-card.selected {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .subject-emoji {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subject-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-large {
+            padding: 1.5rem 3rem;
+            font-size: 1.2rem;
+            border-radius: 20px;
+        }
+
+        .btn-block {
+            width: 100%;
+            margin: 1rem 0;
         }
 
         /* App Layout */
@@ -1748,11 +1641,10 @@
             top: 0;
             height: 100vh;
             z-index: 1000;
-            transform: translateX(0);
-            transition: transform 0.3s ease;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
+            transition: transform 0.3s ease;
         }
 
         .sidebar.hidden {
@@ -1773,7 +1665,7 @@
         .sidebar-header {
             padding: 1.5rem;
             border-bottom: 1px solid var(--border-color);
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
 
@@ -1901,12 +1793,11 @@
             justify-content: center;
             font-size: 1rem;
             transition: all 0.3s ease;
-            box-shadow: var(--shadow-light);
         }
 
         .control-btn:hover {
             transform: translateY(-1px);
-            box-shadow: var(--shadow-medium);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
 
         /* Main Content */
@@ -1933,7 +1824,6 @@
         .content-header {
             height: 70px;
             background: var(--bg-primary);
-            backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
@@ -1948,12 +1838,6 @@
             font-size: 1.5rem;
             font-weight: 600;
             color: var(--text-primary);
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
         }
 
         .sidebar-toggle {
@@ -1988,334 +1872,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Welcome Screen (No Sidebar) */
-        .welcome-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            position: relative;
-        }
-
-        .welcome-card {
-            background: var(--bg-primary);
-            border-radius: 24px;
-            box-shadow: var(--shadow-heavy);
-            width: 100%;
-            max-width: 600px;
-            padding: 3rem;
-            position: relative;
-            z-index: 1;
-            border: 1px solid var(--border-color);
-        }
-
-        .welcome-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 200px;
-            background: var(--primary-gradient);
-            opacity: 0.05;
-            border-radius: 24px 24px 0 0;
-        }
-
-        .welcome-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Typography */
-        .title {
-            font-size: 3rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 1rem;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-            text-align: center;
-            margin-bottom: 3rem;
-            line-height: 1.6;
-        }
-
-        /* Form Elements */
-        .form-section {
-            max-width: 100%;
-        }
-
-        .form-group {
-            margin-bottom: 2rem;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 0.75rem;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 1rem 1.25rem;
-            border: 2px solid var(--border-color);
-            border-radius: 16px;
-            font-size: 1.1rem;
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            transition: all 0.3s ease;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        /* Avatar Selection */
-        .avatar-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            gap: 1rem;
-            margin: 1.5rem 0;
-        }
-
-        .avatar-choice {
-            width: 80px;
-            height: 80px;
-            border-radius: 20px;
-            border: 3px solid transparent;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1.8rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .avatar-choice::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: inherit;
-            filter: brightness(1.1);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .avatar-choice:hover {
-            transform: scale(1.05);
-            box-shadow: var(--shadow-medium);
-        }
-
-        .avatar-choice:hover::before {
-            opacity: 1;
-        }
-
-        .avatar-choice.selected {
-            border-color: var(--accent-color);
-            transform: scale(1.1);
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
-        }
-
-        /* Grade Selection */
-        .grade-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        .grade-card {
-            background: var(--bg-secondary);
-            border: 2px solid var(--border-color);
-            border-radius: 20px;
-            padding: 2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .grade-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--primary-gradient);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .grade-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-medium);
-            border-color: var(--primary-color);
-        }
-
-        .grade-card:hover::before {
-            opacity: 0.05;
-        }
-
-        .grade-card.selected {
-            border-color: var(--primary-color);
-            background: var(--primary-color);
-            color: white;
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-medium);
-        }
-
-        .grade-card.selected::before {
-            opacity: 0.1;
-        }
-
-        .grade-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .grade-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .grade-desc {
-            font-size: 0.95rem;
-            opacity: 0.8;
-        }
-
-        /* Subject Selection */
-        .subjects-container {
-            margin-top: 2rem;
-            padding: 2rem;
-            background: var(--bg-tertiary);
-            border-radius: 20px;
-            display: none;
-        }
-
-        .subjects-container.show {
-            display: block;
-            animation: slideDown 0.4s ease-out;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .subjects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .subject-card {
-            background: var(--bg-primary);
-            border: 2px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-
-        .subject-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-light);
-            border-color: var(--primary-color);
-        }
-
-        .subject-card.selected {
-            border-color: var(--primary-color);
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .subject-emoji {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .subject-name {
-            font-weight: 600;
-            font-size: 1rem;
-        }
-
-        /* Buttons */
-        .btn {
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 16px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow-light);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-medium);
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn-secondary {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border: 2px solid var(--border-color);
-        }
-
-        .btn-large {
-            padding: 1.5rem 3rem;
-            font-size: 1.2rem;
-            border-radius: 20px;
-        }
-
-        .btn-block {
-            width: 100%;
-            margin: 1rem 0;
-        }
-
-        /* Action Cards for Dashboard */
+        /* Action Cards */
         .action-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -2331,30 +1888,12 @@
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .action-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--primary-gradient);
-            opacity: 0;
-            transition: opacity 0.3s ease;
         }
 
         .action-card:hover {
             transform: translateY(-8px);
-            box-shadow: var(--shadow-heavy);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
             border-color: var(--primary-color);
-        }
-
-        .action-card:hover::before {
-            opacity: 0.05;
         }
 
         .action-icon {
@@ -2375,34 +1914,7 @@
             margin-bottom: 2rem;
         }
 
-        /* Messages */
-        .message {
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            margin: 1rem 0;
-            font-weight: 500;
-            border-left: 4px solid;
-        }
-
-        .message.error {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--error-color);
-            border-color: var(--error-color);
-        }
-
-        .message.success {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success-color);
-            border-color: var(--success-color);
-        }
-
-        .message.info {
-            background: rgba(79, 70, 229, 0.1);
-            color: var(--accent-color);
-            border-color: var(--accent-color);
-        }
-
-        /* Room Content */
+        /* Room Components */
         .room-header {
             background: var(--bg-secondary);
             padding: 2rem;
@@ -2474,7 +1986,7 @@
             padding: 1rem 1.25rem;
             border-radius: 16px;
             background: var(--bg-secondary);
-            box-shadow: var(--shadow-light);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
 
         .chat-message.own {
@@ -2531,7 +2043,34 @@
             font-weight: 600;
         }
 
-        /* Loading Animation */
+        /* Messages */
+        .message {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            font-weight: 500;
+            border-left: 4px solid;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error-color);
+            border-color: var(--error-color);
+        }
+
+        .message.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        .message.info {
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        /* Loading */
         .loading {
             display: flex;
             align-items: center;
@@ -2555,27 +2094,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Auto-join Banner */
-        .auto-join-banner {
-            background: var(--primary-gradient);
-            color: white;
-            padding: 1rem 2rem;
-            text-align: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 2000;
-            box-shadow: var(--shadow-medium);
-        }
-
-        .auto-join-banner .btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            margin: 0 0.5rem;
-        }
-
-        /* Responsive Design */
+        /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -2605,8 +2124,8 @@
                 display: flex;
             }
 
-            .content-body {
-                padding: 1rem;
+            .welcome-card {
+                padding: 2rem;
             }
 
             .title {
@@ -2631,44 +2150,127 @@
         }
 
         @media (max-width: 480px) {
-            .welcome-card {
-                padding: 2rem;
-            }
-
             .avatar-choice {
                 width: 60px;
                 height: 60px;
-                font-size: 1.4rem;
+                font-size: 1.2rem;
             }
 
             .subjects-grid {
                 grid-template-columns: 1fr;
             }
         }
-
-        /* RTL Support */
-        [dir="rtl"] .nav-item {
-            text-align: right;
-        }
-
-        [dir="rtl"] .user-info {
-            flex-direction: row-reverse;
-        }
     </style>
 </head>
 <body data-theme="light" dir="ltr">
     <div class="bg-animation"></div>
     
-    <!-- Auto-join Banner (hidden by default) -->
-    <div id="auto-join-banner" class="auto-join-banner" style="display: none;">
+    <!-- Auto-join Banner -->
+    <div id="auto-join-banner" class="auto-join-banner">
         <p style="margin-bottom: 0.5rem;"><strong>You've been invited to join a study room!</strong></p>
-        <button class="btn" onclick="autoJoinRoom()" data-translate="joinNow">Join Now</button>
-        <button class="btn" onclick="hideAutoJoinBanner()" data-translate="dismiss">Dismiss</button>
+        <button class="btn" onclick="autoJoinRoom()">Join Now</button>
+        <button class="btn" onclick="hideAutoJoinBanner()">Dismiss</button>
     </div>
 
-    <!-- Welcome/Registration Screen (Full Screen) -->
+    <!-- Welcome Screen -->
     <div id="welcome-screen" class="screen active">
-        <div class="welcome-container">
+        <div class="welcome-screen">
             <div class="welcome-card">
-                <div class="welcome-content">
-                    <h1 class="title
+                <h1 class="title">Welcome to StudyTogether</h1>
+                <p class="subtitle">Create your profile and start studying with your classmates</p>
+                
+                <!-- Name Input -->
+                <div class="form-group">
+                    <label class="form-label">Your Name</label>
+                    <input type="text" id="student-name" class="form-input" placeholder="Enter your full name" required>
+                </div>
+
+                <!-- Avatar Selection -->
+                <div class="form-group">
+                    <label class="form-label">Choose Your Avatar Color</label>
+                    <div class="avatar-grid">
+                        <div class="avatar-choice selected" data-color="#667eea" style="background: #667eea;">A</div>
+                        <div class="avatar-choice" data-color="#dc2626" style="background: #dc2626;">A</div>
+                        <div class="avatar-choice" data-color="#16a34a" style="background: #16a34a;">A</div>
+                        <div class="avatar-choice" data-color="#ea580c" style="background: #ea580c;">A</div>
+                        <div class="avatar-choice" data-color="#7c3aed" style="background: #7c3aed;">A</div>
+                        <div class="avatar-choice" data-color="#1f2937" style="background: #1f2937;">A</div>
+                    </div>
+                </div>
+
+                <!-- Grade Selection -->
+                <div class="form-group">
+                    <label class="form-label">Select Your Grade</label>
+                    <div class="grade-grid">
+                        <div class="grade-card" data-grade="10">
+                            <div class="grade-icon">🎓</div>
+                            <h3 class="grade-title">Grade 10</h3>
+                            <p class="grade-desc">First year of high school</p>
+                        </div>
+                        <div class="grade-card" data-grade="11">
+                            <div class="grade-icon">📖</div>
+                            <h3 class="grade-title">Grade 11</h3>
+                            <p class="grade-desc">Second year of high school</p>
+                        </div>
+                        <div class="grade-card" data-grade="12">
+                            <div class="grade-icon">🎯</div>
+                            <h3 class="grade-title">Grade 12</h3>
+                            <p class="grade-desc">Final year preparation</p>
+                        </div>
+                    </div>
+
+                    <!-- Subject Selection -->
+                    <div id="subjects-container" class="subjects-container">
+                        <h4 class="form-label">Select Your Subject</h4>
+                        <div id="subjects-grid" class="subjects-grid">
+                            <!-- Subjects will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-large btn-block" onclick="completeRegistration()">Join Study Platform</button>
+                
+                <div id="registration-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Container -->
+    <div id="app-container" class="app-container screen">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon">📚</div>
+                    <span>StudyTogether</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <button class="nav-item active" data-nav="dashboard">
+                        <span class="nav-item-icon">🏠</span>
+                        <span>Dashboard</span>
+                    </button>
+                    <button class="nav-item" data-nav="study-rooms">
+                        <span class="nav-item-icon">👥</span>
+                        <span>Study Rooms</span>
+                    </button>
+                    <button class="nav-item" data-nav="library">
+                        <span class="nav-item-icon">📚</span>
+                        <span>Digital Library</span>
+                    </button>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Account</div>
+                    <button class="nav-item" data-nav="profile">
+                        <span class="nav-item-icon">👤</span>
+                        <span>Profile</span>
+                    </button>
+                    <button class="nav-item" data-nav="settings">
+                        <span class="nav-item-icon">⚙️</span>
+                        <span>Settings</span>
+                    </button>
+                    <button class="nav-item" data-nav="about">
