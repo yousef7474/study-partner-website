@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudyTogether - Complete Study Platform</title>
+    <title>StudyTogether - Study Platform</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.39.3/umd/supabase.min.js"></script>
     <style>
         * {
@@ -27,10 +27,8 @@
             border-radius: 20px;
             padding: 40px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            max-width: 900px;
+            max-width: 800px;
             width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
         }
 
         .logo {
@@ -56,16 +54,41 @@
             display: block;
         }
 
-        /* Login Screen */
-        .login-form {
-            text-align: center;
-            max-width: 400px;
-            margin: 0 auto;
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+            font-weight: 600;
+            display: inline-block;
+            text-decoration: none;
         }
 
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+
+        /* Form elements */
         .form-group {
             margin: 25px 0;
-            text-align: left;
         }
 
         .form-group label {
@@ -89,10 +112,11 @@
             border-color: #667eea;
         }
 
+        /* Avatar selection */
         .avatar-grid {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
-            gap: 10px;
+            gap: 15px;
             justify-items: center;
             margin: 20px 0;
         }
@@ -122,35 +146,6 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.3);
         }
 
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-size: 1.1em;
-            cursor: pointer;
-            margin: 10px;
-            transition: all 0.3s;
-            font-weight: 600;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .btn-secondary {
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-        }
-
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 0.9em;
-        }
-
         /* Messages */
         .message {
             padding: 12px 20px;
@@ -160,26 +155,33 @@
             font-weight: 500;
         }
 
-        .error-msg {
+        .error {
             background: #fef2f2;
             color: #dc2626;
             border: 1px solid #fecaca;
         }
 
-        .success-msg {
+        .success {
             background: #f0fdf4;
             color: #16a34a;
             border: 1px solid #bbf7d0;
         }
 
-        .info-msg {
+        .info {
             background: #eff6ff;
             color: #2563eb;
             border: 1px solid #bfdbfe;
         }
 
-        /* Home Screen */
-        .header {
+        /* Login form */
+        .login-form {
+            text-align: center;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Home screen */
+        .home-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -233,7 +235,7 @@
             margin-bottom: 15px;
         }
 
-        /* Room Screen */
+        /* Room screen */
         .room-header {
             background: #f8fafc;
             padding: 20px;
@@ -342,142 +344,6 @@
             font-size: 1em;
         }
 
-        /* Participants */
-        .participants-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .participant-card {
-            background: #f8fafc;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            border: 2px solid #e2e8f0;
-        }
-
-        .participant-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            margin: 0 auto 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1.5em;
-        }
-
-        .online-dot {
-            width: 12px;
-            height: 12px;
-            background: #22c55e;
-            border-radius: 50%;
-            display: inline-block;
-            margin-left: 8px;
-        }
-
-        /* Timer */
-        .timer-section {
-            text-align: center;
-            background: #f8fafc;
-            padding: 40px;
-            border-radius: 20px;
-        }
-
-        .timer-presets {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .timer-display {
-            font-size: 4em;
-            font-weight: bold;
-            color: #667eea;
-            margin: 30px 0;
-            font-family: 'Courier New', monospace;
-        }
-
-        .timer-controls {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .timer-status {
-            margin-top: 20px;
-            font-size: 1.1em;
-            color: #64748b;
-        }
-
-        /* Notes */
-        .notes-section {
-            border: 2px solid #e2e8f0;
-            border-radius: 15px;
-            overflow: hidden;
-        }
-
-        .notes-toolbar {
-            background: #f8fafc;
-            padding: 15px;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .notes-editor {
-            min-height: 300px;
-            padding: 20px;
-            border: none;
-            outline: none;
-            width: 100%;
-            font-size: 1.1em;
-            line-height: 1.6;
-            resize: vertical;
-        }
-
-        .notes-status {
-            margin-left: auto;
-            color: #64748b;
-            font-size: 0.9em;
-        }
-
-        /* Stats */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-        }
-
-        .stat-card {
-            background: #f8fafc;
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            border: 2px solid #e2e8f0;
-        }
-
-        .stat-number {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #667eea;
-            display: block;
-        }
-
-        .stat-label {
-            color: #64748b;
-            margin-top: 8px;
-            font-weight: 500;
-        }
-
         /* Loading */
         .loading {
             text-align: center;
@@ -493,11 +359,7 @@
                 margin: 10px;
             }
 
-            .timer-display {
-                font-size: 2.5em;
-            }
-
-            .header {
+            .home-header {
                 flex-direction: column;
                 text-align: center;
             }
@@ -533,7 +395,7 @@
                     </div>
                 </div>
                 
-                <button class="btn" onclick="handleLogin()">Enter Study Platform</button>
+                <button class="btn" id="login-btn">Enter Study Platform</button>
                 
                 <div id="login-message"></div>
             </div>
@@ -541,7 +403,7 @@
 
         <!-- Home Screen -->
         <div id="home-screen" class="screen">
-            <div class="header">
+            <div class="home-header">
                 <div class="user-info">
                     <div id="user-avatar" class="user-avatar"></div>
                     <div>
@@ -549,46 +411,40 @@
                         <div style="color: #64748b; font-size: 0.9em;">Ready to study?</div>
                     </div>
                 </div>
-                <button class="btn btn-secondary btn-small" onclick="handleLogout()">Logout</button>
+                <button class="btn btn-secondary btn-small" id="logout-btn">Logout</button>
             </div>
             
             <div class="home-actions">
-                <button class="btn" onclick="handleCreateRoom()">Create Study Room</button>
-                <button class="btn btn-secondary" onclick="toggleJoinForm()">Join Study Room</button>
+                <button class="btn" id="create-room-btn">Create Study Room</button>
+                <button class="btn btn-secondary" id="join-room-btn">Join Study Room</button>
             </div>
             
             <div id="join-form" class="join-form">
                 <input type="text" id="room-code-input" class="room-code-input" placeholder="ROOM CODE" maxlength="6">
-                <button class="btn" onclick="handleJoinRoom()" style="width: 100%;">Join Room</button>
+                <button class="btn" id="join-submit-btn" style="width: 100%;">Join Room</button>
                 <div id="join-message"></div>
-            </div>
-
-            <div id="user-stats" class="stats-grid">
-                <!-- User stats will load here -->
             </div>
         </div>
 
         <!-- Room Screen -->
         <div id="room-screen" class="screen">
-            <div class="header">
-                <button class="btn btn-secondary btn-small" onclick="handleLeaveRoom()">← Leave Room</button>
+            <div class="home-header">
+                <button class="btn btn-secondary btn-small" id="leave-room-btn">← Leave Room</button>
                 
                 <div class="room-header">
                     <div style="font-size: 1.1em; color: #64748b; margin-bottom: 5px;">Room Code</div>
                     <div id="current-room-code" class="room-code">------</div>
                     <div class="room-actions">
-                        <button class="btn btn-small" onclick="copyRoomCode()">Copy Code</button>
-                        <button class="btn btn-small" onclick="shareRoom()">Share Link</button>
+                        <button class="btn btn-small" id="copy-code-btn">Copy Code</button>
+                        <button class="btn btn-small" id="share-link-btn">Share Link</button>
                     </div>
                 </div>
             </div>
 
             <div class="tabs">
-                <button class="tab active" onclick="switchTab('chat')">💬 Chat</button>
-                <button class="tab" onclick="switchTab('participants')">👥 Participants</button>
-                <button class="tab" onclick="switchTab('timer')">⏱️ Timer</button>
-                <button class="tab" onclick="switchTab('notes')">📝 Notes</button>
-                <button class="tab" onclick="switchTab('stats')">📊 Stats</button>
+                <button class="tab active" data-tab="chat">💬 Chat</button>
+                <button class="tab" data-tab="participants">👥 Participants</button>
+                <button class="tab" data-tab="timer">⏱️ Timer</button>
             </div>
 
             <!-- Chat Tab -->
@@ -599,63 +455,44 @@
                     </div>
                     <div class="chat-input-area">
                         <input type="text" id="chat-input" class="chat-input" placeholder="Type your message..." maxlength="500">
-                        <button class="btn btn-small" onclick="sendChatMessage()">Send</button>
+                        <button class="btn btn-small" id="send-chat-btn">Send</button>
                     </div>
                 </div>
             </div>
 
             <!-- Participants Tab -->
             <div id="participants-content" class="tab-content">
-                <div id="participants-list" class="participants-grid">
+                <div id="participants-list">
                     <div class="loading">Loading participants...</div>
                 </div>
             </div>
 
             <!-- Timer Tab -->
             <div id="timer-content" class="tab-content">
-                <div class="timer-section">
-                    <div class="timer-presets">
-                        <button class="btn btn-small" onclick="setTimerMinutes(25)">25 min Focus</button>
-                        <button class="btn btn-small" onclick="setTimerMinutes(5)">5 min Break</button>
-                        <button class="btn btn-small" onclick="setTimerMinutes(15)">15 min Break</button>
-                        <button class="btn btn-small btn-secondary" onclick="customTimer()">Custom</button>
+                <div style="text-align: center; background: #f8fafc; padding: 40px; border-radius: 20px;">
+                    <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap;">
+                        <button class="btn btn-small" data-timer="25">25 min Focus</button>
+                        <button class="btn btn-small" data-timer="5">5 min Break</button>
+                        <button class="btn btn-small" data-timer="15">15 min Break</button>
                     </div>
                     
-                    <div id="timer-display" class="timer-display">25:00</div>
+                    <div id="timer-display" style="font-size: 4em; font-weight: bold; color: #667eea; margin: 30px 0; font-family: 'Courier New', monospace;">25:00</div>
                     
-                    <div class="timer-controls">
-                        <button id="start-btn" class="btn" onclick="startTimer()">Start</button>
-                        <button id="pause-btn" class="btn btn-secondary" onclick="pauseTimer()" style="display: none;">Pause</button>
-                        <button class="btn btn-secondary" onclick="resetTimer()">Reset</button>
+                    <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                        <button id="start-timer-btn" class="btn">Start</button>
+                        <button id="pause-timer-btn" class="btn btn-secondary" style="display: none;">Pause</button>
+                        <button id="reset-timer-btn" class="btn btn-secondary">Reset</button>
                     </div>
                     
-                    <div id="timer-status" class="timer-status"></div>
-                </div>
-            </div>
-
-            <!-- Notes Tab -->
-            <div id="notes-content" class="tab-content">
-                <div class="notes-section">
-                    <div class="notes-toolbar">
-                        <button class="btn btn-small" onclick="formatNotes('bold')"><b>B</b></button>
-                        <button class="btn btn-small" onclick="formatNotes('italic')"><i>I</i></button>
-                        <button class="btn btn-small" onclick="saveNotes()">💾 Save</button>
-                        <div class="notes-status" id="notes-status">Ready</div>
-                    </div>
-                    <textarea id="notes-editor" class="notes-editor" placeholder="Start taking shared notes with your study group..."></textarea>
-                </div>
-            </div>
-
-            <!-- Stats Tab -->
-            <div id="stats-content" class="tab-content">
-                <div id="room-stats" class="stats-grid">
-                    <div class="loading">Loading room statistics...</div>
+                    <div id="timer-status" style="margin-top: 20px; font-size: 1.1em; color: #64748b;"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        console.log('Starting StudyTogether app...');
+
         // Supabase setup
         const supabase = window.supabase.createClient(
             'https://lpabkpwepnbvgkznzlkf.supabase.co',
@@ -669,16 +506,17 @@
         let timerInterval = null;
         let timerSeconds = 1500; // 25 minutes
         let timerRunning = false;
-        let chatSubscription = null;
-        let participantsSubscription = null;
 
-        // Initialize app
+        // Wait for DOM to load
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('App starting...');
-            initializeApp();
+            console.log('DOM loaded, initializing app...');
+            initApp();
         });
 
-        function initializeApp() {
+        function initApp() {
+            console.log('Initializing app...');
+            
+            // Set up all event listeners with direct references
             setupEventListeners();
             
             // Check for saved user
@@ -689,38 +527,81 @@
                     console.log('Found saved user:', currentUser);
                     showScreen('home-screen');
                     updateUserDisplay();
-                    loadUserStats();
                 } catch (e) {
                     console.error('Error loading saved user:', e);
                     localStorage.removeItem('studyUser');
                 }
             }
 
-            // Check for room code in URL
-            const params = new URLSearchParams(window.location.search);
-            const roomCode = params.get('room');
-            if (roomCode && currentUser) {
-                document.getElementById('room-code-input').value = roomCode.toUpperCase();
-                toggleJoinForm();
-            }
+            console.log('App initialized successfully');
         }
 
         function setupEventListeners() {
+            console.log('Setting up event listeners...');
+            
             // Avatar selection
             document.querySelectorAll('.avatar-choice').forEach(choice => {
                 choice.addEventListener('click', function() {
+                    console.log('Avatar clicked:', this.dataset.color);
                     document.querySelectorAll('.avatar-choice').forEach(c => c.classList.remove('selected'));
                     this.classList.add('selected');
                     selectedColor = this.dataset.color;
-                    console.log('Selected color:', selectedColor);
                 });
             });
 
-            // Update avatar previews when name changes
+            // Name input updates avatars
             document.getElementById('username').addEventListener('input', function() {
                 const letter = this.value.charAt(0).toUpperCase() || 'Y';
                 document.querySelectorAll('.avatar-choice').forEach(choice => {
                     choice.textContent = letter;
+                });
+            });
+
+            // Login button
+            document.getElementById('login-btn').addEventListener('click', handleLogin);
+
+            // Logout button
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+
+            // Create room button
+            document.getElementById('create-room-btn').addEventListener('click', handleCreateRoom);
+
+            // Join room button
+            document.getElementById('join-room-btn').addEventListener('click', toggleJoinForm);
+
+            // Join submit button
+            document.getElementById('join-submit-btn').addEventListener('click', handleJoinRoom);
+
+            // Leave room button
+            document.getElementById('leave-room-btn').addEventListener('click', handleLeaveRoom);
+
+            // Copy/share buttons
+            document.getElementById('copy-code-btn').addEventListener('click', copyRoomCode);
+            document.getElementById('share-link-btn').addEventListener('click', shareRoom);
+
+            // Chat
+            document.getElementById('send-chat-btn').addEventListener('click', sendChatMessage);
+            document.getElementById('chat-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') sendChatMessage();
+            });
+
+            // Timer buttons
+            document.getElementById('start-timer-btn').addEventListener('click', startTimer);
+            document.getElementById('pause-timer-btn').addEventListener('click', pauseTimer);
+            document.getElementById('reset-timer-btn').addEventListener('click', resetTimer);
+
+            // Timer presets
+            document.querySelectorAll('[data-timer]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const minutes = parseInt(this.dataset.timer);
+                    setTimerMinutes(minutes);
+                });
+            });
+
+            // Tab switching
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    switchTab(this.dataset.tab);
                 });
             });
 
@@ -733,23 +614,12 @@
                 if (e.key === 'Enter') handleJoinRoom();
             });
 
-            document.getElementById('chat-input').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') sendChatMessage();
-            });
-
-            // Auto-save notes
-            let notesTimeout;
-            document.getElementById('notes-editor').addEventListener('input', function() {
-                clearTimeout(notesTimeout);
-                document.getElementById('notes-status').textContent = 'Typing...';
-                notesTimeout = setTimeout(() => {
-                    saveNotes();
-                }, 2000);
-            });
+            console.log('Event listeners set up successfully');
         }
 
         // Authentication functions
         async function handleLogin() {
+            console.log('Login clicked');
             const name = document.getElementById('username').value.trim();
             const messageDiv = document.getElementById('login-message');
             
@@ -782,7 +652,6 @@
                 
                 showScreen('home-screen');
                 updateUserDisplay();
-                loadUserStats();
                 showMessage(messageDiv, 'Profile created successfully!', 'success');
                 
             } catch (error) {
@@ -792,15 +661,12 @@
         }
 
         function handleLogout() {
-            if (currentRoom) {
-                handleLeaveRoom();
-            }
-            
+            console.log('Logout clicked');
             currentUser = null;
             localStorage.removeItem('studyUser');
             showScreen('login-screen');
             
-            // Reset login form
+            // Reset form
             document.getElementById('username').value = '';
             document.querySelectorAll('.avatar-choice').forEach(choice => {
                 choice.classList.remove('selected');
@@ -830,28 +696,11 @@
         }
 
         async function handleCreateRoom() {
-            console.log('Creating room...');
+            console.log('Create room clicked');
             
             try {
                 let roomCode = generateRoomCode();
                 
-                // Ensure unique room code
-                let { data: existing } = await supabase
-                    .from('rooms')
-                    .select('id')
-                    .eq('room_code', roomCode)
-                    .single();
-                
-                while (existing) {
-                    roomCode = generateRoomCode();
-                    existing = await supabase
-                        .from('rooms')
-                        .select('id')
-                        .eq('room_code', roomCode)
-                        .single();
-                }
-
-                // Create room
                 const { data: room, error } = await supabase
                     .from('rooms')
                     .insert([{
@@ -874,6 +723,7 @@
         }
 
         function toggleJoinForm() {
+            console.log('Toggle join form clicked');
             const form = document.getElementById('join-form');
             form.classList.toggle('show');
             if (form.classList.contains('show')) {
@@ -882,6 +732,7 @@
         }
 
         async function handleJoinRoom() {
+            console.log('Join room clicked');
             const input = document.getElementById('room-code-input');
             const code = input.value.toUpperCase().trim();
             const messageDiv = document.getElementById('join-message');
@@ -890,8 +741,6 @@
                 showMessage(messageDiv, 'Please enter a room code', 'error');
                 return;
             }
-
-            console.log('Joining room:', code);
 
             try {
                 const { data: room, error } = await supabase
@@ -916,7 +765,8 @@
 
         async function joinRoom(roomId, roomCode) {
             try {
-                // Add to participants
+                console.log('Joining room:', roomId, roomCode);
+                
                 const { error } = await supabase
                     .from('room_participants')
                     .upsert([{
@@ -931,11 +781,9 @@
                 document.getElementById('current-room-code').textContent = roomCode;
                 
                 showScreen('room-screen');
-                setupRoomSubscriptions();
-                loadRoomData();
+                loadMessages();
                 
-                // Send join message
-                await sendSystemMessage(`${currentUser.name} joined the room`);
+                console.log('Successfully joined room');
                 
             } catch (error) {
                 console.error('Join room error:', error);
@@ -943,84 +791,16 @@
             }
         }
 
-        async function handleLeaveRoom() {
-            if (!currentRoom) return;
-
-            try {
-                // Send leave message
-                await sendSystemMessage(`${currentUser.name} left the room`);
-
-                // Remove from participants
-                await supabase
-                    .from('room_participants')
-                    .delete()
-                    .eq('room_id', currentRoom.id)
-                    .eq('user_id', currentUser.id);
-
-                // Clean up subscriptions
-                if (chatSubscription) {
-                    chatSubscription.unsubscribe();
-                    chatSubscription = null;
-                }
-                if (participantsSubscription) {
-                    participantsSubscription.unsubscribe();
-                    participantsSubscription = null;
-                }
-
-                currentRoom = null;
-                showScreen('home-screen');
-                loadUserStats();
-                
-            } catch (error) {
-                console.error('Leave room error:', error);
-            }
+        function handleLeaveRoom() {
+            console.log('Leave room clicked');
+            currentRoom = null;
+            showScreen('home-screen');
         }
 
-        // Real-time subscriptions
-        function setupRoomSubscriptions() {
-            console.log('Setting up room subscriptions...');
-            
-            // Subscribe to messages
-            chatSubscription = supabase
-                .channel('room-messages')
-                .on('postgres_changes', {
-                    event: '*',
-                    schema: 'public',
-                    table: 'messages',
-                    filter: `room_id=eq.${currentRoom.id}`
-                }, () => {
-                    console.log('Message update received');
-                    loadMessages();
-                })
-                .subscribe();
-
-            // Subscribe to participants
-            participantsSubscription = supabase
-                .channel('room-participants')
-                .on('postgres_changes', {
-                    event: '*',
-                    schema: 'public',
-                    table: 'room_participants',
-                    filter: `room_id=eq.${currentRoom.id}`
-                }, () => {
-                    console.log('Participant update received');
-                    loadParticipants();
-                })
-                .subscribe();
-        }
-
-        // Load room data
-        async function loadRoomData() {
-            console.log('Loading room data...');
-            await Promise.all([
-                loadMessages(),
-                loadParticipants(),
-                loadSharedNotes(),
-                loadRoomStats()
-            ]);
-        }
-
+        // Chat functions
         async function loadMessages() {
+            if (!currentRoom) return;
+            
             try {
                 const { data: messages, error } = await supabase
                     .from('messages')
@@ -1030,7 +810,7 @@
                     `)
                     .eq('room_id', currentRoom.id)
                     .order('created_at', { ascending: true })
-                    .limit(50);
+                    .limit(20);
 
                 if (error) throw error;
 
@@ -1046,20 +826,11 @@
                     const messageDiv = document.createElement('div');
                     messageDiv.className = `chat-message ${message.user_id === currentUser.id ? 'own' : ''}`;
                     
-                    if (message.message_type === 'system') {
-                        messageDiv.innerHTML = `
-                            <div style="text-align: center; font-style: italic; color: #64748b;">
-                                ${escapeHtml(message.content)}
-                            </div>
-                        `;
-                        messageDiv.style.background = '#f1f5f9';
-                    } else {
-                        const time = new Date(message.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                        messageDiv.innerHTML = `
-                            <div class="message-info">${escapeHtml(message.users.name)} • ${time}</div>
-                            <div>${escapeHtml(message.content)}</div>
-                        `;
-                    }
+                    const time = new Date(message.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    messageDiv.innerHTML = `
+                        <div class="message-info">${message.users.name} • ${time}</div>
+                        <div>${escapeHtml(message.content)}</div>
+                    `;
                     
                     container.appendChild(messageDiv);
                 });
@@ -1088,74 +859,10 @@
                     }]);
 
                 input.value = '';
+                loadMessages(); // Reload messages
                 
             } catch (error) {
                 console.error('Send message error:', error);
-            }
-        }
-
-        async function sendSystemMessage(content) {
-            try {
-                await supabase
-                    .from('messages')
-                    .insert([{
-                        room_id: currentRoom.id,
-                        user_id: currentUser.id,
-                        content: content,
-                        message_type: 'system'
-                    }]);
-            } catch (error) {
-                console.error('Send system message error:', error);
-            }
-        }
-
-        async function loadParticipants() {
-            try {
-                const { data: participants, error } = await supabase
-                    .from('room_participants')
-                    .select(`
-                        *,
-                        users (name, avatar_color, total_study_time)
-                    `)
-                    .eq('room_id', currentRoom.id)
-                    .eq('is_online', true);
-
-                if (error) throw error;
-
-                const container = document.getElementById('participants-list');
-                container.innerHTML = '';
-
-                if (participants.length === 0) {
-                    container.innerHTML = '<div class="loading">No participants found</div>';
-                    return;
-                }
-
-                participants.forEach(participant => {
-                    const user = participant.users;
-                    const card = document.createElement('div');
-                    card.className = 'participant-card';
-                    
-                    const studyHours = Math.floor(user.total_study_time / 60);
-                    const isYou = participant.user_id === currentUser.id;
-                    
-                    card.innerHTML = `
-                        <div class="participant-avatar" style="background: ${user.avatar_color};">
-                            ${user.name.charAt(0).toUpperCase()}
-                        </div>
-                        <div style="font-weight: 600; margin-bottom: 5px;">
-                            ${escapeHtml(user.name)}${isYou ? ' (You)' : ''}
-                        </div>
-                        <div style="color: #64748b; font-size: 0.9em;">
-                            ${studyHours}h studied
-                            <span class="online-dot"></span>
-                        </div>
-                    `;
-                    
-                    container.appendChild(card);
-                });
-                
-            } catch (error) {
-                console.error('Load participants error:', error);
             }
         }
 
@@ -1166,19 +873,13 @@
             resetTimer();
         }
 
-        function customTimer() {
-            const minutes = prompt('Enter timer duration in minutes:', '25');
-            if (minutes && !isNaN(minutes) && minutes > 0) {
-                setTimerMinutes(parseInt(minutes));
-            }
-        }
-
         function startTimer() {
+            console.log('Start timer clicked');
             if (timerRunning) return;
             
             timerRunning = true;
-            document.getElementById('start-btn').style.display = 'none';
-            document.getElementById('pause-btn').style.display = 'inline-block';
+            document.getElementById('start-timer-btn').style.display = 'none';
+            document.getElementById('pause-timer-btn').style.display = 'inline-block';
             document.getElementById('timer-status').textContent = 'Timer running... Stay focused! 🎯';
             
             timerInterval = setInterval(() => {
@@ -1189,23 +890,23 @@
                     timerComplete();
                 }
             }, 1000);
-
-            recordStudySession();
         }
 
         function pauseTimer() {
+            console.log('Pause timer clicked');
             timerRunning = false;
             clearInterval(timerInterval);
-            document.getElementById('start-btn').style.display = 'inline-block';
-            document.getElementById('pause-btn').style.display = 'none';
+            document.getElementById('start-timer-btn').style.display = 'inline-block';
+            document.getElementById('pause-timer-btn').style.display = 'none';
             document.getElementById('timer-status').textContent = 'Timer paused';
         }
 
         function resetTimer() {
+            console.log('Reset timer clicked');
             timerRunning = false;
             clearInterval(timerInterval);
-            document.getElementById('start-btn').style.display = 'inline-block';
-            document.getElementById('pause-btn').style.display = 'none';
+            document.getElementById('start-timer-btn').style.display = 'inline-block';
+            document.getElementById('pause-timer-btn').style.display = 'none';
             document.getElementById('timer-status').textContent = '';
             updateTimerDisplay();
         }
@@ -1214,266 +915,4 @@
             const minutes = Math.floor(timerSeconds / 60);
             const seconds = timerSeconds % 60;
             document.getElementById('timer-display').textContent = 
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        function timerComplete() {
-            resetTimer();
-            document.getElementById('timer-status').textContent = 'Timer completed! Great work! 🎉';
-            
-            // Browser notification
-            if (Notification.permission === 'granted') {
-                new Notification('Study Timer Complete!', {
-                    body: 'Great job! Time for a break.',
-                    icon: '📚'
-                });
-            }
-            
-            if (currentRoom) {
-                sendSystemMessage(`${currentUser.name} completed a study session! 🎉`);
-            }
-        }
-
-        async function recordStudySession() {
-            if (!currentRoom) return;
-            
-            try {
-                const sessionMinutes = Math.floor(timerSeconds / 60);
-                await supabase
-                    .from('study_sessions')
-                    .insert([{
-                        room_id: currentRoom.id,
-                        user_id: currentUser.id,
-                        duration_minutes: sessionMinutes,
-                        session_type: sessionMinutes > 10 ? 'focus' : 'break'
-                    }]);
-
-                // Update user's total study time
-                const newTotal = currentUser.total_study_time + sessionMinutes;
-                await supabase
-                    .from('users')
-                    .update({ total_study_time: newTotal })
-                    .eq('id', currentUser.id);
-
-                currentUser.total_study_time = newTotal;
-                localStorage.setItem('studyUser', JSON.stringify(currentUser));
-                
-            } catch (error) {
-                console.error('Record study session error:', error);
-            }
-        }
-
-        // Notes functions
-        async function loadSharedNotes() {
-            if (!currentRoom) return;
-            
-            try {
-                const { data: notes, error } = await supabase
-                    .from('shared_notes')
-                    .select('*')
-                    .eq('room_id', currentRoom.id)
-                    .single();
-
-                const editor = document.getElementById('notes-editor');
-                editor.value = notes ? notes.content : '';
-                document.getElementById('notes-status').textContent = 'Loaded';
-                
-            } catch (error) {
-                if (error.code !== 'PGRST116') {
-                    console.error('Load notes error:', error);
-                }
-            }
-        }
-
-        async function saveNotes() {
-            if (!currentRoom) return;
-            
-            const content = document.getElementById('notes-editor').value;
-            
-            try {
-                await supabase
-                    .from('shared_notes')
-                    .upsert([{
-                        room_id: currentRoom.id,
-                        content: content,
-                        last_updated_by: currentUser.id
-                    }]);
-
-                document.getElementById('notes-status').textContent = 'Saved ✓';
-                
-            } catch (error) {
-                console.error('Save notes error:', error);
-                document.getElementById('notes-status').textContent = 'Save failed ✗';
-            }
-        }
-
-        function formatNotes(command) {
-            const editor = document.getElementById('notes-editor');
-            const start = editor.selectionStart;
-            const end = editor.selectionEnd;
-            const selectedText = editor.value.substring(start, end);
-            
-            if (selectedText) {
-                let formatted = selectedText;
-                if (command === 'bold') {
-                    formatted = `**${selectedText}**`;
-                } else if (command === 'italic') {
-                    formatted = `*${selectedText}*`;
-                }
-                
-                editor.value = editor.value.substring(0, start) + formatted + editor.value.substring(end);
-                editor.focus();
-                editor.setSelectionRange(start, start + formatted.length);
-            }
-        }
-
-        // Statistics functions
-        async function loadUserStats() {
-            if (!currentUser) return;
-            
-            try {
-                const { data: sessions, error } = await supabase
-                    .from('study_sessions')
-                    .select('*')
-                    .eq('user_id', currentUser.id);
-
-                if (error) throw error;
-
-                const totalSessions = sessions.length;
-                const totalMinutes = sessions.reduce((sum, session) => sum + session.duration_minutes, 0);
-                const totalHours = Math.floor(totalMinutes / 60);
-                const avgSession = totalSessions > 0 ? Math.round(totalMinutes / totalSessions) : 0;
-
-                const container = document.getElementById('user-stats');
-                container.innerHTML = `
-                    <div class="stat-card">
-                        <span class="stat-number">${totalHours}</span>
-                        <div class="stat-label">Hours Studied</div>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-number">${totalSessions}</span>
-                        <div class="stat-label">Study Sessions</div>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-number">${avgSession}</span>
-                        <div class="stat-label">Avg Session (min)</div>
-                    </div>
-                `;
-                
-            } catch (error) {
-                console.error('Load user stats error:', error);
-            }
-        }
-
-        async function loadRoomStats() {
-            if (!currentRoom) return;
-            
-            try {
-                const { data: sessions, error } = await supabase
-                    .from('study_sessions')
-                    .select('*')
-                    .eq('room_id', currentRoom.id);
-
-                if (error) throw error;
-
-                const totalSessions = sessions.length;
-                const totalMinutes = sessions.reduce((sum, session) => sum + session.duration_minutes, 0);
-                const totalHours = Math.floor(totalMinutes / 60);
-                const uniqueUsers = new Set(sessions.map(s => s.user_id)).size;
-
-                const container = document.getElementById('room-stats');
-                container.innerHTML = `
-                    <div class="stat-card">
-                        <span class="stat-number">${totalHours}</span>
-                        <div class="stat-label">Room Study Hours</div>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-number">${totalSessions}</span>
-                        <div class="stat-label">Total Sessions</div>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-number">${uniqueUsers}</span>
-                        <div class="stat-label">Active Studiers</div>
-                    </div>
-                `;
-                
-            } catch (error) {
-                console.error('Load room stats error:', error);
-            }
-        }
-
-        // UI helper functions
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
-        }
-
-        function switchTab(tabName) {
-            // Update tab buttons
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
-
-            // Update tab content
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.getElementById(tabName + '-content').classList.add('active');
-
-            // Load content if needed
-            if (tabName === 'participants') {
-                loadParticipants();
-            } else if (tabName === 'stats') {
-                loadRoomStats();
-            } else if (tabName === 'notes') {
-                loadSharedNotes();
-            }
-        }
-
-        function showMessage(element, text, type) {
-            element.innerHTML = `<div class="message ${type}-msg">${text}</div>`;
-            if (type === 'success' || type === 'error') {
-                setTimeout(() => {
-                    element.innerHTML = '';
-                }, 5000);
-            }
-        }
-
-        function copyRoomCode() {
-            const code = document.getElementById('current-room-code').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                alert('Room code copied to clipboard!');
-            });
-        }
-
-        function shareRoom() {
-            const code = document.getElementById('current-room-code').textContent;
-            const link = `${window.location.origin}${window.location.pathname}?room=${code}`;
-            navigator.clipboard.writeText(link).then(() => {
-                alert('Invite link copied to clipboard!');
-            });
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // Request notification permission
-        if ('Notification' in window && Notification.permission === 'default') {
-            Notification.requestPermission();
-        }
-
-        // Cleanup on page unload
-        window.addEventListener('beforeunload', function() {
-            if (currentRoom) {
-                handleLeaveRoom();
-            }
-        });
-    </script>
-</body>
-</html>
+                `${
