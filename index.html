@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyTogether - Online Study Rooms</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .logo {
+            font-size: 2.5em;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .home-section {
+            display: block;
+        }
+
+        .room-section {
+            display: none;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.2s;
+            min-width: 200px;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+        }
+
+        .button.secondary {
+            background: #f8f9fa;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .input-group {
+            margin: 20px 0;
+        }
+
+        .input-group input {
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 1.1em;
+            width: 100%;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .room-code {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px dashed #667eea;
+        }
+
+        .room-code h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .code-display {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+            letter-spacing: 3px;
+            margin: 10px 0;
+        }
+
+        .participants {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .participant {
+            background: white;
+            padding: 10px 15px;
+            margin: 5px 0;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .participant-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #667eea;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+
+        .success-message {
+            color: #27ae60;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+
+        .copy-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Home Screen -->
+        <div id="home" class="home-section">
+            <div class="logo">📚 StudyTogether</div>
+            <div class="subtitle">Create or join online study rooms with your classmates</div>
+            
+            <button class="button" onclick="createRoom()">Create Study Room</button>
+            <button class="button secondary" onclick="showJoinForm()">Join Study Room</button>
+            
+            <div id="join-form" style="display: none; margin-top: 30px;">
+                <div class="input-group">
+                    <input type="text" id="room-code-input" placeholder="Enter Room Code" maxlength="6">
+                </div>
+                <button class="button" onclick="joinRoom()">Join Room</button>
+                <div id="join-error" class="error-message" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- Study Room Screen -->
+        <div id="room" class="room-section">
+            <button class="back-btn" onclick="goHome()">← Back to Home</button>
+            
+            <div class="room-code">
+                <h3>Room Code</h3>
+                <div class="code-display" id="current-room-code">ABC123</div>
+                <button class="copy-btn" onclick="copyRoomCode()">Copy Code</button>
+                <button class="copy-btn" onclick="copyInviteLink()">Copy Link</button>
+            </div>
+
+            <div class="participants">
+                <h3 style="margin-bottom: 15px; color: #333;">Study Room Participants (<span id="participant-count">1</span>)</h3>
+                <div id="participant-list">
+                    <div class="participant">
+                        <div class="participant-avatar">You</div>
+                        <span>You (Host)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <p style="color: #666; font-size: 0.9em;">Share the room code or invite link with your study partners!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple data storage (in a real app, this would be a database)
+        let rooms = {};
+        let currentRoom = null;
+        let userName = 'Student';
+
+        // Generate random room code
+        function generateRoomCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        // Create a new room
+        function createRoom() {
+            const roomCode = generateRoomCode();
+            
+            // Make sure room code is unique
+            while (rooms[roomCode]) {
+                roomCode = generateRoomCode();
+            }
+            
+            // Create room data
+            rooms[roomCode] = {
+                code: roomCode,
+                host: userName,
+                participants: [userName],
+                created: new Date()
+            };
+            
+            currentRoom = roomCode;
+            document.getElementById('current-room-code').textContent = roomCode;
+            updateParticipantsList();
+            showRoom();
+        }
+
+        // Show join form
+        function showJoinForm() {
+            const joinForm = document.getElementById('join-form');
+            joinForm.style.display = joinForm.style.display === 'none' ? 'block' : 'none';
+            document.getElementById('room-code-input').focus();
+        }
+
+        // Join existing room
+        function joinRoom() {
+            const codeInput = document.getElementById('room-code-input');
+            const roomCode = codeInput.value.toUpperCase().trim();
+            const errorDiv = document.getElementById('join-error');
+            
+            // Clear previous errors
+            errorDiv.style.display = 'none';
+            
+            if (!roomCode) {
+                showError('Please enter a room code');
+                return;
+            }
+            
+            if (!rooms[roomCode]) {
+                showError('Room not found. Please check the code and try again.');
+                return;
+            }
+            
+            // Add user to room if not already there
+            if (!rooms[roomCode].participants.includes(userName)) {
+                rooms[roomCode].participants.push(userName);
+            }
+            
+            currentRoom = roomCode;
+            document.getElementById('current-room-code').textContent = roomCode;
+            updateParticipantsList();
+            showRoom();
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorDiv = document.getElementById('join-error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        // Update participants list
+        function updateParticipantsList() {
+            if (!currentRoom || !rooms[currentRoom]) return;
+            
+            const participantList = document.getElementById('participant-list');
+            const participants = rooms[currentRoom].participants;
+            
+            participantList.innerHTML = '';
+            
+            participants.forEach((participant, index) => {
+                const div = document.createElement('div');
+                div.className = 'participant';
+                
+                const avatar = document.createElement('div');
+                avatar.className = 'participant-avatar';
+                avatar.textContent = participant.charAt(0).toUpperCase();
+                
+                const name = document.createElement('span');
+                if (participant === userName) {
+                    name.textContent = index === 0 ? 'You (Host)' : 'You';
+                } else {
+                    name.textContent = participant + (index === 0 ? ' (Host)' : '');
+                }
+                
+                div.appendChild(avatar);
+                div.appendChild(name);
+                participantList.appendChild(div);
+            });
+            
+            document.getElementById('participant-count').textContent = participants.length;
+        }
+
+        // Copy room code to clipboard
+        function copyRoomCode() {
+            const roomCode = document.getElementById('current-room-code').textContent;
+            navigator.clipboard.writeText(roomCode).then(() => {
+                alert('Room code copied to clipboard!');
+            });
+        }
+
+        // Copy invite link to clipboard
+        function copyInviteLink() {
+            const roomCode = document.getElementById('current-room-code').textContent;
+            const inviteLink = `${window.location.href}?room=${roomCode}`;
+            navigator.clipboard.writeText(inviteLink).then(() => {
+                alert('Invite link copied to clipboard!');
+            });
+        }
+
+        // Show room screen
+        function showRoom() {
+            document.getElementById('home').style.display = 'none';
+            document.getElementById('room').style.display = 'block';
+        }
+
+        // Go back to home screen
+        function goHome() {
+            document.getElementById('home').style.display = 'block';
+            document.getElementById('room').style.display = 'none';
+            document.getElementById('join-form').style.display = 'none';
+            document.getElementById('room-code-input').value = '';
+        }
+
+        // Handle Enter key in room code input
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('room-code-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    joinRoom();
+                }
+            });
+
+            // Check if there's a room code in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomFromUrl = urlParams.get('room');
+            if (roomFromUrl) {
+                document.getElementById('room-code-input').value = roomFromUrl.toUpperCase();
+                showJoinForm();
+            }
+        });
+
+        // Simulate other students joining (for demo purposes)
+        setTimeout(() => {
+            if (currentRoom && rooms[currentRoom]) {
+                const demoNames = ['Alice', 'Bob', 'Charlie', 'Diana'];
+                const randomName = demoNames[Math.floor(Math.random() * demoNames.length)];
+                
+                if (!rooms[currentRoom].participants.includes(randomName)) {
+                    rooms[currentRoom].participants.push(randomName);
+                    updateParticipantsList();
+                }
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
