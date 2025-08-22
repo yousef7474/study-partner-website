@@ -1,556 +1,291 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudyTogether - Study Platform</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            max-width: 800px;
-            width: 100%;
-        }
-
-        .logo {
-            font-size: 2.5em;
-            color: #667eea;
-            margin-bottom: 10px;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 1.1em;
-            text-align: center;
-        }
-
-        .screen {
-            display: none;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        /* Buttons */
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-size: 1.1em;
-            cursor: pointer;
-            margin: 10px;
-            transition: all 0.3s;
-            font-weight: 600;
-            display: inline-block;
-            text-decoration: none;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .btn-secondary {
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-        }
-
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 0.9em;
-        }
-
-        /* Form elements */
-        .form-group {
-            margin: 25px 0;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #eee;
-            border-radius: 10px;
-            font-size: 1.1em;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        /* Avatar selection */
-        .avatar-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 15px;
-            justify-items: center;
-            margin: 20px 0;
-        }
-
-        .avatar-choice {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1.3em;
-            transition: all 0.3s;
-        }
-
-        .avatar-choice:hover {
-            transform: scale(1.1);
-        }
-
-        .avatar-choice.selected {
-            border-color: #333;
-            transform: scale(1.15);
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-        }
-
-        /* Messages */
-        .message {
-            padding: 12px 20px;
-            border-radius: 10px;
-            margin: 15px 0;
-            text-align: center;
-            font-weight: 500;
-        }
-
-        .error {
-            background: #fef2f2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
-        }
-
-        .success {
-            background: #f0fdf4;
-            color: #16a34a;
-            border: 1px solid #bbf7d0;
-        }
-
-        .info {
-            background: #eff6ff;
-            color: #2563eb;
-            border: 1px solid #bfdbfe;
-        }
-
-        /* Login form */
-        .login-form {
-            text-align: center;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
-        /* Home screen */
-        .home-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1.2em;
-        }
-
-        .home-actions {
-            text-align: center;
-            margin: 40px 0;
-        }
-
-        .join-form {
-            max-width: 300px;
-            margin: 30px auto;
-            display: none;
-        }
-
-        .join-form.show {
-            display: block;
-        }
-
-        .room-code-input {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #eee;
-            border-radius: 10px;
-            font-size: 1.2em;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 15px;
-        }
-
-        /* Room screen */
-        .room-header {
-            background: #f8fafc;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-
-        .room-code {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: #667eea;
-            margin: 10px 0;
-            letter-spacing: 2px;
-        }
-
-        .room-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 25px;
-            border-bottom: 2px solid #f1f5f9;
-            overflow-x: auto;
-        }
-
-        .tab {
-            padding: 12px 20px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            font-weight: 500;
-            color: #64748b;
-            border-bottom: 2px solid transparent;
-            transition: all 0.3s;
-            white-space: nowrap;
-        }
-
-        .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Chat */
-        .chat-box {
-            border: 2px solid #e2e8f0;
-            border-radius: 15px;
-            height: 400px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chat-messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background: #f8fafc;
-        }
-
-        .chat-message {
-            margin-bottom: 15px;
-            padding: 12px 16px;
-            border-radius: 12px;
-            background: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .chat-message.own {
-            background: #667eea;
-            color: white;
-            margin-left: 20%;
-        }
-
-        .message-info {
-            font-size: 0.85em;
-            opacity: 0.7;
-            margin-bottom: 5px;
-        }
-
-        .chat-input-area {
-            display: flex;
-            padding: 15px;
-            border-top: 1px solid #e2e8f0;
-            gap: 10px;
-        }
-
-        .chat-input {
-            flex: 1;
-            padding: 12px 16px;
-            border: 1px solid #d1d5db;
-            border-radius: 25px;
-            font-size: 1em;
-        }
-
-        /* Participants */
-        .participant-card {
-            background: #f8fafc;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            border: 2px solid #e2e8f0;
-            margin-bottom: 15px;
-        }
-
-        .participant-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            margin: 0 auto 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1.5em;
-        }
-
-        .online-dot {
-            width: 12px;
-            height: 12px;
-            background: #22c55e;
-            border-radius: 50%;
-            display: inline-block;
-            margin-left: 8px;
-        }
-
-        /* Loading */
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #64748b;
-            font-size: 1.1em;
-        }
-
-        /* Timer */
-        .timer-section {
-            text-align: center;
-            background: #f8fafc;
-            padding: 40px;
-            border-radius: 20px;
-        }
-
-        .timer-display {
-            font-size: 4em;
-            font-weight: bold;
-            color: #667eea;
-            margin: 30px 0;
-            font-family: 'Courier New', monospace;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-                margin: 10px;
-            }
-
-            .home-header {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .avatar-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .timer-display {
-                font-size: 2.5em;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- Login Screen -->
-        <div id="login-screen" class="screen active">
-            <div class="logo">📚 StudyTogether</div>
-            <div class="subtitle">Complete study platform with real-time collaboration</div>
-            
-            <div class="login-form">
-                <div class="form-group">
-                    <label for="username">Your Name</label>
-                    <input type="text" id="username" placeholder="Enter your name" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Choose Your Avatar Color</label>
-                    <div class="avatar-grid">
-                        <div class="avatar-choice selected" data-color="#667eea" style="background: #667eea;">Y</div>
-                        <div class="avatar-choice" data-color="#dc2626" style="background: #dc2626;">Y</div>
-                        <div class="avatar-choice" data-color="#16a34a" style="background: #16a34a;">Y</div>
-                        <div class="avatar-choice" data-color="#ea580c" style="background: #ea580c;">Y</div>
-                        <div class="avatar-choice" data-color="#7c3aed" style="background: #7c3aed;">Y</div>
-                        <div class="avatar-choice" data-color="#1f2937" style="background: #1f2937;">Y</div>
+<div class="main-actions">
+                        <div class="action-card" onclick="goToStudyRooms()">
+                            <div class="action-icon">🏠</div>
+                            <h3 class="action-title" data-translate="studyRooms">Study Rooms</h3>
+                            <p class="action-desc" data-translate="studyRoomsDesc">Join or create virtual study rooms with your classmates</p>
+                            <button class="btn" data-translate="enterRooms">Enter Study Rooms</button>
+                        </div>
+                        
+                        <div class="action-card" onclick="goToLibrary()">
+                            <div class="action-icon">📚</div>
+                            <h3 class="action-title" data-translate="digitalLibrary">Digital Library</h3>
+                            <p class="action-desc" data-translate="libraryDesc">Access study materials, notes, and resources for your grade</p>
+                            <button class="btn btn-secondary" data-translate="browseLibrary">Browse Library</button>
+                        </div>
                     </div>
                 </div>
-                
-                <button class="btn" id="login-btn">Enter Study Platform</button>
-                
-                <div id="login-message"></div>
-            </div>
-        </div>
 
-        <!-- Home Screen -->
-        <div id="home-screen" class="screen">
-            <div class="home-header">
-                <div class="user-info">
-                    <div id="user-avatar" class="user-avatar"></div>
-                    <div>
-                        <div style="font-size: 1.2em; font-weight: 600;" id="welcome-text">Welcome!</div>
-                        <div style="color: #64748b; font-size: 0.9em;">Ready to study?</div>
-                    </div>
-                </div>
-                <button class="btn btn-secondary btn-small" id="logout-btn">Logout</button>
-            </div>
-            
-            <div class="home-actions">
-                <button class="btn" id="create-room-btn">Create Study Room</button>
-                <button class="btn btn-secondary" id="join-room-btn">Join Study Room</button>
-            </div>
-            
-            <div id="join-form" class="join-form">
-                <input type="text" id="room-code-input" class="room-code-input" placeholder="ROOM CODE" maxlength="6">
-                <button class="btn" id="join-submit-btn" style="width: 100%;">Join Room</button>
-                <div id="join-message"></div>
-            </div>
-        </div>
-
-        <!-- Room Screen -->
-        <div id="room-screen" class="screen">
-            <div class="home-header">
-                <button class="btn btn-secondary btn-small" id="leave-room-btn">← Leave Room</button>
-                
-                <div class="room-header">
-                    <div style="font-size: 1.1em; color: #64748b; margin-bottom: 5px;">Room Code</div>
-                    <div id="current-room-code" class="room-code">------</div>
-                    <div class="room-actions">
-                        <button class="btn btn-small" id="copy-code-btn">Copy Code</button>
-                        <button class="btn btn-small" id="share-link-btn">Share Link</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tabs">
-                <button class="tab active" data-tab="chat">💬 Chat</button>
-                <button class="tab" data-tab="participants">👥 Participants</button>
-                <button class="tab" data-tab="timer">⏱️ Timer</button>
-            </div>
-
-            <!-- Chat Tab -->
-            <div id="chat-content" class="tab-content active">
-                <div class="chat-box">
-                    <div id="chat-messages" class="chat-messages">
-                        <div class="loading">Loading chat...</div>
-                    </div>
-                    <div class="chat-input-area">
-                        <input type="text" id="chat-input" class="chat-input" placeholder="Type your message..." maxlength="500">
-                        <button class="btn btn-small" id="send-chat-btn">Send</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Participants Tab -->
-            <div id="participants-content" class="tab-content">
-                <div id="participants-list">
-                    <div class="loading">Loading participants...</div>
-                </div>
-            </div>
-
-            <!-- Timer Tab -->
-            <div id="timer-content" class="tab-content">
-                <div class="timer-section">
-                    <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap;">
-                        <button class="btn btn-small" data-timer="25">25 min Focus</button>
-                        <button class="btn btn-small" data-timer="5">5 min Break</button>
-                        <button class="btn btn-small" data-timer="15">15 min Break</button>
+                <!-- Study Rooms Screen -->
+                <div id="study-rooms-screen" class="screen">
+                    <div class="home-header">
+                        <h2 class="title" style="font-size: 2rem; margin: 0;" data-translate="studyRooms">Study Rooms</h2>
+                        <button class="btn btn-secondary" onclick="backToHome()" data-translate="backHome">← Back to Home</button>
                     </div>
                     
-                    <div id="timer-display" class="timer-display">25:00</div>
-                    
-                    <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                        <button id="start-timer-btn" class="btn">Start</button>
-                        <button id="pause-timer-btn" class="btn btn-secondary" style="display: none;">Pause</button>
-                        <button id="reset-timer-btn" class="btn btn-secondary">Reset</button>
+                    <div class="main-actions">
+                        <div class="action-card" onclick="createRoom()">
+                            <div class="action-icon">➕</div>
+                            <h3 class="action-title" data-translate="createRoom">Create Study Room</h3>
+                            <p class="action-desc" data-translate="createRoomDesc">Start a new study session and invite your friends</p>
+                            <button class="btn" data-translate="createNow">Create Now</button>
+                        </div>
+                        
+                        <div class="action-card" onclick="showJoinForm()">
+                            <div class="action-icon">🚪</div>
+                            <h3 class="action-title" data-translate="joinRoom">Join Study Room</h3>
+                            <p class="action-desc" data-translate="joinRoomDesc">Enter a room code to join an existing study session</p>
+                            <button class="btn btn-secondary" data-translate="joinNow">Join Now</button>
+                        </div>
                     </div>
                     
-                    <div id="timer-status" style="margin-top: 20px; font-size: 1.1em; color: #64748b;"></div>
+                    <div id="join-form" class="join-form">
+                        <label class="form-label" data-translate="enterRoomCode">Enter Room Code</label>
+                        <input type="text" id="room-code-input" class="room-code-input" data-translate-placeholder="roomCodePlaceholder" placeholder="XXXXXX" maxlength="6">
+                        <button class="btn btn-block" onclick="joinRoom()" data-translate="joinRoom">Join Room</button>
+                        <div id="join-message"></div>
+                    </div>
+                </div>
+
+                <!-- Room Screen -->
+                <div id="room-screen" class="screen">
+                    <div class="home-header">
+                        <button class="btn btn-secondary" onclick="leaveRoom()" data-translate="leaveRoom">← Leave Room</button>
+                        
+                        <div class="room-header">
+                            <p style="color: var(--text-secondary); margin-bottom: 0.5rem;" data-translate="roomCode">Room Code</p>
+                            <div id="current-room-code" class="room-code">------</div>
+                            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem;">
+                                <button class="btn" onclick="copyRoomCode()" data-translate="copyCode">Copy Code</button>
+                                <button class="btn btn-secondary" onclick="shareRoom()" data-translate="shareLink">Share Link</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tabs">
+                        <button class="tab active" data-tab="chat">💬 <span data-translate="chat">Chat</span></button>
+                        <button class="tab" data-tab="participants">👥 <span data-translate="participants">Participants</span></button>
+                        <button class="tab" data-tab="timer">⏱️ <span data-translate="timer">Timer</span></button>
+                    </div>
+
+                    <!-- Chat Tab -->
+                    <div id="chat-content" class="tab-content active">
+                        <div class="chat-box">
+                            <div id="chat-messages" class="chat-messages">
+                                <div class="loading">
+                                    <div class="loading-spinner"></div>
+                                    <span data-translate="loadingChat">Loading chat...</span>
+                                </div>
+                            </div>
+                            <div class="chat-input-area">
+                                <input type="text" id="chat-input" class="chat-input" data-translate-placeholder="typeMessage" placeholder="Type your message..." maxlength="500">
+                                <button class="btn" onclick="sendMessage()" data-translate="send">Send</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Participants Tab -->
+                    <div id="participants-content" class="tab-content">
+                        <div id="participants-list">
+                            <div class="loading">
+                                <div class="loading-spinner"></div>
+                                <span data-translate="loadingParticipants">Loading participants...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timer Tab -->
+                    <div id="timer-content" class="tab-content">
+                        <div style="text-align: center; background: var(--bg-secondary); padding: 3rem; border-radius: 20px;">
+                            <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap;">
+                                <button class="btn" data-timer="25">25 <span data-translate="minFocus">min Focus</span></button>
+                                <button class="btn" data-timer="5">5 <span data-translate="minBreak">min Break</span></button>
+                                <button class="btn" data-timer="15">15 <span data-translate="minBreak">min Break</span></button>
+                            </div>
+                            
+                            <div id="timer-display" style="font-size: 4rem; font-weight: 700; color: var(--primary-color); margin: 2rem 0; font-family: 'Courier New', monospace;">25:00</div>
+                            
+                            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                                <button id="start-timer-btn" class="btn" onclick="startTimer()" data-translate="start">Start</button>
+                                <button id="pause-timer-btn" class="btn btn-secondary" onclick="pauseTimer()" style="display: none;" data-translate="pause">Pause</button>
+                                <button class="btn btn-secondary" onclick="resetTimer()" data-translate="reset">Reset</button>
+                            </div>
+                            
+                            <div id="timer-status" style="margin-top: 1.5rem; font-size: 1.1rem; color: var(--text-secondary);"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Library Screen (Placeholder) -->
+                <div id="library-screen" class="screen">
+                    <div class="home-header">
+                        <h2 class="title" style="font-size: 2rem; margin: 0;" data-translate="digitalLibrary">Digital Library</h2>
+                        <button class="btn btn-secondary" onclick="backToHome()" data-translate="backHome">← Back to Home</button>
+                    </div>
+                    
+                    <div style="text-align: center; padding: 4rem 2rem;">
+                        <div style="font-size: 4rem; margin-bottom: 2rem;">🚧</div>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--text-primary);" data-translate="comingSoon">Coming Soon!</h3>
+                        <p style="color: var(--text-secondary); font-size: 1.1rem;" data-translate="libraryComingSoon">The digital library feature is under development. Stay tuned for access to study materials and resources!</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Load Supabase from CDN -->
+    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
-        console.log('Starting StudyTogether app...');
+        // Translations
+        const translations = {
+            en: {
+                appName: "StudyTogether",
+                welcome: "Welcome to StudyTogether",
+                welcomeDesc: "Create your profile and start studying with your classmates",
+                yourName: "Your Name",
+                enterName: "Enter your full name",
+                chooseAvatar: "Choose Your Avatar Color",
+                selectGrade: "Select Your Grade",
+                grade10: "Grade 10",
+                grade10Desc: "First year of high school",
+                grade11: "Grade 11", 
+                grade11Desc: "Second year of high school",
+                grade12: "Grade 12",
+                grade12Desc: "Final year preparation",
+                selectSubject: "Select Your Subject",
+                joinPlatform: "Join Study Platform",
+                welcomeBack: "Welcome back!",
+                logout: "Logout",
+                studyRooms: "Study Rooms",
+                studyRoomsDesc: "Join or create virtual study rooms with your classmates",
+                enterRooms: "Enter Study Rooms",
+                digitalLibrary: "Digital Library",
+                libraryDesc: "Access study materials, notes, and resources for your grade",
+                browseLibrary: "Browse Library",
+                backHome: "← Back to Home",
+                createRoom: "Create Study Room",
+                createRoomDesc: "Start a new study session and invite your friends",
+                createNow: "Create Now",
+                joinRoom: "Join Study Room",
+                joinRoomDesc: "Enter a room code to join an existing study session",
+                joinNow: "Join Now",
+                enterRoomCode: "Enter Room Code",
+                roomCodePlaceholder: "XXXXXX",
+                leaveRoom: "← Leave Room",
+                roomCode: "Room Code",
+                copyCode: "Copy Code",
+                shareLink: "Share Link",
+                chat: "Chat",
+                participants: "Participants",
+                timer: "Timer",
+                loadingChat: "Loading chat...",
+                typeMessage: "Type your message...",
+                send: "Send",
+                loadingParticipants: "Loading participants...",
+                minFocus: "min Focus",
+                minBreak: "min Break",
+                start: "Start",
+                pause: "Pause",
+                reset: "Reset",
+                comingSoon: "Coming Soon!",
+                libraryComingSoon: "The digital library feature is under development. Stay tuned for access to study materials and resources!"
+            },
+            ar: {
+                appName: "ادرس معاً",
+                welcome: "مرحباً بك في منصة ادرس معاً",
+                welcomeDesc: "أنشئ ملفك الشخصي وابدأ الدراسة مع زملائك",
+                yourName: "اسمك",
+                enterName: "أدخل اسمك الكامل",
+                chooseAvatar: "اختر لون الصورة الرمزية",
+                selectGrade: "اختر صفك الدراسي",
+                grade10: "الصف العاشر",
+                grade10Desc: "السنة الأولى من المرحلة الثانوية",
+                grade11: "الصف الحادي عشر",
+                grade11Desc: "السنة الثانية من المرحلة الثانوية", 
+                grade12: "الصف الثاني عشر",
+                grade12Desc: "سنة التحضير للامتحانات النهائية",
+                selectSubject: "اختر مادتك",
+                joinPlatform: "انضم للمنصة",
+                welcomeBack: "مرحباً بعودتك!",
+                logout: "تسجيل خروج",
+                studyRooms: "غرف الدراسة",
+                studyRoomsDesc: "انضم أو أنشئ غرف دراسة افتراضية مع زملائك",
+                enterRooms: "ادخل غرف الدراسة",
+                digitalLibrary: "المكتبة الرقمية",
+                libraryDesc: "الوصول إلى المواد الدراسية والملاحظات والموارد لصفك",
+                browseLibrary: "تصفح المكتبة",
+                backHome: "← العودة للرئيسية",
+                createRoom: "أنشئ غرفة دراسة",
+                createRoomDesc: "ابدأ جلسة دراسة جديدة وادع أصدقاءك",
+                createNow: "أنشئ الآن",
+                joinRoom: "انضم لغرفة دراسة",
+                joinRoomDesc: "أدخل رمز الغرفة للانضمام إلى جلسة دراسة موجودة",
+                joinNow: "انضم الآن",
+                enterRoomCode: "أدخل رمز الغرفة",
+                roomCodePlaceholder: "XXXXXX",
+                leaveRoom: "← مغادرة الغرفة",
+                roomCode: "رمز الغرفة",
+                copyCode: "نسخ الرمز",
+                shareLink: "مشاركة الرابط",
+                chat: "المحادثة",
+                participants: "المشاركون",
+                timer: "المؤقت",
+                loadingChat: "جاري تحميل المحادثة...",
+                typeMessage: "اكتب رسالتك...",
+                send: "إرسال",
+                loadingParticipants: "جاري تحميل المشاركين...",
+                minFocus: "دقيقة تركيز",
+                minBreak: "دقيقة استراحة",
+                start: "ابدأ",
+                pause: "توقف",
+                reset: "إعادة تعيين",
+                comingSoon: "قريباً!",
+                libraryComingSoon: "ميزة المكتبة الرقمية قيد التطوير. ترقبوا الوصول إلى المواد الدراسية والموارد!"
+            }
+        };
+
+        // Subject data
+        const subjectsByGrade = {
+            10: [
+                { name: "Mathematics", nameAr: "الرياضيات", emoji: "🔢" },
+                { name: "Physics", nameAr: "الفيزياء", emoji: "⚛️" },
+                { name: "Chemistry", nameAr: "الكيمياء", emoji: "🧪" },
+                { name: "Biology", nameAr: "الأحياء", emoji: "🧬" },
+                { name: "English", nameAr: "اللغة الإنجليزية", emoji: "🇬🇧" },
+                { name: "Arabic", nameAr: "اللغة العربية", emoji: "📝" },
+                { name: "History", nameAr: "التاريخ", emoji: "🏛️" },
+                { name: "Geography", nameAr: "الجغرافيا", emoji: "🌍" }
+            ],
+            11: [
+                { name: "Advanced Mathematics", nameAr: "الرياضيات المتقدمة", emoji: "📊" },
+                { name: "Physics", nameAr: "الفيزياء", emoji: "⚛️" },
+                { name: "Chemistry", nameAr: "الكيمياء", emoji: "🧪" },
+                { name: "Biology", nameAr: "الأحياء", emoji: "🧬" },
+                { name: "English Literature", nameAr: "الأدب الإنجليزي", emoji: "📚" },
+                { name: "Arabic Literature", nameAr: "الأدب العربي", emoji: "✍️" },
+                { name: "Computer Science", nameAr: "علوم الحاسوب", emoji: "💻" },
+                { name: "Economics", nameAr: "الاقتصاد", emoji: "💰" }
+            ],
+            12: [
+                { name: "Calculus", nameAr: "التفاضل والتكامل", emoji: "∫" },
+                { name: "Advanced Physics", nameAr: "الفيزياء المتقدمة", emoji: "🚀" },
+                { name: "Organic Chemistry", nameAr: "الكيمياء العضوية", emoji: "⚗️" },
+                { name: "Advanced Biology", nameAr: "الأحياء المتقدمة", emoji: "🔬" },
+                { name: "English Composition", nameAr: "التأليف الإنجليزي", emoji: "✏️" },
+                { name: "Philosophy", nameAr: "الفلسفة", emoji: "🤔" },
+                { name: "Statistics", nameAr: "الإحصاء", emoji: "📈" },
+                { name: "Psychology", nameAr: "علم النفس", emoji: "🧠" }
+            ]
+        };
 
         // Global variables
         let currentUser = null;
         let currentRoom = null;
         let selectedColor = '#667eea';
+        let selectedGrade = null;
+        let selectedSubject = null;
+        let currentLanguage = 'en';
+        let currentTheme = 'light';
         let timerInterval = null;
         let timerSeconds = 1500;
         let timerRunning = false;
@@ -558,71 +293,76 @@
         let chatSubscription = null;
         let participantsSubscription = null;
 
-        // Initialize app when DOM loads
+        // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, initializing app...');
+            console.log('StudyTogether app starting...');
             initApp();
         });
 
         function initApp() {
-            console.log('Initializing app...');
-            
             // Initialize Supabase
             try {
                 supabase = window.supabase.createClient(
                     'https://lpabkpwepnbvgkznzlkf.supabase.co',
                     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwYWJrcHdlcG5idmdrem56bGtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4ODI2MTUsImV4cCI6MjA3MTQ1ODYxNX0.d4eKNAu3KjVXFnXuQlPUnST0eC2ynL1al9w8AQE16R0'
                 );
-                console.log('Supabase initialized successfully');
+                console.log('Supabase initialized');
             } catch (error) {
-                console.error('Failed to initialize Supabase:', error);
-                document.getElementById('login-message').innerHTML = '<div class="message error">Failed to connect to database. Please refresh the page.</div>';
-                return;
+                console.error('Supabase initialization failed:', error);
             }
+            
+            // Load saved preferences
+            loadPreferences();
             
             // Set up event listeners
             setupEventListeners();
             
-            // Check for saved user and room
-            checkSavedData();
-
+            // Check for saved user
+            checkSavedUser();
+            
+            // Apply initial language and theme
+            updateLanguage();
+            applyTheme();
+            
             console.log('App initialized successfully');
         }
 
-        function setupEventListeners() {
-            console.log('Setting up event listeners...');
+        function loadPreferences() {
+            const savedLang = localStorage.getItem('studyTogether_language');
+            const savedTheme = localStorage.getItem('studyTogether_theme');
             
+            if (savedLang && ['en', 'ar'].includes(savedLang)) {
+                currentLanguage = savedLang;
+            }
+            
+            if (savedTheme && ['light', 'dark'].includes(savedTheme)) {
+                currentTheme = savedTheme;
+            }
+        }
+
+        function setupEventListeners() {
             // Avatar selection
             document.querySelectorAll('.avatar-choice').forEach(choice => {
-                choice.addEventListener('click', function() {
-                    console.log('Avatar clicked:', this.dataset.color);
+                choice.onclick = function() {
                     document.querySelectorAll('.avatar-choice').forEach(c => c.classList.remove('selected'));
                     this.classList.add('selected');
                     selectedColor = this.dataset.color;
-                });
+                    updateAvatarPreviews();
+                };
             });
 
-            // Name input updates avatars
-            document.getElementById('username').addEventListener('input', function() {
-                const letter = this.value.charAt(0).toUpperCase() || 'Y';
-                document.querySelectorAll('.avatar-choice').forEach(choice => {
-                    choice.textContent = letter;
-                });
-            });
+            // Name input
+            document.getElementById('student-name').oninput = updateAvatarPreviews;
 
-            // Button event listeners
-            document.getElementById('login-btn').onclick = handleLogin;
-            document.getElementById('logout-btn').onclick = handleLogout;
-            document.getElementById('create-room-btn').onclick = handleCreateRoom;
-            document.getElementById('join-room-btn').onclick = toggleJoinForm;
-            document.getElementById('join-submit-btn').onclick = handleJoinRoom;
-            document.getElementById('leave-room-btn').onclick = handleLeaveRoom;
-            document.getElementById('copy-code-btn').onclick = copyRoomCode;
-            document.getElementById('share-link-btn').onclick = shareRoom;
-            document.getElementById('send-chat-btn').onclick = sendChatMessage;
-            document.getElementById('start-timer-btn').onclick = startTimer;
-            document.getElementById('pause-timer-btn').onclick = pauseTimer;
-            document.getElementById('reset-timer-btn').onclick = resetTimer;
+            // Grade selection
+            document.querySelectorAll('.grade-card').forEach(card => {
+                card.onclick = function() {
+                    document.querySelectorAll('.grade-card').forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedGrade = this.dataset.grade;
+                    showSubjects(selectedGrade);
+                };
+            });
 
             // Timer presets
             document.querySelectorAll('[data-timer]').forEach(btn => {
@@ -640,43 +380,72 @@
             });
 
             // Enter key handlers
-            document.getElementById('username').onkeypress = function(e) {
-                if (e.key === 'Enter') handleLogin();
+            document.getElementById('student-name').onkeypress = function(e) {
+                if (e.key === 'Enter') completeRegistration();
             };
 
             document.getElementById('room-code-input').onkeypress = function(e) {
-                if (e.key === 'Enter') handleJoinRoom();
+                if (e.key === 'Enter') joinRoom();
             };
 
             document.getElementById('chat-input').onkeypress = function(e) {
-                if (e.key === 'Enter') sendChatMessage();
+                if (e.key === 'Enter') sendMessage();
             };
-
-            console.log('Event listeners set up successfully');
         }
 
-        function checkSavedData() {
-            // Check for saved user
-            const savedUser = localStorage.getItem('studyUser');
+        function updateAvatarPreviews() {
+            const name = document.getElementById('student-name').value;
+            const letter = name.charAt(0).toUpperCase() || 'A';
+            document.querySelectorAll('.avatar-choice').forEach(choice => {
+                choice.textContent = letter;
+            });
+        }
+
+        function showSubjects(grade) {
+            const container = document.getElementById('subjects-container');
+            const grid = document.getElementById('subjects-grid');
+            
+            container.classList.add('show');
+            grid.innerHTML = '';
+            
+            const subjects = subjectsByGrade[grade] || [];
+            subjects.forEach(subject => {
+                const subjectCard = document.createElement('div');
+                subjectCard.className = 'subject-card';
+                subjectCard.onclick = function() {
+                    document.querySelectorAll('.subject-card').forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedSubject = subject;
+                };
+                
+                const subjectName = currentLanguage === 'ar' ? subject.nameAr : subject.name;
+                subjectCard.innerHTML = `
+                    <div class="subject-emoji">${subject.emoji}</div>
+                    <div class="subject-name">${subjectName}</div>
+                `;
+                
+                grid.appendChild(subjectCard);
+            });
+        }
+
+        function checkSavedUser() {
+            const savedUser = localStorage.getItem('studyTogether_user');
             if (savedUser) {
                 try {
                     currentUser = JSON.parse(savedUser);
                     console.log('Found saved user:', currentUser);
                     
-                    // Check for saved room
-                    const savedRoom = localStorage.getItem('studyRoom');
+                    const savedRoom = localStorage.getItem('studyTogether_room');
                     if (savedRoom) {
                         try {
                             currentRoom = JSON.parse(savedRoom);
-                            console.log('Found saved room:', currentRoom);
-                            document.getElementById('current-room-code').textContent = currentRoom.code;
                             showScreen('room-screen');
+                            document.getElementById('current-room-code').textContent = currentRoom.code;
                             setupRoomSubscriptions();
                             loadRoomData();
                             rejoinRoom();
                         } catch (e) {
-                            console.error('Error loading saved room:', e);
-                            localStorage.removeItem('studyRoom');
+                            localStorage.removeItem('studyTogether_room');
                             showScreen('home-screen');
                             updateUserDisplay();
                         }
@@ -685,92 +454,186 @@
                         updateUserDisplay();
                     }
                 } catch (e) {
-                    console.error('Error loading saved user:', e);
-                    localStorage.removeItem('studyUser');
+                    localStorage.removeItem('studyTogether_user');
                 }
             }
         }
 
-        // Authentication functions
-        async function handleLogin() {
-            console.log('Login clicked');
-            const name = document.getElementById('username').value.trim();
-            const messageDiv = document.getElementById('login-message');
+        // Registration
+        async function completeRegistration() {
+            const name = document.getElementById('student-name').value.trim();
+            const messageDiv = document.getElementById('registration-message');
             
             if (!name) {
-                showMessage(messageDiv, 'Please enter your name', 'error');
+                showMessage(messageDiv, currentLanguage === 'ar' ? 'يرجى إدخال اسمك' : 'Please enter your name', 'error');
+                return;
+            }
+            
+            if (!selectedGrade) {
+                showMessage(messageDiv, currentLanguage === 'ar' ? 'يرجى اختيار صفك الدراسي' : 'Please select your grade', 'error');
+                return;
+            }
+            
+            if (!selectedSubject) {
+                showMessage(messageDiv, currentLanguage === 'ar' ? 'يرجى اختيار مادتك' : 'Please select your subject', 'error');
                 return;
             }
 
             if (!supabase) {
-                showMessage(messageDiv, 'Database connection not available', 'error');
+                showMessage(messageDiv, currentLanguage === 'ar' ? 'خطأ في الاتصال بقاعدة البيانات' : 'Database connection error', 'error');
                 return;
             }
 
-            console.log('Attempting login with:', { name, selectedColor });
-            showMessage(messageDiv, 'Creating your profile...', 'info');
+            showMessage(messageDiv, currentLanguage === 'ar' ? 'جاري إنشاء ملفك الشخصي...' : 'Creating your profile...', 'info');
 
             try {
                 const { data, error } = await supabase
                     .from('users')
                     .insert([{
                         name: name,
-                        avatar_color: selectedColor
+                        avatar_color: selectedColor,
+                        grade: selectedGrade,
+                        subject: selectedSubject.name
                     }])
                     .select()
                     .single();
 
-                if (error) {
-                    console.error('Supabase error:', error);
-                    throw error;
-                }
+                if (error) throw error;
 
-                console.log('User created successfully:', data);
                 currentUser = data;
-                localStorage.setItem('studyUser', JSON.stringify(currentUser));
+                localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
                 
                 showScreen('home-screen');
                 updateUserDisplay();
-                showMessage(messageDiv, 'Profile created successfully!', 'success');
+                showMessage(messageDiv, currentLanguage === 'ar' ? 'تم إنشاء الملف الشخصي بنجاح!' : 'Profile created successfully!', 'success');
                 
             } catch (error) {
-                console.error('Login error:', error);
-                showMessage(messageDiv, `Failed to create profile: ${error.message}`, 'error');
+                console.error('Registration error:', error);
+                showMessage(messageDiv, currentLanguage === 'ar' ? 'فشل في إنشاء الملف الشخصي' : 'Failed to create profile', 'error');
             }
         }
 
-        function handleLogout() {
-            console.log('Logout clicked');
-            
+        function updateUserDisplay() {
+            if (currentUser) {
+                const welcomeText = currentLanguage === 'ar' ? `مرحباً، ${currentUser.name}!` : `Welcome, ${currentUser.name}!`;
+                document.getElementById('user-welcome').textContent = welcomeText;
+                
+                const avatar = document.getElementById('user-avatar');
+                avatar.textContent = currentUser.name.charAt(0).toUpperCase();
+                avatar.style.background = currentUser.avatar_color;
+                
+                const gradeSubject = currentLanguage === 'ar' ? 
+                    `الصف ${currentUser.grade} - ${currentUser.subject}` : 
+                    `Grade ${currentUser.grade} - ${currentUser.subject}`;
+                document.getElementById('user-grade-subject').textContent = gradeSubject;
+            }
+        }
+
+        function logout() {
             if (currentRoom) {
-                handleLeaveRoom();
+                leaveRoom();
             }
             
             currentUser = null;
-            localStorage.removeItem('studyUser');
-            localStorage.removeItem('studyRoom');
-            showScreen('login-screen');
+            selectedGrade = null;
+            selectedSubject = null;
+            localStorage.removeItem('studyTogether_user');
+            localStorage.removeItem('studyTogether_room');
+            showScreen('registration-screen');
             
             // Reset form
-            document.getElementById('username').value = '';
+            document.getElementById('student-name').value = '';
+            document.querySelectorAll('.grade-card').forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('.subject-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('subjects-container').classList.remove('show');
             document.querySelectorAll('.avatar-choice').forEach(choice => {
                 choice.classList.remove('selected');
-                choice.textContent = 'Y';
+                choice.textContent = 'A';
             });
             document.querySelector('.avatar-choice').classList.add('selected');
             selectedColor = '#667eea';
         }
 
-        function updateUserDisplay() {
-            if (currentUser) {
-                document.getElementById('welcome-text').textContent = `Welcome, ${currentUser.name}!`;
-                const avatar = document.getElementById('user-avatar');
-                avatar.textContent = currentUser.name.charAt(0).toUpperCase();
-                avatar.style.background = currentUser.avatar_color;
+        // Navigation
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function goToStudyRooms() {
+            showScreen('study-rooms-screen');
+        }
+
+        function goToLibrary() {
+            showScreen('library-screen');
+        }
+
+        function backToHome() {
+            showScreen('home-screen');
+        }
+
+        function showJoinForm() {
+            const form = document.getElementById('join-form');
+            form.classList.toggle('show');
+            if (form.classList.contains('show')) {
+                document.getElementById('room-code-input').focus();
             }
         }
 
-        // Room functions
+        // Theme and Language
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('studyTogether_theme', currentTheme);
+            applyTheme();
+        }
+
+        function applyTheme() {
+            document.body.setAttribute('data-theme', currentTheme);
+            document.getElementById('theme-icon').textContent = currentTheme === 'light' ? '🌙' : '☀️';
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'ar' : 'en';
+            localStorage.setItem('studyTogether_language', currentLanguage);
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const isArabic = currentLanguage === 'ar';
+            
+            // Update document direction and lang
+            document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+            document.documentElement.lang = currentLanguage;
+            
+            // Update language toggle button
+            document.getElementById('lang-icon').textContent = isArabic ? 'EN' : 'ع';
+            document.querySelector('.lang-toggle').title = isArabic ? 'Switch to English' : 'التبديل إلى العربية';
+            
+            // Update all translatable elements
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[currentLanguage][key]) {
+                    element.textContent = translations[currentLanguage][key];
+                }
+            });
+            
+            // Update placeholders
+            document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-translate-placeholder');
+                if (translations[currentLanguage][key]) {
+                    element.placeholder = translations[currentLanguage][key];
+                }
+            });
+            
+            // Update subjects if grade is selected
+            if (selectedGrade) {
+                showSubjects(selectedGrade);
+            }
+        }
+
+        // Room functions (keeping existing functionality)
         function generateRoomCode() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let result = '';
@@ -780,16 +643,14 @@
             return result;
         }
 
-        async function handleCreateRoom() {
-            console.log('Create room clicked');
-            
+        async function createRoom() {
             if (!supabase) {
-                alert('Database connection not available');
+                alert(currentLanguage === 'ar' ? 'خطأ في الاتصال بقاعدة البيانات' : 'Database connection error');
                 return;
             }
             
             try {
-                let roomCode = generateRoomCode();
+                const roomCode = generateRoomCode();
                 
                 const { data: room, error } = await supabase
                     .from('rooms')
@@ -803,37 +664,26 @@
 
                 if (error) throw error;
 
-                console.log('Room created:', room);
-                await joinRoom(room.id, roomCode);
+                await joinRoomById(room.id, roomCode);
                 
             } catch (error) {
                 console.error('Create room error:', error);
-                alert('Failed to create room. Please try again.');
+                alert(currentLanguage === 'ar' ? 'فشل في إنشاء الغرفة' : 'Failed to create room');
             }
         }
 
-        function toggleJoinForm() {
-            console.log('Toggle join form clicked');
-            const form = document.getElementById('join-form');
-            form.classList.toggle('show');
-            if (form.classList.contains('show')) {
-                document.getElementById('room-code-input').focus();
-            }
-        }
-
-        async function handleJoinRoom() {
-            console.log('Join room clicked');
+        async function joinRoom() {
             const input = document.getElementById('room-code-input');
             const code = input.value.toUpperCase().trim();
             const messageDiv = document.getElementById('join-message');
             
             if (!code) {
-                showMessage(messageDiv, 'Please enter a room code', 'error');
+                showMessage(messageDiv, currentLanguage === 'ar' ? 'يرجى إدخال رمز الغرفة' : 'Please enter room code', 'error');
                 return;
             }
 
             if (!supabase) {
-                showMessage(messageDiv, 'Database connection not available', 'error');
+                showMessage(messageDiv, currentLanguage === 'ar' ? 'خطأ في الاتصال بقاعدة البيانات' : 'Database connection error', 'error');
                 return;
             }
 
@@ -846,22 +696,20 @@
                     .single();
 
                 if (error || !room) {
-                    showMessage(messageDiv, 'Room not found. Please check the code.', 'error');
+                    showMessage(messageDiv, currentLanguage === 'ar' ? 'الغرفة غير موجودة' : 'Room not found', 'error');
                     return;
                 }
 
-                await joinRoom(room.id, code);
+                await joinRoomById(room.id, code);
                 
             } catch (error) {
                 console.error('Join room error:', error);
-                showMessage(messageDiv, 'Failed to join room. Please try again.', 'error');
+                showMessage(messageDiv, currentLanguage === 'ar' ? 'فشل في الانضمام للغرفة' : 'Failed to join room', 'error');
             }
         }
 
-        async function joinRoom(roomId, roomCode) {
+        async function joinRoomById(roomId, roomCode) {
             try {
-                console.log('Joining room:', roomId, roomCode);
-                
                 const { error } = await supabase
                     .from('room_participants')
                     .upsert([{
@@ -873,17 +721,14 @@
                 if (error) throw error;
 
                 currentRoom = { id: roomId, code: roomCode };
-                localStorage.setItem('studyRoom', JSON.stringify(currentRoom));
+                localStorage.setItem('studyTogether_room', JSON.stringify(currentRoom));
                 document.getElementById('current-room-code').textContent = roomCode;
                 
                 showScreen('room-screen');
                 setupRoomSubscriptions();
                 loadRoomData();
                 
-                // Send join notification message
                 await sendSystemMessage(`${currentUser.name} joined the room`);
-                
-                console.log('Successfully joined room');
                 
             } catch (error) {
                 console.error('Join room error:', error);
@@ -893,8 +738,6 @@
 
         async function rejoinRoom() {
             try {
-                console.log('Rejoining room after refresh');
-                
                 const { error } = await supabase
                     .from('room_participants')
                     .upsert([{
@@ -905,16 +748,12 @@
 
                 if (error) throw error;
                 
-                console.log('Successfully rejoined room');
-                
             } catch (error) {
                 console.error('Rejoin room error:', error);
             }
         }
 
-        function handleLeaveRoom() {
-            console.log('Leave room clicked');
-            
+        function leaveRoom() {
             if (currentRoom && supabase) {
                 supabase
                     .from('room_participants')
@@ -926,7 +765,6 @@
                     });
             }
             
-            // Clean up subscriptions
             if (chatSubscription) {
                 chatSubscription.unsubscribe();
                 chatSubscription = null;
@@ -937,19 +775,15 @@
             }
             
             currentRoom = null;
-            localStorage.removeItem('studyRoom');
-            showScreen('home-screen');
+            localStorage.removeItem('studyTogether_room');
+            showScreen('study-rooms-screen');
         }
 
         // Real-time subscriptions
         function setupRoomSubscriptions() {
-            console.log('Setting up room subscriptions...');
-            
-            // Clean up existing subscriptions
             if (chatSubscription) chatSubscription.unsubscribe();
             if (participantsSubscription) participantsSubscription.unsubscribe();
             
-            // Subscribe to messages
             chatSubscription = supabase
                 .channel(`room-messages-${currentRoom.id}`)
                 .on('postgres_changes', {
@@ -957,13 +791,11 @@
                     schema: 'public',
                     table: 'messages',
                     filter: `room_id=eq.${currentRoom.id}`
-                }, (payload) => {
-                    console.log('Message update received:', payload);
+                }, () => {
                     loadMessages();
                 })
                 .subscribe();
 
-            // Subscribe to participants
             participantsSubscription = supabase
                 .channel(`room-participants-${currentRoom.id}`)
                 .on('postgres_changes', {
@@ -972,10 +804,8 @@
                     table: 'room_participants',
                     filter: `room_id=eq.${currentRoom.id}`
                 }, (payload) => {
-                    console.log('Participant update received:', payload);
                     loadParticipants();
                     
-                    // Show notification when someone joins
                     if (payload.eventType === 'INSERT' && payload.new.user_id !== currentUser.id) {
                         showJoinNotification(payload.new.user_id);
                     }
@@ -992,29 +822,30 @@
                     .single();
 
                 if (!error && user) {
-                    // Browser notification
                     if (Notification.permission === 'granted') {
-                        new Notification('New participant joined!', {
-                            body: `${user.name} joined the study room`,
+                        new Notification(currentLanguage === 'ar' ? 'انضم مشارك جديد!' : 'New participant joined!', {
+                            body: currentLanguage === 'ar' ? `${user.name} انضم لغرفة الدراسة` : `${user.name} joined the study room`,
                             icon: '👥'
                         });
                     }
                     
-                    // Visual notification
                     const notification = document.createElement('div');
                     notification.style.cssText = `
                         position: fixed;
-                        top: 20px;
-                        right: 20px;
-                        background: #16a34a;
+                        top: 90px;
+                        ${currentLanguage === 'ar' ? 'left' : 'right'}: 20px;
+                        background: var(--success-color);
                         color: white;
-                        padding: 15px 20px;
-                        border-radius: 10px;
-                        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                        padding: 1rem 1.5rem;
+                        border-radius: 12px;
+                        box-shadow: var(--shadow-medium);
                         z-index: 1000;
-                        font-weight: bold;
+                        font-weight: 600;
+                        max-width: 300px;
                     `;
-                    notification.textContent = `${user.name} joined the room! 👋`;
+                    notification.textContent = currentLanguage === 'ar' ? 
+                        `${user.name} انضم للغرفة! 👋` : 
+                        `${user.name} joined the room! 👋`;
                     document.body.appendChild(notification);
                     
                     setTimeout(() => {
@@ -1029,13 +860,11 @@
         }
 
         async function loadRoomData() {
-            console.log('Loading room data...');
             await Promise.all([
                 loadMessages(),
                 loadParticipants()
             ]);
             
-            // Set up auto-refresh every 5 seconds as backup
             if (currentRoom) {
                 setTimeout(() => {
                     if (currentRoom) {
@@ -1055,7 +884,7 @@
                     .from('room_participants')
                     .select(`
                         *,
-                        users (name, avatar_color, total_study_time)
+                        users (name, avatar_color, grade, subject)
                     `)
                     .eq('room_id', currentRoom.id)
                     .eq('is_online', true);
@@ -1066,39 +895,57 @@
                 container.innerHTML = '';
 
                 if (participants.length === 0) {
-                    container.innerHTML = '<div class="loading">No participants found</div>';
+                    container.innerHTML = `<div class="loading">${currentLanguage === 'ar' ? 'لا يوجد مشاركون' : 'No participants found'}</div>`;
                     return;
                 }
 
                 participants.forEach(participant => {
                     const user = participant.users;
                     const participantDiv = document.createElement('div');
-                    participantDiv.className = 'participant-card';
+                    participantDiv.style.cssText = `
+                        background: var(--bg-secondary);
+                        padding: 1.5rem;
+                        border-radius: 16px;
+                        text-align: center;
+                        border: 2px solid var(--border-color);
+                        margin-bottom: 1rem;
+                    `;
                     
-                    const studyHours = Math.floor(user.total_study_time / 60);
                     const isYou = participant.user_id === currentUser.id;
+                    const gradeSubject = currentLanguage === 'ar' ? 
+                        `الصف ${user.grade} - ${user.subject}` : 
+                        `Grade ${user.grade} - ${user.subject}`;
                     
                     participantDiv.innerHTML = `
-                        <div class="participant-avatar" style="background: ${user.avatar_color};">
+                        <div style="
+                            width: 60px;
+                            height: 60px;
+                            border-radius: 16px;
+                            margin: 0 auto 1rem;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-weight: 700;
+                            font-size: 1.5rem;
+                            background: ${user.avatar_color};
+                        ">
                             ${user.name.charAt(0).toUpperCase()}
                         </div>
-                        <div style="font-weight: 600; margin-bottom: 5px;">
-                            ${escapeHtml(user.name)}${isYou ? ' (You)' : ''}
+                        <div style="font-weight: 600; margin-bottom: 0.5rem;">
+                            ${user.name}${isYou ? ` (${currentLanguage === 'ar' ? 'أنت' : 'You'})` : ''}
                         </div>
-                        <div style="color: #64748b; font-size: 0.9em;">
-                            ${studyHours}h studied
-                            <span class="online-dot"></span>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                            ${gradeSubject}
                         </div>
                     `;
                     
                     container.appendChild(participantDiv);
                 });
                 
-                console.log(`Loaded ${participants.length} participants`);
-                
             } catch (error) {
                 console.error('Load participants error:', error);
-                document.getElementById('participants-list').innerHTML = '<div class="loading">Error loading participants</div>';
+                document.getElementById('participants-list').innerHTML = `<div class="loading">${currentLanguage === 'ar' ? 'خطأ في تحميل المشاركين' : 'Error loading participants'}</div>`;
             }
         }
 
@@ -1119,7 +966,6 @@
             }
         }
 
-        // Chat functions
         async function loadMessages() {
             if (!currentRoom || !supabase) return;
             
@@ -1132,7 +978,7 @@
                     `)
                     .eq('room_id', currentRoom.id)
                     .order('created_at', { ascending: true })
-                    .limit(20);
+                    .limit(50);
 
                 if (error) throw error;
 
@@ -1140,7 +986,7 @@
                 container.innerHTML = '';
 
                 if (messages.length === 0) {
-                    container.innerHTML = '<div class="loading">No messages yet. Start the conversation!</div>';
+                    container.innerHTML = `<div class="loading">${currentLanguage === 'ar' ? 'لا توجد رسائل بعد. ابدأ المحادثة!' : 'No messages yet. Start the conversation!'}</div>`;
                     return;
                 }
 
@@ -1150,16 +996,16 @@
                     
                     if (message.message_type === 'system') {
                         messageDiv.innerHTML = `
-                            <div style="text-align: center; font-style: italic; color: #64748b;">
+                            <div style="text-align: center; font-style: italic; color: var(--text-secondary);">
                                 ${escapeHtml(message.content)}
                             </div>
                         `;
-                        messageDiv.style.background = '#f1f5f9';
-                        messageDiv.style.color = '#64748b';
+                        messageDiv.style.background = 'var(--bg-tertiary)';
+                        messageDiv.style.color = 'var(--text-secondary)';
                     } else {
                         const time = new Date(message.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                         messageDiv.innerHTML = `
-                            <div class="message-info">${escapeHtml(message.users.name)} • ${time}</div>
+                            <div style="font-size: 0.85rem; opacity: 0.7; margin-bottom: 0.5rem;">${escapeHtml(message.users.name)} • ${time}</div>
                             <div>${escapeHtml(message.content)}</div>
                         `;
                     }
@@ -1174,7 +1020,7 @@
             }
         }
 
-        async function sendChatMessage() {
+        async function sendMessage() {
             const input = document.getElementById('chat-input');
             const content = input.value.trim();
             
@@ -1205,13 +1051,13 @@
         }
 
         function startTimer() {
-            console.log('Start timer clicked');
             if (timerRunning) return;
             
             timerRunning = true;
             document.getElementById('start-timer-btn').style.display = 'none';
             document.getElementById('pause-timer-btn').style.display = 'inline-block';
-            document.getElementById('timer-status').textContent = 'Timer running... Stay focused! 🎯';
+            document.getElementById('timer-status').textContent = currentLanguage === 'ar' ? 
+                'المؤقت يعمل... ركز! 🎯' : 'Timer running... Stay focused! 🎯';
             
             timerInterval = setInterval(() => {
                 timerSeconds--;
@@ -1224,16 +1070,14 @@
         }
 
         function pauseTimer() {
-            console.log('Pause timer clicked');
             timerRunning = false;
             clearInterval(timerInterval);
             document.getElementById('start-timer-btn').style.display = 'inline-block';
             document.getElementById('pause-timer-btn').style.display = 'none';
-            document.getElementById('timer-status').textContent = 'Timer paused';
+            document.getElementById('timer-status').textContent = currentLanguage === 'ar' ? 'المؤقت متوقف' : 'Timer paused';
         }
 
         function resetTimer() {
-            console.log('Reset timer clicked');
             timerRunning = false;
             clearInterval(timerInterval);
             document.getElementById('start-timer-btn').style.display = 'inline-block';
@@ -1251,30 +1095,21 @@
 
         function timerComplete() {
             resetTimer();
-            document.getElementById('timer-status').textContent = 'Timer completed! Great work! 🎉';
+            document.getElementById('timer-status').textContent = currentLanguage === 'ar' ? 
+                'انتهى المؤقت! عمل رائع! 🎉' : 'Timer completed! Great work! 🎉';
             
             if (Notification.permission === 'granted') {
-                new Notification('Study Timer Complete!', {
-                    body: 'Great job! Time for a break.',
+                new Notification(currentLanguage === 'ar' ? 'انتهى مؤقت الدراسة!' : 'Study Timer Complete!', {
+                    body: currentLanguage === 'ar' ? 'عمل رائع! حان وقت الاستراحة.' : 'Great job! Time for a break.',
                     icon: '📚'
                 });
             } else {
-                alert('Timer completed! Great work! 🎉');
+                alert(currentLanguage === 'ar' ? 'انتهى المؤقت! عمل رائع! 🎉' : 'Timer completed! Great work! 🎉');
             }
         }
 
-        // UI helper functions
-        function showScreen(screenId) {
-            console.log('Showing screen:', screenId);
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
-        }
-
+        // UI helpers
         function switchTab(tabName) {
-            console.log('Switching to tab:', tabName);
-            
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
             });
@@ -1302,33 +1137,31 @@
         }
 
         function copyRoomCode() {
-            console.log('Copy room code clicked');
             const code = document.getElementById('current-room-code').textContent;
             
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(code).then(() => {
-                    alert('Room code copied to clipboard!');
+                    alert(currentLanguage === 'ar' ? 'تم نسخ رمز الغرفة!' : 'Room code copied!');
                 }).catch(() => {
-                    prompt('Copy this room code:', code);
+                    prompt(currentLanguage === 'ar' ? 'انسخ رمز الغرفة:' : 'Copy room code:', code);
                 });
             } else {
-                prompt('Copy this room code:', code);
+                prompt(currentLanguage === 'ar' ? 'انسخ رمز الغرفة:' : 'Copy room code:', code);
             }
         }
 
         function shareRoom() {
-            console.log('Share room clicked');
             const code = document.getElementById('current-room-code').textContent;
             const link = `${window.location.origin}${window.location.pathname}?room=${code}`;
             
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(link).then(() => {
-                    alert('Invite link copied to clipboard!');
+                    alert(currentLanguage === 'ar' ? 'تم نسخ رابط الدعوة!' : 'Invite link copied!');
                 }).catch(() => {
-                    prompt('Copy this invite link:', link);
+                    prompt(currentLanguage === 'ar' ? 'انسخ رابط الدعوة:' : 'Copy invite link:', link);
                 });
             } else {
-                prompt('Copy this invite link:', link);
+                prompt(currentLanguage === 'ar' ? 'انسخ رابط الدعوة:' : 'Copy invite link:', link);
             }
         }
 
@@ -1340,22 +1173,953 @@
 
         // Request notification permission
         if ('Notification' in window && Notification.permission === 'default') {
-            Notification.requestPermission().then(permission => {
-                console.log('Notification permission:', permission);
-            });
+            Notification.requestPermission();
         }
 
-        // Test function
-        window.testStudyTogether = function() {
-            console.log('Testing connection...');
-            console.log('Supabase:', supabase ? 'Connected' : 'Not connected');
-            console.log('Current user:', currentUser);
-            console.log('Current room:', currentRoom);
-            console.log('Selected color:', selectedColor);
-        };
-
-        console.log('Script loaded successfully');
-        console.log('Run testStudyTogether() in console to check connection');
+        console.log('StudyTogether fully loaded');
     </script>
 </body>
-</html>
+</html><!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyTogether - منصة الدراسة التعاونية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Light theme colors */
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #4f46e5;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --shadow-medium: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --shadow-heavy: 0 20px 40px rgba(0, 0, 0, 0.15);
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+        }
+
+        [data-theme="dark"] {
+            /* Dark theme colors */
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --shadow-medium: 0 10px 25px rgba(0, 0, 0, 0.3);
+            --shadow-heavy: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Tajawal', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        body[dir="rtl"] {
+            font-family: 'Tajawal', 'Inter', sans-serif;
+        }
+
+        /* Background Animation */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: var(--primary-gradient);
+            opacity: 0.03;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(79, 70, 229, 0.05) 0%, transparent 50%);
+            animation: bgMove 20s ease-in-out infinite;
+        }
+
+        @keyframes bgMove {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(0.5deg); }
+            66% { transform: translateY(20px) rotate(-0.5deg); }
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: var(--bg-primary);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            box-shadow: var(--shadow-light);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-toggle, .lang-toggle {
+            width: 45px;
+            height: 45px;
+            border: none;
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-light);
+        }
+
+        .theme-toggle:hover, .lang-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        /* Main Container */
+        .main-container {
+            min-height: 100vh;
+            padding-top: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 70px 1rem 2rem;
+        }
+
+        .container {
+            background: var(--bg-primary);
+            border-radius: 24px;
+            box-shadow: var(--shadow-heavy);
+            width: 100%;
+            max-width: 1200px;
+            min-height: calc(100vh - 100px);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: var(--primary-gradient);
+            opacity: 0.05;
+            z-index: 0;
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            padding: 3rem;
+            min-height: 100%;
+        }
+
+        /* Screen Management */
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Typography */
+        .title {
+            font-size: 3rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
+        /* Form Elements */
+        .form-section {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            font-size: 1.1rem;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Avatar Selection */
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .avatar-choice {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            border: 3px solid transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.8rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .avatar-choice::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: inherit;
+            filter: brightness(1.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .avatar-choice:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .avatar-choice:hover::before {
+            opacity: 1;
+        }
+
+        .avatar-choice.selected {
+            border-color: var(--accent-color);
+            transform: scale(1.1);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
+        }
+
+        /* Grade Selection */
+        .grade-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .grade-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .grade-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .grade-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+            border-color: var(--primary-color);
+        }
+
+        .grade-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .grade-card.selected {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .grade-card.selected::before {
+            opacity: 0.1;
+        }
+
+        .grade-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .grade-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .grade-desc {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        /* Subject Selection */
+        .subjects-container {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+            display: none;
+        }
+
+        .subjects-container.show {
+            display: block;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .subject-card {
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-light);
+            border-color: var(--primary-color);
+        }
+
+        .subject-card.selected {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .subject-emoji {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .subject-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-large {
+            padding: 1.5rem 3rem;
+            font-size: 1.2rem;
+            border-radius: 20px;
+        }
+
+        .btn-block {
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        /* Home Screen Layout */
+        .home-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-light);
+        }
+
+        .user-details h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-details p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .main-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .action-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .action-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-heavy);
+            border-color: var(--primary-color);
+        }
+
+        .action-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .action-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .action-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .action-desc {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        /* Messages */
+        .message {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            font-weight: 500;
+            border-left: 4px solid;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error-color);
+            border-color: var(--error-color);
+        }
+
+        .message.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        .message.info {
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 1rem;
+            }
+
+            .content {
+                padding: 2rem 1.5rem;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .main-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .grade-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .avatar-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .subjects-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .avatar-choice {
+                width: 60px;
+                height: 60px;
+                font-size: 1.4rem;
+            }
+
+            .subjects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* RTL Support */
+        [dir="rtl"] .header-controls {
+            flex-direction: row-reverse;
+        }
+
+        [dir="rtl"] .user-info {
+            flex-direction: row-reverse;
+        }
+
+        [dir="rtl"] .logo {
+            flex-direction: row-reverse;
+        }
+
+        /* Room and Chat Styles (keeping existing room functionality) */
+        .room-header {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .room-code {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 1rem 0;
+            letter-spacing: 3px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .chat-box {
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-secondary);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            background: var(--bg-primary);
+        }
+
+        .chat-message {
+            margin-bottom: 1rem;
+            padding: 1rem 1.25rem;
+            border-radius: 16px;
+            background: var(--bg-secondary);
+            box-shadow: var(--shadow-light);
+        }
+
+        .chat-message.own {
+            background: var(--primary-color);
+            color: white;
+            margin-left: 20%;
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            gap: 1rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        /* Join Form */
+        .join-form {
+            max-width: 400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .join-form.show {
+            display: block;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        .room-code-input {
+            width: 100%;
+            padding: 1.25rem;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            font-size: 1.3rem;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 1.5rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body data-theme="light" dir="ltr">
+    <div class="bg-animation"></div>
+    
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">📚</div>
+            <span data-translate="appName">StudyTogether</span>
+        </div>
+        
+        <div class="header-controls">
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                <span id="theme-icon">🌙</span>
+            </button>
+            <button class="lang-toggle" onclick="toggleLanguage()" title="التبديل إلى العربية">
+                <span id="lang-icon">ع</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <div class="container">
+            <div class="content">
+                
+                <!-- Registration Screen -->
+                <div id="registration-screen" class="screen active">
+                    <h1 class="title" data-translate="welcome">Welcome to StudyTogether</h1>
+                    <p class="subtitle" data-translate="welcomeDesc">Create your profile and start studying with your classmates</p>
+                    
+                    <div class="form-section">
+                        <!-- Name Input -->
+                        <div class="form-group">
+                            <label class="form-label" data-translate="yourName">Your Name</label>
+                            <input type="text" id="student-name" class="form-input" data-translate-placeholder="enterName" placeholder="Enter your full name" required>
+                        </div>
+
+                        <!-- Avatar Selection -->
+                        <div class="form-group">
+                            <label class="form-label" data-translate="chooseAvatar">Choose Your Avatar Color</label>
+                            <div class="avatar-grid">
+                                <div class="avatar-choice selected" data-color="#667eea" style="background: #667eea;">A</div>
+                                <div class="avatar-choice" data-color="#dc2626" style="background: #dc2626;">A</div>
+                                <div class="avatar-choice" data-color="#16a34a" style="background: #16a34a;">A</div>
+                                <div class="avatar-choice" data-color="#ea580c" style="background: #ea580c;">A</div>
+                                <div class="avatar-choice" data-color="#7c3aed" style="background: #7c3aed;">A</div>
+                                <div class="avatar-choice" data-color="#1f2937" style="background: #1f2937;">A</div>
+                            </div>
+                        </div>
+
+                        <!-- Grade Selection -->
+                        <div class="form-group">
+                            <label class="form-label" data-translate="selectGrade">Select Your Grade</label>
+                            <div class="grade-grid">
+                                <div class="grade-card" data-grade="10">
+                                    <div class="grade-icon">🎓</div>
+                                    <h3 class="grade-title" data-translate="grade10">Grade 10</h3>
+                                    <p class="grade-desc" data-translate="grade10Desc">First year of high school</p>
+                                </div>
+                                <div class="grade-card" data-grade="11">
+                                    <div class="grade-icon">📖</div>
+                                    <h3 class="grade-title" data-translate="grade11">Grade 11</h3>
+                                    <p class="grade-desc" data-translate="grade11Desc">Second year of high school</p>
+                                </div>
+                                <div class="grade-card" data-grade="12">
+                                    <div class="grade-icon">🎯</div>
+                                    <h3 class="grade-title" data-translate="grade12">Grade 12</h3>
+                                    <p class="grade-desc" data-translate="grade12Desc">Final year preparation</p>
+                                </div>
+                            </div>
+
+                            <!-- Subject Selection (appears after grade selection) -->
+                            <div id="subjects-container" class="subjects-container">
+                                <h4 class="form-label" data-translate="selectSubject">Select Your Subject</h4>
+                                <div id="subjects-grid" class="subjects-grid">
+                                    <!-- Subjects will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-large btn-block" onclick="completeRegistration()" data-translate="joinPlatform">Join Study Platform</button>
+                        
+                        <div id="registration-message"></div>
+                    </div>
+                </div>
+
+                <!-- Home Screen -->
+                <div id="home-screen" class="screen">
+                    <div class="home-header">
+                        <div class="user-info">
+                            <div id="user-avatar" class="user-avatar"></div>
+                            <div class="user-details">
+                                <h3 id="user-welcome" data-translate="welcomeBack">Welcome back!</h3>
+                                <p id="user-grade-subject"></p>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="logout()" data-translate="logout">Logout</button>
+                    </div>
+                    
+                    <div class="main-actions">
+                        <div class="action-card" onclick="goToStudyRooms()">
+                            <div class="action-icon">🏠</div>
+                            <h3 class="action-title" data-translate="studyRooms">
