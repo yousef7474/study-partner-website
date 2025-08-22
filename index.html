@@ -7,13 +7,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Light theme colors */
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --primary-color: #667eea;
             --secondary-color: #764ba2;
             --accent-color: #4f46e5;
-            --bg-primary: #f8fafc; /* Changed for a slightly off-white bg */
-            --bg-secondary: #ffffff; /* Card backgrounds */
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
             --bg-tertiary: #f1f5f9;
             --text-primary: #1e293b;
             --text-secondary: #64748b;
@@ -29,367 +28,80 @@
         }
 
         [data-theme="dark"] {
-            /* Dark theme colors */
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-tertiary: #334155;
-            --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --text-muted: #64748b;
-            --border-color: #334155;
-            --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.3);
-            --shadow-medium: 0 10px 25px rgba(0, 0, 0, 0.3);
-            --shadow-heavy: 0 20px 40px rgba(0, 0, 0, 0.4);
+            --bg-primary: #0f172a; --bg-secondary: #1e293b; --bg-tertiary: #334155; --text-primary: #f1f5f9; --text-secondary: #cbd5e1; --text-muted: #64748b; --border-color: #334155; --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.3); --shadow-medium: 0 10px 25px rgba(0, 0, 0, 0.3); --shadow-heavy: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', 'Tajawal', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            transition: background 0.3s ease, color 0.3s ease;
-            overflow-x: hidden;
-        }
-
-        body[dir="rtl"] {
-            font-family: 'Tajawal', 'Inter', sans-serif;
-        }
-
-        /* NEW LAYOUT STYLES */
-        #app-wrapper {
-            display: flex;
-        }
-
-        #sidebar {
-            width: var(--sidebar-width);
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: -100%; /* Hidden by default */
-            background: var(--bg-secondary);
-            border-right: 1px solid var(--border-color);
-            padding: 2rem 1.5rem;
-            display: flex;
-            flex-direction: column;
-            transition: left 0.4s ease, right 0.4s ease;
-            z-index: 1100;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', 'Tajawal', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; transition: background 0.3s ease, color 0.3s ease; overflow-x: hidden; }
+        body[dir="rtl"] { font-family: 'Tajawal', 'Inter', sans-serif; }
         
-        #main-content {
-            width: 100%;
-            min-height: 100vh;
-            transition: margin-left 0.4s ease, margin-right 0.4s ease;
-        }
+        #app-wrapper { display: flex; }
+        #sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; top: 0; left: -100%; background: var(--bg-secondary); border-right: 1px solid var(--border-color); padding: 2rem 1.5rem; display: flex; flex-direction: column; transition: left 0.4s ease, right 0.4s ease; z-index: 1100; }
+        #main-content { width: 100%; min-height: 100vh; transition: margin-left 0.4s ease, margin-right 0.4s ease; }
+        body.in-room-layout #sidebar { left: 0; }
+        body.in-room-layout #main-content { margin-left: var(--sidebar-width); }
+        body.in-room-layout #pre-room-header { display: none; }
+        body[dir="rtl"].in-room-layout #sidebar { left: auto; right: 0; border-right: none; border-left: 1px solid var(--border-color); }
+        body[dir="rtl"].in-room-layout #main-content { margin-left: 0; margin-right: var(--sidebar-width); }
+        .sidebar-header { display: flex; align-items: center; gap: 12px; font-size: 1.3rem; font-weight: 700; color: var(--primary-color); margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); }
+        .sidebar-logo-icon { width: 35px; height: 35px; background: var(--primary-gradient); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: white; }
+        .sidebar-profile { text-align: center; margin-bottom: 2rem; }
+        #sidebar-user-avatar { width: 80px; height: 80px; border-radius: 20px; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 2rem; }
+        #sidebar-user-name { font-weight: 600; font-size: 1.1rem; }
+        #sidebar-user-details { font-size: 0.9rem; color: var(--text-secondary); }
+        .sidebar-section { margin-bottom: 2rem; }
+        .sidebar-section-title { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 1rem; padding: 0 0.5rem; }
+        .sidebar-controls { display: flex; gap: 0.5rem; justify-content: space-between; }
+        .sidebar-btn { flex: 1; height: 45px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-tertiary); color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.3s ease; }
+        .sidebar-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
+        .sidebar-footer { margin-top: auto; text-align: center; }
 
-        /* In-Room Layout Active State */
-        body.in-room-layout #sidebar {
-            left: 0;
-        }
-        body.in-room-layout #main-content {
-            margin-left: var(--sidebar-width);
-        }
-        body.in-room-layout #pre-room-header {
-            display: none;
-        }
+        #pre-room-header { position: fixed; top: 0; left: 0; right: 0; height: 70px; background: var(--bg-secondary); z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; box-shadow: var(--shadow-light); }
+        .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 700; color: var(--primary-color); }
+        .logo-icon { width: 40px; height: 40px; background: var(--primary-gradient); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: white; }
+        .header-controls { display: flex; align-items: center; gap: 1rem; }
+        .theme-toggle, .lang-toggle { width: 45px; height: 45px; border: none; border-radius: 12px; background: var(--bg-tertiary); color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.3s ease; box-shadow: var(--shadow-light); }
+        .theme-toggle:hover, .lang-toggle:hover { transform: translateY(-2px); box-shadow: var(--shadow-medium); }
 
-        /* RTL In-Room Layout */
-        body[dir="rtl"].in-room-layout #sidebar {
-            left: auto;
-            right: 0;
-            border-right: none;
-            border-left: 1px solid var(--border-color);
-        }
-        body[dir="rtl"].in-room-layout #main-content {
-            margin-left: 0;
-            margin-right: var(--sidebar-width);
-        }
-
-        /* Sidebar Content */
-        .sidebar-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .sidebar-logo-icon {
-            width: 35px;
-            height: 35px;
-            background: var(--primary-gradient);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-            color: white;
-        }
-        .sidebar-profile {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        #sidebar-user-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 20px;
-            margin: 0 auto 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 2rem;
-        }
-        #sidebar-user-name {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-        #sidebar-user-details {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        .sidebar-section {
-            margin-bottom: 2rem;
-        }
-        .sidebar-section-title {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            margin-bottom: 1rem;
-            padding: 0 0.5rem;
-        }
-        .sidebar-controls {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: space-between;
-        }
-        .sidebar-btn {
-            flex: 1;
-            height: 45px;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-        }
-        .sidebar-btn:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-        .sidebar-footer {
-            margin-top: auto;
-            text-align: center;
-        }
-
-
-        /* Pre-Room Header */
-        #pre-room-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 70px;
-            background: var(--bg-secondary);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 2rem;
-            box-shadow: var(--shadow-light);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--primary-gradient);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: white;
-        }
+        .main-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 70px 1rem 2rem; }
+        .container { background: var(--bg-secondary); border-radius: 24px; box-shadow: var(--shadow-heavy); width: 100%; max-width: 1200px; min-height: calc(100vh - 100px); position: relative; overflow: hidden; border: 1px solid var(--border-color); }
+        .in-room-layout .content { padding: 2rem 3rem; }
+        .content { position: relative; z-index: 1; padding: 3rem; min-height: 100%; }
+        .screen { display: none; animation: fadeIn 0.5s ease-in-out; }
+        .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .title { font-size: 3rem; font-weight: 700; text-align: center; margin-bottom: 1rem; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .subtitle { font-size: 1.2rem; color: var(--text-secondary); text-align: center; margin-bottom: 3rem; line-height: 1.6; }
         
-        .header-controls {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .theme-toggle, .lang-toggle {
-             width: 45px; height: 45px; border: none; border-radius: 12px; background: var(--bg-tertiary); color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.3s ease; box-shadow: var(--shadow-light);
-        }
-        .theme-toggle:hover, .lang-toggle:hover {
-            transform: translateY(-2px); box-shadow: var(--shadow-medium);
-        }
-
-
-        /* Main Container */
-        .main-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 70px 1rem 2rem;
-        }
-
-        .container {
-            background: var(--bg-secondary);
-            border-radius: 24px;
-            box-shadow: var(--shadow-heavy);
-            width: 100%;
-            max-width: 1200px;
-            min-height: calc(100vh - 100px);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-
-        /* In-room content doesn't need the centered container */
-        .in-room-layout .content {
-             padding: 2rem 3rem;
-        }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 200px;
-            background: var(--primary-gradient);
-            opacity: 0.05;
-            z-index: 0;
-        }
-
-        .content {
-            position: relative;
-            z-index: 1;
-            padding: 3rem;
-            min-height: 100%;
-        }
-
-        /* Screen Management */
-        .screen {
-            display: none;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Typography */
-        .title {
-            font-size: 3rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 1rem;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-            text-align: center;
-            margin-bottom: 3rem;
-            line-height: 1.6;
-        }
-        
-        /* Form Elements */
         .form-section { max-width: 600px; margin: 0 auto; }
         .form-group { margin-bottom: 2rem; }
         .form-label { display: block; font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.75rem; }
         .form-input { width: 100%; padding: 1rem 1.25rem; border: 2px solid var(--border-color); border-radius: 16px; font-size: 1.1rem; background: var(--bg-tertiary); color: var(--text-primary); transition: all 0.3s ease; }
         .form-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
-
-        /* Avatar Selection */
         .avatar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
-        .avatar-choice { width: 80px; height: 80px; border-radius: 20px; border: 3px solid transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.8rem; transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .avatar-choice { width: 80px; height: 80px; border-radius: 20px; border: 3px solid transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.8rem; transition: all 0.3s ease; }
         .avatar-choice.selected { border-color: var(--accent-color); transform: scale(1.1); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2); }
         .avatar-choice:hover { transform: scale(1.05); box-shadow: var(--shadow-medium); }
-
-        /* Grade Selection */
         .grade-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
-        .grade-card { background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 20px; padding: 2rem; cursor: pointer; transition: all 0.3s ease; text-align: center; position: relative; overflow: hidden; }
+        .grade-card { background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 20px; padding: 2rem; cursor: pointer; transition: all 0.3s ease; text-align: center; }
         .grade-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-medium); border-color: var(--primary-color); }
         .grade-card.selected { border-color: var(--primary-color); background: var(--primary-color); color: white; }
-        .grade-icon { font-size: 3rem; margin-bottom: 1rem; }
-        .grade-title { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; }
-        .grade-desc { font-size: 0.95rem; opacity: 0.8; }
-        
-        /* Subject Selection */
-        .subjects-container { margin-top: 2rem; padding: 2rem; background: var(--bg-tertiary); border-radius: 20px; display: none; }
-        .subjects-container.show { display: block; animation: slideDown 0.4s ease-out; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        .subjects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
-        .subject-card { background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 16px; padding: 1.5rem; cursor: pointer; transition: all 0.3s ease; text-align: center; }
-        .subject-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-light); border-color: var(--primary-color); }
-        .subject-card.selected { border-color: var(--primary-color); background: var(--primary-color); color: white; }
-        .subject-emoji { font-size: 2.5rem; margin-bottom: 1rem; }
-        .subject-name { font-weight: 600; font-size: 1.1rem; }
-
-        /* Buttons */
-        .btn { background: var(--primary-gradient); color: white; border: none; padding: 1rem 2rem; border-radius: 16px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-light); position: relative; overflow: hidden; }
+        .btn { background: var(--primary-gradient); color: white; border: none; padding: 1rem 2rem; border-radius: 16px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-light); }
         .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-medium); }
         .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 2px solid var(--border-color); }
         .btn-large { padding: 1.5rem 3rem; font-size: 1.2rem; border-radius: 20px; }
         .btn-block { width: 100%; display: block; text-align: center; }
         .btn-danger { background: var(--error-color); }
-
-        /* Home Screen Layout */
         .home-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; flex-wrap: wrap; gap: 1rem; }
         .user-info { display: flex; align-items: center; gap: 1rem; }
         .user-avatar { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.5rem; box-shadow: var(--shadow-light); }
-        .user-details h3 { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.25rem; }
-        .user-details p { color: var(--text-secondary); font-size: 0.95rem; }
         .main-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin: 3rem 0; }
-        .action-card { background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 24px; padding: 3rem 2rem; text-align: center; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .action-card { background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 24px; padding: 3rem 2rem; text-align: center; cursor: pointer; transition: all 0.3s ease; }
         .action-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-heavy); border-color: var(--primary-color); }
         .action-icon { font-size: 4rem; margin-bottom: 1.5rem; }
-        .action-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; }
-        .action-desc { color: var(--text-secondary); line-height: 1.6; margin-bottom: 2rem; }
-
-        /* Messages & Loading */
-        .message { padding: 1rem 1.5rem; border-radius: 12px; margin: 1rem 0; font-weight: 500; border-left: 4px solid; }
-        .message.error { background: rgba(239, 68, 68, 0.1); color: var(--error-color); border-color: var(--error-color); }
         .loading { display: flex; align-items: center; justify-content: center; padding: 3rem; color: var(--text-secondary); }
         .loading-spinner { width: 40px; height: 40px; border: 4px solid var(--border-color); border-top: 4px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; margin-right: 1rem; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* Room and Chat Styles */
         .room-header { background: var(--bg-tertiary); padding: 2rem; border-radius: 20px; margin-bottom: 2rem; text-align: center; border: 1px solid var(--border-color); }
         .room-code { font-size: 2rem; font-weight: 700; color: var(--primary-color); margin: 1rem 0; letter-spacing: 3px; }
         .tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 2px solid var(--border-color); overflow-x: auto; }
@@ -397,109 +109,75 @@
         .tab.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-
         .chat-box { border: 2px solid var(--border-color); border-radius: 20px; height: 500px; display: flex; flex-direction: column; background: var(--bg-tertiary); }
         .chat-messages { flex: 1; padding: 1.5rem; overflow-y: auto; background: var(--bg-secondary); border-radius: 20px 20px 0 0; }
         .chat-message { max-width: 80%; margin-bottom: 1rem; padding: 1rem 1.25rem; border-radius: 16px; background: var(--bg-tertiary); box-shadow: var(--shadow-light); word-wrap: break-word; }
         .chat-message.own { background: var(--primary-color); color: white; margin-left: auto; }
         [dir="rtl"] .chat-message.own { margin-left: 0; margin-right: auto; }
-
         .chat-input-area { display: flex; padding: 1.5rem; border-top: 1px solid var(--border-color); gap: 1rem; }
         .chat-input { flex: 1; padding: 1rem 1.25rem; border: 1px solid var(--border-color); border-radius: 25px; background: var(--bg-secondary); color: var(--text-primary); font-size: 1rem; }
-        .join-form { max-width: 400px; margin: 2rem auto; padding: 2rem; background: var(--bg-tertiary); border-radius: 20px; border: 1px solid var(--border-color); display: none; }
-        .join-form.show { display: block; animation: slideDown 0.4s ease-out; }
-        .room-code-input { width: 100%; padding: 1.25rem; border: 2px solid var(--border-color); border-radius: 16px; font-size: 1.3rem; text-align: center; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 1.5rem; background: var(--bg-secondary); color: var(--text-primary); font-weight: 600; }
-        
+        .participant-card { display: flex; align-items: center; justify-content: space-between; background: var(--bg-tertiary); padding: 1rem 1.5rem; border-radius: 16px; margin-bottom: 1rem; border: 1px solid var(--border-color); }
+        .participant-info { display: flex; align-items: center; gap: 1rem; }
+        .participant-avatar { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.2rem; }
+        .participant-name { font-weight: 600; }
+        .host-badge { background-color: var(--accent-color); color: white; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 6px; margin-left: 0.5rem; }
+        [dir="rtl"] .host-badge { margin-left: 0; margin-right: 0.5rem; }
+        .kick-btn { background: var(--error-color); color: white; border: none; padding: 0.5rem 1rem; font-size: 0.9rem; font-weight: 500; border-radius: 10px; cursor: pointer; transition: opacity 0.2s; }
+        .kick-btn:hover { opacity: 0.8; }
         @media (max-width: 992px) {
-            body.in-room-layout #sidebar {
-                left: calc(-1 * var(--sidebar-width));
-            }
-            body[dir="rtl"].in-room-layout #sidebar {
-                left: auto;
-                right: calc(-1 * var(--sidebar-width));
-            }
-             body.in-room-layout #main-content {
-                margin-left: 0;
-            }
-            body[dir="rtl"].in-room-layout #main-content {
-                margin-right: 0;
-            }
-            /* A hamburger menu would be needed to toggle the sidebar on mobile, but for now it's hidden */
+            body.in-room-layout #sidebar { left: calc(-1 * var(--sidebar-width)); }
+            body[dir="rtl"].in-room-layout #sidebar { left: auto; right: calc(-1 * var(--sidebar-width)); }
+            body.in-room-layout #main-content, body[dir="rtl"].in-room-layout #main-content { margin-left: 0; margin-right: 0; }
         }
-        @media (max-width: 768px) {
-            .content { padding: 2rem 1.5rem; }
-            .title { font-size: 2.5rem; }
-        }
-
+        @media (max-width: 768px) { .content { padding: 2rem 1.5rem; } .title { font-size: 2.5rem; } }
     </style>
 </head>
 <body data-theme="light">
-
     <div id="app-wrapper">
-        
-        <!-- NEW Sidebar -->
         <aside id="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-logo-icon">📚</div>
                 <span data-translate="appName">StudyTogether</span>
             </div>
-
             <div class="sidebar-profile">
                 <div id="sidebar-user-avatar"></div>
                 <div id="sidebar-user-name"></div>
                 <div id="sidebar-user-details"></div>
             </div>
-
             <div class="sidebar-section">
                 <h4 class="sidebar-section-title">OPTIONS</h4>
                 <div class="sidebar-controls">
-                     <button class="sidebar-btn" onclick="toggleTheme()" title="Toggle Theme">
-                         <span id="sidebar-theme-icon">🌙</span>
-                     </button>
-                     <button class="sidebar-btn" onclick="toggleLanguage()" title="Switch Language">
-                         <span id="sidebar-lang-icon">ع</span>
-                     </button>
+                     <button class="sidebar-btn" onclick="toggleTheme()" title="Toggle Theme"><span id="sidebar-theme-icon">🌙</span></button>
+                     <button class="sidebar-btn" onclick="toggleLanguage()" title="Switch Language"><span id="sidebar-lang-icon">ع</span></button>
                 </div>
             </div>
-            
             <div class="sidebar-section">
                 <h4 class="sidebar-section-title">ABOUT</h4>
-                <p style="font-size: 0.9rem; color: var(--text-secondary); padding: 0 0.5rem;">
-                    A collaborative study platform. Built with ❤️ and Supabase.
-                </p>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); padding: 0 0.5rem;">A collaborative study platform. Built with ❤️ and Supabase.</p>
             </div>
-
             <div class="sidebar-footer">
                 <button class="btn btn-danger btn-block" onclick="leaveRoom()" data-translate="leaveRoom">Leave Room</button>
             </div>
         </aside>
 
         <main id="main-content">
-            <!-- Header for Pre-Room Screens -->
             <header id="pre-room-header">
                 <div class="logo">
                     <div class="logo-icon">📚</div>
                     <span data-translate="appName">StudyTogether</span>
                 </div>
                 <div class="header-controls">
-                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
-                        <span id="theme-icon">🌙</span>
-                    </button>
-                    <button class="lang-toggle" onclick="toggleLanguage()" title="التبديل إلى العربية">
-                        <span id="lang-icon">ع</span>
-                    </button>
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme"><span id="theme-icon">🌙</span></button>
+                    <button class="lang-toggle" onclick="toggleLanguage()" title="Switch Language"><span id="lang-icon">ع</span></button>
                 </div>
             </header>
 
-            <!-- Pre-Room Container -->
             <div class="main-container">
                 <div class="container">
                     <div class="content">
-                        <!-- Registration Screen -->
                         <div id="registration-screen" class="screen active">
                             <h1 class="title" data-translate="welcome">Welcome to StudyTogether</h1>
                             <p class="subtitle" data-translate="welcomeDesc">Create your profile and start studying with your classmates</p>
-                            
                             <div class="form-section">
                                 <div class="form-group">
                                     <label class="form-label" data-translate="yourName">Your Name</label>
@@ -523,89 +201,68 @@
                                         <div class="grade-card" data-grade="11"><div class="grade-icon">📖</div><h3 class="grade-title" data-translate="grade11">Grade 11</h3><p class="grade-desc" data-translate="grade11Desc">Second year</p></div>
                                         <div class="grade-card" data-grade="12"><div class="grade-icon">🎯</div><h3 class="grade-title" data-translate="grade12">Grade 12</h3><p class="grade-desc" data-translate="grade12Desc">Final year</p></div>
                                     </div>
-                                    <div id="subjects-container" class="subjects-container">
-                                        <h4 class="form-label" data-translate="selectSubject">Select Your Subject</h4>
-                                        <div id="subjects-grid" class="subjects-grid"></div>
-                                    </div>
+                                    <div id="subjects-container" class="subjects-container" style="display:none;"><h4 class="form-label" data-translate="selectSubject">Select Subject</h4><div id="subjects-grid"></div></div>
                                 </div>
                                 <button class="btn btn-large btn-block" onclick="completeRegistration()" data-translate="joinPlatform">Join Study Platform</button>
                                 <div id="registration-message"></div>
                             </div>
                         </div>
         
-                        <!-- Home Screen -->
                         <div id="home-screen" class="screen">
                             <div class="home-header">
                                 <div class="user-info">
                                     <div id="user-avatar" class="user-avatar"></div>
-                                    <div class="user-details">
-                                        <h3 id="user-welcome" data-translate="welcomeBack">Welcome back!</h3>
-                                        <p id="user-grade-subject"></p>
-                                    </div>
+                                    <div class="user-details"><h3 id="user-welcome"></h3><p id="user-grade-subject"></p></div>
                                 </div>
                                 <button class="btn btn-secondary" onclick="logout()" data-translate="logout">Logout</button>
                             </div>
                             <div class="main-actions">
-                                <div class="action-card" onclick="goToStudyRooms()"><div class="action-icon">🏠</div><h3 class="action-title" data-translate="studyRooms">Study Rooms</h3><p class="action-desc" data-translate="studyRoomsDesc">Join or create virtual study rooms</p><button class="btn" data-translate="enterRooms">Enter</button></div>
-                                <div class="action-card" onclick="goToLibrary()"><div class="action-icon">📚</div><h3 class="action-title" data-translate="digitalLibrary">Digital Library</h3><p class="action-desc" data-translate="libraryDesc">Access study materials and resources</p><button class="btn btn-secondary" data-translate="browseLibrary">Browse</button></div>
+                                <div class="action-card" onclick="goToStudyRooms()"><div class="action-icon">🏠</div><h3 data-translate="studyRooms">Study Rooms</h3><p data-translate="studyRoomsDesc">Join or create virtual study rooms</p><button class="btn" data-translate="enterRooms">Enter</button></div>
+                                <div class="action-card" onclick="goToLibrary()"><div class="action-icon">📚</div><h3 data-translate="digitalLibrary">Digital Library</h3><p data-translate="libraryDesc">Access study materials</p><button class="btn btn-secondary" data-translate="browseLibrary">Browse</button></div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- In-Room Screens (Loaded outside the centered container) -->
             <div id="in-room-content" class="content" style="display: none;">
-                <!-- Study Rooms Screen -->
                 <div id="study-rooms-screen" class="screen">
                     <div class="home-header">
-                        <h2 class="title" style="font-size: 2rem; margin: 0; background: none; -webkit-text-fill-color: initial;" data-translate="studyRooms">Study Rooms</h2>
+                        <h2 style="font-size: 2rem; margin: 0; background: none; -webkit-text-fill-color: initial;" data-translate="studyRooms">Study Rooms</h2>
+                        <button class="btn btn-secondary" onclick="backToHome()" data-translate="backHome">← Back to Home</button>
                     </div>
-                    
                     <div class="main-actions">
-                        <div class="action-card" onclick="createRoom()"><div class="action-icon">➕</div><h3 class="action-title" data-translate="createRoom">Create Study Room</h3><p class="action-desc" data-translate="createRoomDesc">Start a new study session</p><button class="btn" data-translate="createNow">Create Now</button></div>
-                        <div class="action-card" onclick="showJoinForm()"><div class="action-icon">🚪</div><h3 class="action-title" data-translate="joinRoom">Join Study Room</h3><p class="action-desc" data-translate="joinRoomDesc">Enter a room code to join</p><button class="btn btn-secondary" data-translate="joinNow">Join Now</button></div>
+                        <div class="action-card" onclick="createRoom()"><div class="action-icon">➕</div><h3 data-translate="createRoom">Create Room</h3><p data-translate="createRoomDesc">Start a new session</p><button class="btn" data-translate="createNow">Create Now</button></div>
+                        <div class="action-card" onclick="showJoinForm()"><div class="action-icon">🚪</div><h3 data-translate="joinRoom">Join Room</h3><p data-translate="joinRoomDesc">Enter a room code</p><button class="btn btn-secondary" data-translate="joinNow">Join Now</button></div>
                     </div>
-                    
-                    <div id="join-form" class="join-form">
-                        <label class="form-label" data-translate="enterRoomCode">Enter Room Code</label>
-                        <input type="text" id="room-code-input" class="room-code-input" data-translate-placeholder="roomCodePlaceholder" placeholder="XXXXXX" maxlength="6">
-                        <button class="btn btn-block" onclick="joinRoom()" data-translate="joinRoom">Join Room</button>
-                        <div id="join-message"></div>
-                    </div>
+                    <div id="join-form" class="join-form" style="display:none;"><label class="form-label" data-translate="enterRoomCode">Enter Code</label><input type="text" id="room-code-input" class="form-input" style="text-align:center;text-transform:uppercase;letter-spacing:4px;" placeholder="XXXXXX" maxlength="6"><button class="btn btn-block" onclick="joinRoom()" data-translate="joinRoom">Join</button><div id="join-message"></div></div>
                 </div>
 
-                <!-- Room Screen -->
                 <div id="room-screen" class="screen">
                     <div class="room-header">
-                        <p style="color: var(--text-secondary); margin-bottom: 0.5rem;" data-translate="roomCode">Room Code</p>
+                        <p style="color: var(--text-secondary);" data-translate="roomCode">Room Code</p>
                         <div id="current-room-code" class="room-code">------</div>
                         <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem;">
                             <button class="btn" onclick="copyRoomCode()" data-translate="copyCode">Copy Code</button>
                             <button class="btn btn-secondary" onclick="shareRoom()" data-translate="shareLink">Share Link</button>
                         </div>
                     </div>
-
                     <div class="tabs">
                         <button class="tab active" data-tab="chat">💬 <span data-translate="chat">Chat</span></button>
                         <button class="tab" data-tab="participants">👥 <span data-translate="participants">Participants</span></button>
                         <button class="tab" data-tab="timer">⏱️ <span data-translate="timer">Timer</span></button>
                     </div>
-                    
-                    <div id="chat-content" class="tab-content active">
-                        <div class="chat-box"><div id="chat-messages" class="chat-messages"><div class="loading"><div class="loading-spinner"></div><span data-translate="loadingChat">Loading...</span></div></div><div class="chat-input-area"><input type="text" id="chat-input" class="chat-input" data-translate-placeholder="typeMessage" placeholder="Type..." maxlength="500"><button class="btn" onclick="sendMessage()" data-translate="send">Send</button></div></div>
-                    </div>
-                    <div id="participants-content" class="tab-content"><div id="participants-list"><div class="loading"><div class="loading-spinner"></div><span data-translate="loadingParticipants">Loading...</span></div></div></div>
-                    <div id="timer-content" class="tab-content"><div style="text-align: center; background: var(--bg-secondary); padding: 3rem; border-radius: 20px;"><div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap;"><button class="btn" data-timer="25">25 <span data-translate="minFocus">min Focus</span></button><button class="btn" data-timer="5">5 <span data-translate="minBreak">min Break</span></button><button class="btn" data-timer="15">15 <span data-translate="minBreak">min Break</span></button></div><div id="timer-display" style="font-size: 4rem; font-weight: 700; color: var(--primary-color); margin: 2rem 0; font-family: 'Courier New', monospace;">25:00</div><div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;"><button id="start-timer-btn" class="btn" onclick="startTimer()" data-translate="start">Start</button><button id="pause-timer-btn" class="btn btn-secondary" onclick="pauseTimer()" style="display: none;" data-translate="pause">Pause</button><button class="btn btn-secondary" onclick="resetTimer()" data-translate="reset">Reset</button></div><div id="timer-status" style="margin-top: 1.5rem; font-size: 1.1rem; color: var(--text-secondary);"></div></div></div>
+                    <div id="chat-content" class="tab-content active"><div class="chat-box"><div id="chat-messages" class="chat-messages"></div><div class="chat-input-area"><input type="text" id="chat-input" class="chat-input" data-translate-placeholder="typeMessage" placeholder="Type..." maxlength="500"><button class="btn" onclick="sendMessage()" data-translate="send">Send</button></div></div></div>
+                    <div id="participants-content" class="tab-content"><div id="participants-list"></div></div>
+                    <div id="timer-content" class="tab-content"><div style="text-align: center; background: var(--bg-secondary); padding: 3rem; border-radius: 20px;"><div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap;"><button class="btn" data-timer="25">25 <span data-translate="minFocus">min Focus</span></button><button class="btn" data-timer="5">5 <span data-translate="minBreak">min Break</span></button><button class="btn" data-timer="15">15 <span data-translate="minBreak">min Break</span></button></div><div id="timer-display" style="font-size: 4rem; font-weight: 700; color: var(--primary-color); margin: 2rem 0; font-family: 'Courier New', monospace;">25:00</div><div style="display: flex; gap: 1rem; justify-content: center;"><button id="start-timer-btn" class="btn" onclick="startTimer()" data-translate="start">Start</button><button id="pause-timer-btn" class="btn btn-secondary" onclick="pauseTimer()" style="display: none;" data-translate="pause">Pause</button><button class="btn btn-secondary" onclick="resetTimer()" data-translate="reset">Reset</button></div><div id="timer-status" style="margin-top: 1.5rem;"></div></div></div>
                 </div>
 
-                <!-- Library Screen (Placeholder) -->
                 <div id="library-screen" class="screen">
                     <div class="home-header">
-                        <h2 class="title" style="font-size: 2rem; margin: 0; background: none; -webkit-text-fill-color: initial;" data-translate="digitalLibrary">Digital Library</h2>
+                        <h2 style="font-size: 2rem; margin: 0; background: none; -webkit-text-fill-color: initial;" data-translate="digitalLibrary">Digital Library</h2>
                         <button class="btn btn-secondary" onclick="backToHome()" data-translate="backHome">← Back to Home</button>
                     </div>
-                    <div style="text-align: center; padding: 4rem 2rem;"><div style="font-size: 4rem; margin-bottom: 2rem;">🚧</div><h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--text-primary);" data-translate="comingSoon">Coming Soon!</h3><p style="color: var(--text-secondary); font-size: 1.1rem;" data-translate="libraryComingSoon">The digital library is under development.</p></div>
+                    <div style="text-align: center; padding: 4rem 2rem;"><div style="font-size: 4rem;">🚧</div><h3 style="font-size: 1.5rem;" data-translate="comingSoon">Coming Soon!</h3><p style="color: var(--text-secondary);" data-translate="libraryComingSoon">This feature is under development.</p></div>
                 </div>
             </div>
         </main>
@@ -613,57 +270,33 @@
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // --- START OF SCRIPT ---
-        // NOTE: All translations and subject data are the same as your original, so they are omitted here for brevity.
-        // Assume they are placed here.
-        
-        // Translations (Same as before)
         const translations = {
-            en: {
-                appName: "StudyTogether", welcome: "Welcome to StudyTogether", welcomeDesc: "Create your profile and start studying with your classmates", yourName: "Your Name", enterName: "Enter your full name", chooseAvatar: "Choose Your Avatar Color", selectGrade: "Select Your Grade", grade10: "Grade 10", grade10Desc: "First year of high school", grade11: "Grade 11", grade11Desc: "Second year of high school", grade12: "Grade 12", grade12Desc: "Final year preparation", selectSubject: "Select Your Subject", joinPlatform: "Join Study Platform", welcomeBack: "Welcome back!", logout: "Logout", studyRooms: "Study Rooms", studyRoomsDesc: "Join or create virtual study rooms with your classmates", enterRooms: "Enter Study Rooms", digitalLibrary: "Digital Library", libraryDesc: "Access study materials, notes, and resources for your grade", browseLibrary: "Browse Library", backHome: "← Back to Home", createRoom: "Create Study Room", createRoomDesc: "Start a new study session and invite your friends", createNow: "Create Now", joinRoom: "Join Study Room", joinRoomDesc: "Enter a room code to join an existing study session", joinNow: "Join Now", enterRoomCode: "Enter Room Code", roomCodePlaceholder: "XXXXXX", leaveRoom: "Leave Room", roomCode: "Room Code", copyCode: "Copy Code", shareLink: "Share Link", chat: "Chat", participants: "Participants", timer: "Timer", loadingChat: "Loading chat...", typeMessage: "Type your message...", send: "Send", loadingParticipants: "Loading participants...", minFocus: "min Focus", minBreak: "min Break", start: "Start", pause: "Pause", reset: "Reset", comingSoon: "Coming Soon!", libraryComingSoon: "The digital library feature is under development. Stay tuned!"
-            },
-            ar: {
-                appName: "ادرس معاً", welcome: "مرحباً بك في منصة ادرس معاً", welcomeDesc: "أنشئ ملفك الشخصي وابدأ الدراسة مع زملائك", yourName: "اسمك", enterName: "أدخل اسمك الكامل", chooseAvatar: "اختر لون الصورة الرمزية", selectGrade: "اختر صفك الدراسي", grade10: "الصف العاشر", grade10Desc: "السنة الأولى من المرحلة الثانوية", grade11: "الصف الحادي عشر", grade11Desc: "السنة الثانية من المرحلة الثانوية", grade12: "الصف الثاني عشر", grade12Desc: "سنة التحضير للامتحانات النهائية", selectSubject: "اختر مادتك", joinPlatform: "انضم للمنصة", welcomeBack: "مرحباً بعودتك!", logout: "تسجيل خروج", studyRooms: "غرف الدراسة", studyRoomsDesc: "انضم أو أنشئ غرف دراسة افتراضية", enterRooms: "ادخل غرف الدراسة", digitalLibrary: "المكتبة الرقمية", libraryDesc: "الوصول إلى المواد الدراسية والملاحظات", browseLibrary: "تصفح المكتبة", backHome: "← العودة للرئيسية", createRoom: "أنشئ غرفة دراسة", createRoomDesc: "ابدأ جلسة دراسة جديدة وادع أصدقاءك", createNow: "أنشئ الآن", joinRoom: "انضم لغرفة دراسة", joinRoomDesc: "أدخل رمز الغرفة للانضمام لجلسة", joinNow: "انضم الآن", enterRoomCode: "أدخل رمز الغرفة", roomCodePlaceholder: "XXXXXX", leaveRoom: "مغادرة الغرفة", roomCode: "رمز الغرفة", copyCode: "نسخ الرمز", shareLink: "مشاركة الرابط", chat: "المحادثة", participants: "المشاركون", timer: "المؤقت", loadingChat: "جاري تحميل المحادثة...", typeMessage: "اكتب رسالتك...", send: "إرسال", loadingParticipants: "جاري تحميل المشاركين...", minFocus: "دقيقة تركيز", minBreak: "دقيقة استراحة", start: "ابدأ", pause: "توقف", reset: "إعادة تعيين", comingSoon: "قريباً!", libraryComingSoon: "ميزة المكتبة الرقمية قيد التطوير. ترقبوا!"
-            }
+            en: { appName: "StudyTogether", welcome: "Welcome to StudyTogether", welcomeDesc: "Create your profile and start studying with your classmates", yourName: "Your Name", enterName: "Enter your full name", chooseAvatar: "Choose Your Avatar Color", selectGrade: "Select Your Grade", grade10: "Grade 10", grade10Desc: "First year of high school", grade11: "Grade 11", grade11Desc: "Second year of high school", grade12: "Grade 12", grade12Desc: "Final year preparation", selectSubject: "Select Your Subject", joinPlatform: "Join Study Platform", welcomeBack: "Welcome back!", logout: "Logout", studyRooms: "Study Rooms", studyRoomsDesc: "Join or create virtual study rooms with your classmates", enterRooms: "Enter Study Rooms", digitalLibrary: "Digital Library", libraryDesc: "Access study materials, notes, and resources for your grade", browseLibrary: "Browse Library", backHome: "← Back to Home", createRoom: "Create Study Room", createRoomDesc: "Start a new study session and invite your friends", createNow: "Create Now", joinRoom: "Join Study Room", joinRoomDesc: "Enter a room code to join an existing study session", joinNow: "Join Now", enterRoomCode: "Enter Room Code", roomCodePlaceholder: "XXXXXX", leaveRoom: "Leave Room", roomCode: "Room Code", copyCode: "Copy Code", shareLink: "Share Link", chat: "Chat", participants: "Participants", timer: "Timer", loadingChat: "Loading chat...", typeMessage: "Type your message...", send: "Send", loadingParticipants: "Loading participants...", minFocus: "min Focus", minBreak: "min Break", start: "Start", pause: "Pause", reset: "Reset", comingSoon: "Coming Soon!", libraryComingSoon: "The digital library feature is under development. Stay tuned!" },
+            ar: { appName: "ادرس معاً", welcome: "مرحباً بك في منصة ادرس معاً", welcomeDesc: "أنشئ ملفك الشخصي وابدأ الدراسة مع زملائك", yourName: "اسمك", enterName: "أدخل اسمك الكامل", chooseAvatar: "اختر لون الصورة الرمزية", selectGrade: "اختر صفك الدراسي", grade10: "الصف العاشر", grade10Desc: "السنة الأولى من المرحلة الثانوية", grade11: "الصف الحادي عشر", grade11Desc: "السنة الثانية من المرحلة الثانوية", grade12: "الصف الثاني عشر", grade12Desc: "سنة التحضير للامتحانات النهائية", selectSubject: "اختر مادتك", joinPlatform: "انضم للمنصة", welcomeBack: "مرحباً بعودتك!", logout: "تسجيل خروج", studyRooms: "غرف الدراسة", studyRoomsDesc: "انضم أو أنشئ غرف دراسة افتراضية", enterRooms: "ادخل غرف الدراسة", digitalLibrary: "المكتبة الرقمية", libraryDesc: "الوصول إلى المواد الدراسية والملاحظات", browseLibrary: "تصفح المكتبة", backHome: "← العودة للرئيسية", createRoom: "أنشئ غرفة دراسة", createRoomDesc: "ابدأ جلسة دراسة جديدة وادع أصدقاءك", createNow: "أنشئ الآن", joinRoom: "انضم لغرفة دراسة", joinRoomDesc: "أدخل رمز الغرفة للانضمام لجلسة", joinNow: "انضم الآن", enterRoomCode: "أدخل رمز الغرفة", roomCodePlaceholder: "XXXXXX", leaveRoom: "مغادرة الغرفة", roomCode: "رمز الغرفة", copyCode: "نسخ الرمز", shareLink: "مشاركة الرابط", chat: "المحادثة", participants: "المشاركون", timer: "المؤقت", loadingChat: "جاري تحميل المحادثة...", typeMessage: "اكتب رسالتك...", send: "إرسال", loadingParticipants: "جاري تحميل المشاركين...", minFocus: "دقيقة تركيز", minBreak: "دقيقة استراحة", start: "ابدأ", pause: "توقف", reset: "إعادة تعيين", comingSoon: "قريباً!", libraryComingSoon: "ميزة المكتبة الرقمية قيد التطوير. ترقبوا!" }
         };
-        // Subject data (Same as before)
         const subjectsByGrade = { 10: [{ name: "Mathematics", nameAr: "الرياضيات", emoji: "🔢" }, { name: "Physics", nameAr: "الفيزياء", emoji: "⚛️" }, { name: "Chemistry", nameAr: "الكيمياء", emoji: "🧪" }], 11: [{ name: "Advanced Mathematics", nameAr: "الرياضيات المتقدمة", emoji: "📊" }, { name: "Physics", nameAr: "الفيزياء", emoji: "⚛️" }, { name: "Computer Science", nameAr: "علوم الحاسوب", emoji: "💻" }], 12: [{ name: "Calculus", nameAr: "التفاضل والتكامل", emoji: "∫" }, { name: "Advanced Physics", nameAr: "الفيزياء المتقدمة", emoji: "🚀" }, { name: "Statistics", nameAr: "الإحصاء", emoji: "📈" }] };
 
-        // Global variables
-        let currentUser = null;
-        let currentRoom = null;
-        let selectedColor = '#667eea';
-        let selectedGrade = null;
-        let selectedSubject = null;
-        let currentLanguage = 'en';
-        let currentTheme = 'light';
-        let timerInterval = null;
-        let timerSeconds = 1500;
-        let timerRunning = false;
-        let supabase = null;
-        let chatSubscription = null;
-        let participantsSubscription = null;
-        let roomCodeFromUrl = null; // NEW: To handle direct join
+        let currentUser = null, currentRoom = null, selectedColor = '#667eea', selectedGrade = null, selectedSubject = null;
+        let currentLanguage = 'en', currentTheme = 'light', timerInterval = null, timerSeconds = 1500, timerRunning = false;
+        let supabase = null, chatSubscription = null, participantsSubscription = null, roomCodeFromUrl = null;
 
-        // Initialize app
         document.addEventListener('DOMContentLoaded', initApp);
 
         function initApp() {
             try {
                 supabase = window.supabase.createClient('https://lpabkpwepnbvgkznzlkf.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwYWJrcHdlcG5idmdrem56bGtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4ODI2MTUsImV4cCI6MjA3MTQ1ODYxNX0.d4eKNAu3KjVXFnXuQlPUnST0eC2ynL1al9w8AQE16R0');
-                console.log('Supabase initialized');
-            } catch (error) {
-                console.error('Supabase initialization failed:', error);
-            }
-            
+            } catch (error) { console.error('Supabase initialization failed:', error); }
             loadPreferences();
             setupEventListeners();
-            handleUrlParams(); // NEW: Check for room code in URL
+            handleUrlParams();
             checkSavedUser();
             updateLanguage();
             applyTheme();
-            
-            console.log('App initialized successfully');
+        }
+
+        function loadPreferences() {
+            currentLanguage = localStorage.getItem('studyTogether_language') || 'en';
+            currentTheme = localStorage.getItem('studyTogether_theme') || 'light';
         }
 
         function handleUrlParams() {
@@ -671,8 +304,6 @@
             const roomCode = params.get('room');
             if (roomCode && roomCode.length === 6) {
                 roomCodeFromUrl = roomCode.toUpperCase();
-                console.log('Found room code in URL:', roomCodeFromUrl);
-                // Clean the URL so a refresh doesn't trigger the join again
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
         }
@@ -680,66 +311,57 @@
         function checkSavedUser() {
             const savedUser = localStorage.getItem('studyTogether_user');
             if (savedUser) {
-                try {
-                    currentUser = JSON.parse(savedUser);
-                    console.log('Found saved user:', currentUser);
-
-                    // NEW: If there's a room code from the URL, attempt to join
-                    if (roomCodeFromUrl) {
-                        joinRoom(roomCodeFromUrl);
-                        roomCodeFromUrl = null; // Consume it
-                        return; // Skip normal flow
-                    }
-                    
-                    const savedRoom = localStorage.getItem('studyTogether_room');
-                    if (savedRoom) {
-                        // Re-joining logic remains, but now we use the new layout
-                        currentRoom = JSON.parse(savedRoom);
-                        enterInRoomLayout(); // Apply new layout
-                        showScreen('room-screen');
-                        document.getElementById('current-room-code').textContent = currentRoom.code;
-                        setupRoomSubscriptions();
-                        loadRoomData();
-                        rejoinRoom();
-                    } else {
-                        showScreen('home-screen');
-                        updateUserDisplay();
-                    }
-                } catch (e) {
-                    localStorage.clear();
-                    showScreen('registration-screen');
+                currentUser = JSON.parse(savedUser);
+                if (roomCodeFromUrl) {
+                    joinRoom(roomCodeFromUrl);
+                    roomCodeFromUrl = null;
+                    return;
+                }
+                const savedRoom = localStorage.getItem('studyTogether_room');
+                if (savedRoom) {
+                    currentRoom = JSON.parse(savedRoom);
+                    enterInRoomLayout();
+                    showScreen('room-screen');
+                    document.getElementById('current-room-code').textContent = currentRoom.code;
+                    setupRoomSubscriptions();
+                    loadRoomData();
+                    rejoinRoom();
+                } else {
+                    showScreen('home-screen');
+                    updateUserDisplay();
                 }
             } else {
-                 showScreen('registration-screen');
+                showScreen('registration-screen');
             }
         }
 
         async function completeRegistration() {
-            // ... (validation logic is the same)
             const name = document.getElementById('student-name').value.trim();
-            if (!name || !selectedGrade || !selectedSubject) { /* show error */ return; }
-            if (!supabase) { /* show error */ return; }
-
+            if (!name || !selectedGrade || !selectedSubject) return;
             try {
                 const { data, error } = await supabase.from('users').insert([{ name, avatar_color: selectedColor, grade: selectedGrade, subject: selectedSubject.name }]).select().single();
                 if (error) throw error;
                 currentUser = data;
                 localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
-                
-                // NEW: After registration, check if we need to join a room from a URL
                 if (roomCodeFromUrl) {
                     await joinRoom(roomCodeFromUrl);
-                    roomCodeFromUrl = null; // Consume it
+                    roomCodeFromUrl = null;
                 } else {
                     showScreen('home-screen');
                     updateUserDisplay();
                 }
-            } catch (error) {
-                console.error('Registration error:', error);
-            }
+            } catch (error) { console.error('Registration error:', error); }
         }
 
-        // NEW: Layout Management Functions
+        function logout() {
+            if (currentRoom) leaveRoom(true); // Pass true to skip layout change until after logout
+            currentUser = null;
+            localStorage.removeItem('studyTogether_user');
+            localStorage.removeItem('studyTogether_room');
+            exitInRoomLayout();
+            showScreen('registration-screen');
+        }
+        
         function enterInRoomLayout() {
             document.body.classList.add('in-room-layout');
             document.querySelector('.main-container').style.display = 'none';
@@ -759,158 +381,250 @@
                 avatar.textContent = currentUser.name.charAt(0).toUpperCase();
                 avatar.style.background = currentUser.avatar_color;
                 document.getElementById('sidebar-user-name').textContent = currentUser.name;
-                const details = currentLanguage === 'ar' ? 
-                    `الصف ${currentUser.grade} - ${currentUser.subject}` : 
-                    `Grade ${currentUser.grade} - ${currentUser.subject}`;
+                const details = `Grade ${currentUser.grade} - ${currentUser.subject}`;
                 document.getElementById('sidebar-user-details').textContent = details;
             }
         }
-        
+
         function updateUserDisplay() {
             if (currentUser) {
-                document.getElementById('user-welcome').textContent = currentLanguage === 'ar' ? `مرحباً، ${currentUser.name}!` : `Welcome, ${currentUser.name}!`;
+                document.getElementById('user-welcome').textContent = `Welcome, ${currentUser.name}!`;
                 const avatar = document.getElementById('user-avatar');
                 avatar.textContent = currentUser.name.charAt(0).toUpperCase();
                 avatar.style.background = currentUser.avatar_color;
-                const details = currentLanguage === 'ar' ? `الصف ${currentUser.grade} - ${currentUser.subject}` : `Grade ${currentUser.grade} - ${currentUser.subject}`;
-                document.getElementById('user-grade-subject').textContent = details;
+                document.getElementById('user-grade-subject').textContent = `Grade ${currentUser.grade} - ${currentUser.subject}`;
             }
-        }
-
-        function logout() {
-            if (currentRoom) {
-                leaveRoom();
-            }
-            currentUser = null;
-            localStorage.removeItem('studyTogether_user');
-            localStorage.removeItem('studyTogether_room');
-            exitInRoomLayout(); // Ensure we are out of room layout
-            showScreen('registration-screen');
-            // ... (reset form logic remains the same)
         }
 
         function applyTheme() {
             document.body.setAttribute('data-theme', currentTheme);
             const icon = currentTheme === 'light' ? '🌙' : '☀️';
             document.getElementById('theme-icon').textContent = icon;
-            document.getElementById('sidebar-theme-icon').textContent = icon; // Update sidebar icon
+            document.getElementById('sidebar-theme-icon').textContent = icon;
         }
 
         function updateLanguage() {
             const isArabic = currentLanguage === 'ar';
             document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
             document.documentElement.lang = currentLanguage;
-            
             const icon = isArabic ? 'EN' : 'ع';
             document.getElementById('lang-icon').textContent = icon;
-            document.getElementById('sidebar-lang-icon').textContent = icon; // Update sidebar icon
-
-            // ... (translation logic for elements remains the same)
-             document.querySelectorAll('[data-translate]').forEach(element => { const key = element.getAttribute('data-translate'); if (translations[currentLanguage][key]) element.textContent = translations[currentLanguage][key]; });
-             document.querySelectorAll('[data-translate-placeholder]').forEach(element => { const key = element.getAttribute('data-translate-placeholder'); if (translations[currentLanguage][key]) element.placeholder = translations[currentLanguage][key]; });
-             if (selectedGrade) showSubjects(selectedGrade);
+            document.getElementById('sidebar-lang-icon').textContent = icon;
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.getAttribute('data-translate');
+                if (translations[currentLanguage][key]) el.textContent = translations[currentLanguage][key];
+            });
+            document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-translate-placeholder');
+                if (translations[currentLanguage][key]) el.placeholder = translations[currentLanguage][key];
+            });
         }
 
-        // --- Room Functions Modified for New Layout ---
+        function setupEventListeners() {
+            document.querySelectorAll('.avatar-choice').forEach(c => c.onclick = function() {
+                document.querySelector('.avatar-choice.selected').classList.remove('selected');
+                this.classList.add('selected');
+                selectedColor = this.dataset.color;
+                updateAvatarPreviews();
+            });
+            document.getElementById('student-name').oninput = updateAvatarPreviews;
+            document.querySelectorAll('.grade-card').forEach(c => c.onclick = function() {
+                document.querySelector('.grade-card.selected')?.classList.remove('selected');
+                this.classList.add('selected');
+                selectedGrade = this.dataset.grade;
+                showSubjects(selectedGrade);
+            });
+            document.querySelectorAll('[data-timer]').forEach(b => b.onclick = () => setTimerMinutes(parseInt(b.dataset.timer)));
+            document.querySelectorAll('.tab').forEach(t => t.onclick = () => switchTab(t.dataset.tab));
+            document.getElementById('chat-input').onkeypress = e => { if (e.key === 'Enter') sendMessage(); };
+        }
+
+        function updateAvatarPreviews() {
+            const letter = document.getElementById('student-name').value.charAt(0).toUpperCase() || 'A';
+            document.querySelectorAll('.avatar-choice').forEach(c => c.textContent = letter);
+        }
+
+        function showSubjects(grade) {
+            const container = document.getElementById('subjects-container');
+            container.style.display = 'block';
+            const grid = document.getElementById('subjects-grid');
+            grid.innerHTML = '';
+            subjectsByGrade[grade]?.forEach(s => {
+                const card = document.createElement('div');
+                card.className = 'grade-card'; // Re-use grade-card style for simplicity
+                card.onclick = () => {
+                    document.querySelector('#subjects-grid .grade-card.selected')?.classList.remove('selected');
+                    card.classList.add('selected');
+                    selectedSubject = s;
+                };
+                card.innerHTML = `<div>${s.emoji}</div><h3>${currentLanguage === 'ar' ? s.nameAr : s.name}</h3>`;
+                grid.appendChild(card);
+            });
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function showJoinForm() {
+            const form = document.getElementById('join-form');
+            form.style.display = form.style.display === 'block' ? 'none' : 'block';
+        }
         
-        async function joinRoom(codeOverride = null) {
-            const input = document.getElementById('room-code-input');
-            const code = codeOverride || input.value.toUpperCase().trim();
-            // ... (validation logic is the same)
-            if (!code) return;
+        function goToStudyRooms() { enterInRoomLayout(); showScreen('study-rooms-screen'); }
+        function goToLibrary() { enterInRoomLayout(); showScreen('library-screen'); }
+        function backToHome() { exitInRoomLayout(); showScreen('home-screen'); }
 
+        function generateRoomCode() { return Array(6).fill(0).map(() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]).join(''); }
+        
+        async function createRoom() {
             try {
-                const { data: room, error } = await supabase.from('rooms').select('*').eq('room_code', code).eq('is_active', true).single();
-                if (error || !room) { /* show error */ return; }
-                await joinRoomById(room.id, code);
-            } catch (error) {
-                console.error('Join room error:', error);
-            }
+                const roomCode = generateRoomCode();
+                const { data, error } = await supabase.from('rooms').insert([{ room_code: roomCode, host_id: currentUser.id, name: `${currentUser.name}'s Room` }]).select().single();
+                if (error) throw error;
+                await joinRoomById(data.id, data.room_code, data.host_id);
+            } catch (e) { console.error(e); }
         }
 
-        async function joinRoomById(roomId, roomCode) {
+        async function joinRoom(codeOverride = null) {
+            const code = codeOverride || document.getElementById('room-code-input').value.toUpperCase().trim();
+            if (!code) return;
+            try {
+                const { data, error } = await supabase.from('rooms').select('*').eq('room_code', code).eq('is_active', true).single();
+                if (error || !data) { alert('Room not found'); return; }
+                await joinRoomById(data.id, data.room_code, data.host_id);
+            } catch (e) { console.error(e); }
+        }
+
+        async function joinRoomById(roomId, roomCode, roomHostId) {
             try {
                 await supabase.from('room_participants').upsert([{ room_id: roomId, user_id: currentUser.id, is_online: true }]);
-
-                currentRoom = { id: roomId, code: roomCode };
+                currentRoom = { id: roomId, code: roomCode, host_id: roomHostId };
                 localStorage.setItem('studyTogether_room', JSON.stringify(currentRoom));
                 document.getElementById('current-room-code').textContent = roomCode;
-                
-                enterInRoomLayout(); // IMPORTANT: Switch to the new layout
+                enterInRoomLayout();
                 showScreen('room-screen');
                 setupRoomSubscriptions();
                 loadRoomData();
-                
-                await sendSystemMessage(`${currentUser.name} joined the room`);
-            } catch (error) {
-                console.error('Join room error:', error);
-                throw error;
-            }
+                await sendSystemMessage(`${currentUser.name} joined the room.`);
+            } catch (e) { console.error(e); }
+        }
+        
+        async function rejoinRoom() {
+             try { await supabase.from('room_participants').update({ is_online: true }).match({ room_id: currentRoom.id, user_id: currentUser.id }); } catch (e) { console.error(e); }
         }
 
-        function leaveRoom() {
-            if (currentRoom && supabase) {
-                supabase.from('room_participants').delete().eq('room_id', currentRoom.id).eq('user_id', currentUser.id);
+        function leaveRoom(isLoggingOut = false) {
+            if (currentRoom) {
+                 supabase.from('room_participants').delete().match({ room_id: currentRoom.id, user_id: currentUser.id });
+                 sendSystemMessage(`${currentUser.name} left the room.`);
             }
             if (chatSubscription) chatSubscription.unsubscribe();
             if (participantsSubscription) participantsSubscription.unsubscribe();
-            
             currentRoom = null;
             localStorage.removeItem('studyTogether_room');
-            exitInRoomLayout(); // IMPORTANT: Revert to the old layout
-            showScreen('home-screen'); // Go back to the main home screen
+            if (!isLoggingOut) {
+                exitInRoomLayout();
+                showScreen('home-screen');
+            }
         }
-
-        function goToStudyRooms() {
-            enterInRoomLayout(); // Switch to the in-room layout to show the study rooms options
-            showScreen('study-rooms-screen');
-        }
-
-        function goToLibrary() {
-            enterInRoomLayout(); // Also switch layout for library
-            showScreen('library-screen');
-        }
-
-        function backToHome() {
-            // "Back to Home" now means exiting the in-room layout
-            exitInRoomLayout();
-            showScreen('home-screen');
-        }
-
-        // All other functions (sendMessage, timer, etc.) remain the same.
-        // We just need to ensure the correct screens are being shown within the correct layouts.
         
-        // --- Unchanged Functions (for reference) ---
-        function loadPreferences(){ const savedLang = localStorage.getItem('studyTogether_language'); const savedTheme = localStorage.getItem('studyTogether_theme'); if(savedLang) currentLanguage = savedLang; if(savedTheme) currentTheme = savedTheme; }
-        function setupEventListeners(){ document.querySelectorAll('.avatar-choice').forEach(c => c.onclick=function(){ document.querySelectorAll('.avatar-choice').forEach(c => c.classList.remove('selected')); this.classList.add('selected'); selectedColor=this.dataset.color; updateAvatarPreviews(); }); document.getElementById('student-name').oninput=updateAvatarPreviews; document.querySelectorAll('.grade-card').forEach(c => c.onclick=function(){ document.querySelectorAll('.grade-card').forEach(c => c.classList.remove('selected')); this.classList.add('selected'); selectedGrade=this.dataset.grade; showSubjects(selectedGrade); }); document.querySelectorAll('[data-timer]').forEach(b => b.onclick=function(){ setTimerMinutes(parseInt(this.dataset.timer)); }); document.querySelectorAll('.tab').forEach(t => t.onclick=function(){ switchTab(this.dataset.tab); }); document.getElementById('chat-input').onkeypress = function(e){ if (e.key === 'Enter') sendMessage(); }; }
-        function updateAvatarPreviews(){ const name=document.getElementById('student-name').value; const letter=name.charAt(0).toUpperCase()||'A'; document.querySelectorAll('.avatar-choice').forEach(c => c.textContent=letter); }
-        function showSubjects(grade){ const container=document.getElementById('subjects-container'); const grid=document.getElementById('subjects-grid'); container.classList.add('show'); grid.innerHTML=''; const subjects=subjectsByGrade[grade]||[]; subjects.forEach(s => { const card=document.createElement('div'); card.className='subject-card'; card.onclick=function(){ document.querySelectorAll('.subject-card').forEach(c => c.classList.remove('selected')); this.classList.add('selected'); selectedSubject=s; }; const name=currentLanguage==='ar'?s.nameAr:s.name; card.innerHTML=`<div class="subject-emoji">${s.emoji}</div><div class="subject-name">${name}</div>`; grid.appendChild(card); }); }
-        function showScreen(screenId){ document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(screenId).classList.add('active'); }
-        function showJoinForm(){ const form = document.getElementById('join-form'); form.classList.toggle('show'); if (form.classList.contains('show')) { document.getElementById('room-code-input').focus(); } }
-        function toggleTheme(){ currentTheme = currentTheme === 'light' ? 'dark' : 'light'; localStorage.setItem('studyTogether_theme', currentTheme); applyTheme(); }
-        function toggleLanguage(){ currentLanguage = currentLanguage === 'en' ? 'ar' : 'en'; localStorage.setItem('studyTogether_language', currentLanguage); updateLanguage(); }
-        function generateRoomCode(){ return Array(6).fill('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789').map(x => x[Math.floor(Math.random()*x.length)]).join(''); }
-        async function createRoom(){ if(!supabase)return; try{ const roomCode=generateRoomCode(); const {data: room, error}=await supabase.from('rooms').insert([{room_code: roomCode, host_id: currentUser.id, name: `${currentUser.name}'s Room`}]).select().single(); if(error)throw error; await joinRoomById(room.id, roomCode); }catch(e){console.error(e);} }
-        async function rejoinRoom(){ try{ await supabase.from('room_participants').upsert([{room_id: currentRoom.id, user_id: currentUser.id, is_online: true}]); }catch(e){console.error(e);} }
-        function setupRoomSubscriptions(){ if(chatSubscription)chatSubscription.unsubscribe(); if(participantsSubscription)participantsSubscription.unsubscribe(); chatSubscription=supabase.channel(`room-messages-${currentRoom.id}`).on('postgres_changes',{event:'*',schema:'public',table:'messages',filter:`room_id=eq.${currentRoom.id}`},()=>loadMessages()).subscribe(); participantsSubscription=supabase.channel(`room-participants-${currentRoom.id}`).on('postgres_changes',{event:'*',schema:'public',table:'room_participants',filter:`room_id=eq.${currentRoom.id}`},()=>loadParticipants()).subscribe(); }
-        async function loadRoomData(){ await Promise.all([loadMessages(), loadParticipants()]); }
-        async function loadParticipants(){ if(!currentRoom||!supabase)return; try{ const {data,error}=await supabase.from('room_participants').select(`*,users(name,avatar_color,grade,subject)`).eq('room_id',currentRoom.id).eq('is_online',true); if(error)throw error; const container=document.getElementById('participants-list'); container.innerHTML=''; participants.forEach(p=>{ const user=p.users; const div=document.createElement('div'); div.innerHTML=`...`; container.appendChild(div); }); }catch(e){console.error(e);} }
-        async function loadMessages(){ if(!currentRoom||!supabase)return; try{ const {data,error}=await supabase.from('messages').select(`*,users(name,avatar_color)`).eq('room_id',currentRoom.id).order('created_at').limit(100); if(error)throw error; const container=document.getElementById('chat-messages'); container.innerHTML=''; messages.forEach(m=>{ const div=document.createElement('div'); div.className=`chat-message ${m.user_id===currentUser.id?'own':''}`; div.innerHTML=`...`; container.appendChild(div); }); container.scrollTop=container.scrollHeight; }catch(e){console.error(e);} }
-        async function sendMessage(){ const input=document.getElementById('chat-input'); const content=input.value.trim(); if(!content||!currentRoom||!supabase)return; try{ await supabase.from('messages').insert([{room_id:currentRoom.id, user_id:currentUser.id, content:content, message_type:'chat'}]); input.value=''; }catch(e){console.error(e);} }
-        function setTimerMinutes(minutes){ timerSeconds=minutes*60; updateTimerDisplay(); resetTimer(); }
-        function startTimer(){ if(timerRunning)return; timerRunning=true; document.getElementById('start-timer-btn').style.display='none'; document.getElementById('pause-timer-btn').style.display='inline-block'; timerInterval=setInterval(()=>{ timerSeconds--; updateTimerDisplay(); if(timerSeconds<=0)timerComplete(); },1000); }
-        function pauseTimer(){ timerRunning=false; clearInterval(timerInterval); document.getElementById('start-timer-btn').style.display='inline-block'; document.getElementById('pause-timer-btn').style.display='none'; }
-        function resetTimer(){ timerRunning=false; clearInterval(timerInterval); document.getElementById('start-timer-btn').style.display='inline-block'; document.getElementById('pause-timer-btn').style.display='none'; updateTimerDisplay(); }
-        function updateTimerDisplay(){ const m=Math.floor(timerSeconds/60); const s=timerSeconds%60; document.getElementById('timer-display').textContent=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
-        function timerComplete(){ resetTimer(); }
-        function switchTab(tabName){ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelector(`[data-tab="${tabName}"]`).classList.add('active'); document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active')); document.getElementById(tabName+'-content').classList.add('active'); if(tabName==='chat')loadMessages(); else if(tabName==='participants')loadParticipants(); }
-        function copyRoomCode(){ navigator.clipboard.writeText(document.getElementById('current-room-code').textContent); }
-        function shareRoom(){ const code=document.getElementById('current-room-code').textContent; const link=`${window.location.origin}${window.location.pathname}?room=${code}`; navigator.clipboard.writeText(link); alert('Invite link copied!'); }
+        async function kickParticipant(userId, userName) {
+            if (!confirm(`Are you sure you want to kick ${userName}?`)) return;
+            try {
+                await supabase.from('room_participants').delete().match({ room_id: currentRoom.id, user_id: userId });
+                await sendSystemMessage(`${userName} was removed by the host.`);
+            } catch (e) { console.error(e); }
+        }
+
+        function setupRoomSubscriptions() {
+            if (chatSubscription) chatSubscription.unsubscribe();
+            if (participantsSubscription) participantsSubscription.unsubscribe();
+            chatSubscription = supabase.channel(`messages-${currentRoom.id}`).on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: `room_id=eq.${currentRoom.id}` }, loadMessages).subscribe();
+            participantsSubscription = supabase.channel(`participants-${currentRoom.id}`).on('postgres_changes', { event: '*', schema: 'public', table: 'room_participants', filter: `room_id=eq.${currentRoom.id}` }, loadParticipants).subscribe();
+        }
+
+        async function loadRoomData() {
+            await Promise.all([loadMessages(), loadParticipants()]);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function loadMessages() {
+            if (!currentRoom) return;
+            const { data, error } = await supabase.from('messages').select(`*, users(name, avatar_color)`).eq('room_id', currentRoom.id).order('created_at');
+            if (error) { console.error(error); return; }
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = data.map(m => {
+                if (m.message_type === 'system') return `<div class="chat-message" style="text-align:center;background:none;box-shadow:none;color:var(--text-secondary);">${escapeHtml(m.content)}</div>`;
+                const isOwn = m.user_id === currentUser.id;
+                const time = new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                return `<div class="chat-message ${isOwn ? 'own' : ''}">
+                            <div style="font-size:0.85rem;opacity:0.8;font-weight:600;">${escapeHtml(m.users.name)} • ${time}</div>
+                            <div>${escapeHtml(m.content)}</div>
+                        </div>`;
+            }).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function loadParticipants() {
+            if (!currentRoom) return;
+            const { data, error } = await supabase.from('room_participants').select(`*, users(id, name, avatar_color)`).eq('room_id', currentRoom.id).eq('is_online', true);
+            if (error) { console.error(error); return; }
+            const container = document.getElementById('participants-list');
+            const isHost = currentUser.id === currentRoom.host_id;
+            container.innerHTML = data.map(p => {
+                const user = p.users;
+                if (!user) return '';
+                const isParticipantHost = user.id === currentRoom.host_id;
+                const safeName = escapeHtml(user.name.replace(/'/g, "\\'"));
+                const kickBtn = isHost && !isParticipantHost ? `<button class="kick-btn" onclick="kickParticipant('${user.id}', '${safeName}')">Kick</button>` : '';
+                return `<div class="participant-card">
+                            <div class="participant-info">
+                                <div class="participant-avatar" style="background:${user.avatar_color};">${escapeHtml(user.name[0].toUpperCase())}</div>
+                                <div><span class="participant-name">${escapeHtml(user.name)}</span> ${isParticipantHost ? '<span class="host-badge">Host</span>' : ''}</div>
+                            </div>
+                            ${kickBtn}
+                        </div>`;
+            }).join('');
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const content = input.value.trim();
+            if (!content) return;
+            try {
+                await supabase.from('messages').insert([{ room_id: currentRoom.id, user_id: currentUser.id, content: content }]);
+                input.value = '';
+            } catch (e) { console.error(e); }
+        }
+
+        async function sendSystemMessage(content) {
+            try { await supabase.from('messages').insert([{ room_id: currentRoom.id, user_id: currentUser.id, content: content, message_type: 'system' }]); } catch (e) { console.error(e); }
+        }
+
+        function copyRoomCode() { navigator.clipboard.writeText(currentRoom.code).then(() => alert('Room code copied!')); }
+        function shareRoom() { navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?room=${currentRoom.code}`).then(() => alert('Invite link copied!')); }
         
-        // --- Simplified functions from original for brevity ---
-        // These are just placeholders to keep the code running. Use the full versions from your original script.
-        async function sendSystemMessage(content){}
-        if ('Notification' in window && Notification.permission === 'default') { Notification.requestPermission(); }
+        function switchTab(tabName) {
+            document.querySelector('.tab.active').classList.remove('active');
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.querySelector('.tab-content.active').classList.remove('active');
+            document.getElementById(`${tabName}-content`).classList.add('active');
+        }
+
+        function setTimerMinutes(minutes) { timerSeconds = minutes * 60; resetTimer(); }
+        function startTimer() { if (timerRunning) return; timerRunning = true; document.getElementById('start-timer-btn').style.display = 'none'; document.getElementById('pause-timer-btn').style.display = 'inline-block'; timerInterval = setInterval(() => { timerSeconds--; updateTimerDisplay(); if (timerSeconds <= 0) timerComplete(); }, 1000); }
+        function pauseTimer() { timerRunning = false; clearInterval(timerInterval); document.getElementById('start-timer-btn').style.display = 'inline-block'; document.getElementById('pause-timer-btn').style.display = 'none'; }
+        function resetTimer() { pauseTimer(); updateTimerDisplay(); }
+        function updateTimerDisplay() { const m = Math.floor(timerSeconds / 60); const s = timerSeconds % 60; document.getElementById('timer-display').textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`; }
+        function timerComplete() { resetTimer(); alert('Timer complete! Great work!'); }
+
     </script>
 </body>
 </html>
