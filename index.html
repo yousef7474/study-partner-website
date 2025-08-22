@@ -23,269 +23,274 @@
             --shadow-heavy: 0 20px 40px rgba(0, 0, 0, 0.15);
             --success-color: #10b981;
             --error-color: #ef4444;
-            --warning-color: #f59e0b;
             --sidebar-width: 280px;
         }
 
         [data-theme="dark"] {
-            --bg-primary: #0f172a; --bg-secondary: #1e293b; --bg-tertiary: #334155; --text-primary: #f1f5f9; --text-secondary: #cbd5e1; --text-muted: #64748b; --border-color: #334155; --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.3); --shadow-medium: 0 10px 25px rgba(0, 0, 0, 0.3); --shadow-heavy: 0 20px 40px rgba(0, 0, 0, 0.4);
+            --bg-primary: #0f172a; --bg-secondary: #1e293b; --bg-tertiary: #334155; --text-primary: #f1f5f9; --text-secondary: #cbd5e1; --text-muted: #64748b; --border-color: #334155;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', 'Tajawal', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; transition: background 0.3s ease, color 0.3s ease; overflow-x: hidden; }
+        body { font-family: 'Inter', 'Tajawal', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; transition: background 0.3s, color 0.3s; overflow-x: hidden; }
         body[dir="rtl"] { font-family: 'Tajawal', 'Inter', sans-serif; }
         
-        #app-wrapper { display: flex; }
-        #sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; top: 0; left: -100%; background: var(--bg-secondary); border-right: 1px solid var(--border-color); padding: 2rem 1.5rem; display: flex; flex-direction: column; transition: left 0.4s ease, right 0.4s ease; z-index: 1100; }
-        #main-content { width: 100%; min-height: 100vh; transition: margin-left 0.4s ease, margin-right 0.4s ease; }
-        body.in-room-layout #sidebar { left: 0; }
-        body.in-room-layout #main-content { margin-left: var(--sidebar-width); }
-        body.in-room-layout #pre-room-header { display: none; }
-        body[dir="rtl"].in-room-layout #sidebar { left: auto; right: 0; border-right: none; border-left: 1px solid var(--border-color); }
-        body[dir="rtl"].in-room-layout #main-content { margin-left: 0; margin-right: var(--sidebar-width); }
-        .sidebar-header { display: flex; align-items: center; gap: 12px; font-size: 1.3rem; font-weight: 700; color: var(--primary-color); margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); }
-        .sidebar-logo-icon { width: 35px; height: 35px; background: var(--primary-gradient); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: white; }
-        .sidebar-profile { text-align: center; margin-bottom: 2rem; }
-        #sidebar-user-avatar { width: 80px; height: 80px; border-radius: 20px; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 2rem; }
-        #sidebar-user-name { font-weight: 600; font-size: 1.1rem; }
-        #sidebar-user-details { font-size: 0.9rem; color: var(--text-secondary); }
-        .sidebar-section { margin-bottom: 2rem; }
-        .sidebar-section-title { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 1rem; padding: 0 0.5rem; }
-        .sidebar-controls { display: flex; gap: 0.5rem; justify-content: space-between; }
-        .sidebar-btn { flex: 1; height: 45px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-tertiary); color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.3s ease; }
-        .sidebar-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
-        .sidebar-footer { margin-top: auto; text-align: center; }
-
-        #pre-room-header { position: fixed; top: 0; left: 0; right: 0; height: 70px; background: var(--bg-secondary); z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; box-shadow: var(--shadow-light); }
+        .header { position: fixed; top: 0; left: 0; right: 0; height: 70px; background: var(--bg-primary); border-bottom: 1px solid var(--border-color); z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; box-shadow: var(--shadow-light); transition: margin-left 0.3s ease, margin-right 0.3s ease; }
         .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 700; color: var(--primary-color); }
         .logo-icon { width: 40px; height: 40px; background: var(--primary-gradient); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: white; }
         .header-controls { display: flex; align-items: center; gap: 1rem; }
-        .theme-toggle, .lang-toggle { width: 45px; height: 45px; border: none; border-radius: 12px; background: var(--bg-tertiary); color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.3s ease; box-shadow: var(--shadow-light); }
-        .theme-toggle:hover, .lang-toggle:hover { transform: translateY(-2px); box-shadow: var(--shadow-medium); }
+        .theme-toggle, .lang-toggle, .menu-toggle { width: 45px; height: 45px; border: none; border-radius: 12px; background: var(--bg-secondary); color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.3s ease; box-shadow: var(--shadow-light); }
+        .theme-toggle:hover, .lang-toggle:hover, .menu-toggle:hover { transform: translateY(-2px); box-shadow: var(--shadow-medium); }
+        .menu-toggle { display: none; }
 
-        .main-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 70px 1rem 2rem; }
-        .container { background: var(--bg-secondary); border-radius: 24px; box-shadow: var(--shadow-heavy); width: 100%; max-width: 1200px; min-height: calc(100vh - 100px); position: relative; overflow: hidden; border: 1px solid var(--border-color); }
-        .in-room-layout .content { padding: 2rem 3rem; }
-        .content { position: relative; z-index: 1; padding: 3rem; min-height: 100%; }
+        .sidebar { position: fixed; top: 0; left: -var(--sidebar-width); width: var(--sidebar-width); height: 100vh; background: var(--bg-secondary); border-right: 1px solid var(--border-color); z-index: 1001; transition: left 0.3s ease, right 0.3s ease; display: flex; flex-direction: column; }
+        .sidebar.active { left: 0; }
+        .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); background: var(--bg-primary); }
+        .sidebar-user { display: flex; align-items: center; gap: 1rem; }
+        .sidebar-avatar { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.5rem; flex-shrink: 0; }
+        .sidebar-user-info { overflow: hidden; }
+        .sidebar-user-info h4 { font-size: 1.1rem; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-user-info p { font-size: 0.9rem; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-secondary); }
+        .sidebar-nav { padding: 1rem 0; flex-grow: 1; overflow-y: auto; }
+        .nav-item { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem; color: var(--text-primary); text-decoration: none; font-weight: 500; transition: all 0.2s ease; border: none; background: none; width: 100%; text-align: left; cursor: pointer; border-left: 4px solid transparent; }
+        .nav-item:hover { background: var(--bg-tertiary); color: var(--primary-color); border-left-color: var(--primary-color); }
+        .nav-item.active { background: var(--primary-color); color: white; border-left-color: var(--accent-color); font-weight: 600; }
+        .nav-icon { font-size: 1.2rem; width: 24px; text-align: center; }
+        .sidebar-footer { padding: 1.5rem; border-top: 1px solid var(--border-color); }
+
+        .main-container { min-height: 100vh; padding-top: 70px; transition: margin-left 0.3s ease, margin-right 0.3s ease; }
+        .main-container.with-sidebar { margin-left: var(--sidebar-width); }
+        .content { padding: 2rem 3rem; }
+        
+        .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+
         .screen { display: none; animation: fadeIn 0.5s ease-in-out; }
         .screen.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .title { font-size: 3rem; font-weight: 700; text-align: center; margin-bottom: 1rem; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .title { font-size: 3rem; text-align: center; margin-bottom: 1rem; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .subtitle { font-size: 1.2rem; color: var(--text-secondary); text-align: center; margin-bottom: 3rem; line-height: 1.6; }
-        
-        .form-section { max-width: 600px; margin: 0 auto; }
+        .page-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 2rem; color: var(--text-primary); }
+
+        .form-section { max-width: 600px; margin: 0 auto; background: var(--bg-secondary); padding: 3rem; border-radius: 24px; box-shadow: var(--shadow-medium); }
         .form-group { margin-bottom: 2rem; }
         .form-label { display: block; font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.75rem; }
         .form-input { width: 100%; padding: 1rem 1.25rem; border: 2px solid var(--border-color); border-radius: 16px; font-size: 1.1rem; background: var(--bg-tertiary); color: var(--text-primary); transition: all 0.3s ease; }
-        .form-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
-        .avatar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
-        .avatar-choice { width: 80px; height: 80px; border-radius: 20px; border: 3px solid transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.8rem; transition: all 0.3s ease; }
+        .form-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2); }
+
+        .avatar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap: 1rem; }
+        .avatar-choice { width: 100%; aspect-ratio: 1/1; border-radius: 20px; border: 3px solid transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.8rem; transition: all 0.3s ease; }
         .avatar-choice.selected { border-color: var(--accent-color); transform: scale(1.1); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2); }
-        .avatar-choice:hover { transform: scale(1.05); box-shadow: var(--shadow-medium); }
-        .grade-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
-        .grade-card { background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 20px; padding: 2rem; cursor: pointer; transition: all 0.3s ease; text-align: center; }
-        .grade-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-medium); border-color: var(--primary-color); }
-        .grade-card.selected { border-color: var(--primary-color); background: var(--primary-color); color: white; }
+        
         .btn { background: var(--primary-gradient); color: white; border: none; padding: 1rem 2rem; border-radius: 16px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-light); }
         .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-medium); }
         .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 2px solid var(--border-color); }
-        .btn-large { padding: 1.5rem 3rem; font-size: 1.2rem; border-radius: 20px; }
         .btn-block { width: 100%; display: block; text-align: center; }
-        .btn-danger { background: var(--error-color); }
-        .home-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; flex-wrap: wrap; gap: 1rem; }
-        .user-info { display: flex; align-items: center; gap: 1rem; }
-        .user-avatar { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.5rem; box-shadow: var(--shadow-light); }
-        .main-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin: 3rem 0; }
+        .btn-small { padding: 0.75rem 1.5rem; font-size: 0.95rem; }
+        
+        .main-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
         .action-card { background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 24px; padding: 3rem 2rem; text-align: center; cursor: pointer; transition: all 0.3s ease; }
         .action-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-heavy); border-color: var(--primary-color); }
         .action-icon { font-size: 4rem; margin-bottom: 1.5rem; }
-        .loading { display: flex; align-items: center; justify-content: center; padding: 3rem; color: var(--text-secondary); }
-        .loading-spinner { width: 40px; height: 40px; border: 4px solid var(--border-color); border-top: 4px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; margin-right: 1rem; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        .room-header { background: var(--bg-tertiary); padding: 2rem; border-radius: 20px; margin-bottom: 2rem; text-align: center; border: 1px solid var(--border-color); }
-        .room-code { font-size: 2rem; font-weight: 700; color: var(--primary-color); margin: 1rem 0; letter-spacing: 3px; }
-        .tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 2px solid var(--border-color); overflow-x: auto; }
-        .tab { padding: 1rem 1.5rem; border: none; background: none; cursor: pointer; font-weight: 600; color: var(--text-secondary); border-bottom: 3px solid transparent; transition: all 0.3s ease; white-space: nowrap; }
-        .tab.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .chat-box { border: 2px solid var(--border-color); border-radius: 20px; height: 500px; display: flex; flex-direction: column; background: var(--bg-tertiary); }
-        .chat-messages { flex: 1; padding: 1.5rem; overflow-y: auto; background: var(--bg-secondary); border-radius: 20px 20px 0 0; }
+
+        .chat-box { border: 2px solid var(--border-color); border-radius: 20px; height: 50vh; min-height: 400px; display: flex; flex-direction: column; background: var(--bg-tertiary); }
+        .chat-messages { flex: 1; padding: 1.5rem; overflow-y: auto; background: var(--bg-secondary); }
         .chat-message { max-width: 80%; margin-bottom: 1rem; padding: 1rem 1.25rem; border-radius: 16px; background: var(--bg-tertiary); box-shadow: var(--shadow-light); word-wrap: break-word; }
         .chat-message.own { background: var(--primary-color); color: white; margin-left: auto; }
-        [dir="rtl"] .chat-message.own { margin-left: 0; margin-right: auto; }
         .chat-input-area { display: flex; padding: 1.5rem; border-top: 1px solid var(--border-color); gap: 1rem; }
-        .chat-input { flex: 1; padding: 1rem 1.25rem; border: 1px solid var(--border-color); border-radius: 25px; background: var(--bg-secondary); color: var(--text-primary); font-size: 1rem; }
-        .participant-card { display: flex; align-items: center; justify-content: space-between; background: var(--bg-tertiary); padding: 1rem 1.5rem; border-radius: 16px; margin-bottom: 1rem; border: 1px solid var(--border-color); }
-        .participant-info { display: flex; align-items: center; gap: 1rem; }
-        .participant-avatar { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.2rem; }
-        .participant-name { font-weight: 600; }
-        .host-badge { background-color: var(--accent-color); color: white; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 6px; margin-left: 0.5rem; }
-        [dir="rtl"] .host-badge { margin-left: 0; margin-right: 0.5rem; }
-        .kick-btn { background: var(--error-color); color: white; border: none; padding: 0.5rem 1rem; font-size: 0.9rem; font-weight: 500; border-radius: 10px; cursor: pointer; transition: opacity 0.2s; }
-        .kick-btn:hover { opacity: 0.8; }
-        @media (max-width: 992px) {
-            body.in-room-layout #sidebar { left: calc(-1 * var(--sidebar-width)); }
-            body[dir="rtl"].in-room-layout #sidebar { left: auto; right: calc(-1 * var(--sidebar-width)); }
-            body.in-room-layout #main-content, body[dir="rtl"].in-room-layout #main-content { margin-left: 0; margin-right: 0; }
+        .chat-input { flex: 1; padding: 1rem 1.25rem; border: 1px solid var(--border-color); border-radius: 25px; background: var(--bg-secondary); }
+
+        .auto-join-notification { position: fixed; top: 90px; right: 20px; background: var(--primary-color); color: white; padding: 1rem 1.5rem; border-radius: 12px; box-shadow: var(--shadow-medium); z-index: 1002; animation: slideInRight 0.5s ease-out; }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        @media (max-width: 1024px) {
+            .main-container.with-sidebar { margin-left: 0; }
+            .header.with-sidebar { margin-left: 0; }
+            .menu-toggle { display: flex; }
+            .sidebar { box-shadow: var(--shadow-heavy); }
+            .sidebar.mobile-active { left: 0; }
         }
-        @media (max-width: 768px) { .content { padding: 2rem 1.5rem; } .title { font-size: 2.5rem; } }
+        @media (max-width: 768px) {
+            .header { padding: 0 1rem; }
+            .content { padding: 2rem 1.5rem; }
+            .title { font-size: 2.5rem; }
+            .page-title { font-size: 2rem; }
+            .form-section { padding: 2rem; }
+        }
+        
+        [dir="rtl"] .sidebar { left: auto; right: -var(--sidebar-width); border-right: none; border-left: 1px solid var(--border-color); }
+        [dir="rtl"] .sidebar.active, [dir="rtl"] .sidebar.mobile-active { right: 0; }
+        [dir="rtl"] .main-container.with-sidebar { margin-left: 0; margin-right: var(--sidebar-width); }
+        [dir="rtl"] .header.with-sidebar { margin-left: 0; margin-right: var(--sidebar-width); }
+        [dir="rtl"] .nav-item { border-left: none; border-right: 4px solid transparent; }
+        [dir="rtl"] .nav-item:hover, [dir="rtl"] .nav-item.active { border-right-color: var(--primary-color); }
+        [dir="rtl"] .chat-message.own { margin-left: 0; margin-right: auto; }
+        [dir="rtl"] .auto-join-notification { left: 20px; right: auto; }
     </style>
 </head>
 <body data-theme="light">
-    <div id="app-wrapper">
-        <aside id="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-logo-icon">📚</div>
-                <span data-translate="appName">StudyTogether</span>
-            </div>
-            <div class="sidebar-profile">
-                <div id="sidebar-user-avatar"></div>
-                <div id="sidebar-user-name"></div>
-                <div id="sidebar-user-details"></div>
-            </div>
-            <div class="sidebar-section">
-                <h4 class="sidebar-section-title">OPTIONS</h4>
-                <div class="sidebar-controls">
-                     <button class="sidebar-btn" onclick="toggleTheme()" title="Toggle Theme"><span id="sidebar-theme-icon">🌙</span></button>
-                     <button class="sidebar-btn" onclick="toggleLanguage()" title="Switch Language"><span id="sidebar-lang-icon">ع</span></button>
+    
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    
+    <div class="sidebar" id="sidebar" style="display: none;">
+        <div class="sidebar-header">
+            <div class="sidebar-user">
+                <div id="sidebar-avatar" class="sidebar-avatar">S</div>
+                <div class="sidebar-user-info">
+                    <h4 id="sidebar-user-name">Student</h4>
+                    <p id="sidebar-user-grade">Grade & Subject</p>
                 </div>
             </div>
-            <div class="sidebar-section">
-                <h4 class="sidebar-section-title">ABOUT</h4>
-                <p style="font-size: 0.9rem; color: var(--text-secondary); padding: 0 0.5rem;">A collaborative study platform. Built with ❤️ and Supabase.</p>
-            </div>
-            <div class="sidebar-footer">
-                <button class="btn btn-danger btn-block" onclick="leaveRoom()" data-translate="leaveRoom">Leave Room</button>
-            </div>
-        </aside>
-
-        <main id="main-content">
-            <header id="pre-room-header">
-                <div class="logo">
-                    <div class="logo-icon">📚</div>
-                    <span data-translate="appName">StudyTogether</span>
-                </div>
-                <div class="header-controls">
-                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme"><span id="theme-icon">🌙</span></button>
-                    <button class="lang-toggle" onclick="toggleLanguage()" title="Switch Language"><span id="lang-icon">ع</span></button>
-                </div>
-            </header>
-
-            <div class="main-container">
-                <div class="container">
-                    <div class="content">
-                        <div id="registration-screen" class="screen active">
-                            <h1 class="title" data-translate="welcome">Welcome to StudyTogether</h1>
-                            <p class="subtitle" data-translate="welcomeDesc">Create your profile and start studying with your classmates</p>
-                            <div class="form-section">
-                                <div class="form-group">
-                                    <label class="form-label" data-translate="yourName">Your Name</label>
-                                    <input type="text" id="student-name" class="form-input" data-translate-placeholder="enterName" placeholder="Enter your full name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label" data-translate="chooseAvatar">Choose Your Avatar Color</label>
-                                    <div class="avatar-grid">
-                                        <div class="avatar-choice selected" data-color="#667eea" style="background: #667eea;">A</div>
-                                        <div class="avatar-choice" data-color="#dc2626" style="background: #dc2626;">A</div>
-                                        <div class="avatar-choice" data-color="#16a34a" style="background: #16a34a;">A</div>
-                                        <div class="avatar-choice" data-color="#ea580c" style="background: #ea580c;">A</div>
-                                        <div class="avatar-choice" data-color="#7c3aed" style="background: #7c3aed;">A</div>
-                                        <div class="avatar-choice" data-color="#1f2937" style="background: #1f2937;">A</div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label" data-translate="selectGrade">Select Your Grade</label>
-                                    <div class="grade-grid">
-                                        <div class="grade-card" data-grade="10"><div class="grade-icon">🎓</div><h3 class="grade-title" data-translate="grade10">Grade 10</h3><p class="grade-desc" data-translate="grade10Desc">First year</p></div>
-                                        <div class="grade-card" data-grade="11"><div class="grade-icon">📖</div><h3 class="grade-title" data-translate="grade11">Grade 11</h3><p class="grade-desc" data-translate="grade11Desc">Second year</p></div>
-                                        <div class="grade-card" data-grade="12"><div class="grade-icon">🎯</div><h3 class="grade-title" data-translate="grade12">Grade 12</h3><p class="grade-desc" data-translate="grade12Desc">Final year</p></div>
-                                    </div>
-                                    <div id="subjects-container" class="subjects-container" style="display:none;"><h4 class="form-label" data-translate="selectSubject">Select Subject</h4><div id="subjects-grid"></div></div>
-                                </div>
-                                <button class="btn btn-large btn-block" onclick="completeRegistration()" data-translate="joinPlatform">Join Study Platform</button>
-                                <div id="registration-message"></div>
-                            </div>
-                        </div>
-        
-                        <div id="home-screen" class="screen">
-                            <div class="home-header">
-                                <div class="user-info">
-                                    <div id="user-avatar" class="user-avatar"></div>
-                                    <div class="user-details"><h3 id="user-welcome"></h3><p id="user-grade-subject"></p></div>
-                                </div>
-                                <button class="btn btn-secondary" onclick="logout()" data-translate="logout">Logout</button>
-                            </div>
-                            <div class="main-actions">
-                                <div class="action-card" onclick="goToStudyRooms()"><div class="action-icon">🏠</div><h3 data-translate="studyRooms">Study Rooms</h3><p data-translate="studyRoomsDesc">Join or create virtual study rooms</p><button class="btn" data-translate="enterRooms">Enter</button></div>
-                                <div class="action-card" onclick="goToLibrary()"><div class="action-icon">📚</div><h3 data-translate="digitalLibrary">Digital Library</h3><p data-translate="libraryDesc">Access study materials</p><button class="btn btn-secondary" data-translate="browseLibrary">Browse</button></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="in-room-content" class="content" style="display: none;">
-                <div id="study-rooms-screen" class="screen">
-                    <div class="home-header">
-                        <h2 style="font-size: 2rem; margin: 0; background: none; -webkit-text-fill-color: initial;" data-translate="studyRooms">Study Rooms</h2>
-                        <button class="btn btn-secondary" onclick="backToHome()" data-translate="backHome">← Back to Home</button>
-                    </div>
-                    <div class="main-actions">
-                        <div class="action-card" onclick="createRoom()"><div class="action-icon">➕</div><h3 data-translate="createRoom">Create Room</h3><p data-translate="createRoomDesc">Start a new session</p><button class="btn" data-translate="createNow">Create Now</button></div>
-                        <div class="action-card" onclick="showJoinForm()"><div class="action-icon">🚪</div><h3 data-translate="joinRoom">Join Room</h3><p data-translate="joinRoomDesc">Enter a room code</p><button class="btn btn-secondary" data-translate="joinNow">Join Now</button></div>
-                    </div>
-                    <div id="join-form" class="join-form" style="display:none;"><label class="form-label" data-translate="enterRoomCode">Enter Code</label><input type="text" id="room-code-input" class="form-input" style="text-align:center;text-transform:uppercase;letter-spacing:4px;" placeholder="XXXXXX" maxlength="6"><button class="btn btn-block" onclick="joinRoom()" data-translate="joinRoom">Join</button><div id="join-message"></div></div>
-                </div>
-
-                <div id="room-screen" class="screen">
-                    <div class="room-header">
-                        <p style="color: var(--text-secondary);" data-translate="roomCode">Room Code</p>
-                        <div id="current-room-code" class="room-code">------</div>
-                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem;">
-                            <button class="btn" onclick="copyRoomCode()" data-translate="copyCode">Copy Code</button>
-                            <button class="btn btn-secondary" onclick="shareRoom()" data-translate="shareLink">Share Link</button>
-                        </div>
-                    </div>
-                    <div class="tabs">
-                        <button class="tab active" data-tab="chat">💬 <span data-translate="chat">Chat</span></button>
-                        <button class="tab" data-tab="participants">👥 <span data-translate="participants">Participants</span></button>
-                        <button class="tab" data-tab="timer">⏱️ <span data-translate="timer">Timer</span></button>
-                    </div>
-                    <div id="chat-content" class="tab-content active"><div class="chat-box"><div id="chat-messages" class="chat-messages"></div><div class="chat-input-area"><input type="text" id="chat-input" class="chat-input" data-translate-placeholder="typeMessage" placeholder="Type..." maxlength="500"><button class="btn" onclick="sendMessage()" data-translate="send">Send</button></div></div></div>
-                    <div id="participants-content" class="tab-content"><div id="participants-list"></div></div>
-                    <div id="timer-content" class="tab-content"><div style="text-align: center; background: var(--bg-secondary); padding: 3rem; border-radius: 20px;"><div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap;"><button class="btn" data-timer="25">25 <span data-translate="minFocus">min Focus</span></button><button class="btn" data-timer="5">5 <span data-translate="minBreak">min Break</span></button><button class="btn" data-timer="15">15 <span data-translate="minBreak">min Break</span></button></div><div id="timer-display" style="font-size: 4rem; font-weight: 700; color: var(--primary-color); margin: 2rem 0; font-family: 'Courier New', monospace;">25:00</div><div style="display: flex; gap: 1rem; justify-content: center;"><button id="start-timer-btn" class="btn" onclick="startTimer()" data-translate="start">Start</button><button id="pause-timer-btn" class="btn btn-secondary" onclick="pauseTimer()" style="display: none;" data-translate="pause">Pause</button><button class="btn btn-secondary" onclick="resetTimer()" data-translate="reset">Reset</button></div><div id="timer-status" style="margin-top: 1.5rem;"></div></div></div>
-                </div>
-
-                <div id="library-screen" class="screen">
-                    <div class="home-header">
-                        <h2 style="font-size: 2rem; margin: 0; background: none; -webkit-text-fill-color: initial;" data-translate="digitalLibrary">Digital Library</h2>
-                        <button class="btn btn-secondary" onclick="backToHome()" data-translate="backHome">← Back to Home</button>
-                    </div>
-                    <div style="text-align: center; padding: 4rem 2rem;"><div style="font-size: 4rem;">🚧</div><h3 style="font-size: 1.5rem;" data-translate="comingSoon">Coming Soon!</h3><p style="color: var(--text-secondary);" data-translate="libraryComingSoon">This feature is under development.</p></div>
-                </div>
-            </div>
-        </main>
+        </div>
+        <nav class="sidebar-nav">
+            <button class="nav-item" data-screen="home-screen" onclick="navigateToScreen('home-screen')"><span class="nav-icon">🏠</span> <span data-translate="home">Home</span></button>
+            <button class="nav-item" data-screen="study-rooms-screen" onclick="navigateToScreen('study-rooms-screen')"><span class="nav-icon">👥</span> <span data-translate="studyRooms">Study Rooms</span></button>
+            <button class="nav-item" data-screen="library-screen" onclick="navigateToScreen('library-screen')"><span class="nav-icon">📚</span> <span data-translate="digitalLibrary">Digital Library</span></button>
+            <button class="nav-item" data-screen="about-screen" onclick="navigateToScreen('about-screen')"><span class="nav-icon">ℹ️</span> <span data-translate="about">About</span></button>
+            <button class="nav-item" data-screen="settings-screen" onclick="navigateToScreen('settings-screen')"><span class="nav-icon">⚙️</span> <span data-translate="settings">Settings</span></button>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="btn btn-secondary btn-block" onclick="logout()" data-translate="logout">Logout</button>
+        </div>
     </div>
     
+    <header class="header" id="header" style="display: none;">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <button class="menu-toggle" id="menu-toggle" onclick="toggleSidebar()"><span>☰</span></button>
+            <div class="logo">
+                <div class="logo-icon">📚</div><span data-translate="appName">StudyTogether</span>
+            </div>
+        </div>
+        <div class="header-controls">
+            <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="lang-toggle" onclick="toggleLanguage()"><span id="lang-icon">ع</span></button>
+        </div>
+    </header>
+
+    <div class="main-container" id="main-container">
+        <div class="content">
+            <div id="registration-screen" class="screen active">
+                <h1 class="title" data-translate="welcome">Welcome to StudyTogether</h1>
+                <p class="subtitle" data-translate="welcomeDesc">Create your profile to start</p>
+                <div class="form-section">
+                    <div class="form-group">
+                        <label class="form-label" data-translate="yourName">Your Name</label>
+                        <input type="text" id="student-name" class="form-input" placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" data-translate="chooseAvatar">Choose Avatar Color</label>
+                        <div class="avatar-grid">
+                            <div class="avatar-choice selected" data-color="#667eea" style="background:#667eea">A</div>
+                            <div class="avatar-choice" data-color="#dc2626" style="background:#dc2626">A</div>
+                            <div class="avatar-choice" data-color="#16a34a" style="background:#16a34a">A</div>
+                            <div class="avatar-choice" data-color="#ea580c" style="background:#ea580c">A</div>
+                            <div class="avatar-choice" data-color="#7c3aed" style="background:#7c3aed">A</div>
+                            <div class="avatar-choice" data-color="#1f2937" style="background:#1f2937">A</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" data-translate="selectGrade">Select Grade</label>
+                        <div class="grade-grid" style="grid-template-columns: 1fr; gap: 1rem;">
+                            <select id="grade-select" class="form-input">
+                                <option value="">-- Select Grade --</option>
+                                <option value="10">Grade 10</option>
+                                <option value="11">Grade 11</option>
+                                <option value="12">Grade 12</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="subjects-container" style="display:none;">
+                        <label class="form-label" data-translate="selectSubject">Select Subject</label>
+                        <select id="subject-select" class="form-input"></select>
+                    </div>
+                    <button class="btn btn-block" onclick="completeRegistration()" data-translate="joinPlatform">Join Platform</button>
+                </div>
+            </div>
+            <div id="home-screen" class="screen">
+                <h1 class="page-title" data-translate="dashboard">Dashboard</h1>
+                <div class="main-actions">
+                    <div class="action-card" onclick="navigateToScreen('study-rooms-screen')"><div class="action-icon">🏠</div><h3>Study Rooms</h3><p>Join or create virtual study rooms</p><button class="btn">Enter Rooms</button></div>
+                    <div class="action-card" onclick="navigateToScreen('library-screen')"><div class="action-icon">📚</div><h3>Digital Library</h3><p>Access study materials and resources</p><button class="btn btn-secondary">Browse</button></div>
+                </div>
+            </div>
+            <div id="study-rooms-screen" class="screen">
+                <h1 class="page-title" data-translate="studyRooms">Study Rooms</h1>
+                <div class="main-actions">
+                    <div class="action-card" onclick="createRoom()"><div class="action-icon">➕</div><h3>Create Room</h3><p>Start a new study session</p><button class="btn">Create Now</button></div>
+                    <div class="action-card" onclick="showJoinForm()"><div class="action-icon">🚪</div><h3>Join Room</h3><p>Enter a room code to join</p><button class="btn btn-secondary">Join Now</button></div>
+                </div>
+                <div id="join-form" style="display:none;max-width:400px;margin:2rem auto;padding:2rem;background:var(--bg-secondary);border-radius:20px;">
+                    <label class="form-label">Enter Room Code</label>
+                    <input type="text" id="room-code-input" class="form-input" style="text-align:center;text-transform:uppercase" placeholder="XXXXXX" maxlength="6">
+                    <button class="btn btn-block" onclick="joinRoom()">Join Room</button>
+                </div>
+            </div>
+            <div id="room-screen" class="screen">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;">
+                    <h1 class="page-title" style="margin:0">Study Room</h1>
+                    <button class="btn btn-secondary btn-small" onclick="leaveRoom()">← Leave Room</button>
+                </div>
+                <div style="background:var(--bg-secondary);padding:2rem;border-radius:20px;margin-bottom:2rem;text-align:center;">
+                    <p>Room Code</p>
+                    <div id="current-room-code" style="font-size:2rem;font-weight:700;color:var(--primary-color)">------</div>
+                    <div style="display:flex;gap:1rem;justify-content:center;margin-top:1rem;">
+                        <button class="btn btn-small" onclick="copyRoomCode()">Copy Code</button>
+                        <button class="btn btn-secondary btn-small" onclick="shareRoom()">Share Link</button>
+                    </div>
+                </div>
+                <div class="tabs">
+                    <button class="tab active" data-tab="chat">💬 Chat</button>
+                    <button class="tab" data-tab="participants">👥 Participants</button>
+                    <button class="tab" data-tab="timer">⏱️ Timer</button>
+                </div>
+                <div id="chat-content" class="tab-content active"><div class="chat-box"><div id="chat-messages"></div><div class="chat-input-area"><input type="text" id="chat-input" class="chat-input" placeholder="Type message..."><button class="btn btn-small" onclick="sendMessage()">Send</button></div></div></div>
+                <div id="participants-content" class="tab-content"><div id="participants-list"></div></div>
+                <div id="timer-content" class="tab-content" style="background:var(--bg-secondary);padding:2rem;border-radius:20px;text-align:center;">
+                    <div><button class="btn btn-small" data-timer="25">25 min Focus</button> <button class="btn btn-small" data-timer="5">5 min Break</button></div>
+                    <div id="timer-display" style="font-size:4rem;font-weight:700;margin:2rem 0;">25:00</div>
+                    <div><button id="start-timer-btn" class="btn" onclick="startTimer()">Start</button><button id="pause-timer-btn" class="btn btn-secondary" onclick="pauseTimer()" style="display:none;">Pause</button><button class="btn btn-secondary" onclick="resetTimer()">Reset</button></div>
+                </div>
+            </div>
+            <div id="library-screen" class="screen"><h1 class="page-title">Digital Library</h1><div style="text-align:center;padding:4rem 0">🚧<h3>Coming Soon!</h3><p>This feature is under development.</p></div></div>
+            <div id="about-screen" class="screen"><h1 class="page-title">About StudyTogether</h1><p style="text-align:center;font-size:1.2rem;color:var(--text-secondary)">A platform for collaborative learning.</p></div>
+            <div id="settings-screen" class="screen"><h1 class="page-title">Settings</h1><div style="max-width:600px;margin:0 auto;background:var(--bg-secondary);padding:2rem;border-radius:20px;"><h3>Preferences</h3><div style="display:flex;justify-content:space-between;align-items:center;margin:1.5rem 0;"><span>Theme</span><button class="btn btn-secondary btn-small" onclick="toggleTheme()"><span id="theme-text"></span></button></div><div style="display:flex;justify-content:space-between;align-items:center;"><span>Language</span><button class="btn btn-secondary btn-small" onclick="toggleLanguage()"><span id="lang-text"></span></button></div><hr style="margin:2rem 0;border:none;border-top:1px solid var(--border-color);"><h3>Account</h3><div style="display:flex;justify-content:space-between;margin:1.5rem 0;"><span>Name</span><span id="settings-name">-</span></div><div style="display:flex;justify-content:space-between;margin:1.5rem 0;"><span>Grade</span><span id="settings-grade">-</span></div><div style="display:flex;justify-content:space-between;margin:1.5rem 0;"><span>Subject</span><span id="settings-subject">-</span></div></div></div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // --- TRANSLATIONS & STATIC DATA ---
         const translations = {
-            en: { appName: "StudyTogether", welcome: "Welcome to StudyTogether", welcomeDesc: "Create your profile and start studying with your classmates", yourName: "Your Name", enterName: "Enter your full name", chooseAvatar: "Choose Your Avatar Color", selectGrade: "Select Your Grade", grade10: "Grade 10", grade10Desc: "First year of high school", grade11: "Grade 11", grade11Desc: "Second year of high school", grade12: "Grade 12", grade12Desc: "Final year preparation", selectSubject: "Select Your Subject", joinPlatform: "Join Study Platform", welcomeBack: "Welcome back!", logout: "Logout", studyRooms: "Study Rooms", studyRoomsDesc: "Join or create virtual study rooms with your classmates", enterRooms: "Enter Study Rooms", digitalLibrary: "Digital Library", libraryDesc: "Access study materials, notes, and resources for your grade", browseLibrary: "Browse Library", backHome: "← Back to Home", createRoom: "Create Study Room", createRoomDesc: "Start a new study session and invite your friends", createNow: "Create Now", joinRoom: "Join Study Room", joinRoomDesc: "Enter a room code to join an existing study session", joinNow: "Join Now", enterRoomCode: "Enter Room Code", roomCodePlaceholder: "XXXXXX", leaveRoom: "Leave Room", roomCode: "Room Code", copyCode: "Copy Code", shareLink: "Share Link", chat: "Chat", participants: "Participants", timer: "Timer", loadingChat: "Loading chat...", typeMessage: "Type your message...", send: "Send", loadingParticipants: "Loading participants...", minFocus: "min Focus", minBreak: "min Break", start: "Start", pause: "Pause", reset: "Reset", comingSoon: "Coming Soon!", libraryComingSoon: "The digital library feature is under development. Stay tuned!" },
-            ar: { appName: "ادرس معاً", welcome: "مرحباً بك في منصة ادرس معاً", welcomeDesc: "أنشئ ملفك الشخصي وابدأ الدراسة مع زملائك", yourName: "اسمك", enterName: "أدخل اسمك الكامل", chooseAvatar: "اختر لون الصورة الرمزية", selectGrade: "اختر صفك الدراسي", grade10: "الصف العاشر", grade10Desc: "السنة الأولى من المرحلة الثانوية", grade11: "الصف الحادي عشر", grade11Desc: "السنة الثانية من المرحلة الثانوية", grade12: "الصف الثاني عشر", grade12Desc: "سنة التحضير للامتحانات النهائية", selectSubject: "اختر مادتك", joinPlatform: "انضم للمنصة", welcomeBack: "مرحباً بعودتك!", logout: "تسجيل خروج", studyRooms: "غرف الدراسة", studyRoomsDesc: "انضم أو أنشئ غرف دراسة افتراضية", enterRooms: "ادخل غرف الدراسة", digitalLibrary: "المكتبة الرقمية", libraryDesc: "الوصول إلى المواد الدراسية والملاحظات", browseLibrary: "تصفح المكتبة", backHome: "← العودة للرئيسية", createRoom: "أنشئ غرفة دراسة", createRoomDesc: "ابدأ جلسة دراسة جديدة وادع أصدقاءك", createNow: "أنشئ الآن", joinRoom: "انضم لغرفة دراسة", joinRoomDesc: "أدخل رمز الغرفة للانضمام لجلسة", joinNow: "انضم الآن", enterRoomCode: "أدخل رمز الغرفة", roomCodePlaceholder: "XXXXXX", leaveRoom: "مغادرة الغرفة", roomCode: "رمز الغرفة", copyCode: "نسخ الرمز", shareLink: "مشاركة الرابط", chat: "المحادثة", participants: "المشاركون", timer: "المؤقت", loadingChat: "جاري تحميل المحادثة...", typeMessage: "اكتب رسالتك...", send: "إرسال", loadingParticipants: "جاري تحميل المشاركين...", minFocus: "دقيقة تركيز", minBreak: "دقيقة استراحة", start: "ابدأ", pause: "توقف", reset: "إعادة تعيين", comingSoon: "قريباً!", libraryComingSoon: "ميزة المكتبة الرقمية قيد التطوير. ترقبوا!" }
+            en: { home: "Home", dashboard: "Dashboard", studyRooms: "Study Rooms", digitalLibrary: "Digital Library", about: "About", settings: "Settings", logout: "Logout", welcome: "Welcome", welcomeDesc: "Create your profile to start", yourName: "Your Name", chooseAvatar: "Choose Avatar Color", selectGrade: "Select Grade", selectSubject: "Select Subject", joinPlatform: "Join Platform" /* ... and all other keys */ },
+            ar: { home: "الرئيسية", dashboard: "لوحة التحكم", studyRooms: "غرف الدراسة", digitalLibrary: "المكتبة الرقمية", about: "حول", settings: "الإعدادات", logout: "خروج", welcome: "مرحباً", welcomeDesc: "أنشئ ملفك للبدء", yourName: "اسمك", chooseAvatar: "اختر لون الصورة", selectGrade: "اختر الصف", selectSubject: "اختر المادة", joinPlatform: "انضم الآن" /* ... and all other keys */ }
         };
-        const subjectsByGrade = { 10: [{ name: "Mathematics", nameAr: "الرياضيات", emoji: "🔢" }, { name: "Physics", nameAr: "الفيزياء", emoji: "⚛️" }, { name: "Chemistry", nameAr: "الكيمياء", emoji: "🧪" }], 11: [{ name: "Advanced Mathematics", nameAr: "الرياضيات المتقدمة", emoji: "📊" }, { name: "Physics", nameAr: "الفيزياء", emoji: "⚛️" }, { name: "Computer Science", nameAr: "علوم الحاسوب", emoji: "💻" }], 12: [{ name: "Calculus", nameAr: "التفاضل والتكامل", emoji: "∫" }, { name: "Advanced Physics", nameAr: "الفيزياء المتقدمة", emoji: "🚀" }, { name: "Statistics", nameAr: "الإحصاء", emoji: "📈" }] };
+        const subjectsByGrade = {
+            10: [{ name: "Mathematics", nameAr: "الرياضيات" }, { name: "Physics", nameAr: "الفيزياء" }],
+            11: [{ name: "Advanced Math", nameAr: "رياضيات متقدمة" }, { name: "Chemistry", nameAr: "كيمياء" }],
+            12: [{ name: "Calculus", nameAr: "تفاضل وتكامل" }, { name: "Biology", nameAr: "أحياء" }]
+        };
 
-        let currentUser = null, currentRoom = null, selectedColor = '#667eea', selectedGrade = null, selectedSubject = null;
-        let currentLanguage = 'en', currentTheme = 'light', timerInterval = null, timerSeconds = 1500, timerRunning = false;
-        let supabase = null, chatSubscription = null, participantsSubscription = null, roomCodeFromUrl = null;
+        // --- DOM ELEMENTS ---
+        const sidebar = document.getElementById('sidebar');
+        const header = document.getElementById('header');
+        const mainContainer = document.getElementById('main-container');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const menuToggle = document.getElementById('menu-toggle');
+        const gradeSelect = document.getElementById('grade-select');
+        const subjectSelect = document.getElementById('subject-select');
+        const subjectsContainer = document.getElementById('subjects-container');
 
+        // --- GLOBAL STATE ---
+        let currentUser = null, currentRoom = null, selectedColor = '#667eea',
+            currentLanguage = 'en', currentTheme = 'light', timerInterval = null, timerSeconds = 1500,
+            supabase = null, chatSubscription = null, participantsSubscription = null, roomCodeFromUrl = null;
+
+        // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', initApp);
-
         function initApp() {
             try {
                 supabase = window.supabase.createClient('https://lpabkpwepnbvgkznzlkf.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwYWJrcHdlcG5idmdrem56bGtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4ODI2MTUsImV4cCI6MjA3MTQ1ODYxNX0.d4eKNAu3KjVXFnXuQlPUnST0eC2ynL1al9w8AQE16R0');
-            } catch (error) { console.error('Supabase initialization failed:', error); }
+            } catch (e) { console.error('Supabase init failed:', e); }
             loadPreferences();
             setupEventListeners();
             handleUrlParams();
@@ -301,190 +306,171 @@
 
         function handleUrlParams() {
             const params = new URLSearchParams(window.location.search);
-            const roomCode = params.get('room');
-            if (roomCode && roomCode.length === 6) {
-                roomCodeFromUrl = roomCode.toUpperCase();
+            roomCodeFromUrl = params.get('room');
+            if (roomCodeFromUrl) {
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
         }
 
+        // --- AUTH & USER STATE ---
         function checkSavedUser() {
             const savedUser = localStorage.getItem('studyTogether_user');
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
+                showLoggedInLayout();
                 if (roomCodeFromUrl) {
-                    joinRoom(roomCodeFromUrl);
+                    showAutoJoinNotification();
+                    joinRoom(roomCodeFromUrl.toUpperCase());
                     roomCodeFromUrl = null;
-                    return;
-                }
-                const savedRoom = localStorage.getItem('studyTogether_room');
-                if (savedRoom) {
-                    currentRoom = JSON.parse(savedRoom);
-                    enterInRoomLayout();
-                    showScreen('room-screen');
-                    document.getElementById('current-room-code').textContent = currentRoom.code;
-                    setupRoomSubscriptions();
-                    loadRoomData();
-                    rejoinRoom();
                 } else {
-                    showScreen('home-screen');
-                    updateUserDisplay();
+                    navigateToScreen('home-screen');
                 }
             } else {
-                showScreen('registration-screen');
+                showLoggedOutLayout();
             }
         }
 
         async function completeRegistration() {
             const name = document.getElementById('student-name').value.trim();
-            if (!name || !selectedGrade || !selectedSubject) return;
+            const grade = gradeSelect.value;
+            const subject = subjectSelect.value;
+            if (!name || !grade || !subject) { alert('Please fill all fields'); return; }
             try {
-                const { data, error } = await supabase.from('users').insert([{ name, avatar_color: selectedColor, grade: selectedGrade, subject: selectedSubject.name }]).select().single();
+                const { data, error } = await supabase.from('users').insert([{ name, avatar_color: selectedColor, grade, subject }]).select().single();
                 if (error) throw error;
                 currentUser = data;
                 localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
-                if (roomCodeFromUrl) {
-                    await joinRoom(roomCodeFromUrl);
-                    roomCodeFromUrl = null;
-                } else {
-                    showScreen('home-screen');
-                    updateUserDisplay();
-                }
-            } catch (error) { console.error('Registration error:', error); }
+                checkSavedUser();
+            } catch (e) { console.error('Registration error:', e); }
         }
 
         function logout() {
-            if (currentRoom) leaveRoom(true); // Pass true to skip layout change until after logout
+            if (currentRoom) leaveRoom(true);
             currentUser = null;
-            localStorage.removeItem('studyTogether_user');
-            localStorage.removeItem('studyTogether_room');
-            exitInRoomLayout();
-            showScreen('registration-screen');
-        }
-        
-        function enterInRoomLayout() {
-            document.body.classList.add('in-room-layout');
-            document.querySelector('.main-container').style.display = 'none';
-            document.getElementById('in-room-content').style.display = 'block';
-            updateSidebarDisplay();
+            localStorage.clear();
+            showLoggedOutLayout();
         }
 
-        function exitInRoomLayout() {
-            document.body.classList.remove('in-room-layout');
-            document.querySelector('.main-container').style.display = 'flex';
-            document.getElementById('in-room-content').style.display = 'none';
+        // --- LAYOUT & NAVIGATION ---
+        function showLoggedInLayout() {
+            sidebar.style.display = 'flex';
+            header.style.display = 'flex';
+            mainContainer.style.display = 'block';
+            document.getElementById('registration-screen').classList.remove('active');
+            updateSidebarUserInfo();
+            updateLayoutForSidebar();
         }
 
-        function updateSidebarDisplay() {
-            if (currentUser) {
-                const avatar = document.getElementById('sidebar-user-avatar');
-                avatar.textContent = currentUser.name.charAt(0).toUpperCase();
-                avatar.style.background = currentUser.avatar_color;
-                document.getElementById('sidebar-user-name').textContent = currentUser.name;
-                const details = `Grade ${currentUser.grade} - ${currentUser.subject}`;
-                document.getElementById('sidebar-user-details').textContent = details;
+        function showLoggedOutLayout() {
+            sidebar.style.display = 'none';
+            header.style.display = 'none';
+            mainContainer.style.display = 'block';
+            mainContainer.classList.remove('with-sidebar');
+            header.classList.remove('with-sidebar');
+            navigateToScreen('registration-screen');
+        }
+
+        function navigateToScreen(screenId) {
+            if (screenId !== 'room-screen' && currentRoom) {
+                if (!confirm('This will leave your current study room. Proceed?')) return;
+                leaveRoom();
             }
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.toggle('active', item.dataset.screen === screenId));
+            if (screenId === 'settings-screen') populateSettings();
+            if (window.innerWidth <= 1024) toggleSidebar(false);
         }
 
-        function updateUserDisplay() {
-            if (currentUser) {
-                document.getElementById('user-welcome').textContent = `Welcome, ${currentUser.name}!`;
-                const avatar = document.getElementById('user-avatar');
-                avatar.textContent = currentUser.name.charAt(0).toUpperCase();
-                avatar.style.background = currentUser.avatar_color;
-                document.getElementById('user-grade-subject').textContent = `Grade ${currentUser.grade} - ${currentUser.subject}`;
-            }
+        function toggleSidebar(forceState) {
+            const shouldBeActive = forceState !== undefined ? forceState : !sidebar.classList.contains('mobile-active');
+            sidebar.classList.toggle('mobile-active', shouldBeActive);
+            sidebarOverlay.classList.toggle('active', shouldBeActive);
         }
 
+        function updateLayoutForSidebar() {
+            const isDesktop = window.innerWidth > 1024;
+            sidebar.classList.toggle('active', isDesktop);
+            mainContainer.classList.toggle('with-sidebar', isDesktop);
+            header.classList.toggle('with-sidebar', isDesktop);
+        }
+
+        // --- UI & PREFERENCES ---
         function applyTheme() {
             document.body.setAttribute('data-theme', currentTheme);
-            const icon = currentTheme === 'light' ? '🌙' : '☀️';
-            document.getElementById('theme-icon').textContent = icon;
-            document.getElementById('sidebar-theme-icon').textContent = icon;
+            document.getElementById('theme-icon').textContent = currentTheme === 'light' ? '🌙' : '☀️';
+            document.getElementById('theme-text').textContent = currentTheme === 'light' ? '🌙 Dark' : '☀️ Light';
+        }
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('studyTogether_theme', currentTheme);
+            applyTheme();
         }
 
         function updateLanguage() {
-            const isArabic = currentLanguage === 'ar';
-            document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+            document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
             document.documentElement.lang = currentLanguage;
-            const icon = isArabic ? 'EN' : 'ع';
-            document.getElementById('lang-icon').textContent = icon;
-            document.getElementById('sidebar-lang-icon').textContent = icon;
+            document.getElementById('lang-icon').textContent = currentLanguage === 'ar' ? 'EN' : 'ع';
+            document.getElementById('lang-text').textContent = currentLanguage === 'ar' ? 'English' : 'العربية';
             document.querySelectorAll('[data-translate]').forEach(el => {
                 const key = el.getAttribute('data-translate');
                 if (translations[currentLanguage][key]) el.textContent = translations[currentLanguage][key];
             });
-            document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
-                const key = el.getAttribute('data-translate-placeholder');
-                if (translations[currentLanguage][key]) el.placeholder = translations[currentLanguage][key];
-            });
+            populateSubjects(gradeSelect.value);
+        }
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'ar' : 'en';
+            localStorage.setItem('studyTogether_language', currentLanguage);
+            updateLanguage();
         }
 
-        function setupEventListeners() {
-            document.querySelectorAll('.avatar-choice').forEach(c => c.onclick = function() {
-                document.querySelector('.avatar-choice.selected').classList.remove('selected');
-                this.classList.add('selected');
-                selectedColor = this.dataset.color;
-                updateAvatarPreviews();
-            });
-            document.getElementById('student-name').oninput = updateAvatarPreviews;
-            document.querySelectorAll('.grade-card').forEach(c => c.onclick = function() {
-                document.querySelector('.grade-card.selected')?.classList.remove('selected');
-                this.classList.add('selected');
-                selectedGrade = this.dataset.grade;
-                showSubjects(selectedGrade);
-            });
-            document.querySelectorAll('[data-timer]').forEach(b => b.onclick = () => setTimerMinutes(parseInt(b.dataset.timer)));
-            document.querySelectorAll('.tab').forEach(t => t.onclick = () => switchTab(t.dataset.tab));
-            document.getElementById('chat-input').onkeypress = e => { if (e.key === 'Enter') sendMessage(); };
+        function updateSidebarUserInfo() {
+            if (!currentUser) return;
+            document.getElementById('sidebar-avatar').style.background = currentUser.avatar_color;
+            document.getElementById('sidebar-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
+            document.getElementById('sidebar-user-name').textContent = currentUser.name;
+            document.getElementById('sidebar-user-grade').textContent = `Grade ${currentUser.grade} - ${currentUser.subject}`;
         }
 
-        function updateAvatarPreviews() {
-            const letter = document.getElementById('student-name').value.charAt(0).toUpperCase() || 'A';
-            document.querySelectorAll('.avatar-choice').forEach(c => c.textContent = letter);
+        function populateSettings() {
+            if (!currentUser) return;
+            document.getElementById('settings-name').textContent = currentUser.name;
+            document.getElementById('settings-grade').textContent = currentUser.grade;
+            document.getElementById('settings-subject').textContent = currentUser.subject;
         }
 
-        function showSubjects(grade) {
-            const container = document.getElementById('subjects-container');
-            container.style.display = 'block';
-            const grid = document.getElementById('subjects-grid');
-            grid.innerHTML = '';
-            subjectsByGrade[grade]?.forEach(s => {
-                const card = document.createElement('div');
-                card.className = 'grade-card'; // Re-use grade-card style for simplicity
-                card.onclick = () => {
-                    document.querySelector('#subjects-grid .grade-card.selected')?.classList.remove('selected');
-                    card.classList.add('selected');
-                    selectedSubject = s;
-                };
-                card.innerHTML = `<div>${s.emoji}</div><h3>${currentLanguage === 'ar' ? s.nameAr : s.name}</h3>`;
-                grid.appendChild(card);
-            });
+        function showAutoJoinNotification() {
+            const notification = document.createElement('div');
+            notification.className = 'auto-join-notification';
+            notification.textContent = 'Joining room from link...';
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 4000);
         }
 
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-        }
-
-        function showJoinForm() {
-            const form = document.getElementById('join-form');
-            form.style.display = form.style.display === 'block' ? 'none' : 'block';
+        function populateSubjects(grade) {
+            const subjects = subjectsByGrade[grade];
+            subjectSelect.innerHTML = `<option value="">-- Select Subject --</option>`;
+            if (subjects) {
+                subjects.forEach(s => {
+                    const option = document.createElement('option');
+                    option.value = s.name;
+                    option.textContent = currentLanguage === 'ar' ? s.nameAr : s.name;
+                    subjectSelect.appendChild(option);
+                });
+                subjectsContainer.style.display = 'block';
+            } else {
+                subjectsContainer.style.display = 'none';
+            }
         }
         
-        function goToStudyRooms() { enterInRoomLayout(); showScreen('study-rooms-screen'); }
-        function goToLibrary() { enterInRoomLayout(); showScreen('library-screen'); }
-        function backToHome() { exitInRoomLayout(); showScreen('home-screen'); }
-
-        function generateRoomCode() { return Array(6).fill(0).map(() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]).join(''); }
-        
+        // --- ROOM LOGIC ---
         async function createRoom() {
             try {
-                const roomCode = generateRoomCode();
-                const { data, error } = await supabase.from('rooms').insert([{ room_code: roomCode, host_id: currentUser.id, name: `${currentUser.name}'s Room` }]).select().single();
+                const roomCode = Array(6).fill(0).map(() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]).join('');
+                const { data, error } = await supabase.from('rooms').insert([{ room_code: roomCode, host_id: currentUser.id }]).select().single();
                 if (error) throw error;
                 await joinRoomById(data.id, data.room_code, data.host_id);
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error(e); alert('Failed to create room.'); }
         }
 
         async function joinRoom(codeOverride = null) {
@@ -492,44 +478,35 @@
             if (!code) return;
             try {
                 const { data, error } = await supabase.from('rooms').select('*').eq('room_code', code).eq('is_active', true).single();
-                if (error || !data) { alert('Room not found'); return; }
+                if (error || !data) { alert('Room not found or is inactive.'); return; }
                 await joinRoomById(data.id, data.room_code, data.host_id);
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error(e); alert('Failed to join room.'); }
         }
 
         async function joinRoomById(roomId, roomCode, roomHostId) {
             try {
-                await supabase.from('room_participants').upsert([{ room_id: roomId, user_id: currentUser.id, is_online: true }]);
+                await supabase.from('room_participants').upsert({ room_id: roomId, user_id: currentUser.id, is_online: true }, { onConflict: 'room_id, user_id' });
                 currentRoom = { id: roomId, code: roomCode, host_id: roomHostId };
                 localStorage.setItem('studyTogether_room', JSON.stringify(currentRoom));
                 document.getElementById('current-room-code').textContent = roomCode;
-                enterInRoomLayout();
-                showScreen('room-screen');
                 setupRoomSubscriptions();
                 loadRoomData();
+                navigateToScreen('room-screen');
                 await sendSystemMessage(`${currentUser.name} joined the room.`);
             } catch (e) { console.error(e); }
         }
-        
-        async function rejoinRoom() {
-             try { await supabase.from('room_participants').update({ is_online: true }).match({ room_id: currentRoom.id, user_id: currentUser.id }); } catch (e) { console.error(e); }
-        }
 
         function leaveRoom(isLoggingOut = false) {
-            if (currentRoom) {
-                 supabase.from('room_participants').delete().match({ room_id: currentRoom.id, user_id: currentUser.id });
-                 sendSystemMessage(`${currentUser.name} left the room.`);
-            }
+            if (!currentRoom) return;
+            sendSystemMessage(`${currentUser.name} left the room.`);
+            supabase.from('room_participants').delete().match({ room_id: currentRoom.id, user_id: currentUser.id });
             if (chatSubscription) chatSubscription.unsubscribe();
             if (participantsSubscription) participantsSubscription.unsubscribe();
             currentRoom = null;
             localStorage.removeItem('studyTogether_room');
-            if (!isLoggingOut) {
-                exitInRoomLayout();
-                showScreen('home-screen');
-            }
+            if (!isLoggingOut) navigateToScreen('study-rooms-screen');
         }
-        
+
         async function kickParticipant(userId, userName) {
             if (!confirm(`Are you sure you want to kick ${userName}?`)) return;
             try {
@@ -538,10 +515,11 @@
             } catch (e) { console.error(e); }
         }
 
+        // --- REAL-TIME & DATA FETCHING ---
         function setupRoomSubscriptions() {
             if (chatSubscription) chatSubscription.unsubscribe();
             if (participantsSubscription) participantsSubscription.unsubscribe();
-            chatSubscription = supabase.channel(`messages-${currentRoom.id}`).on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: `room_id=eq.${currentRoom.id}` }, loadMessages).subscribe();
+            chatSubscription = supabase.channel(`chat-${currentRoom.id}`).on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: `room_id=eq.${currentRoom.id}` }, loadMessages).subscribe();
             participantsSubscription = supabase.channel(`participants-${currentRoom.id}`).on('postgres_changes', { event: '*', schema: 'public', table: 'room_participants', filter: `room_id=eq.${currentRoom.id}` }, loadParticipants).subscribe();
         }
 
@@ -549,27 +527,19 @@
             await Promise.all([loadMessages(), loadParticipants()]);
         }
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
         async function loadMessages() {
             if (!currentRoom) return;
-            const { data, error } = await supabase.from('messages').select(`*, users(name, avatar_color)`).eq('room_id', currentRoom.id).order('created_at');
+            const { data, error } = await supabase.from('messages').select(`*, users(name)`).eq('room_id', currentRoom.id).order('created_at');
             if (error) { console.error(error); return; }
             const container = document.getElementById('chat-messages');
+            const shouldScroll = container.scrollTop + container.clientHeight >= container.scrollHeight - 20;
             container.innerHTML = data.map(m => {
                 if (m.message_type === 'system') return `<div class="chat-message" style="text-align:center;background:none;box-shadow:none;color:var(--text-secondary);">${escapeHtml(m.content)}</div>`;
                 const isOwn = m.user_id === currentUser.id;
                 const time = new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                return `<div class="chat-message ${isOwn ? 'own' : ''}">
-                            <div style="font-size:0.85rem;opacity:0.8;font-weight:600;">${escapeHtml(m.users.name)} • ${time}</div>
-                            <div>${escapeHtml(m.content)}</div>
-                        </div>`;
+                return `<div class="chat-message ${isOwn ? 'own' : ''}"><div><b>${escapeHtml(m.users?.name || 'User')}</b> • <small>${time}</small></div><div>${escapeHtml(m.content)}</div></div>`;
             }).join('');
-            container.scrollTop = container.scrollHeight;
+            if (shouldScroll) container.scrollTop = container.scrollHeight;
         }
 
         async function loadParticipants() {
@@ -579,37 +549,49 @@
             const container = document.getElementById('participants-list');
             const isHost = currentUser.id === currentRoom.host_id;
             container.innerHTML = data.map(p => {
-                const user = p.users;
-                if (!user) return '';
-                const isParticipantHost = user.id === currentRoom.host_id;
-                const safeName = escapeHtml(user.name.replace(/'/g, "\\'"));
-                const kickBtn = isHost && !isParticipantHost ? `<button class="kick-btn" onclick="kickParticipant('${user.id}', '${safeName}')">Kick</button>` : '';
-                return `<div class="participant-card">
-                            <div class="participant-info">
-                                <div class="participant-avatar" style="background:${user.avatar_color};">${escapeHtml(user.name[0].toUpperCase())}</div>
-                                <div><span class="participant-name">${escapeHtml(user.name)}</span> ${isParticipantHost ? '<span class="host-badge">Host</span>' : ''}</div>
-                            </div>
-                            ${kickBtn}
-                        </div>`;
+                if (!p.users) return '';
+                const isParticipantHost = p.users.id === currentRoom.host_id;
+                const kickBtn = isHost && !isParticipantHost ? `<button class="btn btn-small" style="background:var(--error-color)" onclick="kickParticipant('${p.users.id}', '${escapeHtml(p.users.name)}')">Kick</button>` : '';
+                return `<div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;background:var(--bg-tertiary);border-radius:12px;margin-bottom:1rem;"><div style="display:flex;align-items:center;gap:1rem;"><div style="width:40px;height:40px;border-radius:10px;background:${p.users.avatar_color};color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;">${escapeHtml(p.users.name[0].toUpperCase())}</div><div>${escapeHtml(p.users.name)} ${isParticipantHost ? '<b style="color:var(--accent-color)">(Host)</b>' : ''}</div></div>${kickBtn}</div>`;
             }).join('');
         }
 
         async function sendMessage() {
             const input = document.getElementById('chat-input');
             const content = input.value.trim();
-            if (!content) return;
-            try {
-                await supabase.from('messages').insert([{ room_id: currentRoom.id, user_id: currentUser.id, content: content }]);
-                input.value = '';
-            } catch (e) { console.error(e); }
+            if (!content || !currentRoom) return;
+            input.value = '';
+            try { await supabase.from('messages').insert([{ room_id: currentRoom.id, user_id: currentUser.id, content }]); } catch (e) { console.error(e); }
         }
 
         async function sendSystemMessage(content) {
-            try { await supabase.from('messages').insert([{ room_id: currentRoom.id, user_id: currentUser.id, content: content, message_type: 'system' }]); } catch (e) { console.error(e); }
+            if (!currentRoom) return;
+            try { await supabase.from('messages').insert([{ room_id: currentRoom.id, user_id: currentUser.id, content, message_type: 'system' }]); } catch (e) { console.error(e); }
+        }
+
+        // --- EVENT LISTENERS & HELPERS ---
+        function setupEventListeners() {
+            window.addEventListener('resize', updateLayoutForSidebar);
+            document.querySelectorAll('.avatar-choice').forEach(c => c.onclick = function() {
+                document.querySelector('.avatar-choice.selected').classList.remove('selected');
+                this.classList.add('selected');
+                selectedColor = this.dataset.color;
+            });
+            gradeSelect.onchange = (e) => populateSubjects(e.target.value);
+            document.querySelectorAll('.tab').forEach(t => t.onclick = () => switchTab(t.dataset.tab));
+            document.querySelectorAll('[data-timer]').forEach(b => b.onclick = () => setTimerMinutes(parseInt(b.dataset.timer)));
+            document.getElementById('chat-input').onkeypress = e => { if (e.key === 'Enter') sendMessage(); };
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         function copyRoomCode() { navigator.clipboard.writeText(currentRoom.code).then(() => alert('Room code copied!')); }
         function shareRoom() { navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?room=${currentRoom.code}`).then(() => alert('Invite link copied!')); }
+        function showJoinForm() { document.getElementById('join-form').style.display = 'block'; }
         
         function switchTab(tabName) {
             document.querySelector('.tab.active').classList.remove('active');
