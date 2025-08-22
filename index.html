@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudyTogether - Online Study Rooms</title>
+    <title>StudyTogether - Complete Study Platform</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.39.3/umd/supabase.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -23,11 +24,12 @@
         .container {
             background: white;
             border-radius: 20px;
-            padding: 40px;
+            padding: 30px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
+            max-width: 900px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .logo {
@@ -35,20 +37,82 @@
             color: #667eea;
             margin-bottom: 10px;
             font-weight: bold;
+            text-align: center;
         }
 
         .subtitle {
             color: #666;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             font-size: 1.1em;
+            text-align: center;
         }
 
-        .home-section {
+        .section {
+            display: none;
+        }
+
+        .section.active {
             display: block;
         }
 
-        .room-section {
-            display: none;
+        /* Login Section */
+        .login-form {
+            text-align: center;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .input-group {
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 1.1em;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .avatar-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        .avatar-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .avatar-option.selected {
+            border-color: #333;
+            transform: scale(1.1);
         }
 
         .button {
@@ -61,7 +125,7 @@
             cursor: pointer;
             margin: 10px;
             transition: transform 0.2s;
-            min-width: 200px;
+            min-width: 150px;
         }
 
         .button:hover {
@@ -74,164 +138,574 @@
             border: 2px solid #667eea;
         }
 
-        .input-group {
-            margin: 20px 0;
+        .button.small {
+            padding: 8px 15px;
+            font-size: 0.9em;
+            min-width: auto;
         }
 
-        .input-group input {
-            padding: 15px;
-            border: 2px solid #eee;
-            border-radius: 10px;
-            font-size: 1.1em;
-            width: 100%;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        /* Room Section */
+        .room-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .input-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .room-code {
+        .room-info {
             background: #f8f9fa;
-            padding: 20px;
+            padding: 15px;
             border-radius: 15px;
-            margin: 20px 0;
-            border: 2px dashed #667eea;
+            text-align: center;
+            margin-bottom: 20px;
         }
 
-        .room-code h3 {
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-
-        .code-display {
-            font-size: 2em;
+        .room-code-display {
+            font-size: 1.5em;
             font-weight: bold;
-            color: #333;
-            letter-spacing: 3px;
+            color: #667eea;
             margin: 10px 0;
         }
 
-        .participants {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: left;
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
         }
 
-        .participant {
-            background: white;
-            padding: 10px 15px;
-            margin: 5px 0;
+        .tab {
+            padding: 10px 20px;
+            border: none;
+            background: #f8f9fa;
             border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Chat Section */
+        .chat-container {
+            height: 300px;
+            border: 2px solid #eee;
+            border-radius: 15px;
             display: flex;
-            align-items: center;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f9f9f9;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            background: white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
+        .message-header {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .message.own {
+            background: #667eea;
+            color: white;
+            margin-left: 20%;
+        }
+
+        .message.own .message-header {
+            color: #ddd;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            margin-right: 10px;
+        }
+
+        /* Participants */
+        .participants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .participant-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
         .participant-avatar {
-            width: 40px;
-            height: 40px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0 auto 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: bold;
-            margin-right: 15px;
+            font-size: 1.5em;
         }
 
-        .back-btn {
-            background: none;
-            border: none;
-            color: #667eea;
-            font-size: 1.1em;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-
-        .error-message {
-            color: #e74c3c;
-            margin: 10px 0;
-            font-weight: 500;
-        }
-
-        .success-message {
-            color: #27ae60;
-            margin: 10px 0;
-            font-weight: 500;
-        }
-
-        .copy-btn {
+        .online-indicator {
+            width: 12px;
+            height: 12px;
             background: #27ae60;
-            color: white;
-            border: none;
-            padding: 8px 15px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        /* Timer */
+        .timer-container {
+            text-align: center;
+            background: #f8f9fa;
+            padding: 30px;
             border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9em;
-            margin-left: 10px;
+        }
+
+        .timer-display {
+            font-size: 4em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .timer-presets {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        /* Notes */
+        .notes-container {
+            border: 2px solid #eee;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .notes-toolbar {
+            background: #f8f9fa;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .notes-content {
+            min-height: 300px;
+            padding: 15px;
+            font-size: 1.1em;
+            line-height: 1.6;
+            resize: vertical;
+            border: none;
+            outline: none;
+            width: 100%;
+        }
+
+        /* Study Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .room-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .timer-display {
+                font-size: 2.5em;
+            }
+
+            .tabs {
+                justify-content: center;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            padding: 10px;
+            background: #fdf2f2;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .success {
+            color: #27ae60;
+            text-align: center;
+            padding: 10px;
+            background: #f2fdf5;
+            border-radius: 10px;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Home Screen -->
-        <div id="home" class="home-section">
+        <!-- Login Section -->
+        <div id="login-section" class="section active">
             <div class="logo">📚 StudyTogether</div>
-            <div class="subtitle">Create or join online study rooms with your classmates</div>
+            <div class="subtitle">Complete study platform with real-time collaboration</div>
             
-            <button class="button" onclick="createRoom()">Create Study Room</button>
-            <button class="button secondary" onclick="showJoinForm()">Join Study Room</button>
-            
-            <div id="join-form" style="display: none; margin-top: 30px;">
+            <div class="login-form">
                 <div class="input-group">
-                    <input type="text" id="room-code-input" placeholder="Enter Room Code" maxlength="6">
+                    <label for="user-name">Your Name</label>
+                    <input type="text" id="user-name" placeholder="Enter your name" required>
                 </div>
-                <button class="button" onclick="joinRoom()">Join Room</button>
-                <div id="join-error" class="error-message" style="display: none;"></div>
+                
+                <div class="input-group">
+                    <label>Choose Your Avatar Color</label>
+                    <div class="avatar-selector">
+                        <div class="avatar-option selected" data-color="#667eea" style="background: #667eea;">U</div>
+                        <div class="avatar-option" data-color="#e74c3c" style="background: #e74c3c;">U</div>
+                        <div class="avatar-option" data-color="#27ae60" style="background: #27ae60;">U</div>
+                        <div class="avatar-option" data-color="#f39c12" style="background: #f39c12;">U</div>
+                        <div class="avatar-option" data-color="#9b59b6" style="background: #9b59b6;">U</div>
+                        <div class="avatar-option" data-color="#34495e" style="background: #34495e;">U</div>
+                    </div>
+                </div>
+                
+                <button class="button" onclick="login()">Enter Study Platform</button>
+                
+                <div id="login-error" class="error" style="display: none;"></div>
             </div>
         </div>
 
-        <!-- Study Room Screen -->
-        <div id="room" class="room-section">
-            <button class="back-btn" onclick="goHome()">← Back to Home</button>
+        <!-- Home Section -->
+        <div id="home-section" class="section">
+            <div class="room-header">
+                <div>
+                    <div class="logo" style="font-size: 1.8em; margin: 0;">📚 StudyTogether</div>
+                    <div id="welcome-text" class="subtitle" style="margin: 5px 0;">Welcome back!</div>
+                </div>
+                <button class="button small secondary" onclick="logout()">Logout</button>
+            </div>
             
-            <div class="room-code">
-                <h3>Room Code</h3>
-                <div class="code-display" id="current-room-code">ABC123</div>
-                <button class="copy-btn" onclick="copyRoomCode()">Copy Code</button>
-                <button class="copy-btn" onclick="copyInviteLink()">Copy Link</button>
+            <div style="text-align: center; margin: 30px 0;">
+                <button class="button" onclick="createRoom()">Create Study Room</button>
+                <button class="button secondary" onclick="showJoinForm()">Join Study Room</button>
+            </div>
+            
+            <div id="join-form" style="display: none; max-width: 400px; margin: 0 auto;">
+                <div class="input-group">
+                    <input type="text" id="room-code-input" placeholder="Enter Room Code" maxlength="6" style="text-align: center; text-transform: uppercase;">
+                </div>
+                <div style="text-align: center;">
+                    <button class="button" onclick="joinRoom()">Join Room</button>
+                </div>
+                <div id="join-error" class="error" style="display: none;"></div>
             </div>
 
-            <div class="participants">
-                <h3 style="margin-bottom: 15px; color: #333;">Study Room Participants (<span id="participant-count">1</span>)</h3>
-                <div id="participant-list">
-                    <div class="participant">
-                        <div class="participant-avatar">You</div>
-                        <span>You (Host)</span>
+            <div id="user-stats" class="stats-grid" style="margin-top: 30px;">
+                <!-- Stats will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Room Section -->
+        <div id="room-section" class="section">
+            <div class="room-header">
+                <button class="button small secondary" onclick="leaveRoom()">← Leave Room</button>
+                <div class="room-info">
+                    <div>Room Code: <span id="current-room-code" class="room-code-display">------</span></div>
+                    <button class="button small" onclick="copyRoomCode()">Copy Code</button>
+                    <button class="button small" onclick="copyInviteLink()">Share Link</button>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('chat')">💬 Chat</button>
+                <button class="tab" onclick="switchTab('participants')">👥 Participants</button>
+                <button class="tab" onclick="switchTab('timer')">⏱️ Timer</button>
+                <button class="tab" onclick="switchTab('notes')">📝 Notes</button>
+                <button class="tab" onclick="switchTab('stats')">📊 Stats</button>
+            </div>
+
+            <!-- Chat Tab -->
+            <div id="chat-tab" class="tab-content active">
+                <div class="chat-container">
+                    <div id="chat-messages" class="chat-messages">
+                        <div class="loading">Loading chat...</div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="message-input" placeholder="Type your message..." maxlength="500">
+                        <button class="button small" onclick="sendMessage()">Send</button>
                     </div>
                 </div>
             </div>
 
-            <div style="margin-top: 30px;">
-                <p style="color: #666; font-size: 0.9em;">Share the room code or invite link with your study partners!</p>
+            <!-- Participants Tab -->
+            <div id="participants-tab" class="tab-content">
+                <div id="participants-list" class="participants-grid">
+                    <div class="loading">Loading participants...</div>
+                </div>
+            </div>
+
+            <!-- Timer Tab -->
+            <div id="timer-tab" class="tab-content">
+                <div class="timer-container">
+                    <div class="timer-presets">
+                        <button class="button small" onclick="setTimer(25)">25 min Focus</button>
+                        <button class="button small" onclick="setTimer(5)">5 min Break</button>
+                        <button class="button small" onclick="setTimer(15)">15 min Break</button>
+                        <button class="button small secondary" onclick="setCustomTimer()">Custom</button>
+                    </div>
+                    
+                    <div id="timer-display" class="timer-display">25:00</div>
+                    
+                    <div class="timer-controls">
+                        <button id="timer-start" class="button" onclick="startTimer()">Start</button>
+                        <button id="timer-pause" class="button secondary" onclick="pauseTimer()" style="display: none;">Pause</button>
+                        <button id="timer-reset" class="button secondary" onclick="resetTimer()">Reset</button>
+                    </div>
+                    
+                    <div id="timer-status" style="margin-top: 15px; color: #666;"></div>
+                </div>
+            </div>
+
+            <!-- Notes Tab -->
+            <div id="notes-tab" class="tab-content">
+                <div class="notes-container">
+                    <div class="notes-toolbar">
+                        <button class="button small" onclick="formatText('bold')"><b>B</b></button>
+                        <button class="button small" onclick="formatText('italic')"><i>I</i></button>
+                        <button class="button small" onclick="saveNotes()">💾 Save</button>
+                        <span style="color: #666; font-size: 0.9em; margin-left: auto;" id="notes-status">Auto-saving...</span>
+                    </div>
+                    <textarea id="shared-notes" class="notes-content" placeholder="Start taking shared notes with your study group..."></textarea>
+                </div>
+            </div>
+
+            <!-- Stats Tab -->
+            <div id="stats-tab" class="tab-content">
+                <div id="room-stats" class="stats-grid">
+                    <div class="loading">Loading room statistics...</div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Simple data storage (in a real app, this would be a database)
-        let rooms = {};
-        let currentRoom = null;
-        let userName = 'Student';
+        // Supabase configuration
+        const SUPABASE_URL = 'https://lpabkpwepnbvgkznzlkf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwYWJrcHdlcG5idmdrem56bGtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4ODI2MTUsImV4cCI6MjA3MTQ1ODYxNX0.d4eKNAu3KjVXFnXuQlPUnST0eC2ynL1al9w8AQE16R0';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Generate random room code
+        // Global variables
+        let currentUser = null;
+        let currentRoom = null;
+        let selectedAvatarColor = '#667eea';
+        let timerInterval = null;
+        let timerSeconds = 1500; // 25 minutes default
+        let timerActive = false;
+        let chatSubscription = null;
+        let participantsSubscription = null;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            
+            // Check if user was previously logged in
+            const savedUser = localStorage.getItem('studyTogether_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showSection('home-section');
+                loadUserStats();
+                updateWelcomeText();
+            }
+
+            // Check for room code in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomFromUrl = urlParams.get('room');
+            if (roomFromUrl && currentUser) {
+                document.getElementById('room-code-input').value = roomFromUrl.toUpperCase();
+                showJoinForm();
+            }
+        });
+
+        function setupEventListeners() {
+            // Enter key handlers
+            document.getElementById('user-name').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') login();
+            });
+            
+            document.getElementById('room-code-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') joinRoom();
+            });
+            
+            document.getElementById('message-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') sendMessage();
+            });
+
+            // Avatar selection
+            document.querySelectorAll('.avatar-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedAvatarColor = this.dataset.color;
+                    this.textContent = document.getElementById('user-name').value.charAt(0).toUpperCase() || 'U';
+                });
+            });
+
+            // Update avatar preview when name changes
+            document.getElementById('user-name').addEventListener('input', function() {
+                const firstLetter = this.value.charAt(0).toUpperCase() || 'U';
+                document.querySelectorAll('.avatar-option').forEach(option => {
+                    option.textContent = firstLetter;
+                });
+            });
+
+            // Notes auto-save
+            let notesTimeout;
+            document.getElementById('shared-notes').addEventListener('input', function() {
+                clearTimeout(notesTimeout);
+                document.getElementById('notes-status').textContent = 'Saving...';
+                notesTimeout = setTimeout(() => {
+                    saveNotes();
+                }, 2000);
+            });
+        }
+
+        // Authentication functions
+        async function login() {
+            const name = document.getElementById('user-name').value.trim();
+            const errorDiv = document.getElementById('login-error');
+            
+            if (!name) {
+                showError(errorDiv, 'Please enter your name');
+                return;
+            }
+
+            try {
+                // Create user in database
+                const { data, error } = await supabase
+                    .from('users')
+                    .insert([{
+                        name: name,
+                        avatar_color: selectedAvatarColor
+                    }])
+                    .select()
+                    .single();
+
+                if (error) throw error;
+
+                currentUser = data;
+                localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
+                
+                showSection('home-section');
+                updateWelcomeText();
+                loadUserStats();
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showError(errorDiv, 'Failed to create user profile');
+            }
+        }
+
+        function logout() {
+            if (currentRoom) {
+                leaveRoom();
+            }
+            
+            currentUser = null;
+            localStorage.removeItem('studyTogether_user');
+            showSection('login-section');
+            
+            // Reset form
+            document.getElementById('user-name').value = '';
+            document.querySelectorAll('.avatar-option').forEach(option => {
+                option.classList.remove('selected');
+                option.textContent = 'U';
+            });
+            document.querySelector('.avatar-option').classList.add('selected');
+            selectedAvatarColor = '#667eea';
+        }
+
+        function updateWelcomeText() {
+            if (currentUser) {
+                document.getElementById('welcome-text').textContent = `Welcome back, ${currentUser.name}!`;
+            }
+        }
+
+        // Room functions
         function generateRoomCode() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let result = '';
@@ -241,106 +715,601 @@
             return result;
         }
 
-        // Create a new room
-        function createRoom() {
-            const roomCode = generateRoomCode();
-            
-            // Make sure room code is unique
-            while (rooms[roomCode]) {
-                roomCode = generateRoomCode();
+        async function createRoom() {
+            try {
+                let roomCode = generateRoomCode();
+                
+                // Ensure unique room code
+                let { data: existingRoom } = await supabase
+                    .from('rooms')
+                    .select('id')
+                    .eq('room_code', roomCode)
+                    .single();
+                
+                while (existingRoom) {
+                    roomCode = generateRoomCode();
+                    existingRoom = await supabase
+                        .from('rooms')
+                        .select('id')
+                        .eq('room_code', roomCode)
+                        .single();
+                }
+
+                // Create room
+                const { data: room, error: roomError } = await supabase
+                    .from('rooms')
+                    .insert([{
+                        room_code: roomCode,
+                        host_id: currentUser.id,
+                        name: `${currentUser.name}'s Study Room`
+                    }])
+                    .select()
+                    .single();
+
+                if (roomError) throw roomError;
+
+                // Join the room
+                await joinRoomById(room.id, roomCode);
+                
+            } catch (error) {
+                console.error('Create room error:', error);
+                alert('Failed to create room. Please try again.');
             }
-            
-            // Create room data
-            rooms[roomCode] = {
-                code: roomCode,
-                host: userName,
-                participants: [userName],
-                created: new Date()
-            };
-            
-            currentRoom = roomCode;
-            document.getElementById('current-room-code').textContent = roomCode;
-            updateParticipantsList();
-            showRoom();
         }
 
-        // Show join form
         function showJoinForm() {
             const joinForm = document.getElementById('join-form');
             joinForm.style.display = joinForm.style.display === 'none' ? 'block' : 'none';
-            document.getElementById('room-code-input').focus();
+            if (joinForm.style.display === 'block') {
+                document.getElementById('room-code-input').focus();
+            }
         }
 
-        // Join existing room
-        function joinRoom() {
+        async function joinRoom() {
             const codeInput = document.getElementById('room-code-input');
             const roomCode = codeInput.value.toUpperCase().trim();
             const errorDiv = document.getElementById('join-error');
             
-            // Clear previous errors
-            errorDiv.style.display = 'none';
-            
             if (!roomCode) {
-                showError('Please enter a room code');
+                showError(errorDiv, 'Please enter a room code');
                 return;
             }
-            
-            if (!rooms[roomCode]) {
-                showError('Room not found. Please check the code and try again.');
-                return;
+
+            try {
+                // Find room by code
+                const { data: room, error } = await supabase
+                    .from('rooms')
+                    .select('*')
+                    .eq('room_code', roomCode)
+                    .eq('is_active', true)
+                    .single();
+
+                if (error || !room) {
+                    showError(errorDiv, 'Room not found. Please check the code and try again.');
+                    return;
+                }
+
+                await joinRoomById(room.id, roomCode);
+                
+            } catch (error) {
+                console.error('Join room error:', error);
+                showError(errorDiv, 'Failed to join room. Please try again.');
             }
-            
-            // Add user to room if not already there
-            if (!rooms[roomCode].participants.includes(userName)) {
-                rooms[roomCode].participants.push(userName);
-            }
-            
-            currentRoom = roomCode;
-            document.getElementById('current-room-code').textContent = roomCode;
-            updateParticipantsList();
-            showRoom();
         }
 
-        // Show error message
-        function showError(message) {
-            const errorDiv = document.getElementById('join-error');
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
+        async function joinRoomById(roomId, roomCode) {
+            try {
+                // Add user to room participants
+                const { error: participantError } = await supabase
+                    .from('room_participants')
+                    .upsert([{
+                        room_id: roomId,
+                        user_id: currentUser.id,
+                        is_online: true
+                    }]);
+
+                if (participantError) throw participantError;
+
+                // Update user's last active
+                await supabase
+                    .from('users')
+                    .update({ last_active: new Date() })
+                    .eq('id', currentUser.id);
+
+                currentRoom = { id: roomId, code: roomCode };
+                document.getElementById('current-room-code').textContent = roomCode;
+                
+                showSection('room-section');
+                setupRoomSubscriptions();
+                loadRoomData();
+                
+                // Send join message
+                await sendSystemMessage(`${currentUser.name} joined the room`);
+                
+            } catch (error) {
+                console.error('Join room error:', error);
+                throw error;
+            }
         }
 
-        // Update participants list
-        function updateParticipantsList() {
-            if (!currentRoom || !rooms[currentRoom]) return;
-            
-            const participantList = document.getElementById('participant-list');
-            const participants = rooms[currentRoom].participants;
-            
-            participantList.innerHTML = '';
-            
-            participants.forEach((participant, index) => {
-                const div = document.createElement('div');
-                div.className = 'participant';
+        async function leaveRoom() {
+            if (!currentRoom) return;
+
+            try {
+                // Send leave message
+                await sendSystemMessage(`${currentUser.name} left the room`);
+
+                // Remove from participants
+                await supabase
+                    .from('room_participants')
+                    .delete()
+                    .eq('room_id', currentRoom.id)
+                    .eq('user_id', currentUser.id);
+
+                // Clean up subscriptions
+                if (chatSubscription) {
+                    chatSubscription.unsubscribe();
+                    chatSubscription = null;
+                }
+                if (participantsSubscription) {
+                    participantsSubscription.unsubscribe();
+                    participantsSubscription = null;
+                }
+
+                currentRoom = null;
+                showSection('home-section');
+                loadUserStats();
                 
-                const avatar = document.createElement('div');
-                avatar.className = 'participant-avatar';
-                avatar.textContent = participant.charAt(0).toUpperCase();
+            } catch (error) {
+                console.error('Leave room error:', error);
+            }
+        }
+
+        // Real-time subscriptions
+        function setupRoomSubscriptions() {
+            // Subscribe to new messages
+            chatSubscription = supabase
+                .channel('room-messages')
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'messages',
+                    filter: `room_id=eq.${currentRoom.id}`
+                }, handleNewMessage)
+                .subscribe();
+
+            // Subscribe to participant changes
+            participantsSubscription = supabase
+                .channel('room-participants')
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'room_participants',
+                    filter: `room_id=eq.${currentRoom.id}`
+                }, handleParticipantChange)
+                .subscribe();
+        }
+
+        function handleNewMessage(payload) {
+            if (payload.eventType === 'INSERT') {
+                loadMessages();
+            }
+        }
+
+        function handleParticipantChange(payload) {
+            loadParticipants();
+        }
+
+        // Load room data
+        async function loadRoomData() {
+            await Promise.all([
+                loadMessages(),
+                loadParticipants(),
+                loadSharedNotes(),
+                loadRoomStats()
+            ]);
+        }
+
+        async function loadMessages() {
+            try {
+                const { data: messages, error } = await supabase
+                    .from('messages')
+                    .select(`
+                        *,
+                        users (name, avatar_color)
+                    `)
+                    .eq('room_id', currentRoom.id)
+                    .order('created_at', { ascending: true })
+                    .limit(50);
+
+                if (error) throw error;
+
+                const chatMessages = document.getElementById('chat-messages');
+                chatMessages.innerHTML = '';
+
+                messages.forEach(message => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `message ${message.user_id === currentUser.id ? 'own' : ''}`;
+                    
+                    if (message.message_type === 'system') {
+                        messageDiv.innerHTML = `
+                            <div class="message-header" style="text-align: center; font-style: italic;">
+                                ${message.content}
+                            </div>
+                        `;
+                        messageDiv.style.background = '#f0f0f0';
+                        messageDiv.style.color = '#666';
+                    } else {
+                        const time = new Date(message.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        messageDiv.innerHTML = `
+                            <div class="message-header">${message.users.name} • ${time}</div>
+                            <div>${escapeHtml(message.content)}</div>
+                        `;
+                    }
+                    
+                    chatMessages.appendChild(messageDiv);
+                });
+
+                chatMessages.scrollTop = chatMessages.scrollHeight;
                 
-                const name = document.createElement('span');
-                if (participant === userName) {
-                    name.textContent = index === 0 ? 'You (Host)' : 'You';
-                } else {
-                    name.textContent = participant + (index === 0 ? ' (Host)' : '');
+            } catch (error) {
+                console.error('Load messages error:', error);
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('message-input');
+            const content = input.value.trim();
+            
+            if (!content) return;
+
+            try {
+                await supabase
+                    .from('messages')
+                    .insert([{
+                        room_id: currentRoom.id,
+                        user_id: currentUser.id,
+                        content: content,
+                        message_type: 'chat'
+                    }]);
+
+                input.value = '';
+                
+            } catch (error) {
+                console.error('Send message error:', error);
+            }
+        }
+
+        async function sendSystemMessage(content) {
+            try {
+                await supabase
+                    .from('messages')
+                    .insert([{
+                        room_id: currentRoom.id,
+                        user_id: currentUser.id,
+                        content: content,
+                        message_type: 'system'
+                    }]);
+            } catch (error) {
+                console.error('Send system message error:', error);
+            }
+        }
+
+        async function loadParticipants() {
+            try {
+                const { data: participants, error } = await supabase
+                    .from('room_participants')
+                    .select(`
+                        *,
+                        users (name, avatar_color, total_study_time)
+                    `)
+                    .eq('room_id', currentRoom.id)
+                    .eq('is_online', true);
+
+                if (error) throw error;
+
+                const participantsList = document.getElementById('participants-list');
+                participantsList.innerHTML = '';
+
+                participants.forEach(participant => {
+                    const user = participant.users;
+                    const participantDiv = document.createElement('div');
+                    participantDiv.className = 'participant-card';
+                    
+                    const studyHours = Math.floor(user.total_study_time / 60);
+                    const isHost = participant.user_id === currentUser.id;
+                    
+                    participantDiv.innerHTML = `
+                        <div class="participant-avatar" style="background: ${user.avatar_color};">
+                            ${user.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div style="font-weight: bold;">${user.name}${isHost ? ' (You)' : ''}</div>
+                        <div style="color: #666; font-size: 0.9em;">
+                            ${studyHours}h studied
+                            <span class="online-indicator"></span>
+                        </div>
+                    `;
+                    
+                    participantsList.appendChild(participantDiv);
+                });
+                
+            } catch (error) {
+                console.error('Load participants error:', error);
+            }
+        }
+
+        // Timer functions
+        function setTimer(minutes) {
+            timerSeconds = minutes * 60;
+            updateTimerDisplay();
+            resetTimer();
+        }
+
+        function setCustomTimer() {
+            const minutes = prompt('Enter timer duration in minutes:', '25');
+            if (minutes && !isNaN(minutes) && minutes > 0) {
+                setTimer(parseInt(minutes));
+            }
+        }
+
+        function startTimer() {
+            if (timerActive) return;
+            
+            timerActive = true;
+            document.getElementById('timer-start').style.display = 'none';
+            document.getElementById('timer-pause').style.display = 'inline-block';
+            document.getElementById('timer-status').textContent = 'Timer running...';
+            
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                updateTimerDisplay();
+                
+                if (timerSeconds <= 0) {
+                    timerComplete();
+                }
+            }, 1000);
+
+            // Record study session start
+            recordStudySession();
+        }
+
+        function pauseTimer() {
+            timerActive = false;
+            clearInterval(timerInterval);
+            document.getElementById('timer-start').style.display = 'inline-block';
+            document.getElementById('timer-pause').style.display = 'none';
+            document.getElementById('timer-status').textContent = 'Timer paused';
+        }
+
+        function resetTimer() {
+            timerActive = false;
+            clearInterval(timerInterval);
+            document.getElementById('timer-start').style.display = 'inline-block';
+            document.getElementById('timer-pause').style.display = 'none';
+            document.getElementById('timer-status').textContent = '';
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timer-display').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function timerComplete() {
+            resetTimer();
+            document.getElementById('timer-status').textContent = 'Timer completed! Great work! 🎉';
+            
+            // Browser notification
+            if (Notification.permission === 'granted') {
+                new Notification('Study Timer Complete!', {
+                    body: 'Great job! Time for a break.',
+                    icon: '📚'
+                });
+            }
+            
+            // Send timer completion message
+            sendSystemMessage(`${currentUser.name} completed a study session!`);
+        }
+
+        async function recordStudySession() {
+            try {
+                const sessionMinutes = Math.floor(timerSeconds / 60);
+                await supabase
+                    .from('study_sessions')
+                    .insert([{
+                        room_id: currentRoom.id,
+                        user_id: currentUser.id,
+                        duration_minutes: sessionMinutes,
+                        session_type: sessionMinutes > 10 ? 'focus' : 'break'
+                    }]);
+
+                // Update user's total study time
+                await supabase
+                    .from('users')
+                    .update({ 
+                        total_study_time: currentUser.total_study_time + sessionMinutes
+                    })
+                    .eq('id', currentUser.id);
+
+                currentUser.total_study_time += sessionMinutes;
+                
+            } catch (error) {
+                console.error('Record study session error:', error);
+            }
+        }
+
+        // Notes functions
+        async function loadSharedNotes() {
+            try {
+                const { data: notes, error } = await supabase
+                    .from('shared_notes')
+                    .select('*')
+                    .eq('room_id', currentRoom.id)
+                    .single();
+
+                if (error && error.code !== 'PGRST116') throw error;
+
+                const notesTextarea = document.getElementById('shared-notes');
+                notesTextarea.value = notes ? notes.content : '';
+                document.getElementById('notes-status').textContent = 'Loaded';
+                
+            } catch (error) {
+                console.error('Load notes error:', error);
+            }
+        }
+
+        async function saveNotes() {
+            const content = document.getElementById('shared-notes').value;
+            
+            try {
+                await supabase
+                    .from('shared_notes')
+                    .upsert([{
+                        room_id: currentRoom.id,
+                        content: content,
+                        last_updated_by: currentUser.id
+                    }]);
+
+                document.getElementById('notes-status').textContent = 'Saved ✓';
+                
+            } catch (error) {
+                console.error('Save notes error:', error);
+                document.getElementById('notes-status').textContent = 'Save failed ✗';
+            }
+        }
+
+        function formatText(command) {
+            const textarea = document.getElementById('shared-notes');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            
+            if (selectedText) {
+                let formattedText = selectedText;
+                if (command === 'bold') {
+                    formattedText = `**${selectedText}**`;
+                } else if (command === 'italic') {
+                    formattedText = `*${selectedText}*`;
                 }
                 
-                div.appendChild(avatar);
-                div.appendChild(name);
-                participantList.appendChild(div);
-            });
-            
-            document.getElementById('participant-count').textContent = participants.length;
+                textarea.value = textarea.value.substring(0, start) + formattedText + textarea.value.substring(end);
+                textarea.focus();
+                textarea.setSelectionRange(start, start + formattedText.length);
+            }
         }
 
-        // Copy room code to clipboard
+        // Statistics functions
+        async function loadUserStats() {
+            try {
+                const { data: sessions, error } = await supabase
+                    .from('study_sessions')
+                    .select('*')
+                    .eq('user_id', currentUser.id);
+
+                if (error) throw error;
+
+                const totalSessions = sessions.length;
+                const totalMinutes = sessions.reduce((sum, session) => sum + session.duration_minutes, 0);
+                const totalHours = Math.floor(totalMinutes / 60);
+                const avgSession = totalSessions > 0 ? Math.round(totalMinutes / totalSessions) : 0;
+
+                const statsContainer = document.getElementById('user-stats');
+                statsContainer.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-number">${totalHours}</div>
+                        <div class="stat-label">Hours Studied</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${totalSessions}</div>
+                        <div class="stat-label">Study Sessions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${avgSession}</div>
+                        <div class="stat-label">Avg Session (min)</div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Load user stats error:', error);
+            }
+        }
+
+        async function loadRoomStats() {
+            try {
+                const { data: sessions, error } = await supabase
+                    .from('study_sessions')
+                    .select(`
+                        *,
+                        users (name)
+                    `)
+                    .eq('room_id', currentRoom.id);
+
+                if (error) throw error;
+
+                const totalSessions = sessions.length;
+                const totalMinutes = sessions.reduce((sum, session) => sum + session.duration_minutes, 0);
+                const totalHours = Math.floor(totalMinutes / 60);
+                const participantCount = new Set(sessions.map(s => s.user_id)).size;
+
+                const statsContainer = document.getElementById('room-stats');
+                statsContainer.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-number">${totalHours}</div>
+                        <div class="stat-label">Room Study Hours</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${totalSessions}</div>
+                        <div class="stat-label">Total Sessions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${participantCount}</div>
+                        <div class="stat-label">Active Studiers</div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Load room stats error:', error);
+            }
+        }
+
+        // UI functions
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            // Load content if needed
+            if (tabName === 'participants') {
+                loadParticipants();
+            } else if (tabName === 'stats') {
+                loadRoomStats();
+            }
+        }
+
+        function showError(element, message) {
+            element.textContent = message;
+            element.style.display = 'block';
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 5000);
+        }
+
         function copyRoomCode() {
             const roomCode = document.getElementById('current-room-code').textContent;
             navigator.clipboard.writeText(roomCode).then(() => {
@@ -348,58 +1317,24 @@
             });
         }
 
-        // Copy invite link to clipboard
         function copyInviteLink() {
             const roomCode = document.getElementById('current-room-code').textContent;
-            const inviteLink = `${window.location.href}?room=${roomCode}`;
+            const inviteLink = `${window.location.origin}${window.location.pathname}?room=${roomCode}`;
             navigator.clipboard.writeText(inviteLink).then(() => {
                 alert('Invite link copied to clipboard!');
             });
         }
 
-        // Show room screen
-        function showRoom() {
-            document.getElementById('home').style.display = 'none';
-            document.getElementById('room').style.display = 'block';
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
-        // Go back to home screen
-        function goHome() {
-            document.getElementById('home').style.display = 'block';
-            document.getElementById('room').style.display = 'none';
-            document.getElementById('join-form').style.display = 'none';
-            document.getElementById('room-code-input').value = '';
+        // Request notification permission
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
         }
-
-        // Handle Enter key in room code input
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('room-code-input').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    joinRoom();
-                }
-            });
-
-            // Check if there's a room code in URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const roomFromUrl = urlParams.get('room');
-            if (roomFromUrl) {
-                document.getElementById('room-code-input').value = roomFromUrl.toUpperCase();
-                showJoinForm();
-            }
-        });
-
-        // Simulate other students joining (for demo purposes)
-        setTimeout(() => {
-            if (currentRoom && rooms[currentRoom]) {
-                const demoNames = ['Alice', 'Bob', 'Charlie', 'Diana'];
-                const randomName = demoNames[Math.floor(Math.random() * demoNames.length)];
-                
-                if (!rooms[currentRoom].participants.includes(randomName)) {
-                    rooms[currentRoom].participants.push(randomName);
-                    updateParticipantsList();
-                }
-            }
-        }, 5000);
     </script>
 </body>
 </html>
