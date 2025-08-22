@@ -487,19 +487,27 @@
             showMessage(messageDiv, currentLanguage === 'ar' ? 'جاري إنشاء ملفك الشخصي...' : 'Creating your profile...', 'info');
 
             try {
+                const userData = {
+                    name: name,
+                    avatar_color: selectedColor,
+                    grade: selectedGrade.toString(),
+                    subject: selectedSubject.name || selectedSubject
+                };
+
+                console.log('Inserting user data:', userData);
+
                 const { data, error } = await supabase
                     .from('users')
-                    .insert([{
-                        name: name,
-                        avatar_color: selectedColor,
-                        grade: selectedGrade,
-                        subject: selectedSubject.name
-                    }])
+                    .insert([userData])
                     .select()
                     .single();
 
-                if (error) throw error;
+                if (error) {
+                    console.error('Supabase error details:', error);
+                    throw error;
+                }
 
+                console.log('User created successfully:', data);
                 currentUser = data;
                 localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
                 
@@ -509,7 +517,13 @@
                 
             } catch (error) {
                 console.error('Registration error:', error);
-                showMessage(messageDiv, currentLanguage === 'ar' ? 'فشل في إنشاء الملف الشخصي' : 'Failed to create profile', 'error');
+                let errorMessage = currentLanguage === 'ar' ? 'فشل في إنشاء الملف الشخصي' : 'Failed to create profile';
+                
+                if (error.message) {
+                    errorMessage += ': ' + error.message;
+                }
+                
+                showMessage(messageDiv, errorMessage, 'error');
             }
         }
 
