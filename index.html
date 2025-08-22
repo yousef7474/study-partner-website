@@ -555,8 +555,28 @@
                 try {
                     currentUser = JSON.parse(savedUser);
                     console.log('Found saved user:', currentUser);
-                    showScreen('home-screen');
-                    updateUserDisplay();
+                    
+                    // Check for saved room
+                    const savedRoom = localStorage.getItem('studyRoom');
+                    if (savedRoom) {
+                        try {
+                            currentRoom = JSON.parse(savedRoom);
+                            console.log('Found saved room:', currentRoom);
+                            document.getElementById('current-room-code').textContent = currentRoom.code;
+                            showScreen('room-screen');
+                            setupRoomSubscriptions();
+                            loadRoomData();
+                            rejoinRoom();
+                        } catch (e) {
+                            console.error('Error loading saved room:', e);
+                            localStorage.removeItem('studyRoom');
+                            showScreen('home-screen');
+                            updateUserDisplay();
+                        }
+                    } else {
+                        showScreen('home-screen');
+                        updateUserDisplay();
+                    }
                 } catch (e) {
                     console.error('Error loading saved user:', e);
                     localStorage.removeItem('studyUser');
@@ -697,8 +717,15 @@
 
         function handleLogout() {
             console.log('Logout clicked');
+            
+            // Leave room if in one
+            if (currentRoom) {
+                handleLeaveRoom();
+            }
+            
             currentUser = null;
             localStorage.removeItem('studyUser');
+            localStorage.removeItem('studyRoom'); // Also remove saved room
             showScreen('login-screen');
             
             // Reset form
@@ -823,10 +850,15 @@
                 if (error) throw error;
 
                 currentRoom = { id: roomId, code: roomCode };
+                localStorage.setItem('studyRoom', JSON.stringify(currentRoom)); // Save room to localStorage
                 document.getElementById('current-room-code').textContent = roomCode;
                 
                 showScreen('room-screen');
-                loadMessages();
+                setupRoomSubscriptions();
+                loadRoomData();
+                
+                // Send join notification message
+                await sendSystemMessage(`${currentUser.name} joined the room`);
                 
                 console.log('Successfully joined room');
                 
@@ -836,14 +868,138 @@
             }
         }
 
+        async function rejoinRoom() {
+            try {
+                console.log('Rejoining room after refresh');
+                
+                // Mark user as online again
+                const { error } = await supabase
+                    .from('room_participants')
+                    .upsert([{
+                        room_id: currentRoom.id,
+                        user_id: currentUser.id,
+                        is_online: true
+                    }]);
+
+                if (error) throw error;
+                
+                console.log('Successfully rejoined room');
+                
+            } catch (error) {
+                console.error('Rejoin room error:', error);
+            }
+        }
+
         function handleLeaveRoom() {
             console.log('Leave room clicked');
+            
+            if (currentRoom && supabase) {
+                // Remove from participants and send leave message
+                supabase
+                    .from('room_participants')
+                    .delete()
+                    .eq('room_id', currentRoom.id)
+                    .eq('user_id', currentUser.id)
+                    .then(() => {
+                        return sendSystemMessage(`${currentUser.name} left the room`);
+                    });
+            }
+            
+            // Clean up subscriptions
+            if (chatSubscription) {
+                chatSubscription.unsubscribe();
+                chatSubscription = null;
+            }
+            if (participantsSubscription) {
+                participantsSubscription.unsubscribe();
+                participantsSubscription = null;
+            }
+            
             currentRoom = null;
+            localStorage.removeItem('studyRoom'); // Remove saved room
             showScreen('home-screen');
         }
 
-        // Chat functions
-        async function loadMessages() {
+        async function loadParticipants() {
+            if (!currentRoom || !supabase) return;
+            
+            try {
+                const { data: participants, error } = await supabase
+                    .from('room_participants')
+                    .select(`
+                        *,
+                        users (name, avatar_color, total_study_time)
+                    `)
+                    .eq('room_id', currentRoom.id)
+                    .eq('is_online', true);
+
+                if (error) throw error;
+
+                const container = document.getElementById('participants-list');
+                container.innerHTML = '';
+
+                if (participants.length === 0) {
+                    container.innerHTML = '<div class="loading">No participants found</div>';
+                    return;
+                }
+
+                participants.forEach(participant => {
+                    const user = participant.users;
+                    const participantDiv = document.createElement('div');
+                    participantDiv.style.cssText = `
+                        background: #f8fafc;
+                        padding: 20px;
+                        border-radius: 15px;
+                        text-align: center;
+                        border: 2px solid #e2e8f0;
+                        margin-bottom: 15px;
+                    `;
+                    
+                    const studyHours = Math.floor(user.total_study_time / 60);
+                    const isYou = participant.user_id === currentUser.id;
+                    
+                    participantDiv.innerHTML = `
+                        <div style="
+                            width: 60px;
+                            height: 60px;
+                            border-radius: 50%;
+                            margin: 0 auto 15px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-weight: bold;
+                            font-size: 1.5em;
+                            background: ${user.avatar_color};
+                        ">
+                            ${user.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div style="font-weight: 600; margin-bottom: 5px;">
+                            ${escapeHtml(user.name)}${isYou ? ' (You)' : ''}
+                        </div>
+                        <div style="color: #64748b; font-size: 0.9em;">
+                            ${studyHours}h studied
+                            <span style="
+                                width: 12px;
+                                height: 12px;
+                                background: #22c55e;
+                                border-radius: 50%;
+                                display: inline-block;
+                                margin-left: 8px;
+                            "></span>
+                        </div>
+                    `;
+                    
+                    container.appendChild(participantDiv);
+                });
+                
+                console.log(`Loaded ${participants.length} participants`);
+                
+            } catch (error) {
+                console.error('Load participants error:', error);
+                document.getElementById('participants-list').innerHTML = '<div class="loading">Error loading participants</div>';
+            }
+        }
             if (!currentRoom || !supabase) return;
             
             try {
@@ -871,11 +1027,21 @@
                     const messageDiv = document.createElement('div');
                     messageDiv.className = `chat-message ${message.user_id === currentUser.id ? 'own' : ''}`;
                     
-                    const time = new Date(message.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    messageDiv.innerHTML = `
-                        <div class="message-info">${escapeHtml(message.users.name)} • ${time}</div>
-                        <div>${escapeHtml(message.content)}</div>
-                    `;
+                    if (message.message_type === 'system') {
+                        messageDiv.innerHTML = `
+                            <div style="text-align: center; font-style: italic; color: #64748b;">
+                                ${escapeHtml(message.content)}
+                            </div>
+                        `;
+                        messageDiv.style.background = '#f1f5f9';
+                        messageDiv.style.color = '#64748b';
+                    } else {
+                        const time = new Date(message.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        messageDiv.innerHTML = `
+                            <div class="message-info">${escapeHtml(message.users.name)} • ${time}</div>
+                            <div>${escapeHtml(message.content)}</div>
+                        `;
+                    }
                     
                     container.appendChild(messageDiv);
                 });
@@ -904,7 +1070,7 @@
                     }]);
 
                 input.value = '';
-                loadMessages(); // Reload messages
+                // No need to reload messages - real-time subscription will handle it
                 
             } catch (error) {
                 console.error('Send message error:', error);
