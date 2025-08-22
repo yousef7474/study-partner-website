@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StudyTogether - Study Platform</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.39.3/umd/supabase.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -352,6 +351,22 @@
             font-size: 1.1em;
         }
 
+        /* Timer */
+        .timer-section {
+            text-align: center;
+            background: #f8fafc;
+            padding: 40px;
+            border-radius: 20px;
+        }
+
+        .timer-display {
+            font-size: 4em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .container {
@@ -366,6 +381,10 @@
 
             .avatar-grid {
                 grid-template-columns: repeat(3, 1fr);
+            }
+
+            .timer-display {
+                font-size: 2.5em;
             }
         }
     </style>
@@ -469,14 +488,14 @@
 
             <!-- Timer Tab -->
             <div id="timer-content" class="tab-content">
-                <div style="text-align: center; background: #f8fafc; padding: 40px; border-radius: 20px;">
+                <div class="timer-section">
                     <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap;">
                         <button class="btn btn-small" data-timer="25">25 min Focus</button>
                         <button class="btn btn-small" data-timer="5">5 min Break</button>
                         <button class="btn btn-small" data-timer="15">15 min Break</button>
                     </div>
                     
-                    <div id="timer-display" style="font-size: 4em; font-weight: bold; color: #667eea; margin: 30px 0; font-family: 'Courier New', monospace;">25:00</div>
+                    <div id="timer-display" class="timer-display">25:00</div>
                     
                     <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
                         <button id="start-timer-btn" class="btn">Start</button>
@@ -490,22 +509,20 @@
         </div>
     </div>
 
+    <!-- Load Supabase from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
         console.log('Starting StudyTogether app...');
 
-        // Supabase setup
-        const supabase = window.supabase.createClient(
-            'https://lpabkpwepnbvgkznzlkf.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwYWJrcHdlcG5idmdrem56bGtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4ODI2MTUsImV4cCI6MjA3MTQ1ODYxNX0.d4eKNAu3KjVXFnXuQlPUnST0eC2ynL1al9w8AQE16R0'
-        );
-
-        // Global state
+        // Initialize variables first
         let currentUser = null;
         let currentRoom = null;
-        let selectedColor = '#667eea';
+        let selectedColor = '#667eea'; // Initialize this first
         let timerInterval = null;
         let timerSeconds = 1500; // 25 minutes
         let timerRunning = false;
+        let supabase = null;
 
         // Wait for DOM to load
         document.addEventListener('DOMContentLoaded', function() {
@@ -516,7 +533,20 @@
         function initApp() {
             console.log('Initializing app...');
             
-            // Set up all event listeners with direct references
+            // Initialize Supabase after everything is loaded
+            try {
+                supabase = window.supabase.createClient(
+                    'https://lpabkpwepnbvgkznzlkf.supabase.co',
+                    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwYWJrcHdlcG5idmdrem56bGtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4ODI2MTUsImV4cCI6MjA3MTQ1ODYxNX0.d4eKNAu3KjVXFnXuQlPUnST0eC2ynL1al9w8AQE16R0'
+                );
+                console.log('Supabase initialized successfully');
+            } catch (error) {
+                console.error('Failed to initialize Supabase:', error);
+                showMessage(document.getElementById('login-message'), 'Failed to connect to database. Please refresh the page.', 'error');
+                return;
+            }
+            
+            // Set up all event listeners
             setupEventListeners();
             
             // Check for saved user
@@ -628,6 +658,11 @@
                 return;
             }
 
+            if (!supabase) {
+                showMessage(messageDiv, 'Database connection not available', 'error');
+                return;
+            }
+
             console.log('Attempting login with:', { name, selectedColor });
             showMessage(messageDiv, 'Creating your profile...', 'info');
 
@@ -698,6 +733,11 @@
         async function handleCreateRoom() {
             console.log('Create room clicked');
             
+            if (!supabase) {
+                alert('Database connection not available');
+                return;
+            }
+            
             try {
                 let roomCode = generateRoomCode();
                 
@@ -739,6 +779,11 @@
             
             if (!code) {
                 showMessage(messageDiv, 'Please enter a room code', 'error');
+                return;
+            }
+
+            if (!supabase) {
+                showMessage(messageDiv, 'Database connection not available', 'error');
                 return;
             }
 
@@ -799,7 +844,7 @@
 
         // Chat functions
         async function loadMessages() {
-            if (!currentRoom) return;
+            if (!currentRoom || !supabase) return;
             
             try {
                 const { data: messages, error } = await supabase
@@ -828,7 +873,7 @@
                     
                     const time = new Date(message.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                     messageDiv.innerHTML = `
-                        <div class="message-info">${message.users.name} • ${time}</div>
+                        <div class="message-info">${escapeHtml(message.users.name)} • ${time}</div>
                         <div>${escapeHtml(message.content)}</div>
                     `;
                     
@@ -846,7 +891,7 @@
             const input = document.getElementById('chat-input');
             const content = input.value.trim();
             
-            if (!content || !currentRoom) return;
+            if (!content || !currentRoom || !supabase) return;
 
             try {
                 await supabase
@@ -915,4 +960,133 @@
             const minutes = Math.floor(timerSeconds / 60);
             const seconds = timerSeconds % 60;
             document.getElementById('timer-display').textContent = 
-                `${
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function timerComplete() {
+            resetTimer();
+            document.getElementById('timer-status').textContent = 'Timer completed! Great work! 🎉';
+            
+            // Browser notification
+            if (Notification.permission === 'granted') {
+                new Notification('Study Timer Complete!', {
+                    body: 'Great job! Time for a break.',
+                    icon: '📚'
+                });
+            } else {
+                // Fallback alert
+                alert('Timer completed! Great work! 🎉');
+            }
+        }
+
+        // UI helper functions
+        function showScreen(screenId) {
+            console.log('Showing screen:', screenId);
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function switchTab(tabName) {
+            console.log('Switching to tab:', tabName);
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName + '-content').classList.add('active');
+
+            // Load content if needed
+            if (tabName === 'chat') {
+                loadMessages();
+            }
+        }
+
+        function showMessage(element, text, type) {
+            element.innerHTML = `<div class="message ${type}">${text}</div>`;
+            if (type === 'success' || type === 'error') {
+                setTimeout(() => {
+                    element.innerHTML = '';
+                }, 5000);
+            }
+        }
+
+        function copyRoomCode() {
+            console.log('Copy room code clicked');
+            const code = document.getElementById('current-room-code').textContent;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(code).then(() => {
+                    alert('Room code copied to clipboard!');
+                }).catch(() => {
+                    // Fallback
+                    prompt('Copy this room code:', code);
+                });
+            } else {
+                // Fallback for older browsers
+                prompt('Copy this room code:', code);
+            }
+        }
+
+        function shareRoom() {
+            console.log('Share room clicked');
+            const code = document.getElementById('current-room-code').textContent;
+            const link = `${window.location.origin}${window.location.pathname}?room=${code}`;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(link).then(() => {
+                    alert('Invite link copied to clipboard!');
+                }).catch(() => {
+                    // Fallback
+                    prompt('Copy this invite link:', link);
+                });
+            } else {
+                // Fallback for older browsers
+                prompt('Copy this invite link:', link);
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Request notification permission
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission().then(permission => {
+                console.log('Notification permission:', permission);
+            });
+        }
+
+        // Handle page visibility for cleanup
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden && currentRoom) {
+                console.log('Page hidden, user may have left');
+            }
+        });
+
+        // Test button to verify everything is working
+        function testConnection() {
+            console.log('Testing connection...');
+            console.log('Supabase:', supabase ? 'Connected' : 'Not connected');
+            console.log('Current user:', currentUser);
+            console.log('Current room:', currentRoom);
+            console.log('Selected color:', selectedColor);
+        }
+
+        // Add test button in console
+        window.testStudyTogether = testConnection;
+
+        console.log('Script loaded successfully');
+        console.log('Run testStudyTogether() in console to check connection');
+    </script>
+</body>
+</html>
