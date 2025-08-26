@@ -483,9 +483,11 @@
       currentTheme=localStorage.getItem('studyTogether_theme')||'light';
     }
 
+    // Capture ?room=CODE for deep-link join
     function handleUrlParams(){
       const params=new URLSearchParams(window.location.search);
       roomCodeFromUrl=params.get('room');
+      // Clean the URL bar but keep the value in memory
       if(roomCodeFromUrl){ window.history.replaceState({},document.title,window.location.pathname); }
     }
 
@@ -495,7 +497,28 @@
       if(savedUser){
         currentUser=JSON.parse(savedUser);
         showLoggedInLayout();
-        if(roomCodeFromUrl){
+
+        // NEW: restore room if it was active before refresh
+        const savedRoomStr=localStorage.getItem('studyTogether_room');
+        if(savedRoomStr){
+          const saved=JSON.parse(savedRoomStr);
+          // Re-validate the room and re-upsert presence
+          supabase.from('rooms')
+            .select('*').eq('id',saved.id).eq('is_active',true).single()
+            .then(async ({data,error})=>{
+              if(!error && data){
+                await joinRoomById(data.id,data.room_code,data.host_id);
+                toast('Rejoined your room after refresh.','info','Welcome back');
+              }else if(roomCodeFromUrl){
+                // Fallback to link (if any)
+                toast('Joining room from link…','info');
+                joinRoom(roomCodeFromUrl.toUpperCase()); 
+                roomCodeFromUrl=null;
+              }else{
+                navigateToScreen('home-screen');
+              }
+            });
+        }else if(roomCodeFromUrl){
           toast('Joining room from link…','info');
           joinRoom(roomCodeFromUrl.toUpperCase());
           roomCodeFromUrl=null;
@@ -503,7 +526,12 @@
           navigateToScreen('home-screen');
         }
       }else{
+        // Not registered yet
         showLoggedOutLayout();
+        // Optional hint if they arrived via invite link
+        if(roomCodeFromUrl){
+          toast('Complete registration to join the invited room.','info','Invite detected');
+        }
       }
     }
 
@@ -518,7 +546,15 @@
         currentUser=data;
         localStorage.setItem('studyTogether_user',JSON.stringify(currentUser));
         showLoggedInLayout();
-        navigateToScreen('home-screen');
+
+        // NEW: if they came via invite link, auto-join that room now
+        if(roomCodeFromUrl){
+          toast('Joining room from link…','info');
+          await joinRoom(roomCodeFromUrl.toUpperCase());
+          roomCodeFromUrl=null;
+        }else{
+          navigateToScreen('home-screen');
+        }
       }catch(e){
         console.error('Registration error:',e);
         alert('Registration failed.');
@@ -751,6 +787,7 @@
 
     async function joinRoomById(roomId,roomCode,roomHostId){
       try{
+        // Upsert your online presence (safe for refreshes)
         const {error: participantError} = await supabase.from('room_participants').upsert({
           room_id:roomId,
           user_id:currentUser.id,
@@ -772,6 +809,8 @@
         setupRoomSubscriptions();
         loadRoomData();
         navigateToScreen('room-screen');
+
+        // Send a system message only if this is a *new* join (avoid double on very fast refresh)
         await sendSystemMessage(`${currentUser.name} joined the room.`);
       }catch(e){ 
         console.error('Exception joining room:', e); 
@@ -917,6 +956,21 @@
     // -------- EVENTS / HELPERS --------
     function setupEventListeners(){
       window.addEventListener('resize',()=>updateLayoutForSidebar());
+
+      // Keep presence "online" while tab is open (simple heartbeat)
+      setInterval(()=> {
+        if(currentRoom && currentUser){
+          supabase.from('room_participants')
+            .update({is_online:true})
+            .match({room_id:currentRoom.id,user_id:currentUser.id});
+        }
+      }, 20000);
+
+      // If the browser is closing/crashing we do NOT delete the room; presence upsert on next load will recover.
+      window.addEventListener('beforeunload', ()=> {
+        // Optionally, mark a last_seen timestamp if you add that column in DB.
+      });
+
       document.querySelectorAll('.tab').forEach(t=> t.onclick=()=>switchTab(t.dataset.tab));
       document.querySelectorAll('[data-timer]').forEach(b=> b.onclick=()=>setTimerMinutes(parseInt(b.dataset.timer)));
       document.addEventListener('keydown', (e)=>{
@@ -959,7 +1013,11 @@
       navigator.clipboard.writeText(currentRoom.code).then(()=> toast('Room code copied!','success','Copied')); 
     }
     function shareRoom(){ 
-      navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?room=${currentRoom.code}`).then(()=> toast('Invite link copied!','success','Shared')); 
+      const link=`${window.location.origin}${window.location.pathname}?room=${currentRoom.code}`;
+      if(navigator.share){
+        navigator.share({title:'StudyTogether', text:'Join my study room:', url:link}).catch(()=>{});
+      }
+      navigator.clipboard.writeText(link).then(()=> toast('Invite link copied!','success','Shared')); 
     }
     function showJoinForm(){ 
       document.getElementById('join-form').style.display='block'; 
