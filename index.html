@@ -26,68 +26,88 @@
     .header-controls{display:flex;align-items:center;gap:1rem}
     .theme-toggle,.lang-toggle,.menu-toggle{width:45px;height:45px;border:none;border-radius:12px;background:var(--bg-secondary);color:var(--text-primary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem;transition:all .3s ease;box-shadow:var(--shadow-light)}
     .theme-toggle:hover,.lang-toggle:hover,.menu-toggle:hover{transform:translateY(-2px);box-shadow:var(--shadow-medium)}
+    .menu-toggle:active{transform:scale(0.95)}
     .menu-toggle.active{background:var(--primary-color);color:#fff}
 
-    .sidebar{position:fixed;top:70px;left:-var(--sidebar-width);width:var(--sidebar-width);height:calc(100vh - 70px);background:var(--bg-secondary);border-right:1px solid var(--border-color);z-index:1001;transition:all .35s ease;display:flex;flex-direction:column;box-shadow:var(--shadow-medium);opacity:0;visibility:hidden;transform:translateX(-20px)}
+    .sidebar{position:fixed;top:70px;left:-var(--sidebar-width);width:var(--sidebar-width);height:calc(100vh - 70px);background:var(--bg-secondary);border-right:1px solid var(--border-color);z-index:1001;transition:all .4s cubic-bezier(0.25, 0.46, 0.45, 0.94);display:flex;flex-direction:column;box-shadow:var(--shadow-medium);opacity:0;visibility:hidden;transform:translateX(-20px)}
     .sidebar.active{left:0;opacity:1;visibility:visible;transform:translateX(0)}
-
-    .sidebar-header{padding:1.5rem;border-bottom:1px solid var(--border-color);background:var(--bg-primary)}
+    .sidebar.mobile-active{left:0;opacity:1;visibility:visible;transform:translateX(0)}
+    
+    .sidebar-header{padding:1.5rem;border-bottom:1px solid var(--border-color);background:var(--bg-primary);transform:translateY(-20px);opacity:0;transition:all .3s cubic-bezier(0.25, 0.46, 0.45, 0.94)}
+    .sidebar.active .sidebar-header, .sidebar.mobile-active .sidebar-header{transform:translateY(0);opacity:1;transition-delay:0.05s}
     .sidebar-user{display:flex;align-items:center;gap:1rem}
-    .sidebar-avatar{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.5rem}
-    .sidebar-user-info h4{font-size:1.1rem;margin-bottom:.25rem}
-    .sidebar-user-info p{font-size:.9rem;color:var(--text-secondary)}
+    .sidebar-avatar{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.5rem;flex-shrink:0;overflow:hidden;transition:transform .2s ease}
+    .sidebar-user:hover .sidebar-avatar{transform:scale(1.05)}
+    .sidebar-user-info{overflow:hidden}
+    .sidebar-user-info h4{font-size:1.1rem;margin-bottom:.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sidebar-user-info p{font-size:.9rem;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-secondary)}
     
     .sidebar-nav{padding:1rem 0;flex-grow:1;overflow-y:auto}
-    .nav-item{display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;color:var(--text-primary);text-decoration:none;font-weight:500;border:none;background:none;width:100%;text-align:left;cursor:pointer;border-left:4px solid transparent;transition:all .25s ease}
-    .nav-item:hover{background:var(--bg-tertiary);color:var(--primary-color);border-left-color:var(--primary-color)}
-    .nav-item.active{background:var(--primary-color);color:#fff;border-left-color:var(--accent-color);font-weight:600}
-    .nav-icon{font-size:1.2rem;width:24px;text-align:center}
+    .nav-item{display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;color:var(--text-primary);text-decoration:none;font-weight:500;transition:all .3s cubic-bezier(0.25, 0.46, 0.45, 0.94);border:none;background:none;width:100%;text-align:left;cursor:pointer;border-left:4px solid transparent;transform:translateX(-20px);opacity:0}
+    .sidebar.active .nav-item, .sidebar.mobile-active .nav-item{transform:translateX(0);opacity:1}
+    .sidebar.active .nav-item:nth-child(1), .sidebar.mobile-active .nav-item:nth-child(1){transition-delay:0.1s}
+    .sidebar.active .nav-item:nth-child(2), .sidebar.mobile-active .nav-item:nth-child(2){transition-delay:0.15s}
+    .sidebar.active .nav-item:nth-child(3), .sidebar.mobile-active .nav-item:nth-child(3){transition-delay:0.2s}
+    .sidebar.active .nav-item:nth-child(4), .sidebar.mobile-active .nav-item:nth-child(4){transition-delay:0.25s}
+    .sidebar.active .nav-item:nth-child(5), .sidebar.mobile-active .nav-item:nth-child(5){transition-delay:0.3s}
+    .nav-item:hover{background:var(--bg-tertiary);color:var(--primary-color);border-left-color:var(--primary-color);transform:translateX(8px)}
+    .nav-item.active{background:var(--primary-color);color:#fff;border-left-color:var(--accent-color);font-weight:600;transform:translateX(8px)}
+    .nav-icon{font-size:1.2rem;width:24px;text-align:center;transition:transform .2s ease}
+    .nav-item:hover .nav-icon{transform:scale(1.1)}
+    
+    .sidebar-footer{padding:1.5rem;border-top:1px solid var(--border-color);transform:translateY(20px);opacity:0;transition:all .3s cubic-bezier(0.25, 0.46, 0.45, 0.94)}
+    .sidebar.active .sidebar-footer, .sidebar.mobile-active .sidebar-footer{transform:translateY(0);opacity:1;transition-delay:0.35s}
 
-    .sidebar-footer{padding:1.5rem;border-top:1px solid var(--border-color)}
-
-    .main-container{min-height:100vh;padding-top:70px}
+    .main-container{min-height:100vh;padding-top:70px;transition:margin-left .3s ease,margin-right .3s ease}
+    .main-container.with-sidebar{margin-left:var(--sidebar-width)}
     .content{padding:2rem 3rem}
 
-    .sidebar-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;opacity:0;visibility:hidden;transition:all .3s ease}
+    .sidebar-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;opacity:0;visibility:hidden;transition:all .4s cubic-bezier(0.25, 0.46, 0.45, 0.94);backdrop-filter:blur(2px)}
     .sidebar-overlay.active{opacity:1;visibility:visible}
 
-    .screen{display:none;animation:fadeIn .4s ease}
+    .screen{display:none;animation:fadeIn .5s ease-in-out}
     .screen.active{display:block}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
     .title{font-size:3rem;text-align:center;margin-bottom:1rem;background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .subtitle{font-size:1.2rem;color:var(--text-secondary);text-align:center;margin-bottom:3rem}
+    .subtitle{font-size:1.2rem;color:var(--text-secondary);text-align:center;margin-bottom:3rem;line-height:1.6}
+    .page-title{font-size:2.5rem;font-weight:700;margin-bottom:2rem;color:var(--text-primary)}
 
     .form-section{max-width:600px;margin:0 auto;background:var(--bg-secondary);padding:3rem;border-radius:24px;box-shadow:var(--shadow-medium)}
     .form-group{margin-bottom:2rem}
     .form-label{display:block;font-size:1.1rem;font-weight:600;color:var(--text-primary);margin-bottom:.75rem}
-    .form-input{width:100%;padding:1rem 1.25rem;border:2px solid var(--border-color);border-radius:16px;font-size:1.05rem;background:var(--bg-tertiary);color:var(--text-primary);transition:all .2s}
+    .form-input{width:100%;padding:1rem 1.25rem;border:2px solid var(--border-color);border-radius:16px;font-size:1.1rem;background:var(--bg-tertiary);color:var(--text-primary);transition:all .3s ease}
     .form-input:focus{outline:none;border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(102,126,234,.2)}
 
     .avatar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(60px,1fr));gap:1rem}
-    .avatar-choice{width:100%;aspect-ratio:1/1;border-radius:20px;border:3px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.8rem;transition:all .2s;overflow:hidden}
-    .avatar-choice.selected{border-color:var(--accent-color);transform:scale(1.08)}
+    .avatar-choice{width:100%;aspect-ratio:1/1;border-radius:20px;border:3px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.8rem;transition:all .3s ease;overflow:hidden}
+    .avatar-choice.selected{border-color:var(--accent-color);transform:scale(1.08);box-shadow:0 0 0 4px rgba(79,70,229,.2)}
 
-    .btn{background:var(--primary-gradient);color:#fff;border:none;padding:1rem 1.6rem;border-radius:16px;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:var(--shadow-light)}
+    .btn{background:var(--primary-gradient);color:#fff;border:none;padding:1rem 2rem;border-radius:16px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all .3s ease;box-shadow:var(--shadow-light)}
     .btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-medium)}
     .btn-secondary{background:var(--bg-tertiary);color:var(--text-primary);border:2px solid var(--border-color)}
-    .btn-small{padding:.7rem 1.1rem;font-size:.95rem}
-    .btn-block{width:100%}
+    .btn-block{width:100%;display:block;text-align:center}
+    .btn-small{padding:.75rem 1.25rem;font-size:.95rem}
+
+    .main-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem}
+    .action-card{background:var(--bg-secondary);border:2px solid var(--border-color);border-radius:24px;padding:3rem 2rem;text-align:center;cursor:pointer;transition:all .3s ease}
+    .action-card:hover{transform:translateY(-8px);box-shadow:var(--shadow-heavy);border-color:var(--primary-color)}
+    .action-icon{font-size:4rem;margin-bottom:1.5rem}
 
     .chat-box{border:2px solid var(--border-color);border-radius:20px;min-height:400px;display:flex;flex-direction:column;background:var(--bg-tertiary)}
-    .chat-messages{flex:1;padding:1.2rem;overflow-y:auto;background:var(--bg-secondary)}
-    .chat-message{max-width:80%;margin-bottom:.75rem;padding:.75rem 1rem;border-radius:14px;background:var(--bg-tertiary);box-shadow:var(--shadow-light);word-wrap:break-word}
+    .chat-messages{flex:1;padding:1.5rem;overflow-y:auto;background:var(--bg-secondary)}
+    .chat-message{max-width:80%;margin-bottom:1rem;padding:1rem 1.25rem;border-radius:16px;background:var(--bg-tertiary);box-shadow:var(--shadow-light);word-wrap:break-word}
     .chat-message.own{background:var(--primary-color);color:#fff;margin-left:auto}
-    .chat-input-area{display:flex;padding:1rem;border-top:1px solid var(--border-color);gap:.7rem}
+    .chat-input-area{display:flex;padding:1.5rem;border-top:1px solid var(--border-color);gap:1rem}
     .chat-input{flex:1;padding:1rem 1.25rem;border:1px solid var(--border-color);border-radius:25px;background:var(--bg-secondary)}
 
-    .tabs{display:flex;gap:.5rem;margin:1rem 0}
-    .tab{border:none;padding:.6rem 1rem;border-radius:12px;background:var(--bg-tertiary);cursor:pointer}
+    .tabs{display:flex;gap:.5rem;margin-bottom:1rem}
+    .tab{border:none;padding:.7rem 1rem;border-radius:12px;background:var(--bg-tertiary);cursor:pointer}
     .tab.active{background:var(--primary-color);color:#fff}
     .tab-content{display:none}
     .tab-content.active{display:block}
 
-    .toast{position:fixed;top:90px;right:20px;min-width:240px;background:var(--bg-secondary);border:1px solid var(--border-color);box-shadow:var(--shadow-medium);border-radius:12px;padding:.9rem 1rem;z-index:1003;display:flex;gap:.8rem;align-items:flex-start;animation:slideInRight .35s ease}
+    .toast{position:fixed;top:90px;right:20px;min-width:240px;background:var(--bg-secondary);border:1px solid var(--border-color);box-shadow:var(--shadow-medium);border-radius:12px;padding:.9rem 1rem;z-index:1003;display:flex;gap:.8rem;align-items:flex-start;animation:slideInRight .4s ease-out}
     .toast .title{font-size:1rem;margin:0;background:none;-webkit-text-fill-color:unset}
     .toast .msg{color:var(--text-secondary);font-size:.95rem}
     .toast.success{border-left:5px solid var(--success-color)}
@@ -95,16 +115,35 @@
     @keyframes slideInRight{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
 
     @media (max-width:1024px){
+      .main-container.with-sidebar{margin-left:0}
+      .sidebar{box-shadow:var(--shadow-heavy);top:0;height:100vh}
+      .sidebar.mobile-active{left:0}
+      [dir=rtl] .sidebar{top:0}
+    }
+    @media (max-width:768px){
       .header{padding:0 1rem}
-      .content{padding:2rem 1.2rem}
+      .content{padding:2rem 1.5rem}
       .title{font-size:2.5rem}
+      .page-title{font-size:2rem}
       .form-section{padding:2rem}
     }
+
+    [dir=rtl] .sidebar{left:auto;right:-var(--sidebar-width);border-right:none;border-left:1px solid var(--border-color);top:70px;transform:translateX(20px)}
+    [dir=rtl] .sidebar.active,[dir=rtl] .sidebar.mobile-active{right:0;transform:translateX(0)}
+    [dir=rtl] .main-container.with-sidebar{margin-left:0;margin-right:var(--sidebar-width)}
+    [dir=rtl] .header.with-sidebar{margin-left:0;margin-right:var(--sidebar-width)}
+    [dir=rtl] .nav-item{border-left:none;border-right:4px solid transparent}
+    [dir=rtl] .nav-item:hover,[dir=rtl] .nav-item.active{border-right-color:var(--primary-color);transform:translateX(-8px)}
+    [dir=rtl] .chat-message.own{margin-left:0;margin-right:auto}
+    [dir=rtl] .toast{left:20px;right:auto}
+    [dir=rtl] .ltr-arrow{transform:scaleX(-1)}
   </style>
 </head>
 <body data-theme="light">
+  <!-- overlay for mobile -->
   <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar(false)"></div>
 
+  <!-- Sidebar -->
   <div class="sidebar" id="sidebar" style="display:none;">
     <div class="sidebar-header">
       <div class="sidebar-user">
@@ -127,9 +166,10 @@
     </div>
   </div>
 
+  <!-- Header -->
   <header class="header" id="header" style="display:none;">
     <div style="display:flex;align-items:center;gap:1rem;">
-      <button class="menu-toggle" id="menu-toggle" title="Toggle sidebar" onclick="toggleSidebar()"><span>☰</span></button>
+      <button class="menu-toggle" id="menu-toggle" data-translate-title="toggleSidebar" title="Toggle sidebar" onclick="toggleSidebar()"><span>☰</span></button>
       <div class="logo"><div class="logo-icon">📚</div><span data-translate="appName">StudyTogether</span></div>
     </div>
     <div class="header-controls">
@@ -138,6 +178,7 @@
     </div>
   </header>
 
+  <!-- Main -->
   <div class="main-container" id="main-container">
     <div class="content">
       <!-- Registration -->
@@ -324,26 +365,111 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // ---------- CONFIG (use your own project URL & anon key) ----------
-    const SUPABASE_URL='https://lpabkpwepnbvgkznzlkf.supabase.co';
-    const SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwYWJrcHdlcG5idmdrem56bGtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4ODI2MTUsImV4cCI6MjA3MTQ1ODYxNX0.d4eKNAu3KjVXFnXuQlPUnST0eC2ynL1al9w8AQE16R0';
+    // -------- TRANSLATIONS & STATIC DATA --------
+    const translations={
+      en:{
+        home:"Home",
+        dashboard:"Dashboard",
+        studyRooms:"Study Rooms",
+        digitalLibrary:"Digital Library",
+        about:"About",
+        settings:"Settings",
+        logout:"Logout",
+        welcome:"Welcome",
+        welcomeDesc:"Create your profile to start",
+        yourName:"Your Name",
+        chooseAvatar:"Choose Avatar Color",
+        selectGrade:"Select Grade",
+        joinPlatform:"Join Platform",
+        appName:"StudyTogether",
+        toggleSidebar:"Toggle Sidebar",
+        menuToggle:"Menu",
+        copyCode:"Copy Code",
+        shareLink:"Share Link",
+        save:"Save",
+        enterRooms:"Enter Rooms",
+        browse:"Browse",
+        createNow:"Create Now",
+        joinNow:"Join Now",
+        joinRoom:"Join Room",
+        createRoom:"Create Room",
+        enterRoomCode:"Enter Room Code",
+        leaveRoom:"Leave Room",
+        roomCode:"Room Code",
+        subject:"Subject",
+        selectSubject:"Select Subject",
+        studyRoom:"Study Room",
+        startNewSession:"Start a new study session",
+        enterRoomCodeToJoin:"Enter a room code to join",
+        joinOrCreateRooms:"Join or create virtual study rooms",
+        accessStudyMaterials:"Access study materials and resources"
+      },
+      ar:{
+        home:"الرئيسية",
+        dashboard:"لوحة التحكم",
+        studyRooms:"غرف الدراسة",
+        digitalLibrary:"المكتبة الرقمية",
+        about:"حول",
+        settings:"الإعدادات",
+        logout:"خروج",
+        welcome:"مرحباً بك",
+        welcomeDesc:"أنشئ ملفك الشخصي للبدء",
+        yourName:"اسمك",
+        chooseAvatar:"اختر لون الصورة الرمزية",
+        selectGrade:"اختر الصف الدراسي",
+        joinPlatform:"انضم للمنصة",
+        appName:"ستدي توغيذر",
+        toggleSidebar:"إظهار/إخفاء الشريط الجانبي",
+        menuToggle:"القائمة",
+        copyCode:"نسخ الكود",
+        shareLink:"مشاركة الرابط",
+        save:"حفظ",
+        enterRooms:"دخول الغرف",
+        browse:"تصفح",
+        createNow:"إنشاء الآن",
+        joinNow:"انضمام الآن",
+        joinRoom:"انضم للغرفة",
+        createRoom:"إنشاء غرفة",
+        enterRoomCode:"أدخل كود الغرفة",
+        leaveRoom:"مغادرة الغرفة",
+        roomCode:"كود الغرفة",
+        subject:"المادة",
+        selectSubject:"اختر المادة",
+        studyRoom:"غرفة الدراسة",
+        startNewSession:"ابدأ جلسة دراسة جديدة",
+        enterRoomCodeToJoin:"أدخل كود الغرفة للانضمام",
+        joinOrCreateRooms:"انضم أو أنشئ غرف دراسة افتراضية",
+        accessStudyMaterials:"الوصول إلى مواد ومصادر الدراسة"
+      }
+    };
+    
+    const subjectsByGrade={
+      10:[{name:"Mathematics",nameAr:"الرياضيات"},{name:"Physics",nameAr:"الفيزياء"}],
+      11:[{name:"Advanced Math",nameAr:"رياضيات متقدمة"},{name:"Chemistry",nameAr:"كيمياء"}],
+      12:[{name:"Calculus",nameAr:"تفاضل وتكامل"},{name:"Biology",nameAr:"أحياء"}]
+    };
 
-    // ---------- TRANSLATIONS / SUBJECTS (trimmed for brevity) ----------
-    const translations={en:{home:"Home",dashboard:"Dashboard",studyRooms:"Study Rooms",digitalLibrary:"Digital Library",about:"About",settings:"Settings",logout:"Logout",welcome:"Welcome",welcomeDesc:"Create your profile to start",yourName:"Your Name",chooseAvatar:"Choose Avatar Color",selectGrade:"Select Grade",joinPlatform:"Join Platform",appName:"StudyTogether",joinOrCreateRooms:"Join or create virtual study rooms",enterRooms:"Enter Rooms",browse:"Browse",createNow:"Create Now",joinNow:"Join Now",joinRoom:"Join Room",createRoom:"Create Room",enterRoomCode:"Enter Room Code",leaveRoom:"Leave Room",roomCode:"Room Code",subject:"Subject",selectSubject:"Select Subject",studyRoom:"Study Room",startNewSession:"Start a new study session",enterRoomCodeToJoin:"Enter a room code to join",accessStudyMaterials:"Access study materials and resources"},ar:{home:"الرئيسية",dashboard:"لوحة التحكم",studyRooms:"غرف الدراسة",digitalLibrary:"المكتبة الرقمية",about:"حول",settings:"الإعدادات",logout:"خروج",welcome:"مرحباً بك",welcomeDesc:"أنشئ ملفك الشخصي للبدء",yourName:"اسمك",chooseAvatar:"اختر لون الصورة الرمزية",selectGrade:"اختر الصف الدراسي",joinPlatform:"انضم للمنصة",appName:"ستدي توغيذر",joinOrCreateRooms:"انضم أو أنشئ غرف دراسة افتراضية",enterRooms:"دخول الغرف",browse:"تصفح",createNow:"إنشاء الآن",joinNow:"انضمام الآن",joinRoom:"انضم للغرفة",createRoom:"إنشاء غرفة",enterRoomCode:"أدخل كود الغرفة",leaveRoom:"مغادرة الغرفة",roomCode:"كود الغرفة",subject:"المادة",selectSubject:"اختر المادة",studyRoom:"غرفة الدراسة",startNewSession:"ابدأ جلسة دراسة جديدة",enterRoomCodeToJoin:"أدخل كود الغرفة للانضمام",accessStudyMaterials:"الوصول إلى مواد ومصادر الدراسة"}};
-    const subjectsByGrade={10:[{name:"Mathematics",nameAr:"الرياضيات"},{name:"Physics",nameAr:"الفيزياء"}],11:[{name:"Advanced Math",nameAr:"رياضيات متقدمة"},{name:"Chemistry",nameAr:"كيمياء"}],12:[{name:"Calculus",nameAr:"تفاضل وتكامل"},{name:"Biology",nameAr:"أحياء"}]};
+    // -------- DOM --------
+    const sidebar=document.getElementById('sidebar');
+    const header=document.getElementById('header');
+    const mainContainer=document.getElementById('main-container');
+    const sidebarOverlay=document.getElementById('sidebar-overlay');
+    const gradeSelect=document.getElementById('grade-select');
+    const roomSubjectSelect=document.getElementById('room-subject-select');
 
-    // ---------- STATE ----------
-    let supabase=null,currentUser=null,currentRoom=null;
-    let chatSub=null, participantSub=null;
-    let gotRealtimeRecently=false, realtimeWatchdog=null, poller=null;
-    let currentLanguage = localStorage.getItem('studyTogether_language')||'en';
-    let currentTheme = localStorage.getItem('studyTogether_theme')||'light';
-    let selectedColor='#667eea', sidebarOpen=JSON.parse(localStorage.getItem('studyTogether_sidebarOpen')||'false');
+    // -------- STATE --------
+    let currentUser=null,currentRoom=null,currentLanguage='en',currentTheme='light';
+    let timerInterval=null,timerSeconds=1500,timerRunning=false;
+    let supabase=null,chatSubscription=null,participantsSubscription=null,roomCodeFromUrl=null;
+    let selectedColor='#667eea';
+    let sidebarOpen=JSON.parse(localStorage.getItem('studyTogether_sidebarOpen')||'false');
 
-    document.addEventListener('DOMContentLoaded', initApp);
+    document.addEventListener('DOMContentLoaded',initApp);
 
     function initApp(){
-      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+      try{
+        supabase=window.supabase.createClient('https://lpabkpwepnbvgkznzlkf.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwYWJrcHdlcG5idmdrem56bGtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4ODI2MTUsImV4cCI6MjA3MTQ1ODYxNX0.d4eKNAu3KjVXFnXuQlPUnST0eC2ynL1al9w8AQE16R0');
+      }catch(e){console.error('Supabase init failed:',e)}
       loadPreferences();
       setupEventListeners();
       handleUrlParams();
@@ -353,119 +479,247 @@
     }
 
     function loadPreferences(){
-      // noop for now
+      currentLanguage=localStorage.getItem('studyTogether_language')||'en';
+      currentTheme=localStorage.getItem('studyTogether_theme')||'light';
     }
 
+    // Capture ?room=CODE for deep-link join
     function handleUrlParams(){
       const params=new URLSearchParams(window.location.search);
-      const code=params.get('room');
-      if(code){ sessionStorage.setItem('deep_link_room', code.toUpperCase()); history.replaceState({},document.title,location.pathname); }
+      roomCodeFromUrl=params.get('room');
+      // Clean the URL bar but keep the value in memory
+      if(roomCodeFromUrl){ window.history.replaceState({},document.title,window.location.pathname); }
     }
 
-    // ---------- AUTH / USER ----------
+    // -------- AUTH / USER --------
     function checkSavedUser(){
       const savedUser=localStorage.getItem('studyTogether_user');
-      const deepLink = sessionStorage.getItem('deep_link_room');
       if(savedUser){
         currentUser=JSON.parse(savedUser);
         showLoggedInLayout();
 
-        const savedRoom=localStorage.getItem('studyTogether_room');
-        if(savedRoom){
-          const r=JSON.parse(savedRoom);
-          supabase.from('rooms').select('*').eq('id',r.id).eq('is_active',true).single().then(async ({data})=>{
-            if(data){ await joinRoomById(data.id,data.room_code,data.host_id,true); }
-            else if(deepLink){ await joinRoom(deepLink); }
-            else{ navigateToScreen('home-screen'); }
-          });
-        }else if(deepLink){
-          joinRoom(deepLink);
+        // NEW: restore room if it was active before refresh
+        const savedRoomStr=localStorage.getItem('studyTogether_room');
+        if(savedRoomStr){
+          const saved=JSON.parse(savedRoomStr);
+          // Re-validate the room and re-upsert presence
+          supabase.from('rooms')
+            .select('*').eq('id',saved.id).eq('is_active',true).single()
+            .then(async ({data,error})=>{
+              if(!error && data){
+                await joinRoomById(data.id,data.room_code,data.host_id);
+                toast('Rejoined your room after refresh.','info','Welcome back');
+              }else if(roomCodeFromUrl){
+                // Fallback to link (if any)
+                toast('Joining room from link…','info');
+                joinRoom(roomCodeFromUrl.toUpperCase()); 
+                roomCodeFromUrl=null;
+              }else{
+                navigateToScreen('home-screen');
+              }
+            });
+        }else if(roomCodeFromUrl){
+          toast('Joining room from link…','info');
+          joinRoom(roomCodeFromUrl.toUpperCase());
+          roomCodeFromUrl=null;
         }else{
           navigateToScreen('home-screen');
         }
       }else{
+        // Not registered yet
         showLoggedOutLayout();
-        if(deepLink){ toast('Complete registration to join the invited room.','info','Invite detected'); }
+        // Optional hint if they arrived via invite link
+        if(roomCodeFromUrl){
+          toast('Complete registration to join the invited room.','info','Invite detected');
+        }
       }
     }
 
     async function completeRegistration(){
       const name=document.getElementById('student-name').value.trim();
-      const grade=document.getElementById('grade-select').value;
+      const grade=gradeSelect.value;
       if(!name||!grade){ alert('Please enter your name and select a grade.'); return; }
       try{
-        const {data,error}=await supabase.from('users').insert([{name,avatar_color:selectedColor,grade,subject:null}]).select().single();
+        const payload={ name, avatar_color:selectedColor, grade, subject:null };
+        const {data,error}=await supabase.from('users').insert([payload]).select().single();
         if(error) throw error;
         currentUser=data;
         localStorage.setItem('studyTogether_user',JSON.stringify(currentUser));
         showLoggedInLayout();
 
-        const deepLink = sessionStorage.getItem('deep_link_room');
-        if(deepLink){ await joinRoom(deepLink); sessionStorage.removeItem('deep_link_room'); }
-        else navigateToScreen('home-screen');
-      }catch(e){ console.error(e); alert('Registration failed.'); }
+        // NEW: if they came via invite link, auto-join that room now
+        if(roomCodeFromUrl){
+          toast('Joining room from link…','info');
+          await joinRoom(roomCodeFromUrl.toUpperCase());
+          roomCodeFromUrl=null;
+        }else{
+          navigateToScreen('home-screen');
+        }
+      }catch(e){
+        console.error('Registration error:',e);
+        alert('Registration failed.');
+      }
     }
 
     function logout(){
       if(currentRoom) leaveRoom(true);
-      localStorage.clear(); currentUser=null;
+      currentUser=null;
+      localStorage.clear();
       showLoggedOutLayout();
     }
 
-    // ---------- LAYOUT ----------
-    const sidebar=document.getElementById('sidebar'), header=document.getElementById('header'), mainContainer=document.getElementById('main-container');
+    // -------- LAYOUT / NAV --------
     function showLoggedInLayout(){
-      sidebar.style.display='flex'; header.style.display='flex'; mainContainer.style.display='block';
+      sidebar.style.display='flex';
+      header.style.display='flex';
+      mainContainer.style.display='block';
       document.getElementById('registration-screen').classList.remove('active');
       updateSidebarUserInfo();
+      setTimeout(() => {
+        updateLayoutForSidebar(true);
+      }, 50);
     }
+
     function showLoggedOutLayout(){
-      sidebar.style.display='none'; header.style.display='none'; mainContainer.style.display='block';
+      sidebar.style.display='none';
+      header.style.display='none';
+      mainContainer.style.display='block';
+      mainContainer.classList.remove('with-sidebar');
+      header.classList.remove('with-sidebar');
+      sidebar.classList.remove('active', 'mobile-active');
+      sidebarOverlay.classList.remove('active');
       navigateToScreen('registration-screen');
     }
-    function navigateToScreen(id){
-      if(id!=='room-screen' && currentRoom){
+
+    function navigateToScreen(screenId){
+      if(screenId!=='room-screen' && currentRoom){
         if(!confirm('This will leave your current study room. Proceed?')) return;
         leaveRoom();
       }
       document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.screen===id));
+      document.getElementById(screenId).classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(item=>item.classList.toggle('active',item.dataset.screen===screenId));
+      if(screenId==='settings-screen') populateSettings();
+      
+      // Auto-hide sidebar after navigation
       toggleSidebar(false);
-      if(id==='settings-screen') populateSettings();
-    }
-    function toggleSidebar(force){
-      const overlay=document.getElementById('sidebar-overlay');
-      const should=(force!==undefined)?force:!sidebar.classList.contains('active');
-      sidebarOpen=should; localStorage.setItem('studyTogether_sidebarOpen', JSON.stringify(sidebarOpen));
-      sidebar.classList.toggle('active', should);
-      overlay.classList.toggle('active', should);
-      document.getElementById('menu-toggle')?.classList.toggle('active', should);
     }
 
-    // ---------- UI / PREFS ----------
+    function toggleSidebar(force){
+      const isMobile = window.innerWidth <= 1024;
+      const menuToggleBtn = document.getElementById('menu-toggle');
+      
+      if(isMobile){
+        const shouldBeActive = (force !== undefined) ? force : !sidebar.classList.contains('mobile-active');
+        
+        if(shouldBeActive) {
+          sidebar.classList.add('mobile-active');
+          sidebarOverlay.classList.add('active');
+          menuToggleBtn?.classList.add('active');
+        } else {
+          sidebar.classList.remove('mobile-active');
+          sidebarOverlay.classList.remove('active');
+          menuToggleBtn?.classList.remove('active');
+        }
+      } else {
+        const shouldBeActive = (force !== undefined) ? force : !sidebar.classList.contains('active');
+        sidebarOpen = shouldBeActive;
+        
+        localStorage.setItem('studyTogether_sidebarOpen', JSON.stringify(sidebarOpen));
+        
+        if(shouldBeActive) {
+          sidebar.classList.add('active');
+          sidebarOverlay.classList.add('active');
+          menuToggleBtn?.classList.add('active');
+        } else {
+          sidebar.classList.remove('active');
+          sidebarOverlay.classList.remove('active');
+          menuToggleBtn?.classList.remove('active');
+        }
+      }
+    }
+
+    function updateLayoutForSidebar(initial=false){
+      const isDesktop = window.innerWidth > 1024;
+      const menuToggleBtn = document.getElementById('menu-toggle');
+      
+      if(isDesktop){
+        sidebar.classList.remove('mobile-active');
+        
+        if(sidebarOpen) {
+          sidebar.classList.add('active');
+          sidebarOverlay.classList.add('active');
+          menuToggleBtn?.classList.add('active');
+        } else {
+          sidebar.classList.remove('active');
+          sidebarOverlay.classList.remove('active');
+          menuToggleBtn?.classList.remove('active');
+        }
+        
+        mainContainer.classList.remove('with-sidebar');
+        header.classList.remove('with-sidebar');
+      } else {
+        sidebar.classList.remove('active');
+        mainContainer.classList.remove('with-sidebar');
+        header.classList.remove('with-sidebar');
+        
+        if(!sidebar.classList.contains('mobile-active')) {
+          sidebarOverlay.classList.remove('active');
+          menuToggleBtn?.classList.remove('active');
+        }
+      }
+    }
+
+    // -------- UI / PREFERENCES --------
     function applyTheme(){
       document.body.setAttribute('data-theme',currentTheme);
       document.getElementById('theme-icon').textContent=currentTheme==='light'?'🌙':'☀️';
-      const el=document.getElementById('theme-text'); if(el) el.textContent=currentTheme==='light'?'🌙 Dark':'☀️ Light';
+      const themeText=document.getElementById('theme-text'); 
+      if(themeText) themeText.textContent=currentTheme==='light'?'🌙 Dark':'☀️ Light';
     }
-    function toggleTheme(){ currentTheme=currentTheme==='light'?'dark':'light'; localStorage.setItem('studyTogether_theme',currentTheme); applyTheme(); }
-    function toggleLanguage(){ currentLanguage=currentLanguage==='en'?'ar':'en'; localStorage.setItem('studyTogether_language',currentLanguage); updateLanguage(); }
+    
+    function toggleTheme(){
+      currentTheme=currentTheme==='light'?'dark':'light';
+      localStorage.setItem('studyTogether_theme',currentTheme);
+      applyTheme();
+    }
+
     function updateLanguage(){
       document.documentElement.dir=(currentLanguage==='ar')?'rtl':'ltr';
       document.documentElement.lang=currentLanguage;
       document.getElementById('lang-icon').textContent=currentLanguage==='ar'?'EN':'ع';
-      document.querySelectorAll('[data-translate]').forEach(el=>{ const k=el.getAttribute('data-translate'); if(translations[currentLanguage][k]) el.textContent=translations[currentLanguage][k]; });
-      populateRoomSubjects(currentUser?.grade || document.getElementById('grade-select').value);
+      const lt=document.getElementById('lang-text'); 
+      if(lt) lt.textContent=currentLanguage==='ar'?'English':'العربية';
+      
+      document.querySelectorAll('[data-translate]').forEach(el=>{
+        const key=el.getAttribute('data-translate');
+        if(translations[currentLanguage][key]) el.textContent=translations[currentLanguage][key];
+      });
+      
+      document.querySelectorAll('[data-translate-title]').forEach(el=>{
+        const key=el.getAttribute('data-translate-title');
+        if(translations[currentLanguage][key]) el.title=translations[currentLanguage][key];
+      });
+      
+      populateRoomSubjects(currentUser?.grade || gradeSelect.value);
     }
+    
+    function toggleLanguage(){
+      currentLanguage=currentLanguage==='en'?'ar':'en';
+      localStorage.setItem('studyTogether_language',currentLanguage);
+      updateLanguage();
+    }
+
     function updateSidebarUserInfo(){
       if(!currentUser) return;
       const av=document.getElementById('sidebar-avatar');
       av.style.background=currentUser.avatar_color||'#667eea';
       av.textContent=(currentUser.name?.[0]||'U').toUpperCase();
       document.getElementById('sidebar-user-name').textContent=currentUser.name;
-      document.getElementById('sidebar-user-grade').textContent=`Grade ${currentUser.grade}${currentUser.subject?(' - '+currentUser.subject):''}`;
+      const subj = currentUser.subject ? ` - ${currentUser.subject}` : '';
+      document.getElementById('sidebar-user-grade').textContent=`Grade ${currentUser.grade}${subj}`;
     }
+
     function populateSettings(){
       if(!currentUser) return;
       document.getElementById('settings-name').textContent=currentUser.name;
@@ -473,56 +727,103 @@
       document.getElementById('settings-subject').textContent=currentUser.subject || '-';
     }
 
-    // ---------- TOAST ----------
-    function toast(msg,type='info',titleText){
-      const t=document.createElement('div'); t.className=`toast ${type}`;
-      t.innerHTML=`<div><div class="title">${titleText|| (type==='success'?'Success':'Notice')}</div><div class="msg">${escapeHtml(msg)}</div></div>`;
+    // -------- Toasts --------
+    function toast(message,type='info',titleText){
+      const t=document.createElement('div');
+      t.className=`toast ${type}`;
+      t.innerHTML=`<div><div class="title">${titleText|| (type==='success'?'Success':'Notice')}</div><div class="msg">${escapeHtml(message)}</div></div>`;
       document.body.appendChild(t);
-      setTimeout(()=>{ t.style.opacity='.0'; t.style.transform='translateX(20px)'; setTimeout(()=>t.remove(),220); }, 3500);
+      setTimeout(()=>{ 
+        t.style.opacity='.0'; 
+        t.style.transform='translateX(20px)'; 
+        setTimeout(()=>t.remove(),250); 
+      }, 3500);
     }
 
-    // ---------- ROOM ----------
+    // -------- ROOM LOGIC --------
     async function createRoom(){
-      if(!currentUser){ alert('Please log in first.'); return; }
-      const code=Array(6).fill(0).map(()=> 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
-      const {data,error}=await supabase.from('rooms').insert([{room_code:code,host_id:currentUser.id,is_active:true}]).select().single();
-      if(error||!data){ alert('Failed to create room.'); return; }
-      await joinRoomById(data.id,data.room_code,data.host_id);
-      toast('Room created','success','Created');
+      if(!currentUser){
+        alert('Please log in first.');
+        return;
+      }
+      
+      try{
+        const roomCode=Array(6).fill(0).map(()=> 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random()*36)]).join('');
+        const roomData = {
+          room_code: roomCode,
+          host_id: currentUser.id,
+          is_active: true
+        };
+        
+        const {data,error}=await supabase.from('rooms').insert([roomData]).select().single();
+        if(error) {
+          console.error('Room creation error:', error);
+          alert(`Failed to create room: ${error.message || 'Unknown error'}`);
+          return;
+        }
+        
+        if(!data) {
+          alert('Failed to create room: No data returned');
+          return;
+        }
+        
+        await joinRoomById(data.id,data.room_code,data.host_id);
+        toast('Room created successfully!', 'success', 'Created');
+      }catch(e){ 
+        console.error('Room creation exception:', e); 
+        alert(`Failed to create room: ${e.message || 'Unknown error'}`); 
+      }
     }
 
     async function joinRoom(codeOverride=null){
       const code=(codeOverride || document.getElementById('room-code-input').value).toUpperCase().trim();
       if(!code) return;
-      const {data,error}=await supabase.from('rooms').select('*').eq('room_code',code).eq('is_active',true).single();
-      if(error||!data){ alert('Room not found or inactive.'); return; }
-      await joinRoomById(data.id,data.room_code,data.host_id);
+      try{
+        const {data,error}=await supabase.from('rooms').select('*').eq('room_code',code).eq('is_active',true).single();
+        if(error || !data){ alert('Room not found or is inactive.'); return; }
+        await joinRoomById(data.id,data.room_code,data.host_id);
+      }catch(e){ console.error(e); alert('Failed to join room.'); }
     }
 
-    async function joinRoomById(roomId,roomCode,hostId,isRefresh=false){
-      // Upsert presence
-      await supabase.from('room_participants').upsert({
-        room_id:roomId,user_id:currentUser.id,is_online:true,joined_at:new Date().toISOString()
-      },{onConflict:'room_id,user_id'});
+    async function joinRoomById(roomId,roomCode,roomHostId){
+      try{
+        // Upsert your online presence (safe for refreshes)
+        const {error: participantError} = await supabase.from('room_participants').upsert({
+          room_id:roomId,
+          user_id:currentUser.id,
+          is_online:true,
+          joined_at: new Date().toISOString()
+        },{onConflict:'room_id,user_id'});
+        
+        if(participantError){
+          console.error('Failed to join room as participant:', participantError);
+          alert(`Failed to join room: ${participantError.message || 'Unknown error'}`);
+          return;
+        }
+        
+        currentRoom={id:roomId,code:roomCode,host_id:roomHostId};
+        localStorage.setItem('studyTogether_room',JSON.stringify(currentRoom));
+        document.getElementById('current-room-code').textContent=roomCode;
+        populateRoomSubjects(currentUser.grade);
+        await loadRoomSubjectIntoUI();
+        setupRoomSubscriptions();
+        loadRoomData();
+        navigateToScreen('room-screen');
 
-      currentRoom={id:roomId,code:roomCode,host_id:hostId};
-      localStorage.setItem('studyTogether_room', JSON.stringify(currentRoom));
-      document.getElementById('current-room-code').textContent=roomCode;
-      populateRoomSubjects(currentUser.grade);
-      await loadRoomSubjectIntoUI();
-
-      setupRealtimeWithFallback();  // <— key fix
-      await initialLoad();          // load once immediately
-      navigateToScreen('room-screen');
-
-      if(!isRefresh) await sendSystemMessage(`${currentUser.name} joined the room.`);
+        // Send a system message only if this is a *new* join (avoid double on very fast refresh)
+        await sendSystemMessage(`${currentUser.name} joined the room.`);
+      }catch(e){ 
+        console.error('Exception joining room:', e); 
+        alert(`Failed to join room: ${e.message || 'Unknown error'}`);
+      }
     }
 
     function leaveRoom(isLoggingOut=false){
       if(!currentRoom) return;
       sendSystemMessage(`${currentUser.name} left the room.`);
       supabase.from('room_participants').delete().match({room_id:currentRoom.id,user_id:currentUser.id});
-      tearDownRealtime();
+      if(chatSubscription) chatSubscription.unsubscribe();
+      if(participantsSubscription) participantsSubscription.unsubscribe();
       currentRoom=null;
       localStorage.removeItem('studyTogether_room');
       if(!isLoggingOut) navigateToScreen('study-rooms-screen');
@@ -530,126 +831,87 @@
 
     async function saveRoomSubject(){
       if(!currentRoom) return;
-      const subject=document.getElementById('room-subject-select').value || null;
-      await supabase.from('users').update({subject}).eq('id',currentUser.id);
-      currentUser.subject=subject; localStorage.setItem('studyTogether_user',JSON.stringify(currentUser));
-      updateSidebarUserInfo(); populateSettings();
-      toast(`Subject set to ${subject || '—'}`,'success','Updated');
+      const subject=roomSubjectSelect.value || null;
+      try{
+        currentUser.subject=subject;
+        await supabase.from('users').update({subject}).eq('id',currentUser.id);
+        localStorage.setItem('studyTogether_user',JSON.stringify(currentUser));
+        populateSettings();
+        updateSidebarUserInfo();
+        toast(`Subject set to ${subject || '—'}`,'success','Updated');
+      }catch(e){ console.error(e); alert('Failed saving subject'); }
     }
+
     async function loadRoomSubjectIntoUI(){
-      document.getElementById('room-subject-select').value=currentUser.subject || '';
-      populateSettings(); updateSidebarUserInfo();
+      if(!currentRoom) return;
+      roomSubjectSelect.value=currentUser.subject || '';
+      populateSettings();
+      updateSidebarUserInfo();
     }
 
-    // ---------- REALTIME + FALLBACK ----------
-    function tearDownRealtime(){
-      chatSub?.unsubscribe(); participantSub?.unsubscribe();
-      chatSub=null; participantSub=null;
-      clearInterval(poller); poller=null;
-      clearTimeout(realtimeWatchdog); realtimeWatchdog=null;
+    async function kickParticipant(userId,userName){
+      if(!confirm(`Are you sure you want to kick ${userName}?`)) return;
+      try{
+        await supabase.from('room_participants').delete().match({room_id:currentRoom.id,user_id:userId});
+        await sendSystemMessage(`${userName} was removed by the host.`);
+      }catch(e){ console.error(e); }
     }
 
-    function setupRealtimeWithFallback(){
-      tearDownRealtime();
-      gotRealtimeRecently=false;
+    // -------- REAL-TIME --------
+    function setupRoomSubscriptions(){
+      if(chatSubscription) chatSubscription.unsubscribe();
+      if(participantsSubscription) participantsSubscription.unsubscribe();
 
-      // messages: append instantly on INSERT; reload on UPDATE/DELETE
-      chatSub = supabase.channel(`chat-${currentRoom.id}`)
-        .on('postgres_changes', { event:'INSERT', schema:'public', table:'messages', filter:`room_id=eq.${currentRoom.id}` },
-          payload => { gotRealtimePing(); appendIncomingMessage(payload.new); })
-        .on('postgres_changes', { event:'UPDATE', schema:'public', table:'messages', filter:`room_id=eq.${currentRoom.id}` },
-          () => { gotRealtimePing(); loadMessages(); })
-        .on('postgres_changes', { event:'DELETE', schema:'public', table:'messages', filter:`room_id=eq.${currentRoom.id}` },
-          () => { gotRealtimePing(); loadMessages(); })
+      chatSubscription = supabase.channel(`chat-${currentRoom.id}`)
+        .on('postgres_changes',{event:'*',schema:'public',table:'messages',filter:`room_id=eq.${currentRoom.id}`}, loadMessages)
         .subscribe();
 
-      // participants: refresh & toast on join/leave
-      participantSub = supabase.channel(`participants-${currentRoom.id}`)
-        .on('postgres_changes',{ event:'INSERT', schema:'public', table:'room_participants', filter:`room_id=eq.${currentRoom.id}`},
-          async (payload)=>{ gotRealtimePing(); await loadParticipants(); if(payload.new?.user_id!==currentUser.id){ const u=await fetchUser(payload.new.user_id); toast(`${u?.name||'Someone'} joined the room`,'info','Participant joined'); }})
-        .on('postgres_changes',{ event:'DELETE', schema:'public', table:'room_participants', filter:`room_id=eq.${currentRoom.id}`},
-          async (payload)=>{ gotRealtimePing(); await loadParticipants(); if(payload.old?.user_id!==currentUser.id){ const u=await fetchUser(payload.old.user_id); toast(`${u?.name||'Someone'} left the room`,'info','Participant left'); }})
+      participantsSubscription = supabase.channel(`participants-${currentRoom.id}`)
+        .on('postgres_changes',{event:'*',schema:'public',table:'room_participants',filter:`room_id=eq.${currentRoom.id}`}, async (payload)=>{
+          await loadParticipants();
+          if(payload.eventType==='INSERT' && payload.new?.user_id !== currentUser.id){
+            const u = await fetchUser(payload.new.user_id);
+            toast(`${u?.name || 'Someone'} joined the room`,'info','Participant joined');
+          }
+          if(payload.eventType==='DELETE' && payload.old?.user_id !== currentUser.id){
+            const u = await fetchUser(payload.old.user_id);
+            toast(`${u?.name || 'Someone'} left the room`,'info','Participant left');
+          }
+        })
         .subscribe();
-
-      // watchdog: if no realtime after 6s, switch to polling every 2s
-      realtimeWatchdog = setTimeout(()=>{
-        if(!gotRealtimeRecently){
-          startPollingFallback();
-          toast('Realtime not active. Using auto-refresh. Enable Realtime on tables to improve speed.','info','Fallback enabled');
-        }
-      }, 6000);
     }
 
-    function gotRealtimePing(){ gotRealtimeRecently=true; }
-
-    function startPollingFallback(){
-      clearInterval(poller);
-      poller = setInterval(async ()=>{
-        await Promise.all([loadMessages(), loadParticipants()]);
-      }, 2000); // gentle 2s poll
+    async function loadRoomData(){
+      await Promise.all([loadMessages(), loadParticipants()]);
     }
 
-    async function initialLoad(){ await Promise.all([loadMessages(), loadParticipants()]); }
-
-    // ---------- DATA LOAD / RENDER ----------
     async function loadMessages(){
       if(!currentRoom) return;
-      const {data,error}=await supabase.from('messages').select(`id,room_id,user_id,content,message_type,created_at, users(name)`).eq('room_id',currentRoom.id).order('created_at');
-      if(error) return console.error(error);
-      const cont=document.getElementById('chat-messages');
-      const nearBottom=cont.scrollTop + cont.clientHeight >= cont.scrollHeight - 20;
-      cont.innerHTML=data.map(renderMessage).join('');
-      if(nearBottom) cont.scrollTop = cont.scrollHeight;
-    }
-
-    function appendIncomingMessage(m){
-      // Fetch username only if needed
-      const cont=document.getElementById('chat-messages');
-      const nearBottom=cont.scrollTop + cont.clientHeight >= cont.scrollHeight - 20;
-
-      let html='';
-      if(m.message_type==='system'){
-        html = `<div class="chat-message" style="max-width:100%;text-align:center;background:none;box-shadow:none;color:var(--text-secondary);">${escapeHtml(m.content)}</div>`;
-        cont.insertAdjacentHTML('beforeend', html);
-      }else{
-        // Optimistic: use current user name if sender is me; otherwise lazy-fetch
-        const isOwn = m.user_id===currentUser.id;
-        const name = isOwn ? currentUser.name : 'User';
-        const time = new Date(m.created_at || Date.now()).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-        html = `<div class="chat-message ${isOwn?'own':''}"><div><b>${escapeHtml(name)}</b> • <small>${time}</small></div><div>${escapeHtml(m.content)}</div></div>`;
-        cont.insertAdjacentHTML('beforeend', html);
-        if(!isOwn){ // backfill exact name
-          fetchUser(m.user_id).then(u=>{
-            if(!u) return;
-            // update the last inserted bubble if it still shows "User"
-            const last=cont.lastElementChild?.querySelector('b');
-            if(last && last.textContent==='User'){ last.textContent=u.name; }
-          });
-        }
-      }
-      if(nearBottom) cont.scrollTop = cont.scrollHeight;
-    }
-
-    function renderMessage(m){
-      if(m.message_type==='system'){
-        return `<div class="chat-message" style="max-width:100%;text-align:center;background:none;box-shadow:none;color:var(--text-secondary);">${escapeHtml(m.content)}</div>`;
-      }
-      const isOwn=m.user_id===currentUser.id;
-      const time=new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-      const name=m.users?.name || (isOwn?currentUser.name:'User');
-      return `<div class="chat-message ${isOwn?'own':''}"><div><b>${escapeHtml(name)}</b> • <small>${time}</small></div><div>${escapeHtml(m.content)}</div></div>`;
+      const {data,error}=await supabase.from('messages').select(`*, users(name)`).eq('room_id',currentRoom.id).order('created_at');
+      if(error){ console.error(error); return; }
+      const container=document.getElementById('chat-messages');
+      const shouldScroll=container.scrollTop + container.clientHeight >= container.scrollHeight - 20;
+      container.innerHTML=data.map(m=>{
+        if(m.message_type==='system') return `<div class="chat-message" style="max-width:100%;text-align:center;background:none;box-shadow:none;color:var(--text-secondary);">${escapeHtml(m.content)}</div>`;
+        const isOwn=m.user_id===currentUser.id;
+        const time=new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+        return `<div class="chat-message ${isOwn?'own':''}"><div><b>${escapeHtml(m.users?.name || 'User')}</b> • <small>${time}</small></div><div>${escapeHtml(m.content)}</div></div>`;
+      }).join('');
+      if(shouldScroll) container.scrollTop = container.scrollHeight;
     }
 
     async function loadParticipants(){
       if(!currentRoom) return;
-      const {data,error}=await supabase.from('room_participants').select(`user_id,is_online`).eq('room_id',currentRoom.id).eq('is_online',true);
+      let {data, error}=await supabase.from('room_participants').select(`user_id,is_online,room_id`).eq('room_id',currentRoom.id).eq('is_online',true);
       if(error){ console.error(error); return; }
-      const ids=[...new Set(data.map(p=>p.user_id))];
-      const map=await fetchUsersMap(ids);
+      const userIds = [...new Set(data.map(p=>p.user_id))];
+      const usersMap = await fetchUsersMap(userIds);
+
+      const container=document.getElementById('participants-list');
       const isHost=currentUser.id===currentRoom.host_id;
-      const cont=document.getElementById('participants-list');
-      cont.innerHTML = data.map(p=>{
-        const u=map[p.user_id]; if(!u) return '';
+      container.innerHTML = data.map(p=>{
+        const u=usersMap[p.user_id];
+        if(!u) return '';
         const isParticipantHost = u.id===currentRoom.host_id;
         const kickBtn = isHost && !isParticipantHost ? `<button class="btn btn-small" style="background:var(--error-color)" onclick="kickParticipant('${u.id}','${escapeHtml(u.name)}')">Kick</button>` : '';
         return `<div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;background:var(--bg-tertiary);border-radius:12px;margin-bottom:1rem;">
@@ -663,76 +925,143 @@
     }
 
     async function fetchUsersMap(ids){
-      if(!ids.length) return {};
-      const {data}=await supabase.from('users').select('id,name,avatar_color').in('id',ids);
-      const m={}; (data||[]).forEach(u=>m[u.id]=u); return m;
+      if(ids.length===0) return {};
+      const {data,error}=await supabase.from('users').select('id,name,avatar_color').in('id',ids);
+      if(error){ console.error(error); return {}; }
+      const map={}; data.forEach(u=>map[u.id]=u); return map;
     }
+    
     async function fetchUser(id){
-      const {data}=await supabase.from('users').select('id,name').eq('id',id).single();
-      return data||null;
+      const {data,error}=await supabase.from('users').select('id,name').eq('id',id).single();
+      return error?null:data;
     }
 
-    // ---------- CHAT ----------
     async function sendMessage(){
       const input=document.getElementById('chat-input');
-      const content=input.value.trim(); if(!content||!currentRoom) return;
+      const content=input.value.trim();
+      if(!content || !currentRoom) return;
       input.value='';
-      await supabase.from('messages').insert([{room_id:currentRoom.id,user_id:currentUser.id,content}]);
-      // If realtime is off, the fallback poller will pick it up within ~2s.
-      // For instant local echo even without realtime, you can also call appendIncomingMessage(...)
-    }
-    async function sendSystemMessage(content){
-      if(!currentRoom) return;
-      await supabase.from('messages').insert([{room_id:currentRoom.id,user_id:currentUser.id,content,message_type:'system'}]);
+      try{ 
+        await supabase.from('messages').insert([{room_id:currentRoom.id,user_id:currentUser.id,content}]); 
+      }catch(e){ console.error(e); }
     }
 
-    // ---------- MISC ----------
+    async function sendSystemMessage(content){
+      if(!currentRoom) return;
+      try{ 
+        await supabase.from('messages').insert([{room_id:currentRoom.id,user_id:currentUser.id,content,message_type:'system'}]); 
+      }catch(e){ console.error(e); }
+    }
+
+    // -------- EVENTS / HELPERS --------
     function setupEventListeners(){
-      window.addEventListener('resize',()=>{});
+      window.addEventListener('resize',()=>updateLayoutForSidebar());
+
+      // Keep presence "online" while tab is open (simple heartbeat)
+      setInterval(()=> {
+        if(currentRoom && currentUser){
+          supabase.from('room_participants')
+            .update({is_online:true})
+            .match({room_id:currentRoom.id,user_id:currentUser.id});
+        }
+      }, 20000);
+
+      // If the browser is closing/crashing we do NOT delete the room; presence upsert on next load will recover.
+      window.addEventListener('beforeunload', ()=> {
+        // Optionally, mark a last_seen timestamp if you add that column in DB.
+      });
+
+      document.querySelectorAll('.tab').forEach(t=> t.onclick=()=>switchTab(t.dataset.tab));
+      document.querySelectorAll('[data-timer]').forEach(b=> b.onclick=()=>setTimerMinutes(parseInt(b.dataset.timer)));
+      document.addEventListener('keydown', (e)=>{
+        if(e.key==='Escape') toggleSidebar(false);
+        if((e.ctrlKey || e.metaKey) && e.key==='b'){
+          e.preventDefault();
+          toggleSidebar();
+        }
+      });
+
+      document.querySelectorAll('.avatar-choice').forEach(c => c.onclick = function(){
+        const prev=document.querySelector('.avatar-choice.selected');
+        if(prev) prev.classList.remove('selected');
+        this.classList.add('selected');
+        selectedColor=this.dataset.color;
+      });
+
       document.getElementById('student-name').addEventListener('input', e => {
         const first = e.target.value.trim().charAt(0).toUpperCase() || 'A';
         document.querySelectorAll('.avatar-choice').forEach(div => { div.textContent = first; });
       });
-      document.querySelectorAll('.avatar-choice').forEach(c=> c.onclick=()=>{ document.querySelector('.avatar-choice.selected')?.classList.remove('selected'); c.classList.add('selected'); selectedColor=c.dataset.color; });
 
       const chatInput=document.getElementById('chat-input');
       chatInput.onkeypress = e => { if(e.key==='Enter') sendMessage(); };
-
-      // keep presence alive
-      setInterval(()=>{ if(currentRoom&&currentUser){ supabase.from('room_participants').update({is_online:true}).match({room_id:currentRoom.id,user_id:currentUser.id}); } }, 20000);
     }
 
     function populateRoomSubjects(grade){
-      const select=document.getElementById('room-subject-select');
-      const label=(translations[currentLanguage]['selectSubject']||'Select Subject');
-      select.innerHTML=`<option value="">-- ${label} --</option>`;
-      (subjectsByGrade[grade]||[]).forEach(s=>{
+      const selectText = translations[currentLanguage]['selectSubject'] || 'Select Subject';
+      roomSubjectSelect.innerHTML = `<option value="">-- ${selectText} --</option>`;
+      const subjects=subjectsByGrade[grade]||[];
+      subjects.forEach(s=>{
         const opt=document.createElement('option');
-        opt.value=s.name; opt.textContent=(currentLanguage==='ar')?s.nameAr:s.name;
-        select.appendChild(opt);
+        opt.value=s.name;
+        opt.textContent = currentLanguage==='ar'? s.nameAr : s.name;
+        roomSubjectSelect.appendChild(opt);
       });
     }
 
-    function copyRoomCode(){ navigator.clipboard.writeText(currentRoom.code).then(()=> toast('Room code copied!','success','Copied')); }
+    function copyRoomCode(){ 
+      navigator.clipboard.writeText(currentRoom.code).then(()=> toast('Room code copied!','success','Copied')); 
+    }
     function shareRoom(){ 
-      const link=`${location.origin}${location.pathname}?room=${currentRoom.code}`;
-      if(navigator.share){ navigator.share({title:'StudyTogether', text:'Join my study room:', url:link}).catch(()=>{}); }
+      const link=`${window.location.origin}${window.location.pathname}?room=${currentRoom.code}`;
+      if(navigator.share){
+        navigator.share({title:'StudyTogether', text:'Join my study room:', url:link}).catch(()=>{});
+      }
       navigator.clipboard.writeText(link).then(()=> toast('Invite link copied!','success','Shared')); 
     }
-    function showJoinForm(){ document.getElementById('join-form').style.display='block'; }
+    function showJoinForm(){ 
+      document.getElementById('join-form').style.display='block'; 
+    }
 
-    function switchTab(tab){ document.querySelector('.tab.active').classList.remove('active'); document.querySelector(`[data-tab="${tab}"]`).classList.add('active'); document.querySelector('.tab-content.active').classList.remove('active'); document.getElementById(`${tab}-content`).classList.add('active'); }
-    document.querySelectorAll('.tab').forEach(t=> t.onclick=()=>switchTab(t.dataset.tab));
+    function switchTab(tabName){
+      document.querySelector('.tab.active').classList.remove('active');
+      document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+      document.querySelector('.tab-content.active').classList.remove('active');
+      document.getElementById(`${tabName}-content`).classList.add('active');
+    }
 
-    function setTimerMinutes(m){ timerSeconds=m*60; resetTimer(); }
-    let timerSeconds=1500,timerRunning=false,timerInterval=null;
-    function startTimer(){ if(timerRunning) return; timerRunning=true; document.getElementById('start-timer-btn').style.display='none'; document.getElementById('pause-timer-btn').style.display='inline-block'; timerInterval=setInterval(()=>{ timerSeconds--; updateTimerDisplay(); if(timerSeconds<=0) timerComplete(); },1000); }
-    function pauseTimer(){ timerRunning=false; clearInterval(timerInterval); document.getElementById('start-timer-btn').style.display='inline-block'; document.getElementById('pause-timer-btn').style.display='none'; }
+    function setTimerMinutes(minutes){ timerSeconds=minutes*60; resetTimer(); }
+    function startTimer(){
+      if(timerRunning) return;
+      timerRunning=true;
+      document.getElementById('start-timer-btn').style.display='none';
+      document.getElementById('pause-timer-btn').style.display='inline-block';
+      timerInterval=setInterval(()=>{
+        timerSeconds--; updateTimerDisplay();
+        if(timerSeconds<=0) timerComplete();
+      },1000);
+    }
+    function pauseTimer(){
+      timerRunning=false;
+      clearInterval(timerInterval);
+      document.getElementById('start-timer-btn').style.display='inline-block';
+      document.getElementById('pause-timer-btn').style.display='none';
+    }
     function resetTimer(){ pauseTimer(); updateTimerDisplay(); }
-    function updateTimerDisplay(){ const m=Math.floor(timerSeconds/60), s=timerSeconds%60; document.getElementById('timer-display').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; }
-    function timerComplete(){ resetTimer(); toast('Timer complete! Great work!','success','Done'); }
+    function updateTimerDisplay(){
+      const m=Math.floor(timerSeconds/60), s=timerSeconds%60;
+      document.getElementById('timer-display').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }
+    function timerComplete(){ 
+      resetTimer(); 
+      toast('Timer complete! Great work!','success','Done'); 
+    }
 
-    function escapeHtml(txt){ const d=document.createElement('div'); d.textContent=txt; return d.innerHTML; }
+    function escapeHtml(text){ 
+      const div=document.createElement('div'); 
+      div.textContent=text; 
+      return div.innerHTML; 
+    }
   </script>
 </body>
 </html>
