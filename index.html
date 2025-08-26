@@ -498,11 +498,9 @@
         currentUser=JSON.parse(savedUser);
         showLoggedInLayout();
 
-        // NEW: restore room if it was active before refresh
         const savedRoomStr=localStorage.getItem('studyTogether_room');
         if(savedRoomStr){
           const saved=JSON.parse(savedRoomStr);
-          // Re-validate the room and re-upsert presence
           supabase.from('rooms')
             .select('*').eq('id',saved.id).eq('is_active',true).single()
             .then(async ({data,error})=>{
@@ -510,7 +508,6 @@
                 await joinRoomById(data.id,data.room_code,data.host_id);
                 toast('Rejoined your room after refresh.','info','Welcome back');
               }else if(roomCodeFromUrl){
-                // Fallback to link (if any)
                 toast('Joining room from link…','info');
                 joinRoom(roomCodeFromUrl.toUpperCase()); 
                 roomCodeFromUrl=null;
@@ -526,9 +523,7 @@
           navigateToScreen('home-screen');
         }
       }else{
-        // Not registered yet
         showLoggedOutLayout();
-        // Optional hint if they arrived via invite link
         if(roomCodeFromUrl){
           toast('Complete registration to join the invited room.','info','Invite detected');
         }
@@ -546,8 +541,6 @@
         currentUser=data;
         localStorage.setItem('studyTogether_user',JSON.stringify(currentUser));
         showLoggedInLayout();
-
-        // NEW: if they came via invite link, auto-join that room now
         if(roomCodeFromUrl){
           toast('Joining room from link…','info');
           await joinRoom(roomCodeFromUrl.toUpperCase());
@@ -600,18 +593,14 @@
       document.getElementById(screenId).classList.add('active');
       document.querySelectorAll('.nav-item').forEach(item=>item.classList.toggle('active',item.dataset.screen===screenId));
       if(screenId==='settings-screen') populateSettings();
-      
-      // Auto-hide sidebar after navigation
       toggleSidebar(false);
     }
 
     function toggleSidebar(force){
       const isMobile = window.innerWidth <= 1024;
       const menuToggleBtn = document.getElementById('menu-toggle');
-      
       if(isMobile){
         const shouldBeActive = (force !== undefined) ? force : !sidebar.classList.contains('mobile-active');
-        
         if(shouldBeActive) {
           sidebar.classList.add('mobile-active');
           sidebarOverlay.classList.add('active');
@@ -624,9 +613,7 @@
       } else {
         const shouldBeActive = (force !== undefined) ? force : !sidebar.classList.contains('active');
         sidebarOpen = shouldBeActive;
-        
         localStorage.setItem('studyTogether_sidebarOpen', JSON.stringify(sidebarOpen));
-        
         if(shouldBeActive) {
           sidebar.classList.add('active');
           sidebarOverlay.classList.add('active');
@@ -642,10 +629,8 @@
     function updateLayoutForSidebar(initial=false){
       const isDesktop = window.innerWidth > 1024;
       const menuToggleBtn = document.getElementById('menu-toggle');
-      
       if(isDesktop){
         sidebar.classList.remove('mobile-active');
-        
         if(sidebarOpen) {
           sidebar.classList.add('active');
           sidebarOverlay.classList.add('active');
@@ -655,14 +640,12 @@
           sidebarOverlay.classList.remove('active');
           menuToggleBtn?.classList.remove('active');
         }
-        
         mainContainer.classList.remove('with-sidebar');
         header.classList.remove('with-sidebar');
       } else {
         sidebar.classList.remove('active');
         mainContainer.classList.remove('with-sidebar');
         header.classList.remove('with-sidebar');
-        
         if(!sidebar.classList.contains('mobile-active')) {
           sidebarOverlay.classList.remove('active');
           menuToggleBtn?.classList.remove('active');
@@ -690,17 +673,14 @@
       document.getElementById('lang-icon').textContent=currentLanguage==='ar'?'EN':'ع';
       const lt=document.getElementById('lang-text'); 
       if(lt) lt.textContent=currentLanguage==='ar'?'English':'العربية';
-      
       document.querySelectorAll('[data-translate]').forEach(el=>{
         const key=el.getAttribute('data-translate');
         if(translations[currentLanguage][key]) el.textContent=translations[currentLanguage][key];
       });
-      
       document.querySelectorAll('[data-translate-title]').forEach(el=>{
         const key=el.getAttribute('data-translate-title');
         if(translations[currentLanguage][key]) el.title=translations[currentLanguage][key];
       });
-      
       populateRoomSubjects(currentUser?.grade || gradeSelect.value);
     }
     
@@ -742,37 +722,16 @@
 
     // -------- ROOM LOGIC --------
     async function createRoom(){
-      if(!currentUser){
-        alert('Please log in first.');
-        return;
-      }
-      
+      if(!currentUser){ alert('Please log in first.'); return; }
       try{
         const roomCode=Array(6).fill(0).map(()=> 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random()*36)]).join('');
-        const roomData = {
-          room_code: roomCode,
-          host_id: currentUser.id,
-          is_active: true
-        };
-        
+        const roomData = { room_code: roomCode, host_id: currentUser.id, is_active: true };
         const {data,error}=await supabase.from('rooms').insert([roomData]).select().single();
-        if(error) {
-          console.error('Room creation error:', error);
-          alert(`Failed to create room: ${error.message || 'Unknown error'}`);
-          return;
-        }
-        
-        if(!data) {
-          alert('Failed to create room: No data returned');
-          return;
-        }
-        
+        if(error) { console.error('Room creation error:', error); alert(`Failed to create room: ${error.message || 'Unknown error'}`); return; }
+        if(!data) { alert('Failed to create room: No data returned'); return; }
         await joinRoomById(data.id,data.room_code,data.host_id);
         toast('Room created successfully!', 'success', 'Created');
-      }catch(e){ 
-        console.error('Room creation exception:', e); 
-        alert(`Failed to create room: ${e.message || 'Unknown error'}`); 
-      }
+      }catch(e){ console.error('Room creation exception:', e); alert(`Failed to create room: ${e.message || 'Unknown error'}`); }
     }
 
     async function joinRoom(codeOverride=null){
@@ -787,19 +746,10 @@
 
     async function joinRoomById(roomId,roomCode,roomHostId){
       try{
-        // Upsert your online presence (safe for refreshes)
         const {error: participantError} = await supabase.from('room_participants').upsert({
-          room_id:roomId,
-          user_id:currentUser.id,
-          is_online:true,
-          joined_at: new Date().toISOString()
+          room_id:roomId, user_id:currentUser.id, is_online:true, joined_at: new Date().toISOString()
         },{onConflict:'room_id,user_id'});
-        
-        if(participantError){
-          console.error('Failed to join room as participant:', participantError);
-          alert(`Failed to join room: ${participantError.message || 'Unknown error'}`);
-          return;
-        }
+        if(participantError){ console.error('Failed to join room as participant:', participantError); alert(`Failed to join room: ${participantError.message || 'Unknown error'}`); return; }
         
         currentRoom={id:roomId,code:roomCode,host_id:roomHostId};
         localStorage.setItem('studyTogether_room',JSON.stringify(currentRoom));
@@ -809,21 +759,21 @@
         setupRoomSubscriptions();
         loadRoomData();
         navigateToScreen('room-screen');
-
-        // Send a system message only if this is a *new* join (avoid double on very fast refresh)
-        await sendSystemMessage(`${currentUser.name} joined the room.`);
-      }catch(e){ 
-        console.error('Exception joining room:', e); 
-        alert(`Failed to join room: ${e.message || 'Unknown error'}`);
-      }
+      }catch(e){ console.error('Exception joining room:', e); alert(`Failed to join room: ${e.message || 'Unknown error'}`); }
     }
 
-    function leaveRoom(isLoggingOut=false){
+    async function leaveRoom(isLoggingOut=false){
       if(!currentRoom) return;
-      sendSystemMessage(`${currentUser.name} left the room.`);
-      supabase.from('room_participants').delete().match({room_id:currentRoom.id,user_id:currentUser.id});
+      await sendSystemMessage(`${currentUser.name} left the room.`);
       if(chatSubscription) chatSubscription.unsubscribe();
       if(participantsSubscription) participantsSubscription.unsubscribe();
+      
+      // We only delete from participants if we are not logging out.
+      // If we are logging out, the record stays and `is_online` will be false after timeout.
+      if (!isLoggingOut) {
+          await supabase.from('room_participants').delete().match({room_id:currentRoom.id,user_id:currentUser.id});
+      }
+      
       currentRoom=null;
       localStorage.removeItem('studyTogether_room');
       if(!isLoggingOut) navigateToScreen('study-rooms-screen');
@@ -857,25 +807,30 @@
       }catch(e){ console.error(e); }
     }
 
-    // -------- REAL-TIME --------
+    // -------- REAL-TIME (UPDATED) --------
     function setupRoomSubscriptions(){
       if(chatSubscription) chatSubscription.unsubscribe();
       if(participantsSubscription) participantsSubscription.unsubscribe();
 
+      // NEW EFFICIENT WAY: Listen only for NEW messages (INSERT)
       chatSubscription = supabase.channel(`chat-${currentRoom.id}`)
-        .on('postgres_changes',{event:'*',schema:'public',table:'messages',filter:`room_id=eq.${currentRoom.id}`}, loadMessages)
+        .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:`room_id=eq.${currentRoom.id}`}, async (payload) => {
+          // A new message has been inserted, just add it to the chat UI
+          const user = await fetchUser(payload.new.user_id);
+          appendMessage(payload.new, user?.name || 'User');
+        })
         .subscribe();
 
+      // Participant subscription: reloading the whole list is okay here as it changes infrequently.
       participantsSubscription = supabase.channel(`participants-${currentRoom.id}`)
         .on('postgres_changes',{event:'*',schema:'public',table:'room_participants',filter:`room_id=eq.${currentRoom.id}`}, async (payload)=>{
           await loadParticipants();
           if(payload.eventType==='INSERT' && payload.new?.user_id !== currentUser.id){
             const u = await fetchUser(payload.new.user_id);
-            toast(`${u?.name || 'Someone'} joined the room`,'info','Participant joined');
+            if (u) toast(`${u.name} joined the room`,'info','Participant joined');
           }
           if(payload.eventType==='DELETE' && payload.old?.user_id !== currentUser.id){
-            const u = await fetchUser(payload.old.user_id);
-            toast(`${u?.name || 'Someone'} left the room`,'info','Participant left');
+            toast(`A participant left the room`,'info','Participant left');
           }
         })
         .subscribe();
@@ -884,20 +839,47 @@
     async function loadRoomData(){
       await Promise.all([loadMessages(), loadParticipants()]);
     }
+    
+    // NEW HELPER FUNCTION: Appends a single message to the chat container
+    function appendMessage(message, userName) {
+        const container = document.getElementById('chat-messages');
+        // Check if user is scrolled to the bottom before adding the new message
+        const shouldScroll = container.scrollTop + container.clientHeight >= container.scrollHeight - 30;
 
+        const messageEl = document.createElement('div');
+        messageEl.classList.add('chat-message');
+        
+        if (message.message_type === 'system') {
+            messageEl.style.cssText = "max-width:100%;text-align:center;background:none;box-shadow:none;color:var(--text-secondary);";
+            messageEl.innerHTML = escapeHtml(message.content);
+        } else {
+            const isOwn = message.user_id === currentUser.id;
+            if (isOwn) messageEl.classList.add('own');
+            
+            const time = new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            messageEl.innerHTML = `<div><b>${escapeHtml(userName)}</b> • <small>${time}</small></div><div>${escapeHtml(message.content)}</div>`;
+        }
+        
+        container.appendChild(messageEl);
+
+        // Scroll to bottom only if they were already there
+        if (shouldScroll) {
+            container.scrollTop = container.scrollHeight;
+        }
+    }
+
+    // UPDATED: Now uses the new appendMessage helper
     async function loadMessages(){
       if(!currentRoom) return;
       const {data,error}=await supabase.from('messages').select(`*, users(name)`).eq('room_id',currentRoom.id).order('created_at');
       if(error){ console.error(error); return; }
+      
       const container=document.getElementById('chat-messages');
-      const shouldScroll=container.scrollTop + container.clientHeight >= container.scrollHeight - 20;
-      container.innerHTML=data.map(m=>{
-        if(m.message_type==='system') return `<div class="chat-message" style="max-width:100%;text-align:center;background:none;box-shadow:none;color:var(--text-secondary);">${escapeHtml(m.content)}</div>`;
-        const isOwn=m.user_id===currentUser.id;
-        const time=new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-        return `<div class="chat-message ${isOwn?'own':''}"><div><b>${escapeHtml(m.users?.name || 'User')}</b> • <small>${time}</small></div><div>${escapeHtml(m.content)}</div></div>`;
-      }).join('');
-      if(shouldScroll) container.scrollTop = container.scrollHeight;
+      container.innerHTML = ''; // Clear existing messages before loading
+      
+      data.forEach(m => appendMessage(m, m.users?.name || 'User'));
+      
+      container.scrollTop = container.scrollHeight; // Scroll to bottom on initial load
     }
 
     async function loadParticipants(){
@@ -957,7 +939,6 @@
     function setupEventListeners(){
       window.addEventListener('resize',()=>updateLayoutForSidebar());
 
-      // Keep presence "online" while tab is open (simple heartbeat)
       setInterval(()=> {
         if(currentRoom && currentUser){
           supabase.from('room_participants')
@@ -966,9 +947,11 @@
         }
       }, 20000);
 
-      // If the browser is closing/crashing we do NOT delete the room; presence upsert on next load will recover.
       window.addEventListener('beforeunload', ()=> {
-        // Optionally, mark a last_seen timestamp if you add that column in DB.
+        // Mark user as offline, but don't remove them. They can rejoin.
+        if (currentRoom && currentUser) {
+          supabase.from('room_participants').update({ is_online: false }).match({ user_id: currentUser.id, room_id: currentRoom.id });
+        }
       });
 
       document.querySelectorAll('.tab').forEach(t=> t.onclick=()=>switchTab(t.dataset.tab));
@@ -1058,6 +1041,7 @@
     }
 
     function escapeHtml(text){ 
+      if (typeof text !== 'string') return '';
       const div=document.createElement('div'); 
       div.textContent=text; 
       return div.innerHTML; 
