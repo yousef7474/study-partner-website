@@ -535,9 +535,7 @@
         const roomData = {
           room_code: roomCode,
           host_id: currentUser.id,
-          is_active: true,
-          subject: null,
-          created_at: new Date().toISOString()
+          is_active: true
         };
         
         const {data,error}=await supabase.from('rooms').insert([roomData]).select().single();
@@ -615,8 +613,9 @@
       if(!currentRoom) return;
       const subject=roomSubjectSelect.value || null;
       try{
-        await supabase.from('rooms').update({subject}).eq('id',currentRoom.id);
+        // Since rooms table doesn't have subject column, store it in user's profile
         currentUser.subject=subject;
+        await supabase.from('users').update({subject}).eq('id',currentUser.id);
         localStorage.setItem('studyTogether_user',JSON.stringify(currentUser));
         populateSettings();
         updateSidebarUserInfo();
@@ -626,14 +625,10 @@
 
     async function loadRoomSubjectIntoUI(){
       if(!currentRoom) return;
-      const {data,error}=await supabase.from('rooms').select('subject').eq('id',currentRoom.id).single();
-      if(!error){
-        roomSubjectSelect.value=data.subject || '';
-        currentUser.subject=data.subject || null;
-        localStorage.setItem('studyTogether_user',JSON.stringify(currentUser));
-        populateSettings();
-        updateSidebarUserInfo();
-      }
+      // Load subject from user's profile since rooms table doesn't have subject column
+      roomSubjectSelect.value=currentUser.subject || '';
+      populateSettings();
+      updateSidebarUserInfo();
     }
 
     async function kickParticipant(userId,userName){
