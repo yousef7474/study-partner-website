@@ -564,6 +564,9 @@
       document.getElementById(screenId).classList.add('active');
       document.querySelectorAll('.nav-item').forEach(item=>item.classList.toggle('active',item.dataset.screen===screenId));
       if(screenId==='settings-screen') populateSettings();
+      
+      // Auto-hide sidebar after navigation
+      toggleSidebar(false);
     }
 
     function toggleSidebar(force){
