@@ -411,7 +411,7 @@
     let timerInterval=null,timerSeconds=1500,timerRunning=false;
     let supabase=null,chatSubscription=null,participantsSubscription=null,roomCodeFromUrl=null;
     let selectedColor='#667eea';
-    let sidebarOpen=JSON.parse(localStorage.getItem('studyTogether_sidebarOpen')||'true');
+    let sidebarOpen=JSON.parse(localStorage.getItem('studyTogether_sidebarOpen')||'false');
 
     document.addEventListener('DOMContentLoaded',initApp);
 
@@ -525,6 +525,8 @@
         localStorage.setItem('studyTogether_sidebarOpen',JSON.stringify(sidebarOpen));
         updateLayoutForSidebar();
         menuToggleBtn?.classList.toggle('active',sidebarOpen);
+        // Show overlay on desktop too for consistent experience
+        sidebarOverlay?.classList.toggle('active',sidebarOpen);
       }
     }
 
@@ -534,23 +536,27 @@
       
       if(isDesktop){
         sidebar.classList.toggle('active',sidebarOpen);
-        mainContainer.classList.toggle('with-sidebar',sidebarOpen);
-        header.classList.toggle('with-sidebar',sidebarOpen);
         menuToggleBtn?.classList.toggle('active',sidebarOpen);
+        sidebarOverlay?.classList.toggle('active',sidebarOpen);
         // Remove mobile classes
         sidebar.classList.remove('mobile-active');
-        sidebarOverlay?.classList.remove('active');
+        // Don't push content - let sidebar overlay completely
+        mainContainer.classList.remove('with-sidebar');
+        header.classList.remove('with-sidebar');
       }else{
         sidebar.classList.remove('active');
         mainContainer.classList.remove('with-sidebar');
         header.classList.remove('with-sidebar');
         menuToggleBtn?.classList.remove('active');
+        sidebarOverlay?.classList.remove('active');
       }
       if(initial && isDesktop && sidebarOpen){
         sidebar.classList.add('active');
-        mainContainer.classList.add('with-sidebar');
-        header.classList.add('with-sidebar');
         menuToggleBtn?.classList.add('active');
+        sidebarOverlay?.classList.add('active');
+        // Don't push content on initial load either
+        mainContainer.classList.remove('with-sidebar');
+        header.classList.remove('with-sidebar');
       }
     }
 
