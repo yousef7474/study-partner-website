@@ -26,6 +26,8 @@
     .header-controls{display:flex;align-items:center;gap:1rem}
     .theme-toggle,.lang-toggle,.menu-toggle{width:45px;height:45px;border:none;border-radius:12px;background:var(--bg-secondary);color:var(--text-primary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem;transition:all .3s ease;box-shadow:var(--shadow-light)}
     .theme-toggle:hover,.lang-toggle:hover,.menu-toggle:hover{transform:translateY(-2px);box-shadow:var(--shadow-medium)}
+    .menu-toggle:active{transform:scale(0.95)}
+    .menu-toggle.active{background:var(--primary-color);color:#fff}
 
     .sidebar{position:fixed;top:0;left:-var(--sidebar-width);width:var(--sidebar-width);height:100vh;background:var(--bg-secondary);border-right:1px solid var(--border-color);z-index:1001;transition:left .3s ease,right .3s ease;display:flex;flex-direction:column}
     .sidebar.active{left:0}
@@ -151,7 +153,7 @@
   <!-- Header -->
   <header class="header" id="header" style="display:none;">
     <div style="display:flex;align-items:center;gap:1rem;">
-      <button class="menu-toggle" id="menu-toggle" title="Toggle sidebar" onclick="toggleSidebar()"><span>☰</span></button>
+      <button class="menu-toggle" id="menu-toggle" data-translate-title="toggleSidebar" title="Toggle sidebar" onclick="toggleSidebar()"><span>☰</span></button>
       <div class="logo"><div class="logo-icon">📚</div><span data-translate="appName">StudyTogether</span></div>
     </div>
     <div class="header-controls">
@@ -313,8 +315,42 @@
   <script>
     // -------- TRANSLATIONS & STATIC DATA --------
     const translations={
-      en:{home:"Home",dashboard:"Dashboard",studyRooms:"Study Rooms",digitalLibrary:"Digital Library",about:"About",settings:"Settings",logout:"Logout",welcome:"Welcome",welcomeDesc:"Create your profile to start",yourName:"Your Name",chooseAvatar:"Choose Avatar Color",selectGrade:"Select Grade",joinPlatform:"Join Platform",appName:"StudyTogether"},
-      ar:{home:"الرئيسية",dashboard:"لوحة التحكم",studyRooms:"غرف الدراسة",digitalLibrary:"المكتبة الرقمية",about:"حول",settings:"الإعدادات",logout:"خروج",welcome:"مرحباً",welcomeDesc:"أنشئ ملفك للبدء",yourName:"اسمك",chooseAvatar:"اختر لون الصورة",selectGrade:"اختر الصف",joinPlatform:"انضم الآن",appName:"ستدي توغيذر"}
+      en:{
+        home:"Home",
+        dashboard:"Dashboard",
+        studyRooms:"Study Rooms",
+        digitalLibrary:"Digital Library",
+        about:"About",
+        settings:"Settings",
+        logout:"Logout",
+        welcome:"Welcome",
+        welcomeDesc:"Create your profile to start",
+        yourName:"Your Name",
+        chooseAvatar:"Choose Avatar Color",
+        selectGrade:"Select Grade",
+        joinPlatform:"Join Platform",
+        appName:"StudyTogether",
+        toggleSidebar:"Toggle Sidebar",
+        menuToggle:"Menu"
+      },
+      ar:{
+        home:"الرئيسية",
+        dashboard:"لوحة التحكم",
+        studyRooms:"غرف الدراسة",
+        digitalLibrary:"المكتبة الرقمية",
+        about:"حول",
+        settings:"الإعدادات",
+        logout:"خروج",
+        welcome:"مرحباً بك",
+        welcomeDesc:"أنشئ ملفك الشخصي للبدء",
+        yourName:"اسمك",
+        chooseAvatar:"اختر لون الصورة الرمزية",
+        selectGrade:"اختر الصف الدراسي",
+        joinPlatform:"انضم للمنصة",
+        appName:"ستدي توغيذر",
+        toggleSidebar:"إظهار/إخفاء الشريط الجانبي",
+        menuToggle:"القائمة"
+      }
     };
     const subjectsByGrade={
       10:[{name:"Mathematics",nameAr:"الرياضيات"},{name:"Physics",nameAr:"الفيزياء"}],
@@ -437,32 +473,44 @@
 
     function toggleSidebar(force){
       const isMobile=window.innerWidth<=1024;
+      const menuToggleBtn=document.getElementById('menu-toggle');
+      
       if(isMobile){
         const shouldBeActive=(force!==undefined)?force:!sidebar.classList.contains('mobile-active');
         sidebar.classList.toggle('mobile-active',shouldBeActive);
         sidebarOverlay.classList.toggle('active',shouldBeActive);
+        menuToggleBtn?.classList.toggle('active',shouldBeActive);
       }else{
         sidebarOpen=(force!==undefined)?force:!sidebarOpen;
         localStorage.setItem('studyTogether_sidebarOpen',JSON.stringify(sidebarOpen));
         updateLayoutForSidebar();
+        menuToggleBtn?.classList.toggle('active',sidebarOpen);
       }
     }
 
     function updateLayoutForSidebar(initial=false){
       const isDesktop=window.innerWidth>1024;
+      const menuToggleBtn=document.getElementById('menu-toggle');
+      
       if(isDesktop){
         sidebar.classList.toggle('active',sidebarOpen);
         mainContainer.classList.toggle('with-sidebar',sidebarOpen);
         header.classList.toggle('with-sidebar',sidebarOpen);
+        menuToggleBtn?.classList.toggle('active',sidebarOpen);
+        // Remove mobile classes
+        sidebar.classList.remove('mobile-active');
+        sidebarOverlay?.classList.remove('active');
       }else{
         sidebar.classList.remove('active');
         mainContainer.classList.remove('with-sidebar');
         header.classList.remove('with-sidebar');
+        menuToggleBtn?.classList.remove('active');
       }
       if(initial && isDesktop && sidebarOpen){
         sidebar.classList.add('active');
         mainContainer.classList.add('with-sidebar');
         header.classList.add('with-sidebar');
+        menuToggleBtn?.classList.add('active');
       }
     }
 
@@ -483,10 +531,19 @@
       document.documentElement.lang=currentLanguage;
       document.getElementById('lang-icon').textContent=currentLanguage==='ar'?'EN':'ع';
       const lt=document.getElementById('lang-text'); if(lt) lt.textContent=currentLanguage==='ar'?'English':'العربية';
+      
+      // Translate text content
       document.querySelectorAll('[data-translate]').forEach(el=>{
         const key=el.getAttribute('data-translate');
         if(translations[currentLanguage][key]) el.textContent=translations[currentLanguage][key];
       });
+      
+      // Translate title attributes (tooltips)
+      document.querySelectorAll('[data-translate-title]').forEach(el=>{
+        const key=el.getAttribute('data-translate-title');
+        if(translations[currentLanguage][key]) el.title=translations[currentLanguage][key];
+      });
+      
       populateRoomSubjects(currentUser?.grade || gradeSelect.value);
     }
     function toggleLanguage(){
@@ -736,7 +793,14 @@
       window.addEventListener('resize',()=>updateLayoutForSidebar());
       document.querySelectorAll('.tab').forEach(t=> t.onclick=()=>switchTab(t.dataset.tab));
       document.querySelectorAll('[data-timer]').forEach(b=> b.onclick=()=>setTimerMinutes(parseInt(b.dataset.timer)));
-      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') toggleSidebar(false); });
+      document.addEventListener('keydown', (e)=>{
+        if(e.key==='Escape') toggleSidebar(false);
+        // Toggle sidebar with Ctrl/Cmd + B
+        if((e.ctrlKey || e.metaKey) && e.key==='b'){
+          e.preventDefault();
+          toggleSidebar();
+        }
+      });
 
       // avatar color selection
       document.querySelectorAll('.avatar-choice').forEach(c => c.onclick = function(){
