@@ -525,12 +525,39 @@
 
     // -------- ROOM LOGIC --------
     async function createRoom(){
+      if(!currentUser){
+        alert('Please log in first.');
+        return;
+      }
+      
       try{
         const roomCode=Array(6).fill(0).map(()=> 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random()*36)]).join('');
-        const {data,error}=await supabase.from('rooms').insert([{room_code:roomCode,host_id:currentUser.id,is_active:true,subject:null}]).select().single();
-        if(error) throw error;
+        const roomData = {
+          room_code: roomCode,
+          host_id: currentUser.id,
+          is_active: true,
+          subject: null,
+          created_at: new Date().toISOString()
+        };
+        
+        const {data,error}=await supabase.from('rooms').insert([roomData]).select().single();
+        if(error) {
+          console.error('Room creation error:', error);
+          alert(`Failed to create room: ${error.message || 'Unknown error'}`);
+          return;
+        }
+        
+        if(!data) {
+          alert('Failed to create room: No data returned');
+          return;
+        }
+        
         await joinRoomById(data.id,data.room_code,data.host_id);
-      }catch(e){ console.error(e); alert('Failed to create room.'); }
+        toast('Room created successfully!', 'success', 'Created');
+      }catch(e){ 
+        console.error('Room creation exception:', e); 
+        alert(`Failed to create room: ${e.message || 'Unknown error'}`); 
+      }
     }
 
     async function joinRoom(codeOverride=null){
@@ -545,7 +572,19 @@
 
     async function joinRoomById(roomId,roomCode,roomHostId){
       try{
-        await supabase.from('room_participants').upsert({room_id:roomId,user_id:currentUser.id,is_online:true},{onConflict:'room_id, user_id'});
+        const {error: participantError} = await supabase.from('room_participants').upsert({
+          room_id:roomId,
+          user_id:currentUser.id,
+          is_online:true,
+          joined_at: new Date().toISOString()
+        },{onConflict:'room_id,user_id'});
+        
+        if(participantError){
+          console.error('Failed to join room as participant:', participantError);
+          alert(`Failed to join room: ${participantError.message || 'Unknown error'}`);
+          return;
+        }
+        
         currentRoom={id:roomId,code:roomCode,host_id:roomHostId};
         localStorage.setItem('studyTogether_room',JSON.stringify(currentRoom));
         document.getElementById('current-room-code').textContent=roomCode;
@@ -555,7 +594,10 @@
         loadRoomData();
         navigateToScreen('room-screen');
         await sendSystemMessage(`${currentUser.name} joined the room.`);
-      }catch(e){ console.error(e); }
+      }catch(e){ 
+        console.error('Exception joining room:', e); 
+        alert(`Failed to join room: ${e.message || 'Unknown error'}`);
+      }
     }
 
     function leaveRoom(isLoggingOut=false){
