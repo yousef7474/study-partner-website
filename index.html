@@ -295,22 +295,11 @@
         </div>
 
         <div class="tabs">
-          <button class="tab active" data-tab="chat">💬 Chat</button>
-          <button class="tab" data-tab="participants">👥 Participants</button>
+          <button class="tab active" data-tab="participants">👥 Participants</button>
           <button class="tab" data-tab="timer">⏱️ Timer</button>
         </div>
 
-        <div id="chat-content" class="tab-content active">
-          <div class="chat-box">
-            <div id="chat-messages" class="chat-messages"></div>
-            <div class="chat-input-area">
-              <input type="text" id="chat-input" class="chat-input" placeholder="Type message...">
-              <button class="btn btn-small" onclick="sendMessage()">Send</button>
-            </div>
-          </div>
-        </div>
-
-        <div id="participants-content" class="tab-content">
+        <div id="participants-content" class="tab-content active">
           <div id="participants-list"></div>
         </div>
 
@@ -320,6 +309,7 @@
             <button class="btn btn-small" data-timer="5">5 min Break</button>
           </div>
           <div id="timer-display" style="font-size:4rem;font-weight:700;margin:2rem 0">25:00</div>
+          <div id="timer-status" style="font-size:1.2rem;color:var(--text-secondary);margin-bottom:1rem;"></div>
           <div>
             <button id="start-timer-btn" class="btn" onclick="startTimer()">Start</button>
             <button id="pause-timer-btn" class="btn btn-secondary" onclick="pauseTimer()" style="display:none;">Pause</button>
@@ -338,16 +328,16 @@
       <div id="about-screen" class="screen">
         <h1 class="page-title">About Study Partner</h1>
         <div style="max-width:800px;margin:0 auto;background:var(--bg-secondary);padding:3rem;border-radius:24px;box-shadow:var(--shadow-medium);text-align:center;">
-          <p style="font-size:1.4rem;color:var(--text-primary);margin-bottom:2rem;font-weight:600;">
+          <p style="font-size:1.4rem;color:var(--text-primary);margin-bottom:2rem;font-weight:600;" data-translate="aboutTitle">
             Empowering Students Through Collaborative Learning
           </p>
-          <p style="font-size:1.1rem;color:var(--text-secondary);line-height:1.8;margin-bottom:1.5rem;">
+          <p style="font-size:1.1rem;color:var(--text-secondary);line-height:1.8;margin-bottom:1.5rem;" data-translate="aboutDesc1">
             Study Partner is a revolutionary platform designed to transform the way students learn and collaborate. Our mission is to break down the barriers of traditional studying by creating virtual spaces where students can connect, share knowledge, and achieve academic excellence together.
           </p>
-          <p style="font-size:1.1rem;color:var(--text-secondary);line-height:1.8;margin-bottom:1.5rem;">
+          <p style="font-size:1.1rem;color:var(--text-secondary);line-height:1.8;margin-bottom:1.5rem;" data-translate="aboutDesc2">
             Whether you're preparing for exams, working on group projects, or simply seeking study companions, Study Partner provides the tools and environment you need. From real-time chat rooms to collaborative timers and subject-specific spaces, we've built everything with one goal in mind: helping students succeed together.
           </p>
-          <p style="font-size:1.1rem;color:var(--text-secondary);line-height:1.8;">
+          <p style="font-size:1.1rem;color:var(--text-secondary);line-height:1.8;" data-translate="aboutDesc3">
             Join thousands of students who have discovered the power of collaborative learning. Because when we study together, we succeed together.
           </p>
         </div>
@@ -402,7 +392,11 @@
         studyRoom:"Study Room", startNewSession:"Start a new study session",
         enterRoomCodeToJoin:"Enter a room code to join",
         joinOrCreateRooms:"Join or create virtual study rooms",
-        accessStudyMaterials:"Access study materials and resources"
+        accessStudyMaterials:"Access study materials and resources",
+        aboutTitle:"Empowering Students Through Collaborative Learning",
+        aboutDesc1:"Study Partner is a revolutionary platform designed to transform the way students learn and collaborate. Our mission is to break down the barriers of traditional studying by creating virtual spaces where students can connect, share knowledge, and achieve academic excellence together.",
+        aboutDesc2:"Whether you're preparing for exams, working on group projects, or simply seeking study companions, Study Partner provides the tools and environment you need. From real-time chat rooms to collaborative timers and subject-specific spaces, we've built everything with one goal in mind: helping students succeed together.",
+        aboutDesc3:"Join thousands of students who have discovered the power of collaborative learning. Because when we study together, we succeed together."
       },
       ar:{
         home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة",
@@ -419,7 +413,11 @@
         studyRoom:"غرفة الدراسة", startNewSession:"ابدأ جلسة دراسة جديدة",
         enterRoomCodeToJoin:"أدخل كود الغرفة للانضمام",
         joinOrCreateRooms:"انضم أو أنشئ غرف دراسة افتراضية",
-        accessStudyMaterials:"الوصول إلى مواد ومصادر الدراسة"
+        accessStudyMaterials:"الوصول إلى مواد ومصادر الدراسة",
+        aboutTitle:"تمكين الطلاب من خلال التعلم التعاوني",
+        aboutDesc1:"دراسة شريك هي منصة ثورية مصممة لتغيير طريقة تعلم وتعاون الطلاب. مهمتنا هي كسر حواجز الدراسة التقليدية من خلال إنشاء مساحات افتراضية حيث يمكن للطلاب التواصل ومشاركة المعرفة وتحقيق التميز الأكاديمي معاً.",
+        aboutDesc2:"سواء كنت تستعد للامتحانات، أو تعمل على مشاريع جماعية، أو تبحث عن رفقاء دراسة، توفر دراسة شريك الأدوات والبيئة التي تحتاجها. من غرف الدردشة في الوقت الفعلي إلى المؤقتات التعاونية والمساحات الخاصة بالمواد، لقد بنينا كل شيء بهدف واحد: مساعدة الطلاب على النجاح معاً.",
+        aboutDesc3:"انضم إلى آلاف الطلاب الذين اكتشفوا قوة التعلم التعاوني. لأنه عندما ندرس معاً، ننجح معاً."
       }
     };
     
@@ -440,11 +438,11 @@
 
     // -------- GLOBAL STATE --------
     let currentUser=null, currentRoom=null, currentLanguage='en', currentTheme='light';
-    let timerInterval=null, timerSeconds=1500, timerRunning=false;
-    let supabase=null, chatSubscription=null, participantsSubscription=null, roomCodeFromUrl=null;
+    let timerInterval=null, timerSeconds=1500, timerRunning=false, timerStartedBy=null;
+    let supabase=null, participantsSubscription=null, timerSubscription=null, roomCodeFromUrl=null;
     let selectedColor='#667eea';
     let sidebarOpen=JSON.parse(localStorage.getItem('studyTogether_sidebarOpen')||'false');
-    let fallbackPolling=null, lastMessageTime=null, connectionRetryCount=0;
+    let connectionRetryCount=0;
 
     // -------- INITIALIZATION --------
     document.addEventListener('DOMContentLoaded', initApp);
@@ -818,23 +816,15 @@
     async function leaveRoom(isLoggingOut = false){
       if(!currentRoom) return;
       
-      try {
-        await sendSystemMessage(`${currentUser.name} left the room.`);
-      } catch (error) {
-        console.error('Error sending leave message:', error);
-      }
-      
       // Clean up subscriptions
-      if(chatSubscription){
-        chatSubscription.unsubscribe();
-        chatSubscription = null;
-      }
       if(participantsSubscription){
         participantsSubscription.unsubscribe();
         participantsSubscription = null;
       }
-      
-      stopFallbackPolling();
+      if(timerSubscription){
+        timerSubscription.unsubscribe();
+        timerSubscription = null;
+      }
       
       if (!isLoggingOut) {
         try {
@@ -846,7 +836,6 @@
       }
       
       currentRoom = null;
-      lastMessageTime = null;
       connectionRetryCount = 0;
       localStorage.removeItem('studyTogether_room');
       updateConnectionStatus('disconnected');
@@ -889,50 +878,17 @@
 
     // -------- REAL-TIME SUBSCRIPTIONS --------
     function setupRoomSubscriptions(){
-      if(chatSubscription){
-        chatSubscription.unsubscribe();
-        chatSubscription = null;
-      }
       if(participantsSubscription){
         participantsSubscription.unsubscribe();
         participantsSubscription = null;
       }
+      if(timerSubscription){
+        timerSubscription.unsubscribe();
+        timerSubscription = null;
+      }
 
-      const chatChannelName = `room-chat-${currentRoom.id}-${Date.now()}`;
       const participantsChannelName = `room-participants-${currentRoom.id}-${Date.now()}`;
-
-      // Chat subscription
-      chatSubscription = supabase.channel(chatChannelName, {
-        config: { broadcast: { self: false }, presence: { key: currentUser.id } }
-      }).on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'messages',
-        filter: `room_id=eq.${currentRoom.id}`
-      }, async (payload) => {
-        console.log('New message received:', payload);
-        try {
-          const user = await fetchUser(payload.new.user_id);
-          appendMessage(payload.new, user?.name || 'User');
-          updateConnectionStatus('connected');
-          connectionRetryCount = 0;
-        } catch (error) {
-          console.error('Error handling new message:', error);
-          updateConnectionStatus('disconnected');
-        }
-      }).subscribe((status) => {
-        console.log('Chat subscription status:', status);
-        if (status === 'SUBSCRIBED') {
-          updateConnectionStatus('connected');
-          connectionRetryCount = 0;
-        } else if (status === 'CHANNEL_ERROR') {
-          updateConnectionStatus('disconnected');
-          connectionRetryCount++;
-          if (connectionRetryCount < 5) {
-            setTimeout(() => setupRoomSubscriptions(), 2000 * connectionRetryCount);
-          }
-        }
-      });
+      const timerChannelName = `room-timer-${currentRoom.id}-${Date.now()}`;
 
       // Participants subscription
       participantsSubscription = supabase.channel(participantsChannelName, {
@@ -949,12 +905,12 @@
           
           if (payload.eventType === 'INSERT' && payload.new?.user_id !== currentUser.id) {
             const user = await fetchUser(payload.new.user_id);
-            if (user) toast(`${user.name} joined the room`, 'info', 'Participant joined');
+            if (user) showPopupNotification(`${user.name} joined the room`, 'Participant joined');
           }
           
           if (payload.eventType === 'DELETE' && payload.old?.user_id !== currentUser.id) {
             const user = await fetchUser(payload.old.user_id);
-            toast(`${user?.name || 'A participant'} left the room`, 'info', 'Participant left');
+            showPopupNotification(`${user?.name || 'A participant'} left the room`, 'Participant left');
           }
           
           updateConnectionStatus('connected');
@@ -976,107 +932,125 @@
           }
         }
       });
+
+      // Timer subscription
+      timerSubscription = supabase.channel(timerChannelName, {
+        config: { broadcast: { self: false }, presence: { key: currentUser.id } }
+      }).on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'room_timers',
+        filter: `room_id=eq.${currentRoom.id}`
+      }, async (payload) => {
+        console.log('Timer change received:', payload);
+        try {
+          if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+            await loadRoomTimer();
+          }
+          updateConnectionStatus('connected');
+          connectionRetryCount = 0;
+        } catch (error) {
+          console.error('Error handling timer change:', error);
+          updateConnectionStatus('disconnected');
+        }
+      }).subscribe((status) => {
+        console.log('Timer subscription status:', status);
+        if (status === 'SUBSCRIBED') {
+          updateConnectionStatus('connected');
+          connectionRetryCount = 0;
+        } else if (status === 'CHANNEL_ERROR') {
+          updateConnectionStatus('disconnected');
+          connectionRetryCount++;
+          if (connectionRetryCount < 5) {
+            setTimeout(() => setupRoomSubscriptions(), 2000 * connectionRetryCount);
+          }
+        }
+      });
     }
 
     async function loadRoomData(){
-      await Promise.all([loadMessages(), loadParticipants()]);
-      startFallbackPolling();
+      await Promise.all([loadParticipants(), loadRoomTimer()]);
     }
 
-    // -------- FALLBACK POLLING --------
-    function startFallbackPolling() {
-      if (fallbackPolling) clearInterval(fallbackPolling);
-      
-      fallbackPolling = setInterval(async () => {
-        if (!currentRoom) {
-          clearInterval(fallbackPolling);
+    // -------- TIMER SYNCHRONIZATION --------
+    async function loadRoomTimer(){
+      if(!currentRoom) return;
+      try {
+        const {data, error} = await supabase.from('room_timers')
+          .select('*')
+          .eq('room_id', currentRoom.id)
+          .eq('is_active', true)
+          .single();
+        
+        if(error || !data) {
+          // No active timer
+          resetTimer();
+          updateTimerStatus('');
           return;
         }
         
-        try {
-          const query = supabase.from('messages')
-            .select('*, users(name)')
-            .eq('room_id', currentRoom.id)
-            .order('created_at', { ascending: false })
-            .limit(5);
-            
-          if (lastMessageTime) {
-            query.gt('created_at', lastMessageTime);
-          }
+        const now = new Date();
+        const startTime = new Date(data.start_time);
+        const endTime = new Date(data.end_time);
+        
+        if (now >= endTime) {
+          // Timer has ended
+          await supabase.from('room_timers')
+            .update({is_active: false})
+            .eq('id', data.id);
           
-          const { data: newMessages } = await query;
-          
-          if (newMessages && newMessages.length > 0) {
-            newMessages.reverse().forEach(m => {
-              appendMessage(m, m.users?.name || 'User');
-            });
-            lastMessageTime = newMessages[newMessages.length - 1].created_at;
-            
-            if (connectionStatus.classList.contains('disconnected')) {
-              updateConnectionStatus('connected');
-            }
-          }
-        } catch (error) {
-          console.error('Fallback polling error:', error);
-          updateConnectionStatus('disconnected');
+          timerComplete();
+          return;
         }
-      }, 3000);
+        
+        // Timer is still running
+        const remainingMs = endTime - now;
+        timerSeconds = Math.ceil(remainingMs / 1000);
+        timerStartedBy = data.started_by_name;
+        
+        updateTimerDisplay();
+        updateTimerStatus(`Started by ${timerStartedBy}`);
+        
+        if (!timerRunning) {
+          startTimerCountdown();
+        }
+      } catch (error) {
+        console.error('Error loading room timer:', error);
+      }
     }
     
-    function stopFallbackPolling() {
-      if (fallbackPolling) {
-        clearInterval(fallbackPolling);
-        fallbackPolling = null;
-      }
-    }
-
-    // -------- MESSAGE HANDLING --------
-    function appendMessage(message, userName) {
-      const container = document.getElementById('chat-messages');
-      const existingMessage = container.querySelector(`[data-message-id="${message.id}"]`);
-      if (existingMessage) return;
+    async function syncTimerToRoom(duration, startedByName) {
+      if (!currentRoom) return;
       
-      const shouldScroll = container.scrollTop + container.clientHeight >= container.scrollHeight - 30;
-      const messageEl = document.createElement('div');
-      messageEl.classList.add('chat-message');
-      messageEl.setAttribute('data-message-id', message.id);
-      
-      if (message.message_type === 'system') {
-        messageEl.style.cssText = "max-width:100%;text-align:center;background:none;box-shadow:none;color:var(--text-secondary);";
-        messageEl.innerHTML = escapeHtml(message.content);
-      } else {
-        const isOwn = message.user_id === currentUser.id;
-        if (isOwn) messageEl.classList.add('own');
+      try {
+        // Deactivate any existing timers
+        await supabase.from('room_timers')
+          .update({is_active: false})
+          .eq('room_id', currentRoom.id);
         
-        const time = new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        messageEl.innerHTML = `<div><b>${escapeHtml(userName)}</b> • <small>${time}</small></div><div>${escapeHtml(message.content)}</div>`;
+        // Create new timer
+        const startTime = new Date();
+        const endTime = new Date(startTime.getTime() + duration * 1000);
+        
+        await supabase.from('room_timers').insert([{
+          room_id: currentRoom.id,
+          duration_seconds: duration,
+          start_time: startTime.toISOString(),
+          end_time: endTime.toISOString(),
+          started_by: currentUser.id,
+          started_by_name: startedByName,
+          is_active: true
+        }]);
+      } catch (error) {
+        console.error('Error syncing timer:', error);
       }
-      
-      container.appendChild(messageEl);
-      if (shouldScroll) container.scrollTop = container.scrollHeight;
-      if (message.created_at) lastMessageTime = message.created_at;
     }
-
-    async function loadMessages(){
-      if(!currentRoom) return;
-      const {data, error} = await supabase.from('messages')
-        .select('*, users(name)')
-        .eq('room_id', currentRoom.id)
-        .order('created_at');
-      if(error){
-        console.error(error);
-        return;
+    
+    function updateTimerStatus(status) {
+      const statusEl = document.getElementById('timer-status');
+      if (statusEl) {
+        statusEl.textContent = status;
       }
-      
-      const container = document.getElementById('chat-messages');
-      container.innerHTML = '';
-      data.forEach(m => appendMessage(m, m.users?.name || 'User'));
-      
-      if (data.length > 0) {
-        lastMessageTime = data[data.length - 1].created_at;
-      }
-      
-      container.scrollTop = container.scrollHeight;
     }
 
     async function loadParticipants(){
@@ -1133,34 +1107,23 @@
       return error ? null : data;
     }
 
-    async function sendMessage(){
-      const input = document.getElementById('chat-input');
-      const content = input.value.trim();
-      if(!content || !currentRoom) return;
-      input.value = '';
-      try{ 
-        await supabase.from('messages').insert([{
-          room_id: currentRoom.id,
-          user_id: currentUser.id,
-          content
-        }]); 
-      }catch(e){
-        console.error(e);
+    // -------- POPUP NOTIFICATIONS --------
+    function showPopupNotification(message, title = 'Notification') {
+      if (Notification.permission === 'granted') {
+        new Notification(title, {
+          body: message,
+          icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiM2NjdlZWEiLz4KPHN2ZyB4PSIxNiIgeT0iMTYiIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj4KPHA+8J+TsjwvcD4KPC9zdmc+Cjwvc3ZnPgo='
+        });
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            showPopupNotification(message, title);
+          }
+        });
       }
-    }
-
-    async function sendSystemMessage(content){
-      if(!currentRoom) return;
-      try{ 
-        await supabase.from('messages').insert([{
-          room_id: currentRoom.id,
-          user_id: currentUser.id,
-          content,
-          message_type: 'system'
-        }]); 
-      }catch(e){
-        console.error(e);
-      }
+      
+      // Also show toast as fallback
+      toast(message, 'info', title);
     }
 
     // -------- EVENT LISTENERS --------
@@ -1222,11 +1185,10 @@
         });
       });
 
-      // Chat input enter key
-      const chatInput = document.getElementById('chat-input');
-      chatInput.onkeypress = e => {
-        if(e.key === 'Enter') sendMessage();
-      };
+      // Request notification permission on load
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
     }
 
     // -------- UTILITY FUNCTIONS --------
@@ -1277,28 +1239,67 @@
       resetTimer();
     }
     
-    function startTimer(){
+    async function startTimer(){
+      if(timerRunning || !currentRoom) return;
+      
+      await syncTimerToRoom(timerSeconds, currentUser.name);
+      startTimerCountdown();
+      updateTimerStatus(`Started by ${currentUser.name}`);
+    }
+    
+    function startTimerCountdown() {
       if(timerRunning) return;
+      
       timerRunning = true;
       document.getElementById('start-timer-btn').style.display = 'none';
       document.getElementById('pause-timer-btn').style.display = 'inline-block';
+      
       timerInterval = setInterval(() => {
         timerSeconds--;
         updateTimerDisplay();
-        if(timerSeconds <= 0) timerComplete();
+        if(timerSeconds <= 0) {
+          timerComplete();
+        }
       }, 1000);
     }
     
-    function pauseTimer(){
+    async function pauseTimer(){
+      if (!currentRoom) return;
+      
+      try {
+        await supabase.from('room_timers')
+          .update({is_active: false})
+          .eq('room_id', currentRoom.id)
+          .eq('is_active', true);
+      } catch (error) {
+        console.error('Error pausing timer:', error);
+      }
+      
       timerRunning = false;
       clearInterval(timerInterval);
       document.getElementById('start-timer-btn').style.display = 'inline-block';
       document.getElementById('pause-timer-btn').style.display = 'none';
+      updateTimerStatus('');
     }
     
-    function resetTimer(){
-      pauseTimer();
+    async function resetTimer(){
+      if (currentRoom) {
+        try {
+          await supabase.from('room_timers')
+            .update({is_active: false})
+            .eq('room_id', currentRoom.id)
+            .eq('is_active', true);
+        } catch (error) {
+          console.error('Error resetting timer:', error);
+        }
+      }
+      
+      timerRunning = false;
+      clearInterval(timerInterval);
+      document.getElementById('start-timer-btn').style.display = 'inline-block';
+      document.getElementById('pause-timer-btn').style.display = 'none';
       updateTimerDisplay();
+      updateTimerStatus('');
     }
     
     function updateTimerDisplay(){
@@ -1309,7 +1310,16 @@
     }
     
     function timerComplete(){
-      resetTimer();
+      timerRunning = false;
+      clearInterval(timerInterval);
+      document.getElementById('start-timer-btn').style.display = 'inline-block';
+      document.getElementById('pause-timer-btn').style.display = 'none';
+      updateTimerStatus('');
+      
+      // Show popup notification
+      showPopupNotification('Time\'s up! Great work everyone!', 'Timer Complete');
+      
+      // Also show toast
       toast('Timer complete! Great work!', 'success', 'Done');
     }
 
