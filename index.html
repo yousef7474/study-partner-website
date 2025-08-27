@@ -309,6 +309,9 @@
             <button class="btn btn-small" data-timer="5">5 min Break</button>
           </div>
           <div id="timer-display" style="font-size:4rem;font-weight:700;margin:2rem 0">25:00</div>
+          <div id="timer-progress-container" style="width:100%;height:8px;background:var(--bg-tertiary);border-radius:4px;margin:1rem 0;overflow:hidden;">
+            <div id="timer-progress-bar" style="height:100%;background:var(--primary-gradient);width:100%;transition:width 1s linear;border-radius:4px;"></div>
+          </div>
           <div id="timer-status" style="font-size:1.2rem;color:var(--text-secondary);margin-bottom:1rem;"></div>
           <div>
             <button id="start-timer-btn" class="btn" onclick="startTimer()">Start</button>
@@ -404,7 +407,7 @@
         logout:"خروج", welcome:"مرحباً بك", welcomeDesc:"أنشئ ملفك الشخصي للبدء",
         yourName:"اسمك", chooseAvatar:"اختر لون الصورة الرمزية",
         selectGrade:"اختر الصف الدراسي", joinPlatform:"انضم للمنصة",
-        appName:"دراسة شريك", toggleSidebar:"إظهار/إخفاء الشريط الجانبي",
+        appName:"شريك الدراسة", toggleSidebar:"إظهار/إخفاء الشريط الجانبي",
         menuToggle:"القائمة", copyCode:"نسخ الكود", shareLink:"مشاركة الرابط",
         save:"حفظ", enterRooms:"دخول الغرف", browse:"تصفح", createNow:"إنشاء الآن",
         joinNow:"انضمام الآن", joinRoom:"انضم للغرفة", createRoom:"إنشاء غرفة",
@@ -438,7 +441,7 @@
 
     // -------- GLOBAL STATE --------
     let currentUser=null, currentRoom=null, currentLanguage='en', currentTheme='light';
-    let timerInterval=null, timerSeconds=1500, timerRunning=false, timerStartedBy=null;
+    let timerInterval=null, timerSeconds=1500, timerRunning=false, timerStartedBy=null, timerDuration=1500;
     let supabase=null, participantsSubscription=null, timerSubscription=null, roomCodeFromUrl=null;
     let selectedColor='#667eea';
     let sidebarOpen=JSON.parse(localStorage.getItem('studyTogether_sidebarOpen')||'false');
@@ -806,6 +809,17 @@
         await loadRoomData();
         navigateToScreen('room-screen');
         updateConnectionStatus('connected');
+        
+        // Small delay then broadcast participant update
+        setTimeout(() => {
+          if (participantsSubscription) {
+            participantsSubscription.send({
+              type: 'broadcast',
+              event: 'participant_update',
+              payload: { action: 'join', user_id: currentUser.id }
+            });
+          }
+        }, 1000);
       }catch(e){
         console.error('Exception joining room:', e);
         updateConnectionStatus('disconnected');
@@ -827,6 +841,15 @@
       }
       
       if (!isLoggingOut) {
+        // Broadcast leave before removing from database
+        if (participantsSubscription) {
+          participantsSubscription.send({
+            type: 'broadcast',
+            event: 'participant_update',
+            payload: { action: 'leave', user_id: currentUser.id }
+          });
+        }
+        
         try {
           await supabase.from('room_participants')
             .delete().match({room_id: currentRoom.id, user_id: currentUser.id});
@@ -892,7 +915,7 @@
 
       // Participants subscription
       participantsSubscription = supabase.channel(participantsChannelName, {
-        config: { broadcast: { self: false }, presence: { key: currentUser.id } }
+        config: { broadcast: { self: true }, presence: { key: currentUser.id } }
       }).on('postgres_changes', {
         event: '*',
         schema: 'public',
@@ -901,16 +924,24 @@
       }, async (payload) => {
         console.log('Participants change received:', payload);
         try {
+          // First reload the participants list
           await loadParticipants();
           
+          // Then show notifications
           if (payload.eventType === 'INSERT' && payload.new?.user_id !== currentUser.id) {
             const user = await fetchUser(payload.new.user_id);
-            if (user) showPopupNotification(`${user.name} joined the room`, 'Participant joined');
+            if (user) {
+              console.log('User joined:', user.name);
+              showPopupNotification(`${user.name} joined the room`, 'Participant joined');
+            }
           }
           
           if (payload.eventType === 'DELETE' && payload.old?.user_id !== currentUser.id) {
             const user = await fetchUser(payload.old.user_id);
-            showPopupNotification(`${user?.name || 'A participant'} left the room`, 'Participant left');
+            if (user) {
+              console.log('User left:', user.name);
+              showPopupNotification(`${user.name} left the room`, 'Participant left');
+            }
           }
           
           updateConnectionStatus('connected');
@@ -919,6 +950,9 @@
           console.error('Error handling participants change:', error);
           updateConnectionStatus('disconnected');
         }
+      }).on('broadcast', { event: 'participant_update' }, (payload) => {
+        console.log('Broadcast participant update:', payload);
+        loadParticipants();
       }).subscribe((status) => {
         console.log('Participants subscription status:', status);
         if (status === 'SUBSCRIBED') {
@@ -935,7 +969,7 @@
 
       // Timer subscription
       timerSubscription = supabase.channel(timerChannelName, {
-        config: { broadcast: { self: false }, presence: { key: currentUser.id } }
+        config: { broadcast: { self: true }, presence: { key: currentUser.id } }
       }).on('postgres_changes', {
         event: '*',
         schema: 'public',
@@ -952,6 +986,19 @@
         } catch (error) {
           console.error('Error handling timer change:', error);
           updateConnectionStatus('disconnected');
+        }
+      }).on('broadcast', { event: 'timer_update' }, (payload) => {
+        console.log('Broadcast timer update:', payload);
+        if (payload.action === 'start') {
+          timerSeconds = payload.duration;
+          timerStartedBy = payload.startedBy;
+          updateTimerDisplay();
+          updateTimerStatus(`Started by ${timerStartedBy}`);
+          if (!timerRunning) {
+            startTimerCountdown();
+          }
+        } else if (payload.action === 'stop') {
+          resetTimerUI();
         }
       }).subscribe((status) => {
         console.log('Timer subscription status:', status);
@@ -1006,9 +1053,11 @@
         // Timer is still running
         const remainingMs = endTime - now;
         timerSeconds = Math.ceil(remainingMs / 1000);
+        timerDuration = data.duration_seconds;
         timerStartedBy = data.started_by_name;
         
         updateTimerDisplay();
+        updateProgressBar();
         updateTimerStatus(`Started by ${timerStartedBy}`);
         
         if (!timerRunning) {
@@ -1236,13 +1285,29 @@
     // -------- TIMER FUNCTIONS --------
     function setTimerMinutes(minutes){
       timerSeconds = minutes * 60;
+      timerDuration = timerSeconds;
       resetTimer();
     }
     
     async function startTimer(){
       if(timerRunning || !currentRoom) return;
       
+      timerDuration = timerSeconds;
       await syncTimerToRoom(timerSeconds, currentUser.name);
+      
+      // Broadcast to all participants
+      if (timerSubscription) {
+        timerSubscription.send({
+          type: 'broadcast',
+          event: 'timer_update',
+          payload: {
+            action: 'start',
+            duration: timerSeconds,
+            startedBy: currentUser.name
+          }
+        });
+      }
+      
       startTimerCountdown();
       updateTimerStatus(`Started by ${currentUser.name}`);
     }
@@ -1257,6 +1322,7 @@
       timerInterval = setInterval(() => {
         timerSeconds--;
         updateTimerDisplay();
+        updateProgressBar();
         if(timerSeconds <= 0) {
           timerComplete();
         }
@@ -1275,11 +1341,16 @@
         console.error('Error pausing timer:', error);
       }
       
-      timerRunning = false;
-      clearInterval(timerInterval);
-      document.getElementById('start-timer-btn').style.display = 'inline-block';
-      document.getElementById('pause-timer-btn').style.display = 'none';
-      updateTimerStatus('');
+      // Broadcast pause to all participants
+      if (timerSubscription) {
+        timerSubscription.send({
+          type: 'broadcast',
+          event: 'timer_update',
+          payload: { action: 'stop' }
+        });
+      }
+      
+      resetTimerUI();
     }
     
     async function resetTimer(){
@@ -1292,14 +1363,18 @@
         } catch (error) {
           console.error('Error resetting timer:', error);
         }
+        
+        // Broadcast reset to all participants
+        if (timerSubscription) {
+          timerSubscription.send({
+            type: 'broadcast',
+            event: 'timer_update',
+            payload: { action: 'stop' }
+          });
+        }
       }
       
-      timerRunning = false;
-      clearInterval(timerInterval);
-      document.getElementById('start-timer-btn').style.display = 'inline-block';
-      document.getElementById('pause-timer-btn').style.display = 'none';
-      updateTimerDisplay();
-      updateTimerStatus('');
+      resetTimerUI();
     }
     
     function updateTimerDisplay(){
@@ -1307,6 +1382,24 @@
       const seconds = timerSeconds % 60;
       document.getElementById('timer-display').textContent = 
         `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+    
+    function updateProgressBar(){
+      const progressBar = document.getElementById('timer-progress-bar');
+      if (progressBar && timerDuration > 0) {
+        const percentage = (timerSeconds / timerDuration) * 100;
+        progressBar.style.width = `${Math.max(0, percentage)}%`;
+      }
+    }
+    
+    function resetTimerUI(){
+      timerRunning = false;
+      clearInterval(timerInterval);
+      document.getElementById('start-timer-btn').style.display = 'inline-block';
+      document.getElementById('pause-timer-btn').style.display = 'none';
+      updateTimerDisplay();
+      updateProgressBar();
+      updateTimerStatus('');
     }
     
     function timerComplete(){
