@@ -446,6 +446,11 @@
     let selectedColor='#667eea';
     let sidebarOpen=JSON.parse(localStorage.getItem('studyTogether_sidebarOpen')||'false');
     let connectionRetryCount=0;
+    
+    // Subscription management
+    let subscriptionCleanupCallbacks = [];
+    let isSubscriptionSetup = false;
+    let subscriptionSetupPromise = null;
 
     // -------- INITIALIZATION --------
     document.addEventListener('DOMContentLoaded', initApp);
@@ -805,7 +810,7 @@
         document.getElementById('current-room-code').textContent = roomCode;
         populateRoomSubjects(currentUser.grade);
         await loadRoomSubjectIntoUI();
-        setupRoomSubscriptions();
+        await setupRoomSubscriptions();
         await loadRoomData();
         navigateToScreen('room-screen');
         updateConnectionStatus('connected');
@@ -830,15 +835,8 @@
     async function leaveRoom(isLoggingOut = false){
       if(!currentRoom) return;
       
-      // Clean up subscriptions
-      if(participantsSubscription){
-        participantsSubscription.unsubscribe();
-        participantsSubscription = null;
-      }
-      if(timerSubscription){
-        timerSubscription.unsubscribe();
-        timerSubscription = null;
-      }
+      // Clean up all subscriptions properly
+      cleanupSubscriptions();
       
       if (!isLoggingOut) {
         // Broadcast leave before removing from database
@@ -899,93 +897,196 @@
       }
     }
 
-    // -------- REAL-TIME SUBSCRIPTIONS --------
-    function setupRoomSubscriptions(){
+    // -------- SUBSCRIPTION CLEANUP --------
+    function cleanupSubscriptions() {
+      console.log('Cleaning up subscriptions...');
+      
+      // Run all cleanup callbacks
+      subscriptionCleanupCallbacks.forEach(cleanup => {
+        try {
+          cleanup();
+        } catch (error) {
+          console.error('Error during subscription cleanup:', error);
+        }
+      });
+      subscriptionCleanupCallbacks = [];
+      
+      // Clean up main subscriptions
       if(participantsSubscription){
-        participantsSubscription.unsubscribe();
+        try {
+          participantsSubscription.unsubscribe();
+        } catch (error) {
+          console.error('Error unsubscribing participants:', error);
+        }
         participantsSubscription = null;
       }
       if(timerSubscription){
-        timerSubscription.unsubscribe();
+        try {
+          timerSubscription.unsubscribe();
+        } catch (error) {
+          console.error('Error unsubscribing timer:', error);
+        }
         timerSubscription = null;
       }
+      
+      isSubscriptionSetup = false;
+      subscriptionSetupPromise = null;
+    }
 
-      const participantsChannelName = `room-participants-${currentRoom.id}-${Date.now()}`;
-      const timerChannelName = `room-timer-${currentRoom.id}-${Date.now()}`;
+    // -------- REAL-TIME SUBSCRIPTIONS --------
+    function setupRoomSubscriptions(){
+      // Prevent race conditions
+      if (isSubscriptionSetup) {
+        console.log('Subscriptions already set up, skipping...');
+        return subscriptionSetupPromise;
+      }
+      
+      if (subscriptionSetupPromise) {
+        console.log('Subscription setup in progress, waiting...');
+        return subscriptionSetupPromise;
+      }
+      
+      subscriptionSetupPromise = _setupRoomSubscriptions();
+      return subscriptionSetupPromise;
+    }
+    
+    async function _setupRoomSubscriptions(){
+      if (!currentRoom || !currentUser) {
+        console.error('Cannot setup subscriptions: missing room or user');
+        return;
+      }
+      
+      console.log('Setting up room subscriptions for room:', currentRoom.id);
+      
+      // Clean up any existing subscriptions first
+      cleanupSubscriptions();
+      
+      const participantsChannelName = `room-participants-${currentRoom.id}`;
+      const timerChannelName = `room-timer-${currentRoom.id}`;
 
-      // Participants subscription
-      participantsSubscription = supabase.channel(participantsChannelName, {
-        config: { broadcast: { self: true }, presence: { key: currentUser.id } }
-      }).on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'room_participants',
-        filter: `room_id=eq.${currentRoom.id}`
-      }, async (payload) => {
-        console.log('Participants change received:', payload);
-        try {
-          // First reload the participants list
-          await loadParticipants();
-          
-          // Then show notifications
-          if (payload.eventType === 'INSERT' && payload.new?.user_id !== currentUser.id) {
-            const user = await fetchUser(payload.new.user_id);
-            if (user) {
-              console.log('User joined:', user.name);
-              showPopupNotification(`${user.name} joined the room`, 'Participant joined');
+      try {
+        // Participants subscription
+        participantsSubscription = supabase.channel(participantsChannelName, {
+          config: { broadcast: { self: true }, presence: { key: currentUser.id } }
+        }).on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'room_participants',
+          filter: `room_id=eq.${currentRoom.id}`
+        }, async (payload) => {
+          console.log('Participants change received:', payload);
+          try {
+            // First reload the participants list
+            await loadParticipants();
+            
+            // Then show notifications
+            if (payload.eventType === 'INSERT' && payload.new?.user_id !== currentUser.id) {
+              const user = await fetchUser(payload.new.user_id);
+              if (user) {
+                console.log('User joined:', user.name);
+                showPopupNotification(`${user.name} joined the room`, 'Participant joined');
+              }
             }
-          }
-          
-          if (payload.eventType === 'DELETE' && payload.old?.user_id !== currentUser.id) {
-            const user = await fetchUser(payload.old.user_id);
-            if (user) {
-              console.log('User left:', user.name);
-              showPopupNotification(`${user.name} left the room`, 'Participant left');
+            
+            if (payload.eventType === 'DELETE' && payload.old?.user_id !== currentUser.id) {
+              const user = await fetchUser(payload.old.user_id);
+              if (user) {
+                console.log('User left:', user.name);
+                showPopupNotification(`${user.name} left the room`, 'Participant left');
+              }
             }
+            
+            updateConnectionStatus('connected');
+            connectionRetryCount = 0;
+          } catch (error) {
+            console.error('Error handling participants change:', error);
+            updateConnectionStatus('disconnected');
           }
-          
-          updateConnectionStatus('connected');
-          connectionRetryCount = 0;
-        } catch (error) {
-          console.error('Error handling participants change:', error);
-          updateConnectionStatus('disconnected');
-        }
-      }).on('broadcast', { event: 'participant_update' }, (payload) => {
-        console.log('Broadcast participant update:', payload);
-        loadParticipants();
-      }).subscribe((status) => {
-        console.log('Participants subscription status:', status);
-        if (status === 'SUBSCRIBED') {
-          updateConnectionStatus('connected');
-          connectionRetryCount = 0;
-        } else if (status === 'CHANNEL_ERROR') {
-          updateConnectionStatus('disconnected');
-          connectionRetryCount++;
-          if (connectionRetryCount < 5) {
-            setTimeout(() => setupRoomSubscriptions(), 2000 * connectionRetryCount);
-          }
-        }
-      });
+        }).on('broadcast', { event: 'participant_update' }, (payload) => {
+          console.log('Broadcast participant update:', payload);
+          safeLoadParticipants();
+        });
+        
+        // Subscribe with error handling
+        const participantsPromise = new Promise((resolve, reject) => {
+          participantsSubscription.subscribe((status) => {
+            console.log('Participants subscription status:', status);
+            if (status === 'SUBSCRIBED') {
+              updateConnectionStatus('connected');
+              connectionRetryCount = 0;
+              resolve(status);
+            } else if (status === 'CHANNEL_ERROR') {
+              updateConnectionStatus('disconnected');
+              connectionRetryCount++;
+              reject(new Error('Participants subscription failed'));
+            }
+          });
+        });
 
-      // Timer subscription (broadcast only)
-      timerSubscription = supabase.channel(timerChannelName, {
-        config: { broadcast: { self: true }, presence: { key: currentUser.id } }
-      }).on('broadcast', { event: 'timer_sync' }, (payload) => {
-        console.log('Broadcast timer sync:', payload);
-        handleTimerBroadcast(payload);
-      }).subscribe((status) => {
-        console.log('Timer subscription status:', status);
-        if (status === 'SUBSCRIBED') {
-          updateConnectionStatus('connected');
-          connectionRetryCount = 0;
-        } else if (status === 'CHANNEL_ERROR') {
-          updateConnectionStatus('disconnected');
-          connectionRetryCount++;
-          if (connectionRetryCount < 5) {
-            setTimeout(() => setupRoomSubscriptions(), 2000 * connectionRetryCount);
+        // Timer subscription (broadcast only)
+        timerSubscription = supabase.channel(timerChannelName, {
+          config: { broadcast: { self: true }, presence: { key: currentUser.id } }
+        }).on('broadcast', { event: 'timer_sync' }, (payload) => {
+          console.log('Broadcast timer sync:', payload);
+          safeHandleTimerBroadcast(payload);
+        });
+        
+        // Subscribe with error handling
+        const timerPromise = new Promise((resolve, reject) => {
+          timerSubscription.subscribe((status) => {
+            console.log('Timer subscription status:', status);
+            if (status === 'SUBSCRIBED') {
+              updateConnectionStatus('connected');
+              connectionRetryCount = 0;
+              resolve(status);
+            } else if (status === 'CHANNEL_ERROR') {
+              updateConnectionStatus('disconnected');
+              connectionRetryCount++;
+              reject(new Error('Timer subscription failed'));
+            }
+          });
+        });
+        
+        // Wait for both subscriptions to be ready
+        await Promise.all([participantsPromise, timerPromise]);
+        
+        isSubscriptionSetup = true;
+        console.log('All subscriptions set up successfully');
+        
+        // Add cleanup callbacks
+        subscriptionCleanupCallbacks.push(() => {
+          if (participantsSubscription) {
+            participantsSubscription.unsubscribe();
+            participantsSubscription = null;
           }
+        });
+        
+        subscriptionCleanupCallbacks.push(() => {
+          if (timerSubscription) {
+            timerSubscription.unsubscribe();
+            timerSubscription = null;
+          }
+        });
+        
+      } catch (error) {
+        console.error('Error setting up subscriptions:', error);
+        cleanupSubscriptions();
+        updateConnectionStatus('disconnected');
+        
+        // Retry with exponential backoff
+        if (connectionRetryCount < 5) {
+          connectionRetryCount++;
+          const retryDelay = Math.pow(2, connectionRetryCount) * 1000;
+          console.log(`Retrying subscription setup in ${retryDelay}ms...`);
+          setTimeout(() => {
+            subscriptionSetupPromise = null;
+            setupRoomSubscriptions();
+          }, retryDelay);
+        } else {
+          console.error('Max subscription retry attempts reached');
         }
-      });
+      }
+    }
     }
 
     async function loadRoomData(){
@@ -999,74 +1100,159 @@
       seconds: 1500,
       duration: 1500,
       startedBy: null,
-      startTime: null
+      startTime: null,
+      roomId: null
     };
+    
+    // Timer state locks to prevent race conditions
+    let timerStateLock = false;
+    let lastTimerUpdate = 0;
 
     function handleTimerBroadcast(data) {
-      console.log('Timer broadcast received:', data);
+      // Prevent race conditions with state lock
+      if (timerStateLock) {
+        console.log('Timer state locked, queuing update...');
+        setTimeout(() => handleTimerBroadcast(data), 100);
+        return;
+      }
       
-      if (data.action === 'start') {
-        // Calculate current seconds based on start time
-        const now = Date.now();
-        const elapsed = Math.floor((now - data.startTime) / 1000);
-        const remainingSeconds = Math.max(0, data.duration - elapsed);
+      timerStateLock = true;
+      
+      try {
+        console.log('Timer broadcast received:', data);
         
-        roomTimerState = {
-          isRunning: true,
-          seconds: remainingSeconds,
-          duration: data.duration,
-          startedBy: data.startedBy,
-          startTime: data.startTime
-        };
-        
-        timerSeconds = remainingSeconds;
-        timerDuration = data.duration;
-        timerStartedBy = data.startedBy;
-        
-        updateTimerDisplay();
-        updateProgressBar();
-        updateTimerStatus(`Started by ${data.startedBy}`);
-        
-        if (!timerRunning && remainingSeconds > 0) {
-          startTimerCountdown();
-        } else if (remainingSeconds <= 0) {
-          timerComplete();
+        // Ignore old updates
+        if (data.startTime && data.startTime <= lastTimerUpdate) {
+          console.log('Ignoring old timer update');
+          return;
         }
-      } else if (data.action === 'stop') {
-        roomTimerState.isRunning = false;
-        resetTimerUI();
+        
+        if (data.action === 'start') {
+          // Calculate current seconds based on start time
+          const now = Date.now();
+          const elapsed = Math.floor((now - data.startTime) / 1000);
+          const remainingSeconds = Math.max(0, data.duration - elapsed);
+          
+          // Update room state atomically
+          roomTimerState = {
+            isRunning: true,
+            seconds: remainingSeconds,
+            duration: data.duration,
+            startedBy: data.startedBy,
+            startTime: data.startTime,
+            roomId: data.roomId
+          };
+          
+          // Sync local state
+          syncLocalTimerState(roomTimerState);
+          
+          if (remainingSeconds > 0) {
+            if (!timerRunning) {
+              startTimerCountdown();
+            }
+          } else {
+            timerComplete();
+          }
+          
+          lastTimerUpdate = data.startTime;
+        } else if (data.action === 'stop') {
+          roomTimerState.isRunning = false;
+          resetTimerUI();
+        }
+      } catch (error) {
+        console.error('Error handling timer broadcast:', error);
+      } finally {
+        timerStateLock = false;
+      }
+    }
+    
+    function syncLocalTimerState(state) {
+      timerSeconds = state.seconds;
+      timerDuration = state.duration;
+      timerStartedBy = state.startedBy;
+      
+      updateTimerDisplay();
+      updateProgressBar();
+      updateTimerStatus(`Started by ${state.startedBy}`);
+    }
+    
+    function getConsistentTimerState() {
+      if (roomTimerState.isRunning && roomTimerState.startTime) {
+        const now = Date.now();
+        const elapsed = Math.floor((now - roomTimerState.startTime) / 1000);
+        const remainingSeconds = Math.max(0, roomTimerState.duration - elapsed);
+        
+        return {
+          ...roomTimerState,
+          seconds: remainingSeconds
+        };
+      }
+      return roomTimerState;
+    }
+
+    function safeBroadcast(event, payload) {
+      if (!timerSubscription) {
+        console.error('Timer subscription not available for broadcast');
+        return false;
+      }
+      
+      try {
+        timerSubscription.send({
+          type: 'broadcast',
+          event: event,
+          payload: payload
+        });
+        console.log('Broadcast sent successfully:', event, payload);
+        return true;
+      } catch (error) {
+        console.error('Broadcast failed:', error);
+        updateConnectionStatus('disconnected');
+        return false;
       }
     }
 
     function broadcastTimerStart() {
-      if (!timerSubscription) return;
-      
       const payload = {
         action: 'start',
         duration: timerDuration,
         startedBy: currentUser.name,
-        startTime: Date.now()
+        startTime: Date.now(),
+        roomId: currentRoom.id // Add room verification
       };
       
       console.log('Broadcasting timer start:', payload);
-      
-      timerSubscription.send({
-        type: 'broadcast',
-        event: 'timer_sync',
-        payload
-      });
+      return safeBroadcast('timer_sync', payload);
     }
 
     function broadcastTimerStop() {
-      if (!timerSubscription) return;
+      const payload = {
+        action: 'stop',
+        roomId: currentRoom.id // Add room verification
+      };
       
-      console.log('Broadcasting timer stop');
-      
-      timerSubscription.send({
-        type: 'broadcast',
-        event: 'timer_sync',
-        payload: { action: 'stop' }
-      });
+      console.log('Broadcasting timer stop:', payload);
+      return safeBroadcast('timer_sync', payload);
+    }
+    
+    function safeLoadParticipants() {
+      try {
+        loadParticipants();
+      } catch (error) {
+        console.error('Error loading participants:', error);
+      }
+    }
+    
+    function safeHandleTimerBroadcast(payload) {
+      try {
+        // Verify the broadcast is for our room
+        if (payload.roomId && payload.roomId !== currentRoom?.id) {
+          console.log('Ignoring timer broadcast for different room');
+          return;
+        }
+        handleTimerBroadcast(payload);
+      } catch (error) {
+        console.error('Error handling timer broadcast:', error);
+      }
     }
     
     function updateTimerStatus(status) {
@@ -1258,23 +1444,57 @@
 
     // -------- TIMER FUNCTIONS --------
     function setTimerMinutes(minutes){
+      if (timerStateLock || timerRunning) return;
+      
       timerSeconds = minutes * 60;
       timerDuration = timerSeconds;
+      
+      // Update room state
+      roomTimerState.seconds = timerSeconds;
+      roomTimerState.duration = timerDuration;
+      
       resetTimer();
     }
     
     async function startTimer(){
-      if(timerRunning || !currentRoom) return;
+      if(timerRunning || !currentRoom || timerStateLock) return;
       
-      timerDuration = timerSeconds;
-      timerStartedBy = currentUser.name;
+      timerStateLock = true;
       
-      // Broadcast to all participants
-      broadcastTimerStart();
-      
-      // Start locally
-      startTimerCountdown();
-      updateTimerStatus(`Started by ${currentUser.name}`);
+      try {
+        timerDuration = timerSeconds;
+        timerStartedBy = currentUser.name;
+        const startTime = Date.now();
+        
+        // Update room state first
+        roomTimerState = {
+          isRunning: true,
+          seconds: timerDuration,
+          duration: timerDuration,
+          startedBy: currentUser.name,
+          startTime: startTime,
+          roomId: currentRoom.id
+        };
+        
+        // Broadcast to all participants
+        const broadcastSuccess = broadcastTimerStart();
+        
+        if (broadcastSuccess) {
+          // Start locally only if broadcast succeeded
+          startTimerCountdown();
+          updateTimerStatus(`Started by ${currentUser.name}`);
+          lastTimerUpdate = startTime;
+        } else {
+          // Reset state if broadcast failed
+          roomTimerState.isRunning = false;
+          console.error('Failed to broadcast timer start');
+        }
+      } catch (error) {
+        console.error('Error starting timer:', error);
+        roomTimerState.isRunning = false;
+      } finally {
+        timerStateLock = false;
+      }
     }
     
     function startTimerCountdown() {
@@ -1285,9 +1505,19 @@
       document.getElementById('pause-timer-btn').style.display = 'inline-block';
       
       timerInterval = setInterval(() => {
-        timerSeconds--;
+        // Use consistent state for countdown
+        const consistentState = getConsistentTimerState();
+        
+        if (!consistentState.isRunning) {
+          // Timer was stopped externally
+          timerComplete();
+          return;
+        }
+        
+        timerSeconds = consistentState.seconds;
         updateTimerDisplay();
         updateProgressBar();
+        
         if(timerSeconds <= 0) {
           timerComplete();
         }
@@ -1295,23 +1525,62 @@
     }
     
     async function pauseTimer(){
-      if (!currentRoom) return;
+      if (!currentRoom || timerStateLock) return;
       
-      // Broadcast pause to all participants
-      broadcastTimerStop();
+      timerStateLock = true;
       
-      // Reset locally
-      resetTimerUI();
+      try {
+        // Update room state
+        roomTimerState.isRunning = false;
+        
+        // Broadcast pause to all participants
+        const broadcastSuccess = broadcastTimerStop();
+        
+        if (broadcastSuccess) {
+          // Reset locally
+          resetTimerUI();
+        } else {
+          console.error('Failed to broadcast timer stop');
+        }
+      } catch (error) {
+        console.error('Error pausing timer:', error);
+      } finally {
+        timerStateLock = false;
+      }
     }
     
     async function resetTimer(){
-      if (currentRoom) {
-        // Broadcast reset to all participants
-        broadcastTimerStop();
-      }
+      if (timerStateLock) return;
       
-      // Reset locally
-      resetTimerUI();
+      timerStateLock = true;
+      
+      try {
+        // Reset room state
+        roomTimerState = {
+          isRunning: false,
+          seconds: timerDuration,
+          duration: timerDuration,
+          startedBy: null,
+          startTime: null,
+          roomId: currentRoom?.id
+        };
+        
+        if (currentRoom) {
+          // Broadcast reset to all participants
+          const broadcastSuccess = broadcastTimerStop();
+          
+          if (!broadcastSuccess) {
+            console.error('Failed to broadcast timer reset');
+          }
+        }
+        
+        // Reset locally
+        resetTimerUI();
+      } catch (error) {
+        console.error('Error resetting timer:', error);
+      } finally {
+        timerStateLock = false;
+      }
     }
     
     function updateTimerDisplay(){
@@ -1331,9 +1600,19 @@
     
     function resetTimerUI(){
       timerRunning = false;
-      clearInterval(timerInterval);
+      
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      
       document.getElementById('start-timer-btn').style.display = 'inline-block';
       document.getElementById('pause-timer-btn').style.display = 'none';
+      
+      // Use consistent state for UI updates
+      const consistentState = getConsistentTimerState();
+      timerSeconds = consistentState.seconds;
+      
       updateTimerDisplay();
       updateProgressBar();
       updateTimerStatus('');
