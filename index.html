@@ -967,39 +967,12 @@
         }
       });
 
-      // Timer subscription
+      // Timer subscription (broadcast only)
       timerSubscription = supabase.channel(timerChannelName, {
         config: { broadcast: { self: true }, presence: { key: currentUser.id } }
-      }).on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'room_timers',
-        filter: `room_id=eq.${currentRoom.id}`
-      }, async (payload) => {
-        console.log('Timer change received:', payload);
-        try {
-          if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
-            await loadRoomTimer();
-          }
-          updateConnectionStatus('connected');
-          connectionRetryCount = 0;
-        } catch (error) {
-          console.error('Error handling timer change:', error);
-          updateConnectionStatus('disconnected');
-        }
-      }).on('broadcast', { event: 'timer_update' }, (payload) => {
-        console.log('Broadcast timer update:', payload);
-        if (payload.action === 'start') {
-          timerSeconds = payload.duration;
-          timerStartedBy = payload.startedBy;
-          updateTimerDisplay();
-          updateTimerStatus(`Started by ${timerStartedBy}`);
-          if (!timerRunning) {
-            startTimerCountdown();
-          }
-        } else if (payload.action === 'stop') {
-          resetTimerUI();
-        }
+      }).on('broadcast', { event: 'timer_sync' }, (payload) => {
+        console.log('Broadcast timer sync:', payload);
+        handleTimerBroadcast(payload);
       }).subscribe((status) => {
         console.log('Timer subscription status:', status);
         if (status === 'SUBSCRIBED') {
@@ -1016,83 +989,84 @@
     }
 
     async function loadRoomData(){
-      await Promise.all([loadParticipants(), loadRoomTimer()]);
+      await loadParticipants();
+      // No need to load timer from database, using broadcast only
     }
 
-    // -------- TIMER SYNCHRONIZATION --------
-    async function loadRoomTimer(){
-      if(!currentRoom) return;
-      try {
-        const {data, error} = await supabase.from('room_timers')
-          .select('*')
-          .eq('room_id', currentRoom.id)
-          .eq('is_active', true)
-          .single();
+    // -------- TIMER SYNCHRONIZATION (BROADCAST ONLY) --------
+    let roomTimerState = {
+      isRunning: false,
+      seconds: 1500,
+      duration: 1500,
+      startedBy: null,
+      startTime: null
+    };
+
+    function handleTimerBroadcast(data) {
+      console.log('Timer broadcast received:', data);
+      
+      if (data.action === 'start') {
+        // Calculate current seconds based on start time
+        const now = Date.now();
+        const elapsed = Math.floor((now - data.startTime) / 1000);
+        const remainingSeconds = Math.max(0, data.duration - elapsed);
         
-        if(error || !data) {
-          // No active timer
-          resetTimer();
-          updateTimerStatus('');
-          return;
-        }
+        roomTimerState = {
+          isRunning: true,
+          seconds: remainingSeconds,
+          duration: data.duration,
+          startedBy: data.startedBy,
+          startTime: data.startTime
+        };
         
-        const now = new Date();
-        const startTime = new Date(data.start_time);
-        const endTime = new Date(data.end_time);
-        
-        if (now >= endTime) {
-          // Timer has ended
-          await supabase.from('room_timers')
-            .update({is_active: false})
-            .eq('id', data.id);
-          
-          timerComplete();
-          return;
-        }
-        
-        // Timer is still running
-        const remainingMs = endTime - now;
-        timerSeconds = Math.ceil(remainingMs / 1000);
-        timerDuration = data.duration_seconds;
-        timerStartedBy = data.started_by_name;
+        timerSeconds = remainingSeconds;
+        timerDuration = data.duration;
+        timerStartedBy = data.startedBy;
         
         updateTimerDisplay();
         updateProgressBar();
-        updateTimerStatus(`Started by ${timerStartedBy}`);
+        updateTimerStatus(`Started by ${data.startedBy}`);
         
-        if (!timerRunning) {
+        if (!timerRunning && remainingSeconds > 0) {
           startTimerCountdown();
+        } else if (remainingSeconds <= 0) {
+          timerComplete();
         }
-      } catch (error) {
-        console.error('Error loading room timer:', error);
+      } else if (data.action === 'stop') {
+        roomTimerState.isRunning = false;
+        resetTimerUI();
       }
     }
-    
-    async function syncTimerToRoom(duration, startedByName) {
-      if (!currentRoom) return;
+
+    function broadcastTimerStart() {
+      if (!timerSubscription) return;
       
-      try {
-        // Deactivate any existing timers
-        await supabase.from('room_timers')
-          .update({is_active: false})
-          .eq('room_id', currentRoom.id);
-        
-        // Create new timer
-        const startTime = new Date();
-        const endTime = new Date(startTime.getTime() + duration * 1000);
-        
-        await supabase.from('room_timers').insert([{
-          room_id: currentRoom.id,
-          duration_seconds: duration,
-          start_time: startTime.toISOString(),
-          end_time: endTime.toISOString(),
-          started_by: currentUser.id,
-          started_by_name: startedByName,
-          is_active: true
-        }]);
-      } catch (error) {
-        console.error('Error syncing timer:', error);
-      }
+      const payload = {
+        action: 'start',
+        duration: timerDuration,
+        startedBy: currentUser.name,
+        startTime: Date.now()
+      };
+      
+      console.log('Broadcasting timer start:', payload);
+      
+      timerSubscription.send({
+        type: 'broadcast',
+        event: 'timer_sync',
+        payload
+      });
+    }
+
+    function broadcastTimerStop() {
+      if (!timerSubscription) return;
+      
+      console.log('Broadcasting timer stop');
+      
+      timerSubscription.send({
+        type: 'broadcast',
+        event: 'timer_sync',
+        payload: { action: 'stop' }
+      });
     }
     
     function updateTimerStatus(status) {
@@ -1293,21 +1267,12 @@
       if(timerRunning || !currentRoom) return;
       
       timerDuration = timerSeconds;
-      await syncTimerToRoom(timerSeconds, currentUser.name);
+      timerStartedBy = currentUser.name;
       
       // Broadcast to all participants
-      if (timerSubscription) {
-        timerSubscription.send({
-          type: 'broadcast',
-          event: 'timer_update',
-          payload: {
-            action: 'start',
-            duration: timerSeconds,
-            startedBy: currentUser.name
-          }
-        });
-      }
+      broadcastTimerStart();
       
+      // Start locally
       startTimerCountdown();
       updateTimerStatus(`Started by ${currentUser.name}`);
     }
@@ -1332,48 +1297,20 @@
     async function pauseTimer(){
       if (!currentRoom) return;
       
-      try {
-        await supabase.from('room_timers')
-          .update({is_active: false})
-          .eq('room_id', currentRoom.id)
-          .eq('is_active', true);
-      } catch (error) {
-        console.error('Error pausing timer:', error);
-      }
-      
       // Broadcast pause to all participants
-      if (timerSubscription) {
-        timerSubscription.send({
-          type: 'broadcast',
-          event: 'timer_update',
-          payload: { action: 'stop' }
-        });
-      }
+      broadcastTimerStop();
       
+      // Reset locally
       resetTimerUI();
     }
     
     async function resetTimer(){
       if (currentRoom) {
-        try {
-          await supabase.from('room_timers')
-            .update({is_active: false})
-            .eq('room_id', currentRoom.id)
-            .eq('is_active', true);
-        } catch (error) {
-          console.error('Error resetting timer:', error);
-        }
-        
         // Broadcast reset to all participants
-        if (timerSubscription) {
-          timerSubscription.send({
-            type: 'broadcast',
-            event: 'timer_update',
-            payload: { action: 'stop' }
-          });
-        }
+        broadcastTimerStop();
       }
       
+      // Reset locally
       resetTimerUI();
     }
     
