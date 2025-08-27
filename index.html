@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>StudyTogether - منصة الدراسة التعاونية</title>
+  <title>Study Partner - منصة الدراسة التعاونية</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
     :root{
@@ -181,7 +181,7 @@
   <header class="header" id="header" style="display:none;">
     <div style="display:flex;align-items:center;gap:1rem;">
       <button class="menu-toggle" id="menu-toggle" data-translate-title="toggleSidebar" title="Toggle sidebar" onclick="toggleSidebar()"><span>☰</span></button>
-      <div class="logo"><div class="logo-icon">📚</div><span data-translate="appName">StudyTogether</span></div>
+      <div class="logo"><div class="logo-icon">📚</div><span data-translate="appName">Study Partner</span></div>
     </div>
     <div class="header-controls">
       <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
@@ -194,7 +194,7 @@
     <div class="content">
       <!-- Registration -->
       <div id="registration-screen" class="screen active">
-        <h1 class="title" data-translate="welcome">Welcome to StudyTogether</h1>
+        <h1 class="title" data-translate="welcome">Welcome to Study Partner</h1>
         <p class="subtitle" data-translate="welcomeDesc">Create your profile to start</p>
         <div class="form-section">
           <div class="form-group">
@@ -336,10 +336,21 @@
       </div>
 
       <div id="about-screen" class="screen">
-        <h1 class="page-title">About StudyTogether</h1>
-        <p style="text-align:center;font-size:1.2rem;color:var(--text-secondary)">
-          A platform for collaborative learning.
-        </p>
+        <h1 class="page-title">About Study Partner</h1>
+        <div style="max-width:800px;margin:0 auto;background:var(--bg-secondary);padding:3rem;border-radius:24px;box-shadow:var(--shadow-medium);text-align:center;">
+          <p style="font-size:1.4rem;color:var(--text-primary);margin-bottom:2rem;font-weight:600;">
+            Empowering Students Through Collaborative Learning
+          </p>
+          <p style="font-size:1.1rem;color:var(--text-secondary);line-height:1.8;margin-bottom:1.5rem;">
+            Study Partner is a revolutionary platform designed to transform the way students learn and collaborate. Our mission is to break down the barriers of traditional studying by creating virtual spaces where students can connect, share knowledge, and achieve academic excellence together.
+          </p>
+          <p style="font-size:1.1rem;color:var(--text-secondary);line-height:1.8;margin-bottom:1.5rem;">
+            Whether you're preparing for exams, working on group projects, or simply seeking study companions, Study Partner provides the tools and environment you need. From real-time chat rooms to collaborative timers and subject-specific spaces, we've built everything with one goal in mind: helping students succeed together.
+          </p>
+          <p style="font-size:1.1rem;color:var(--text-secondary);line-height:1.8;">
+            Join thousands of students who have discovered the power of collaborative learning. Because when we study together, we succeed together.
+          </p>
+        </div>
       </div>
 
       <div id="settings-screen" class="screen">
@@ -359,16 +370,16 @@
             </button>
           </div>
           <hr style="margin:2rem 0;border:none;border-top:1px solid var(--border-color)">
-          <h3>Account</h3>
-          <div style="display:flex;justify-content:space-between;margin:1.0rem 0;">
-            <span>Name</span><span id="settings-name">-</span>
+          <h3>Personal Information</h3>
+          <div class="form-group">
+            <label class="form-label">Name</label>
+            <input type="text" id="settings-name-input" class="form-input" placeholder="Enter your name">
           </div>
-          <div style="display:flex;justify-content:space-between;margin:1.0rem 0;">
-            <span>Grade</span><span id="settings-grade">-</span>
+          <div class="form-group">
+            <label class="form-label">Subject</label>
+            <input type="text" id="settings-subject-input" class="form-input" placeholder="Enter your subject">
           </div>
-          <div style="display:flex;justify-content:space-between;margin:1.0rem 0;">
-            <span>Subject</span><span id="settings-subject">-</span>
-          </div>
+          <button class="btn btn-block" onclick="savePersonalInfo()">Save Changes</button>
         </div>
       </div>
     </div>
@@ -383,7 +394,7 @@
         about:"About", settings:"Settings", logout:"Logout", welcome:"Welcome",
         welcomeDesc:"Create your profile to start", yourName:"Your Name",
         chooseAvatar:"Choose Avatar Color", selectGrade:"Select Grade", joinPlatform:"Join Platform",
-        appName:"StudyTogether", toggleSidebar:"Toggle Sidebar", menuToggle:"Menu",
+        appName:"Study Partner", toggleSidebar:"Toggle Sidebar", menuToggle:"Menu",
         copyCode:"Copy Code", shareLink:"Share Link", save:"Save", enterRooms:"Enter Rooms",
         browse:"Browse", createNow:"Create Now", joinNow:"Join Now", joinRoom:"Join Room",
         createRoom:"Create Room", enterRoomCode:"Enter Room Code", leaveRoom:"Leave Room",
@@ -399,7 +410,7 @@
         logout:"خروج", welcome:"مرحباً بك", welcomeDesc:"أنشئ ملفك الشخصي للبدء",
         yourName:"اسمك", chooseAvatar:"اختر لون الصورة الرمزية",
         selectGrade:"اختر الصف الدراسي", joinPlatform:"انضم للمنصة",
-        appName:"ستدي توغيذر", toggleSidebar:"إظهار/إخفاء الشريط الجانبي",
+        appName:"دراسة شريك", toggleSidebar:"إظهار/إخفاء الشريط الجانبي",
         menuToggle:"القائمة", copyCode:"نسخ الكود", shareLink:"مشاركة الرابط",
         save:"حفظ", enterRooms:"دخول الغرف", browse:"تصفح", createNow:"إنشاء الآن",
         joinNow:"انضمام الآن", joinRoom:"انضم للغرفة", createRoom:"إنشاء غرفة",
@@ -683,9 +694,31 @@
 
     function populateSettings(){
       if(!currentUser) return;
-      document.getElementById('settings-name').textContent = currentUser.name;
-      document.getElementById('settings-grade').textContent = currentUser.grade;
-      document.getElementById('settings-subject').textContent = currentUser.subject || '-';
+      document.getElementById('settings-name-input').value = currentUser.name || '';
+      document.getElementById('settings-subject-input').value = currentUser.subject || '';
+    }
+
+    async function savePersonalInfo(){
+      if(!currentUser) return;
+      const name = document.getElementById('settings-name-input').value.trim();
+      const subject = document.getElementById('settings-subject-input').value.trim() || null;
+      
+      if(!name){
+        alert('Name cannot be empty.');
+        return;
+      }
+      
+      try{
+        currentUser.name = name;
+        currentUser.subject = subject;
+        await supabase.from('users').update({name, subject}).eq('id', currentUser.id);
+        localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
+        updateSidebarUserInfo();
+        toast('Personal information updated successfully!', 'success', 'Updated');
+      }catch(e){
+        console.error(e);
+        alert('Failed to save personal information.');
+      }
     }
 
     // -------- NOTIFICATIONS --------
@@ -1218,7 +1251,7 @@
       const link = `${window.location.origin}${window.location.pathname}?room=${currentRoom.code}`;
       if(navigator.share){
         navigator.share({
-          title: 'StudyTogether', 
+          title: 'Study Partner', 
           text: 'Join my study room:', 
           url: link
         }).catch(() => {});
