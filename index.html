@@ -150,7 +150,6 @@
       position: relative;
       overflow: hidden;
       background-color: var(--bg-tertiary);
-      /* thin breaks every 12px */
       background-image: repeating-linear-gradient(
         to right,
         var(--bg-tertiary) 0 10px,
@@ -162,7 +161,6 @@
       width:100%;
       transition:width 1s linear;
       border-radius:4px;
-      /* gradient + moving stripes */
       background-image:
         repeating-linear-gradient(
           45deg,
@@ -327,7 +325,7 @@
           <div style="flex-basis:100%;height:0"></div>
           <div style="display:flex;gap:.75rem;align-items:center">
             <label class="form-label" style="margin:0" data-translate="subject">Subject</label>
-            <select id="room-subject-select" class="form-input" style="width:auto;min-width:220px"></select>
+            <select id="room-subject-select" class="form-input" style="width:auto;min-width:260px"></select>
             <button class="btn btn-small" onclick="saveRoomSubject()" data-translate="save">Save</button>
           </div>
         </div>
@@ -361,7 +359,7 @@
             <button id="start-timer-btn" class="btn" onclick="startTimer()" data-translate="start">Start</button>
             <button id="pause-timer-btn" class="btn btn-secondary" onclick="pauseTimer()" style="display:none;" data-translate="pause">Pause</button>
             <button class="btn btn-secondary" onclick="resetTimer()" data-translate="reset">Reset</button>
-            <!-- NEW End Session -->
+            <!-- End Session -->
             <button class="btn btn-secondary" style="background:var(--error-color)" onclick="endSession()" data-translate="endSession">End Session</button>
           </div>
 
@@ -426,7 +424,7 @@
 
       <div id="settings-screen" class="screen">
         <h1 class="page-title" data-translate="settings">Settings</h1>
-        <div style="max-width:600px;margin:0 auto;background:var(--bg-secondary);padding:2rem;border-radius:20px;">
+        <div style="max-width:700px;margin:0 auto;background:var(--bg-secondary);padding:2rem;border-radius:20px;">
           <h3 data-translate="preferences">Preferences</h3>
           <div style="display:flex;justify-content:space-between;align-items:center;margin:1.5rem 0;">
             <span data-translate="theme">Theme</span>
@@ -442,14 +440,24 @@
           </div>
           <hr style="margin:2rem 0;border:none;border-top:1px solid var(--border-color)">
           <h3 data-translate="personalInfo">Personal Information</h3>
+
           <div class="form-group">
             <label class="form-label" data-translate="nameLabel">Name</label>
             <input type="text" id="settings-name-input" class="form-input" placeholder="Enter your name">
           </div>
+
+          <!-- Grade shown in settings -->
+          <div class="form-group">
+            <label class="form-label" data-translate="gradeLabel">Grade</label>
+            <select id="settings-grade-select" class="form-input"></select>
+          </div>
+
+          <!-- Subject tied to grade -->
           <div class="form-group">
             <label class="form-label" data-translate="subjectLabel">Subject</label>
-            <input type="text" id="settings-subject-input" class="form-input" placeholder="Enter your subject">
+            <select id="settings-subject-select" class="form-input"></select>
           </div>
+
           <button class="btn btn-block" onclick="savePersonalInfo()" data-translate="saveChanges">Save Changes</button>
         </div>
       </div>
@@ -483,7 +491,7 @@
         start:"Start", pause:"Pause", reset:"Reset", startEndHeading:"Start–End",
         preferences:"Preferences", theme:"Theme", language:"Language",
         personalInfo:"Personal Information", nameLabel:"Name", subjectLabel:"Subject", saveChanges:"Save Changes",
-        endSession:"End Session"
+        endSession:"End Session", gradeLabel:"Grade"
       },
       ar:{
         home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة",
@@ -510,20 +518,87 @@
         start:"بدء", pause:"إيقاف مؤقت", reset:"إعادة ضبط", startEndHeading:"من–إلى",
         preferences:"التفضيلات", theme:"الثيم", language:"اللغة",
         personalInfo:"المعلومات الشخصية", nameLabel:"الاسم", subjectLabel:"المادة", saveChanges:"حفظ التغييرات",
-        endSession:"إنهاء الجلسة"
+        endSession:"إنهاء الجلسة", gradeLabel:"الصف"
       }
     };
     
-    // Grade translation mapping (values rendered in UI)
+    // Grade translation mapping
     const gradeTranslations = {
       en: { "10": "Grade 10", "11": "Grade 11", "12": "Grade 12" },
       ar: { "10": "الصف الأول الثانوي", "11": "الصف الثاني الثانوي", "12": "الصف الثالث الثانوي" }
     };
-    
-    const subjectsByGrade={
-      10:[{name:"Mathematics",nameAr:"الرياضيات"},{name:"Physics",nameAr:"الفيزياء"}],
-      11:[{name:"Advanced Math",nameAr:"رياضيات متقدمة"},{name:"Chemistry",nameAr:"كيمياء"}],
-      12:[{name:"Calculus",nameAr:"تفاضل وتكامل"},{name:"Biology",nameAr:"أحياء"}]
+
+    // -------- SUBJECT CATALOG BY GRADE (EN/AR) --------
+    const subjectsByGrade = {
+      10: [
+        {name:"Mathematics", nameAr:"الرياضيات"},
+        {name:"Physics", nameAr:"الفيزياء"},
+        {name:"Chemistry", nameAr:"الكيمياء"},
+        {name:"Biology", nameAr:"الأحياء"},
+        {name:"Quran", nameAr:"القرآن"},
+        {name:"Digital Technology", nameAr:"التقنية الرقمية"},
+        {name:"English", nameAr:"الإنجليزية"},
+        {name:"Arabic", nameAr:"العربية"},
+        {name:"Environmental Science", nameAr:"العلوم البيئية"}
+      ],
+      11: [
+        {name:"Mathematics", nameAr:"الرياضيات"},
+        {name:"Language Proficiency (Arabic)", nameAr:"الكفايات اللغوية"},
+        {name:"Chemistry", nameAr:"الكيمياء"},
+        {name:"Biology", nameAr:"الأحياء"},
+        {name:"Physics", nameAr:"الفيزياء"},
+        {name:"History", nameAr:"التاريخ"},
+        {name:"Tawhid (Monotheism)", nameAr:"التوحيد"},
+        {name:"Hadith", nameAr:"الحديث"},
+        {name:"Quran", nameAr:"القرآن"},
+        {name:"Qur'anic Readings", nameAr:"القراءات"},
+        {name:"English", nameAr:"إنجليزي"},
+        {name:"Digital Technology", nameAr:"التقنية الرقمية"},
+        {name:"Engineering", nameAr:"الهندسة"},
+        {name:"Principles of Health Sciences", nameAr:"مبادئ العلوم الصحية"},
+        {name:"Financial Management", nameAr:"الإدارة المالية"},
+        {name:"Introduction to Business", nameAr:"مقدمة في الأعمال"},
+        {name:"Data Science", nameAr:"علم البيانات"},
+        {name:"Principles of Economics", nameAr:"مبادئ الاقتصاد"},
+        {name:"Internet of Things", nameAr:"إنترنت الأشياء"}
+      ],
+      12: [
+        {name:"Mathematics", nameAr:"الرياضيات"},
+        {name:"Physics", nameAr:"الفيزياء"},
+        {name:"Chemistry", nameAr:"الكيمياء"},
+        {name:"Biology", nameAr:"الأحياء"},
+        {name:"Fiqh (Jurisprudence)", nameAr:"الفقه"},
+        {name:"Hadith Terminology", nameAr:"مصطلح الحديث"},
+        {name:"Tafsir (Quran Exegesis)", nameAr:"التفسير"},
+        {name:"English", nameAr:"الإنجليزي"},
+        {name:"Geography", nameAr:"الجغرافيا"},
+        {name:"Managerial Skills", nameAr:"المهارات الإدارية"},
+        {name:"Sustainable Development", nameAr:"التنمية المستدامة"},
+        {name:"Earth & Space Sciences", nameAr:"علوم الأرض والفضاء"},
+        {name:"Research & Information Sources", nameAr:"البحث ومصادر المعلومات"},
+        {name:"Digital Technology", nameAr:"التقنية الرقمية"},
+        {name:"Functional & Creative Writing", nameAr:"الكتابة الوظيفية والإبداعية"},
+        {name:"Literary Studies", nameAr:"الدراسات الأدبية"},
+        {name:"Principles of Law", nameAr:"مبادئ القانون"},
+        {name:"Statistics", nameAr:"الإحصاء"},
+        {name:"Healthcare", nameAr:"الرعاية الصحية"},
+        {name:"Human Body Systems", nameAr:"أنظمة جسم الإنسان"},
+        {name:"Digital Design", nameAr:"التصميم الرقمي"},
+        {name:"Artificial Intelligence", nameAr:"الذكاء الاصطناعي"},
+        {name:"Cybersecurity", nameAr:"الأمن السيبراني"},
+        {name:"Engineering Design", nameAr:"التصميم الهندسي"},
+        {name:"Principles of Management", nameAr:"مبادئ الإدارة"},
+        {name:"Event Management", nameAr:"إدارة الفعاليات"},
+        {name:"Marketing Campaigns", nameAr:"الحملات التسويقية"},
+        {name:"Digital Citizenship", nameAr:"المواطنة الرقمية"},
+        {name:"Life Skills", nameAr:"المهارات الحياتية"},
+        {name:"Let's Learn Chinese", nameAr:"هيا نتعلم اللغة الصينية"},
+        {name:"Inheritance Law (Faraid)", nameAr:"الفرائض"},
+        {name:"Usul al-Fiqh (Principles of Jurisprudence)", nameAr:"أصول الفقه"},
+        {name:"Software Engineering", nameAr:"هندسة البرمجيات"},
+        {name:"Rhetoric & Literary Criticism", nameAr:"الدراسات البلاغية والنقدية"},
+        {name:"Secretarial & Office Administration", nameAr:"السكرتارية والإدارة المكتبية"}
+      ]
     };
 
     // -------- DOM ELEMENTS --------
@@ -557,7 +632,6 @@
       startTime: null
     };
 
-    // -------- INITIALIZATION --------
     document.addEventListener('DOMContentLoaded', initApp);
 
     function initApp(){
@@ -572,11 +646,11 @@
         updateConnectionStatus('disconnected');
       }
       loadPreferences();
-      populateGradeSelect(); // initial render
+      populateGradeSelect();
       setupEventListeners();
       handleUrlParams();
       checkSavedUser();
-      updateLanguage(); // includes: populate subjects + refresh UI text
+      updateLanguage();
       applyTheme();
       syncQuickControls();
     }
@@ -605,7 +679,7 @@
       connectionStatus.style.display = currentRoom ? 'block' : 'none';
     }
 
-    // -------- USER AUTHENTICATION --------
+    // -------- USER AUTH --------
     function checkSavedUser(){
       const savedUser = localStorage.getItem('studyTogether_user');
       if(savedUser){
@@ -673,7 +747,7 @@
       showLoggedOutLayout();
     }
 
-    // -------- LAYOUT MANAGEMENT --------
+    // -------- LAYOUT --------
     function showLoggedInLayout(){
       sidebar.style.display = 'flex';
       header.style.display = 'flex';
@@ -713,7 +787,6 @@
     function toggleSidebar(force){
       const isMobile = window.innerWidth <= 1024;
       const menuToggleBtn = document.getElementById('menu-toggle');
-      
       if(isMobile){
         const shouldBeActive = (force !== undefined) ? force : !sidebar.classList.contains('mobile-active');
         sidebar.classList.toggle('mobile-active', shouldBeActive);
@@ -732,7 +805,6 @@
     function updateLayoutForSidebar(){
       const isDesktop = window.innerWidth > 1024;
       const menuToggleBtn = document.getElementById('menu-toggle');
-      
       if(isDesktop){
         sidebar.classList.remove('mobile-active');
         if(sidebarOpen){
@@ -795,14 +867,12 @@
         if(translations[currentLanguage][key]) el.title = translations[currentLanguage][key];
       });
 
-      // repopulate grade options & subjects
+      // repopulate selects according to language
       populateGradeSelect();
       populateRoomSubjects(currentUser?.grade || gradeSelect.value);
+      if(currentUser) populateSettings();
 
-      // refresh grade line under avatar
       updateSidebarUserInfo();
-
-      // sync pre-login header controls labels/icons
       syncQuickControls();
     }
     
@@ -812,8 +882,9 @@
       updateLanguage();
     }
 
-    function syncQuickControls(){ /* icons updated in applyTheme/updateLanguage */ }
+    function syncQuickControls(){}
 
+    // -------- SIDEBAR USER LINE --------
     function updateSidebarUserInfo(){
       if(!currentUser) return;
       const avatar = document.getElementById('sidebar-avatar');
@@ -838,7 +909,7 @@
       return (lang === 'ar' ? found.nameAr : found.name);
     }
 
-    // Registration: populate grade options based on language
+    // -------- REGISTRATION: Grade select --------
     function populateGradeSelect(){
       const previous = gradeSelect.value || '';
       gradeSelect.innerHTML = '';
@@ -855,26 +926,90 @@
       if(previous) gradeSelect.value = previous;
     }
 
+    // -------- SETTINGS POPULATION --------
     function populateSettings(){
       if(!currentUser) return;
       document.getElementById('settings-name-input').value = currentUser.name || '';
-      document.getElementById('settings-subject-input').value = currentUser.subject || '';
+
+      // Grade dropdown in settings
+      const gradeSel = document.getElementById('settings-grade-select');
+      gradeSel.innerHTML = '';
+      ['10','11','12'].forEach(val=>{
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = gradeTranslations[currentLanguage][val];
+        gradeSel.appendChild(opt);
+      });
+      gradeSel.value = String(currentUser.grade || '');
+
+      // Subject dropdown depends on grade
+      populateSettingsSubjectsForGrade(gradeSel.value, currentUser.subject);
+      gradeSel.onchange = () => {
+        populateSettingsSubjectsForGrade(gradeSel.value, null);
+      };
+    }
+
+    function populateSettingsSubjectsForGrade(gradeVal, selectedSubject){
+      const subjSel = document.getElementById('settings-subject-select');
+      subjSel.innerHTML = '';
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = currentLanguage === 'ar' ? '-- اختر المادة --' : '-- Select Subject --';
+      subjSel.appendChild(placeholder);
+
+      const list = subjectsByGrade[gradeVal] || [];
+      list.forEach(s=>{
+        const opt = document.createElement('option');
+        opt.value = s.name; // store canonical English
+        opt.textContent = currentLanguage==='ar' ? s.nameAr : s.name;
+        subjSel.appendChild(opt);
+      });
+
+      // If selectedSubject is provided and exists, set it
+      if(selectedSubject){
+        const exists = list.some(s => s.name === selectedSubject || s.nameAr === selectedSubject);
+        if(exists){
+          subjSel.value = list.find(s => s.name === selectedSubject || s.nameAr === selectedSubject).name;
+        } else {
+          // add a fallback option for legacy/custom subjects
+          const extra = document.createElement('option');
+          extra.value = selectedSubject;
+          extra.textContent = selectedSubject;
+          subjSel.appendChild(extra);
+          subjSel.value = selectedSubject;
+        }
+      } else {
+        subjSel.value = '';
+      }
     }
 
     async function savePersonalInfo(){
       if(!currentUser) return;
-      const name = document.getElementById('settings-name-input').value.trim();
-      const subject = document.getElementById('settings-subject-input').value.trim() || null;
+      const name    = document.getElementById('settings-name-input').value.trim();
+      const newGrade= document.getElementById('settings-grade-select').value;
+      const newSubj = document.getElementById('settings-subject-select').value || null;
+
       if(!name){
         alert(currentLanguage==='ar' ? 'لا يمكن أن يكون الاسم فارغاً.' : 'Name cannot be empty.');
         return;
       }
+      if(!newGrade){
+        alert(currentLanguage==='ar' ? 'اختر الصف.' : 'Please choose a grade.');
+        return;
+      }
+
       try{
-        currentUser.name = name;
-        currentUser.subject = subject;
-        await supabase.from('users').update({name, subject}).eq('id', currentUser.id);
+        currentUser.name  = name;
+        currentUser.grade = newGrade;
+        currentUser.subject = newSubj;
+
+        await supabase.from('users').update({name, grade:newGrade, subject:newSubj}).eq('id', currentUser.id);
         localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
+
+        // Refresh dependent UI
         updateSidebarUserInfo();
+        populateRoomSubjects(newGrade);
+
         toast(currentLanguage==='ar'?'تم تحديث المعلومات بنجاح!':'Personal information updated successfully!', 'success', currentLanguage==='ar'?'تم التحديث':'Updated');
       }catch(e){
         console.error(e);
@@ -1013,7 +1148,7 @@
         localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
         populateSettings();
         updateSidebarUserInfo();
-        toast((currentLanguage==='ar'?'تم تعيين المادة إلى ':'Subject set to ') + (subject || '—'), 'success', currentLanguage==='ar'?'تم التحديث':'Updated');
+        toast((currentLanguage==='ar'?'تم تعيين المادة إلى ':'Subject set to ') + (getSubjectDisplayName(subject, currentUser.grade, currentLanguage) || '—'), 'success', currentLanguage==='ar'?'تم التحديث':'Updated');
       }catch(e){
         console.error(e);
         alert(currentLanguage==='ar'?'فشل حفظ المادة.':'Failed saving subject.');
@@ -1036,7 +1171,7 @@
       }catch(e){ console.error(e); }
     }
 
-    // -------- REAL-TIME SUBSCRIPTIONS --------
+    // -------- REAL-TIME --------
     function setupRoomSubscriptions(){
       cleanupSubscriptions();
       const participantsChannelName = `room-participants-${currentRoom.id}`;
@@ -1096,7 +1231,7 @@
 
     async function loadRoomData(){ await loadParticipants(); }
 
-    // -------- TIMER SYNC (with schedule & stop) --------
+    // -------- TIMER SYNC --------
     function handleTimerBroadcast(data) {
       if (data.action === 'schedule') {
         lastScheduleBy = data.userId || null;
@@ -1315,13 +1450,11 @@
     }
 
     async function endSession(){
-      // Stop for everyone
       broadcastTimerAction('stop');
       resetTimerUI();
       toast(currentLanguage==='ar' ? 'تم إنهاء المؤقت والجلسة.' : 'Timer and session ended.', 'success',
             currentLanguage==='ar' ? 'انتهت الجلسة' : 'Session Ended');
 
-      // If host, offer to close the room
       const isHost = currentRoom && currentUser && currentUser.id === currentRoom.host_id;
       if(isHost && currentRoom){
         const confirmClose = confirm(currentLanguage==='ar'
@@ -1511,17 +1644,22 @@
       toast(message, 'info', title);
     }
 
-    // -------- UTILITY --------
+    // -------- UTILS --------
     function populateRoomSubjects(grade){
       const selectText = translations[currentLanguage]['selectSubject'] || 'Select Subject';
       roomSubjectSelect.innerHTML = `<option value="">-- ${selectText} --</option>`;
       const subjects = subjectsByGrade[grade] || [];
       subjects.forEach(s => {
         const opt = document.createElement('option');
-        opt.value = s.name;
+        opt.value = s.name; // canonical English
         opt.textContent = currentLanguage === 'ar' ? s.nameAr : s.name;
         roomSubjectSelect.appendChild(opt);
       });
+      if(currentUser && currentUser.subject){
+        // set current subject if still valid
+        const exists = subjects.some(s => s.name === currentUser.subject || s.nameAr === currentUser.subject);
+        roomSubjectSelect.value = exists ? subjects.find(s => s.name === currentUser.subject || s.nameAr === currentUser.subject).name : '';
+      }
     }
 
     function copyRoomCode(){ 
@@ -1558,8 +1696,7 @@
       return div.innerHTML;
     }
 
-    // Placeholder to avoid errors when kicking (you can wire to chat if needed)
-    async function sendSystemMessage(_msg){ /* no-op */ }
+    async function sendSystemMessage(_msg){ /* no-op placeholder */ }
   </script>
 </body>
 </html>
