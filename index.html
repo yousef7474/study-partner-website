@@ -70,7 +70,7 @@
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
     .title{font-size:3rem;text-align:center;margin-bottom:1rem;background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .subtitle{font-size:1.2rem;color:var(--text-secondary);text-align:center;margin-bottom:3rem;line-height:1.6}
+    .subtitle{font-size:1.2rem;color:var(--text-secondary);text-align:center;margin-bottom:1rem;line-height:1.6}
     .page-title{font-size:2.5rem;font-weight:700;margin-bottom:2rem;color:var(--text-primary)}
 
     .form-section{max-width:600px;margin:0 auto;background:var(--bg-secondary);padding:3rem;border-radius:24px;box-shadow:var(--shadow-medium)}
@@ -195,6 +195,12 @@
     <div class="content">
       <!-- Registration -->
       <div id="registration-screen" class="screen active">
+        <!-- Quick controls visible before login -->
+        <div class="header-controls" style="justify-content:flex-end;margin-bottom:1rem;">
+          <button class="theme-toggle" onclick="toggleTheme()" title="Theme"><span id="reg-theme-icon">🌙</span></button>
+          <button class="lang-toggle" onclick="toggleLanguage()" title="Language"><span id="reg-lang-icon">ع</span></button>
+        </div>
+
         <h1 class="title" data-translate="welcome">Welcome to Study Partner</h1>
         <p class="subtitle" data-translate="welcomeDesc">Create your profile to start</p>
         <div class="form-section">
@@ -217,12 +223,7 @@
 
           <div class="form-group">
             <label class="form-label" data-translate="selectGrade">Select Grade</label>
-            <select id="grade-select" class="form-input">
-              <option value="">-- Select Grade --</option>
-              <option value="10">Grade 10</option>
-              <option value="11">Grade 11</option>
-              <option value="12">Grade 12</option>
-            </select>
+            <select id="grade-select" class="form-input"></select>
           </div>
 
           <button class="btn btn-block" onclick="completeRegistration()" data-translate="joinPlatform">Join Platform</button>
@@ -304,20 +305,58 @@
           <div id="participants-list"></div>
         </div>
 
+        <!-- UPDATED TIMER PANEL -->
         <div id="timer-content" class="tab-content" style="background:var(--bg-secondary);padding:2rem;border-radius:20px;text-align:center">
+          <!-- Quick presets -->
           <div>
             <button class="btn btn-small" data-timer="25">25 min Focus</button> 
             <button class="btn btn-small" data-timer="5">5 min Break</button>
           </div>
+
+          <!-- Display -->
           <div id="timer-display" style="font-size:4rem;font-weight:700;margin:2rem 0">25:00</div>
           <div id="timer-progress-container" style="width:100%;height:8px;background:var(--bg-tertiary);border-radius:4px;margin:1rem 0;overflow:hidden;">
             <div id="timer-progress-bar" style="height:100%;background:var(--primary-gradient);width:100%;transition:width 1s linear;border-radius:4px;"></div>
           </div>
           <div id="timer-status" style="font-size:1.2rem;color:var(--text-secondary);margin-bottom:1rem;"></div>
-          <div>
-            <button id="start-timer-btn" class="btn" onclick="startTimer()">Start</button>
-            <button id="pause-timer-btn" class="btn btn-secondary" onclick="pauseTimer()" style="display:none;">Pause</button>
-            <button class="btn btn-secondary" onclick="resetTimer()">Reset</button>
+
+          <!-- Controls -->
+          <div style="margin-bottom:1.5rem">
+            <button id="start-timer-btn" class="btn" onclick="startTimer()" data-translate="start">Start</button>
+            <button id="pause-timer-btn" class="btn btn-secondary" onclick="pauseTimer()" style="display:none;" data-translate="pause">Pause</button>
+            <button class="btn btn-secondary" onclick="resetTimer()" data-translate="reset">Reset</button>
+          </div>
+
+          <!-- Custom duration -->
+          <h3 data-translate="customTimer" style="margin-top:1rem;">Custom Timer</h3>
+          <div id="custom-duration" style="display:flex;gap:.75rem;align-items:flex-end;justify-content:center;margin:1rem 0;flex-wrap:wrap">
+            <div>
+              <label class="form-label" data-translate="hours">Hours</label>
+              <input type="number" id="custom-hours" class="form-input" min="0" value="0" style="width:110px">
+            </div>
+            <div>
+              <label class="form-label" data-translate="minutes">Minutes</label>
+              <input type="number" id="custom-minutes" class="form-input" min="0" value="25" style="width:110px">
+            </div>
+            <div>
+              <label class="form-label" data-translate="seconds">Seconds</label>
+              <input type="number" id="custom-seconds" class="form-input" min="0" value="0" style="width:110px">
+            </div>
+            <button class="btn btn-small" onclick="applyCustomDuration()" data-translate="setTimer">Set Timer</button>
+          </div>
+
+          <!-- Start / End scheduling -->
+          <h3 data-translate="startEndHeading" style="margin-top:1rem">Start–End</h3>
+          <div id="start-end" style="display:flex;gap:.75rem;align-items:flex-end;justify-content:center;margin:1rem 0;flex-wrap:wrap">
+            <div>
+              <label class="form-label" data-translate="startTime">Start Time</label>
+              <input type="time" id="start-time-input" class="form-input" style="width:170px">
+            </div>
+            <div>
+              <label class="form-label" data-translate="endTime">End Time</label>
+              <input type="time" id="end-time-input" class="form-input" style="width:170px">
+            </div>
+            <button class="btn btn-small" onclick="applyStartEndTimer()" data-translate="setTimer">Set Timer</button>
           </div>
         </div>
       </div>
@@ -348,32 +387,32 @@
       </div>
 
       <div id="settings-screen" class="screen">
-        <h1 class="page-title">Settings</h1>
+        <h1 class="page-title" data-translate="settings">Settings</h1>
         <div style="max-width:600px;margin:0 auto;background:var(--bg-secondary);padding:2rem;border-radius:20px;">
-          <h3>Preferences</h3>
+          <h3 data-translate="preferences">Preferences</h3>
           <div style="display:flex;justify-content:space-between;align-items:center;margin:1.5rem 0;">
-            <span>Theme</span>
+            <span data-translate="theme">Theme</span>
             <button class="btn btn-secondary btn-small" onclick="toggleTheme()">
               <span id="theme-text"></span>
             </button>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;">
-            <span>Language</span>
+            <span data-translate="language">Language</span>
             <button class="btn btn-secondary btn-small" onclick="toggleLanguage()">
               <span id="lang-text"></span>
             </button>
           </div>
           <hr style="margin:2rem 0;border:none;border-top:1px solid var(--border-color)">
-          <h3>Personal Information</h3>
+          <h3 data-translate="personalInfo">Personal Information</h3>
           <div class="form-group">
-            <label class="form-label">Name</label>
+            <label class="form-label" data-translate="nameLabel">Name</label>
             <input type="text" id="settings-name-input" class="form-input" placeholder="Enter your name">
           </div>
           <div class="form-group">
-            <label class="form-label">Subject</label>
+            <label class="form-label" data-translate="subjectLabel">Subject</label>
             <input type="text" id="settings-subject-input" class="form-input" placeholder="Enter your subject">
           </div>
-          <button class="btn btn-block" onclick="savePersonalInfo()">Save Changes</button>
+          <button class="btn btn-block" onclick="savePersonalInfo()" data-translate="saveChanges">Save Changes</button>
         </div>
       </div>
     </div>
@@ -402,7 +441,10 @@
         aboutDesc2:"Whether you're preparing for exams, working on group projects, or simply seeking study companions, Study Partner provides the tools and environment you need. From real-time chat rooms to collaborative timers and subject-specific spaces, we've built everything with one goal in mind: helping students succeed together.",
         aboutDesc3:"Join thousands of students who have discovered the power of collaborative learning. Because when we study together, we succeed together.",
         customTimer:"Custom Timer", startTime:"Start Time", endTime:"End Time", setTimer:"Set Timer",
-        hours:"Hours", minutes:"Minutes", seconds:"Seconds", customDuration:"Custom Duration"
+        hours:"Hours", minutes:"Minutes", seconds:"Seconds", customDuration:"Custom Duration",
+        start:"Start", pause:"Pause", reset:"Reset", startEndHeading:"Start–End",
+        preferences:"Preferences", theme:"Theme", language:"Language",
+        personalInfo:"Personal Information", nameLabel:"Name", subjectLabel:"Subject", saveChanges:"Save Changes"
       },
       ar:{
         home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة",
@@ -425,22 +467,17 @@
         aboutDesc2:"سواء كنت تستعد للامتحانات، أو تعمل على مشاريع جماعية، أو تبحث عن رفقاء دراسة، توفر دراسة شريك الأدوات والبيئة التي تحتاجها. من غرف الدردشة في الوقت الفعلي إلى المؤقتات التعاونية والمساحات الخاصة بالمواد، لقد بنينا كل شيء بهدف واحد: مساعدة الطلاب على النجاح معاً.",
         aboutDesc3:"انضم إلى آلاف الطلاب الذين اكتشفوا قوة التعلم التعاوني. لأنه عندما ندرس معاً، ننجح معاً.",
         customTimer:"مؤقت مخصص", startTime:"وقت البداية", endTime:"وقت النهاية", setTimer:"ضبط المؤقت",
-        hours:"ساعات", minutes:"دقائق", seconds:"ثواني", customDuration:"مدة مخصصة"
+        hours:"ساعات", minutes:"دقائق", seconds:"ثواني", customDuration:"مدة مخصصة",
+        start:"بدء", pause:"إيقاف مؤقت", reset:"إعادة ضبط", startEndHeading:"من–إلى",
+        preferences:"التفضيلات", theme:"الثيم", language:"اللغة",
+        personalInfo:"المعلومات الشخصية", nameLabel:"الاسم", subjectLabel:"المادة", saveChanges:"حفظ التغييرات"
       }
     };
     
-    // Grade translation mapping
+    // Grade translation mapping (values rendered in UI)
     const gradeTranslations = {
-      en: {
-        "10": "Grade 10",
-        "11": "Grade 11", 
-        "12": "Grade 12"
-      },
-      ar: {
-        "10": "الصف الأول الثانوي",
-        "11": "الصف الثاني الثانوي",
-        "12": "الصف الثالث الثانوي"
-      }
+      en: { "10": "Grade 10", "11": "Grade 11", "12": "Grade 12" },
+      ar: { "10": "الصف الأول الثانوي", "11": "الصف الثاني الثانوي", "12": "الصف الثالث الثانوي" }
     };
     
     const subjectsByGrade={
@@ -466,6 +503,11 @@
     let sidebarOpen=JSON.parse(localStorage.getItem('studyTogether_sidebarOpen')||'false');
     let connectionRetryCount=0;
 
+    // scheduling globals
+    let scheduledStartTimeout = null;
+    let scheduledStartTime = null;
+    let lastScheduleBy = null;
+
     // -------- ROOM TIMER STATE --------
     let roomTimerState = {
       isRunning: false,
@@ -490,11 +532,13 @@
         updateConnectionStatus('disconnected');
       }
       loadPreferences();
+      populateGradeSelect(); // initial render
       setupEventListeners();
       handleUrlParams();
       checkSavedUser();
-      updateLanguage();
+      updateLanguage(); // includes: populate subjects + refresh UI text
       applyTheme();
+      syncQuickControls();
     }
 
     function loadPreferences(){
@@ -560,7 +604,7 @@
       const name = document.getElementById('student-name').value.trim();
       const grade = gradeSelect.value;
       if(!name || !grade){
-        alert('Please enter your name and select a grade.');
+        alert(currentLanguage==='ar' ? 'يرجى إدخال الاسم واختيار الصف.' : 'Please enter your name and select a grade.');
         return;
       }
       try{
@@ -578,7 +622,7 @@
         }
       }catch(e){
         console.error('Registration error:', e);
-        alert('Registration failed.');
+        alert(currentLanguage==='ar' ? 'فشل التسجيل.' : 'Registration failed.');
       }
     }
 
@@ -613,7 +657,7 @@
 
     function navigateToScreen(screenId){
       if(screenId !== 'room-screen' && currentRoom){
-        if(!confirm('This will leave your current study room. Proceed?')) return;
+        if(!confirm(currentLanguage==='ar'?'سيتم مغادرة الغرفة الحالية. المتابعة؟':'This will leave your current study room. Proceed?')) return;
         leaveRoom();
       }
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -676,7 +720,12 @@
     // -------- THEME & LANGUAGE --------
     function applyTheme(){
       document.body.setAttribute('data-theme', currentTheme);
-      document.getElementById('theme-icon').textContent = currentTheme === 'light' ? '🌙' : '☀️';
+      // icons
+      const themeIcon = document.getElementById('theme-icon');
+      const regThemeIcon = document.getElementById('reg-theme-icon');
+      if(themeIcon) themeIcon.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+      if(regThemeIcon) regThemeIcon.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+      // button labels in settings
       const themeText = document.getElementById('theme-text'); 
       if(themeText) themeText.textContent = currentTheme === 'light' ? '🌙 Dark' : '☀️ Light';
     }
@@ -690,7 +739,13 @@
     function updateLanguage(){
       document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
       document.documentElement.lang = currentLanguage;
-      document.getElementById('lang-icon').textContent = currentLanguage === 'ar' ? 'EN' : 'ع';
+
+      // icons
+      const langIcon = document.getElementById('lang-icon');
+      const regLangIcon = document.getElementById('reg-lang-icon');
+      if(langIcon) langIcon.textContent = currentLanguage === 'ar' ? 'EN' : 'ع';
+      if(regLangIcon) regLangIcon.textContent = currentLanguage === 'ar' ? 'EN' : 'ع';
+
       const langText = document.getElementById('lang-text'); 
       if(langText) langText.textContent = currentLanguage === 'ar' ? 'English' : 'العربية';
       
@@ -702,7 +757,16 @@
         const key = el.getAttribute('data-translate-title');
         if(translations[currentLanguage][key]) el.title = translations[currentLanguage][key];
       });
+
+      // repopulate grade options & subjects
+      populateGradeSelect();
       populateRoomSubjects(currentUser?.grade || gradeSelect.value);
+
+      // refresh grade line under avatar
+      updateSidebarUserInfo();
+
+      // sync pre-login header controls labels/icons
+      syncQuickControls();
     }
     
     function toggleLanguage(){
@@ -711,14 +775,59 @@
       updateLanguage();
     }
 
+    function syncQuickControls(){
+      // keep registration screen icons in sync (handled in applyTheme/updateLanguage)
+    }
+
     function updateSidebarUserInfo(){
       if(!currentUser) return;
+
+      // Avatar
       const avatar = document.getElementById('sidebar-avatar');
       avatar.style.background = currentUser.avatar_color || '#667eea';
       avatar.textContent = (currentUser.name?.[0] || 'U').toUpperCase();
+
+      // Name
       document.getElementById('sidebar-user-name').textContent = currentUser.name;
-      const subject = currentUser.subject ? ` - ${currentUser.subject}` : '';
-      document.getElementById('sidebar-user-grade').textContent = `Grade ${currentUser.grade}${subject}`;
+
+      // Grade (localized) + Subject
+      const gradeKey = String(currentUser.grade || '');
+      const gradeLabel =
+        (gradeTranslations[currentLanguage] && gradeTranslations[currentLanguage][gradeKey]) ?
+          gradeTranslations[currentLanguage][gradeKey] :
+          (currentLanguage === 'ar' ? `الصف ${gradeKey}` : `Grade ${gradeKey}`);
+
+      const subjectDisplay = getSubjectDisplayName(currentUser.subject, currentUser.grade, currentLanguage);
+      document.getElementById('sidebar-user-grade').textContent =
+        subjectDisplay ? `${gradeLabel} - ${subjectDisplay}` : gradeLabel;
+    }
+
+    function getSubjectDisplayName(subject, grade, lang){
+      if(!subject) return '';
+      const arr = subjectsByGrade[grade] || [];
+      const found = arr.find(s => s.name === subject || s.nameAr === subject);
+      if(!found) return subject;
+      return (lang === 'ar' ? found.nameAr : found.name);
+    }
+
+    // Registration: populate grade options based on language
+    function populateGradeSelect(){
+      const previous = gradeSelect.value || '';
+      gradeSelect.innerHTML = '';
+      const optionPlaceholder = document.createElement('option');
+      optionPlaceholder.value = '';
+      optionPlaceholder.textContent = currentLanguage === 'ar' ? '-- اختر الصف الدراسي --' : '-- Select Grade --';
+      gradeSelect.appendChild(optionPlaceholder);
+
+      ['10','11','12'].forEach(val=>{
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = gradeTranslations[currentLanguage][val];
+        gradeSelect.appendChild(opt);
+      });
+
+      // restore selection if present
+      if(previous) gradeSelect.value = previous;
     }
 
     function populateSettings(){
@@ -733,7 +842,7 @@
       const subject = document.getElementById('settings-subject-input').value.trim() || null;
       
       if(!name){
-        alert('Name cannot be empty.');
+        alert(currentLanguage==='ar' ? 'لا يمكن أن يكون الاسم فارغاً.' : 'Name cannot be empty.');
         return;
       }
       
@@ -743,10 +852,10 @@
         await supabase.from('users').update({name, subject}).eq('id', currentUser.id);
         localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
         updateSidebarUserInfo();
-        toast('Personal information updated successfully!', 'success', 'Updated');
+        toast(currentLanguage==='ar'?'تم تحديث المعلومات بنجاح!':'Personal information updated successfully!', 'success', currentLanguage==='ar'?'تم التحديث':'Updated');
       }catch(e){
         console.error(e);
-        alert('Failed to save personal information.');
+        alert(currentLanguage==='ar'?'فشل حفظ المعلومات.':'Failed to save personal information.');
       }
     }
 
@@ -766,7 +875,7 @@
     // -------- ROOM MANAGEMENT --------
     async function createRoom(){
       if(!currentUser){
-        alert('Please log in first.');
+        alert(currentLanguage==='ar'?'يرجى تسجيل الدخول أولاً.':'Please log in first.');
         return;
       }
       try{
@@ -779,15 +888,15 @@
         if(error){
           console.error('Room creation error:', error);
           updateConnectionStatus('disconnected');
-          alert(`Failed to create room: ${error.message || 'Unknown error'}`);
+          alert((currentLanguage==='ar'?'فشل إنشاء الغرفة: ':'Failed to create room: ') + (error.message || 'Unknown error'));
           return;
         }
         await joinRoomById(data.id, data.room_code, data.host_id);
-        toast('Room created successfully!', 'success', 'Created');
+        toast(currentLanguage==='ar'?'تم إنشاء الغرفة بنجاح!':'Room created successfully!', 'success', currentLanguage==='ar'?'تم الإنشاء':'Created');
       }catch(e){
         console.error('Room creation exception:', e);
         updateConnectionStatus('disconnected');
-        alert(`Failed to create room: ${e.message || 'Unknown error'}`);
+        alert((currentLanguage==='ar'?'فشل إنشاء الغرفة: ':'Failed to create room: ') + (e.message || 'Unknown error'));
       }
     }
 
@@ -800,14 +909,14 @@
           .select('*').eq('room_code', code).eq('is_active', true).single();
         if(error || !data){
           updateConnectionStatus('disconnected');
-          alert('Room not found or is inactive.');
+          alert(currentLanguage==='ar'?'الغرفة غير موجودة أو غير فعّالة.':'Room not found or is inactive.');
           return;
         }
         await joinRoomById(data.id, data.room_code, data.host_id);
       }catch(e){
         console.error(e);
         updateConnectionStatus('disconnected');
-        alert('Failed to join room.');
+        alert(currentLanguage==='ar'?'فشل الانضمام إلى الغرفة.':'Failed to join room.');
       }
     }
 
@@ -824,7 +933,7 @@
         if(error){
           console.error('Failed to join room as participant:', error);
           updateConnectionStatus('disconnected');
-          alert(`Failed to join room: ${error.message || 'Unknown error'}`);
+          alert((currentLanguage==='ar'?'فشل الانضمام إلى الغرفة: ':'Failed to join room: ') + (error.message || 'Unknown error'));
           return;
         }
         
@@ -838,7 +947,6 @@
         navigateToScreen('room-screen');
         updateConnectionStatus('connected');
         
-        // Small delay then broadcast participant update
         setTimeout(() => {
           if (participantsSubscription) {
             participantsSubscription.send({
@@ -851,14 +959,12 @@
       }catch(e){
         console.error('Exception joining room:', e);
         updateConnectionStatus('disconnected');
-        alert(`Failed to join room: ${e.message || 'Unknown error'}`);
+        alert((currentLanguage==='ar'?'فشل الانضمام إلى الغرفة: ':'Failed to join room: ') + (e.message || 'Unknown error'));
       }
     }
 
     async function leaveRoom(isLoggingOut = false){
       if(!currentRoom) return;
-      
-      // Clean up subscriptions
       cleanupSubscriptions();
       
       if (!isLoggingOut) {
@@ -875,15 +981,8 @@
       localStorage.removeItem('studyTogether_room');
       updateConnectionStatus('disconnected');
       
-      // Reset timer state
       resetTimerUI();
-      roomTimerState = {
-        isRunning: false,
-        seconds: 1500,
-        duration: 1500,
-        startedBy: null,
-        startTime: null
-      };
+      roomTimerState = { isRunning:false, seconds:1500, duration:1500, startedBy:null, startTime:null };
       
       if(!isLoggingOut) navigateToScreen('study-rooms-screen');
     }
@@ -897,10 +996,10 @@
         localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
         populateSettings();
         updateSidebarUserInfo();
-        toast(`Subject set to ${subject || '—'}`, 'success', 'Updated');
+        toast((currentLanguage==='ar'?'تم تعيين المادة إلى ':'Subject set to ') + (subject || '—'), 'success', currentLanguage==='ar'?'تم التحديث':'Updated');
       }catch(e){
         console.error(e);
-        alert('Failed saving subject');
+        alert(currentLanguage==='ar'?'فشل حفظ المادة.':'Failed saving subject.');
       }
     }
 
@@ -912,7 +1011,7 @@
     }
 
     async function kickParticipant(userId, userName){
-      if(!confirm(`Are you sure you want to kick ${userName}?`)) return;
+      if(!confirm(currentLanguage==='ar'?`هل تريد إزالة ${userName}؟`:`Are you sure you want to kick ${userName}?`)) return;
       try{
         await supabase.from('room_participants')
           .delete().match({room_id: currentRoom.id, user_id: userId});
@@ -922,67 +1021,43 @@
       }
     }
 
-    // -------- IMPROVED REAL-TIME SUBSCRIPTIONS --------
+    // -------- REAL-TIME SUBSCRIPTIONS --------
     function setupRoomSubscriptions(){
-      // Clean up existing subscriptions more thoroughly
       cleanupSubscriptions();
 
-      // Use consistent channel names without timestamps to avoid conflicts
       const participantsChannelName = `room-participants-${currentRoom.id}`;
       const timerChannelName = `room-timer-${currentRoom.id}`;
 
-      // Participants subscription
       participantsSubscription = supabase.channel(participantsChannelName, {
-        config: { 
-          broadcast: { self: false }, // Don't receive our own broadcasts
-          presence: { key: currentUser.id } 
-        }
+        config: { broadcast: { self: false }, presence: { key: currentUser.id } }
       }).on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'room_participants',
-        filter: `room_id=eq.${currentRoom.id}`
+        event: '*', schema: 'public', table: 'room_participants', filter: `room_id=eq.${currentRoom.id}`
       }, async (payload) => {
-        console.log('Participants change received:', payload);
         try {
           await loadParticipants();
-          
           if (payload.eventType === 'INSERT' && payload.new?.user_id !== currentUser.id) {
             const user = await fetchUser(payload.new.user_id);
-            if (user) {
-              showPopupNotification(`${user.name} joined the room`, 'Participant joined');
-            }
+            if (user) showPopupNotification(`${user.name} joined the room`, currentLanguage==='ar'?'انضم مشارك':'Participant joined');
           }
-          
           if (payload.eventType === 'DELETE' && payload.old?.user_id !== currentUser.id) {
             const user = await fetchUser(payload.old.user_id);
-            if (user) {
-              showPopupNotification(`${user.name} left the room`, 'Participant left');
-            }
+            if (user) showPopupNotification(`${user.name} left the room`, currentLanguage==='ar'?'غادر مشارك':'Participant left');
           }
-          
           updateConnectionStatus('connected');
           connectionRetryCount = 0;
         } catch (error) {
           console.error('Error handling participants change:', error);
           updateConnectionStatus('disconnected');
         }
-      }).on('broadcast', { event: 'participant_update' }, (payload) => {
-        console.log('Broadcast participant update:', payload);
+      }).on('broadcast', { event: 'participant_update' }, () => {
         loadParticipants();
       }).subscribe();
 
-      // Timer subscription with improved error handling
       timerSubscription = supabase.channel(timerChannelName, {
-        config: { 
-          broadcast: { self: false }, // Don't receive our own broadcasts
-          presence: { key: currentUser.id } 
-        }
+        config: { broadcast: { self: false }, presence: { key: currentUser.id } }
       }).on('broadcast', { event: 'timer_sync' }, (payload) => {
-        console.log('Timer broadcast received:', payload);
         handleTimerBroadcast(payload.payload);
       }).subscribe((status) => {
-        console.log('Timer subscription status:', status);
         if (status === 'SUBSCRIBED') {
           updateConnectionStatus('connected');
           connectionRetryCount = 0;
@@ -994,94 +1069,66 @@
     }
 
     function cleanupSubscriptions() {
-      if (participantsSubscription) {
-        try {
-          participantsSubscription.unsubscribe();
-        } catch (e) {
-          console.error('Error unsubscribing participants:', e);
-        }
-        participantsSubscription = null;
-      }
-      
-      if (timerSubscription) {
-        try {
-          timerSubscription.unsubscribe();
-        } catch (e) {
-          console.error('Error unsubscribing timer:', e);
-        }
-        timerSubscription = null;
-      }
+      if (participantsSubscription) { try { participantsSubscription.unsubscribe(); } catch (e) {} participantsSubscription = null; }
+      if (timerSubscription) { try { timerSubscription.unsubscribe(); } catch (e) {} timerSubscription = null; }
     }
 
     function retryConnection() {
       connectionRetryCount++;
       if (connectionRetryCount < 3) {
-        setTimeout(() => {
-          console.log(`Retrying connection (attempt ${connectionRetryCount})`);
-          setupRoomSubscriptions();
-        }, 2000 * connectionRetryCount);
+        setTimeout(() => { setupRoomSubscriptions(); }, 2000 * connectionRetryCount);
       }
     }
 
-    async function loadRoomData(){
-      await loadParticipants();
-    }
+    async function loadRoomData(){ await loadParticipants(); }
 
-    // -------- IMPROVED TIMER SYNCHRONIZATION --------
+    // -------- TIMER SYNC (updated with schedule) --------
     function handleTimerBroadcast(data) {
-      console.log('Processing timer broadcast:', data);
-      
-      if (data.action === 'start') {
-        // Calculate current seconds based on server start time
+      if (data.action === 'schedule') {
+        lastScheduleBy = data.userId || null;
+        scheduleTimerAt(data.scheduledStartTime, data.duration);
+        const at = new Date(data.scheduledStartTime).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        updateTimerStatus((currentLanguage==='ar' ? 'تمت الجدولة للساعة ' : 'Scheduled for ') + at);
+        toast(`${currentLanguage==='ar' ? 'تمت جدولة المؤقت بواسطة' : 'Timer scheduled by'} ${data.startedBy}`, 'info', currentLanguage==='ar' ? 'تمت الجدولة' : 'Scheduled');
+
+      } else if (data.action === 'start') {
         const now = Date.now();
         const elapsed = Math.floor((now - data.startTime) / 1000);
         const remainingSeconds = Math.max(0, data.duration - elapsed);
-        
-        // Update global timer state
-        roomTimerState = {
-          isRunning: true,
-          seconds: remainingSeconds,
-          duration: data.duration,
-          startedBy: data.startedBy,
-          startTime: data.startTime
-        };
-        
-        // Update local timer variables
+
+        roomTimerState = { isRunning:true, seconds:remainingSeconds, duration:data.duration, startedBy:data.startedBy, startTime:data.startTime };
+
         timerSeconds = remainingSeconds;
         timerDuration = data.duration;
         timerStartedBy = data.startedBy;
-        
-        // Update UI
+
         updateTimerDisplay();
         updateProgressBar();
-        updateTimerStatus(`Started by ${data.startedBy}`);
-        
-        // Start countdown if not already running and time remaining
+        updateTimerStatus(`${currentLanguage==='ar'?'بدأ بواسطة':'Started by'} ${data.startedBy}`);
+
         if (!timerRunning && remainingSeconds > 0) {
           startLocalTimerCountdown();
         } else if (remainingSeconds <= 0) {
           timerComplete();
         }
-        
-        toast(`Timer started by ${data.startedBy}`, 'info', 'Timer Started');
-        
+
+        toast(`${currentLanguage==='ar'?'بدأ المؤقت بواسطة':'Timer started by'} ${data.startedBy}`, 'info', currentLanguage==='ar'?'تم البدء':'Timer Started');
+
       } else if (data.action === 'pause' || data.action === 'reset') {
         roomTimerState.isRunning = false;
         resetTimerUI();
-        toast(`Timer ${data.action}d by ${data.startedBy}`, 'info', `Timer ${data.action.charAt(0).toUpperCase() + data.action.slice(1)}d`);
-        
-      } else if (data.action === 'stop') {
+        const cap = data.action.charAt(0).toUpperCase() + data.action.slice(1);
+        toast(`Timer ${data.action}d by ${data.startedBy}`, 'info', `Timer ${cap}d`);
+
+      } else if (data.action === 'stop' || data.action === 'complete') {
         roomTimerState.isRunning = false;
         resetTimerUI();
       }
     }
 
     function broadcastTimerAction(action, extraData = {}) {
-      if (!timerSubscription || !currentRoom) {
-        console.error('Cannot broadcast: no timer subscription or room');
-        return;
-      }
-      
+      if (!timerSubscription || !currentRoom) { console.error('Cannot broadcast: no timer subscription or room'); return; }
+
       const payload = {
         action,
         startedBy: currentUser.name,
@@ -1090,155 +1137,175 @@
         timestamp: Date.now(),
         ...extraData
       };
-      
-      if (action === 'start') {
+
+      if (action === 'start' && !payload.startTime) {
         payload.duration = timerDuration;
         payload.startTime = Date.now();
       }
-      
-      console.log('Broadcasting timer action:', payload);
-      
+
       try {
-        timerSubscription.send({
-          type: 'broadcast',
-          event: 'timer_sync',
-          payload
-        });
+        timerSubscription.send({ type:'broadcast', event:'timer_sync', payload });
       } catch (error) {
         console.error('Error broadcasting timer action:', error);
-        toast('Failed to sync timer with other participants', 'error', 'Sync Error');
+        toast(currentLanguage==='ar'?'فشل مزامنة المؤقت':'Failed to sync timer', 'error', currentLanguage==='ar'?'خطأ مزامنة':'Sync Error');
       }
     }
 
-    async function loadParticipants(){
-      if(!currentRoom) return;
-      const {data, error} = await supabase.from('room_participants')
-        .select('user_id,is_online,room_id')
-        .eq('room_id', currentRoom.id)
-        .eq('is_online', true);
-      if(error){
-        console.error(error);
+    // -------- TIMER CORE --------
+    function formatTime(totalSeconds){
+      const h = Math.floor(totalSeconds / 3600);
+      const m = Math.floor((totalSeconds % 3600) / 60);
+      const s = totalSeconds % 60;
+      return (h > 0)
+        ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+        : `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }
+
+    function applyCustomDuration(){
+      const h = parseInt(document.getElementById('custom-hours').value || '0', 10);
+      const m = parseInt(document.getElementById('custom-minutes').value || '0', 10);
+      const s = parseInt(document.getElementById('custom-seconds').value || '0', 10);
+      const total = (isNaN(h)?0:h)*3600 + (isNaN(m)?0:m)*60 + (isNaN(s)?0:s);
+
+      if(total <= 0){
+        alert(currentLanguage === 'ar' ? 'يرجى إدخال مدة صحيحة.' : 'Please enter a valid duration.');
         return;
       }
-      
-      const userIds = [...new Set(data.map(p => p.user_id))];
-      const usersMap = await fetchUsersMap(userIds);
-      const container = document.getElementById('participants-list');
-      const isHost = currentUser.id === currentRoom.host_id;
-      
-      container.innerHTML = data.map(p => {
-        const user = usersMap[p.user_id];
-        if(!user) return '';
-        const isParticipantHost = user.id === currentRoom.host_id;
-        const kickBtn = isHost && !isParticipantHost ? 
-          `<button class="btn btn-small" style="background:var(--error-color)" onclick="kickParticipant('${user.id}','${escapeHtml(user.name)}')">Kick</button>` : '';
-        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;background:var(--bg-tertiary);border-radius:12px;margin-bottom:1rem;">
-          <div style="display:flex;align-items:center;gap:1rem;">
-            <div class="sidebar-avatar" style="width:40px;height:40px;border-radius:10px;background:${user.avatar_color || '#667eea'};">${escapeHtml((user.name?.[0]||'U').toUpperCase())}</div>
-            <div>${escapeHtml(user.name)} ${isParticipantHost?'<b style="color:var(--accent-color)">(Host)</b>':''}</div>
-          </div>
-          ${kickBtn}
-        </div>`;
-      }).join('');
+
+      timerSeconds = total;
+      timerDuration = total;
+      resetTimerUI();
+      updateTimerDisplay();
+      updateProgressBar();
+      toast(`${currentLanguage==='ar'?'تم ضبط المؤقت إلى':'Timer set to'} ${formatTime(total)}`, 'success', currentLanguage==='ar'?'تم الضبط':'Custom Duration');
     }
 
-    async function fetchUsersMap(ids){
-      if(ids.length === 0) return {};
-      const {data, error} = await supabase.from('users')
-        .select('id,name,avatar_color')
-        .in('id', ids);
-      if(error){
-        console.error(error);
-        return {};
+    function applyStartEndTimer(){
+      const startVal = document.getElementById('start-time-input').value;
+      const endVal   = document.getElementById('end-time-input').value;
+
+      if(!startVal || !endVal){
+        alert(currentLanguage==='ar' ? 'يرجى إدخال وقتي البداية والنهاية.' : 'Please provide both start and end times.');
+        return;
       }
-      const map = {};
-      data.forEach(u => map[u.id] = u);
-      return map;
-    }
-    
-    async function fetchUser(id){
-      const {data, error} = await supabase.from('users')
-        .select('id,name')
-        .eq('id', id)
-        .single();
-      return error ? null : data;
-    }
 
-    // -------- POPUP NOTIFICATIONS --------
-    function showPopupNotification(message, title = 'Notification') {
-      if (Notification.permission === 'granted') {
-        new Notification(title, {
-          body: message,
-          icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiM2NjdlZWEiLz4KPHN2ZyB4PSIxNiIgeT0iMTYiIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj4KPHA+8J+TsjwvcD4KPC9zdmc+Cjwvc3ZnPgo='
-        });
-      } else if (Notification.permission !== 'denied') {
-        Notification.requestPermission().then(permission => {
-          if (permission === 'granted') {
-            showPopupNotification(message, title);
-          }
-        });
+      const now = new Date();
+      const [sh, sm] = startVal.split(':').map(Number);
+      const [eh, em] = endVal.split(':').map(Number);
+
+      let start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), sh||0, sm||0, 0, 0);
+      let end   = new Date(now.getFullYear(), now.getMonth(), now.getDate(), eh||0, em||0, 0, 0);
+
+      if(end <= start){ end = new Date(end.getTime() + 24*3600*1000); }
+
+      const durationSec = Math.floor((end - start) / 1000);
+      if(durationSec <= 0){
+        alert(currentLanguage==='ar' ? 'وقت النهاية يجب أن يكون بعد البداية.' : 'End time must be after start time.');
+        return;
       }
-      
-      // Also show toast as fallback
-      toast(message, 'info', title);
+
+      const msUntilStart = start.getTime() - now.getTime();
+      const endsAtText = end.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+
+      if(msUntilStart > 0){
+        lastScheduleBy = currentUser.id;
+        scheduleTimerAt(start.getTime(), durationSec);
+        broadcastTimerAction('schedule', { duration: durationSec, scheduledStartTime: start.getTime() });
+        updateTimerStatus((currentLanguage==='ar' ? 'تمت الجدولة للساعة ' : 'Scheduled for ') + start.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + (currentLanguage==='ar' ? `، ينتهي ${endsAtText}` : `, ends ${endsAtText}`));
+        toast(currentLanguage==='ar' ? 'تمت جدولة المؤقت' : 'Timer scheduled', 'info', currentLanguage==='ar' ? 'تمت الجدولة' : 'Scheduled');
+      } else {
+        const remaining = Math.max(0, Math.floor((end.getTime() - now.getTime()) / 1000));
+        if(remaining <= 0){
+          alert(currentLanguage==='ar' ? 'وقت النهاية في الماضي.' : 'End time is in the past.');
+          return;
+        }
+        timerDuration = remaining;
+        timerSeconds  = remaining;
+        resetTimerUI();
+        updateTimerDisplay();
+        updateProgressBar();
+        updateTimerStatus((currentLanguage==='ar' ? 'ينتهي ' : 'Ends ') + endsAtText);
+        broadcastTimerAction('start', { duration: remaining, startTime: Date.now() });
+        startLocalTimerCountdown();
+      }
     }
 
-    // -------- UPDATED TIMER FUNCTIONS --------
+    function scheduleTimerAt(ts, duration){
+      if(scheduledStartTimeout) clearTimeout(scheduledStartTimeout);
+
+      scheduledStartTime = ts;
+      timerDuration = duration;
+      timerSeconds  = duration;
+
+      resetTimerUI();
+      timerDuration = duration;
+      timerSeconds  = duration;
+      updateTimerDisplay();
+      updateProgressBar();
+
+      const ms = ts - Date.now();
+      const startLabel = new Date(ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      updateTimerStatus((currentLanguage==='ar' ? 'تمت الجدولة للساعة ' : 'Scheduled for ') + startLabel);
+
+      scheduledStartTimeout = setTimeout(() => {
+        if(lastScheduleBy === currentUser.id){
+          broadcastTimerAction('start', { duration, startTime: ts });
+        }
+        startTimerAt(ts, duration);
+      }, Math.max(0, ms));
+    }
+
+    function startTimerAt(startTs, duration){
+      const elapsed   = Math.floor((Date.now() - startTs) / 1000);
+      const remaining = Math.max(0, duration - elapsed);
+      timerDuration   = duration;
+      timerSeconds    = remaining;
+      timerStartedBy  = currentUser.name;
+
+      resetTimerUI();
+      document.getElementById('start-timer-btn').style.display = 'none';
+      document.getElementById('pause-timer-btn').style.display = 'inline-block';
+      timerRunning = true;
+      updateTimerDisplay();
+      updateProgressBar();
+
+      const endsAt = new Date(startTs + duration*1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      updateTimerStatus((currentLanguage==='ar' ? 'ينتهي ' : 'Ends ') + endsAt);
+
+      startLocalTimerCountdown();
+    }
+
     async function startTimer(){
       if(timerRunning || !currentRoom) return;
-      
-      // Set timer duration and starter
       timerDuration = timerSeconds;
       timerStartedBy = currentUser.name;
-      
-      // Broadcast to all participants FIRST
       broadcastTimerAction('start');
-      
-      // Then start locally
       startLocalTimerCountdown();
-      updateTimerStatus(`Started by ${currentUser.name}`);
+      updateTimerStatus(`${currentLanguage==='ar'?'بدأ بواسطة':'Started by'} ${currentUser.name}`);
     }
 
     function startLocalTimerCountdown() {
-      if(timerRunning) {
-        clearInterval(timerInterval); // Clear any existing interval
-      }
-      
+      if(timerRunning) { clearInterval(timerInterval); }
       timerRunning = true;
       document.getElementById('start-timer-btn').style.display = 'none';
       document.getElementById('pause-timer-btn').style.display = 'inline-block';
-      
       timerInterval = setInterval(() => {
         timerSeconds--;
         updateTimerDisplay();
         updateProgressBar();
-        
-        if(timerSeconds <= 0) {
-          timerComplete();
-        }
+        if(timerSeconds <= 0) { timerComplete(); }
       }, 1000);
     }
 
     async function pauseTimer(){
       if (!currentRoom) return;
-      
-      // Broadcast pause to all participants
       broadcastTimerAction('pause');
-      
-      // Reset locally
       resetTimerUI();
     }
 
     async function resetTimer(){
-      // Reset timer to default duration
       timerSeconds = timerDuration || 1500;
-      
-      if (currentRoom) {
-        // Broadcast reset to all participants
-        broadcastTimerAction('reset');
-      }
-      
-      // Reset locally
+      if (currentRoom) broadcastTimerAction('reset');
       resetTimerUI();
     }
 
@@ -1261,24 +1328,22 @@
 
     function updateTimerStatus(status) {
       const statusEl = document.getElementById('timer-status');
-      if (statusEl) {
-        statusEl.textContent = status;
-      }
+      if (statusEl) statusEl.textContent = status || '';
     }
 
     function resetTimerUI(){
       timerRunning = false;
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-      }
+
+      // cancel scheduled start
+      if (scheduledStartTimeout) { clearTimeout(scheduledStartTimeout); scheduledStartTimeout = null; }
+      scheduledStartTime = null;
+
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
       
       const startBtn = document.getElementById('start-timer-btn');
       const pauseBtn = document.getElementById('pause-timer-btn');
-      
       if (startBtn) startBtn.style.display = 'inline-block';
       if (pauseBtn) pauseBtn.style.display = 'none';
-      
       updateTimerDisplay();
       updateProgressBar();
       updateTimerStatus('');
@@ -1286,27 +1351,15 @@
 
     function timerComplete(){
       timerRunning = false;
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-      }
-      
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
       const startBtn = document.getElementById('start-timer-btn');
       const pauseBtn = document.getElementById('pause-timer-btn');
-      
       if (startBtn) startBtn.style.display = 'inline-block';
       if (pauseBtn) pauseBtn.style.display = 'none';
-      
       updateTimerStatus('');
-      
-      // Show notifications
-      showPopupNotification('Time\'s up! Great work everyone!', 'Timer Complete');
-      toast('Timer complete! Great work!', 'success', 'Done');
-      
-      // If this user started the timer, broadcast completion
-      if (timerStartedBy === currentUser.name) {
-        broadcastTimerAction('complete');
-      }
+      showPopupNotification(currentLanguage==='ar'?'انتهى الوقت! عمل رائع للجميع!':"Time's up! Great work everyone!", currentLanguage==='ar'?'انتهى المؤقت':'Timer Complete');
+      toast(currentLanguage==='ar'?'اكتمل المؤقت!':'Timer complete!', 'success', currentLanguage==='ar'?'تم':'Done');
+      if (timerStartedBy === currentUser.name) broadcastTimerAction('complete');
     }
 
     function setTimerMinutes(minutes){
@@ -1319,7 +1372,6 @@
     function setupEventListeners(){
       window.addEventListener('resize', () => updateLayoutForSidebar());
 
-      // Keep user online in room
       setInterval(() => {
         if(currentRoom && currentUser){
           supabase.from('room_participants')
@@ -1328,7 +1380,6 @@
         }
       }, 20000);
 
-      // Mark user as offline on page unload
       window.addEventListener('beforeunload', () => {
         if (currentRoom && currentUser) {
           supabase.from('room_participants')
@@ -1337,17 +1388,14 @@
         }
       });
 
-      // Tab switching
       document.querySelectorAll('.tab').forEach(t => 
         t.onclick = () => switchTab(t.dataset.tab)
       );
       
-      // Timer buttons
       document.querySelectorAll('[data-timer]').forEach(b => 
         b.onclick = () => setTimerMinutes(parseInt(b.dataset.timer))
       );
-      
-      // Keyboard shortcuts
+
       document.addEventListener('keydown', (e) => {
         if(e.key === 'Escape') toggleSidebar(false);
         if((e.ctrlKey || e.metaKey) && e.key === 'b'){
@@ -1356,7 +1404,6 @@
         }
       });
 
-      // Avatar selection
       document.querySelectorAll('.avatar-choice').forEach(c => 
         c.onclick = function(){
           const prev = document.querySelector('.avatar-choice.selected');
@@ -1366,7 +1413,6 @@
         }
       );
 
-      // Update avatar preview when typing name
       document.getElementById('student-name').addEventListener('input', e => {
         const first = e.target.value.trim().charAt(0).toUpperCase() || 'A';
         document.querySelectorAll('.avatar-choice').forEach(div => {
@@ -1374,13 +1420,74 @@
         });
       });
 
-      // Request notification permission on load
       if ('Notification' in window && Notification.permission === 'default') {
         Notification.requestPermission();
       }
     }
 
-    // -------- UTILITY FUNCTIONS --------
+    // -------- PARTICIPANTS HELPERS --------
+    async function loadParticipants(){
+      if(!currentRoom) return;
+      const {data, error} = await supabase.from('room_participants')
+        .select('user_id,is_online,room_id')
+        .eq('room_id', currentRoom.id)
+        .eq('is_online', true);
+      if(error){ console.error(error); return; }
+      
+      const userIds = [...new Set(data.map(p => p.user_id))];
+      const usersMap = await fetchUsersMap(userIds);
+      const container = document.getElementById('participants-list');
+      const isHost = currentUser.id === currentRoom.host_id;
+      
+      container.innerHTML = data.map(p => {
+        const user = usersMap[p.user_id];
+        if(!user) return '';
+        const isParticipantHost = user.id === currentRoom.host_id;
+        const kickBtn = isHost && !isParticipantHost ? 
+          `<button class="btn btn-small" style="background:var(--error-color)" onclick="kickParticipant('${user.id}','${escapeHtml(user.name)}')">${currentLanguage==='ar'?'إزالة':'Kick'}</button>` : '';
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;background:var(--bg-tertiary);border-radius:12px;margin-bottom:1rem;">
+          <div style="display:flex;align-items:center;gap:1rem;">
+            <div class="sidebar-avatar" style="width:40px;height:40px;border-radius:10px;background:${user.avatar_color || '#667eea'};">${escapeHtml((user.name?.[0]||'U').toUpperCase())}</div>
+            <div>${escapeHtml(user.name)} ${isParticipantHost?'<b style="color:var(--accent-color)">(Host)</b>':''}</div>
+          </div>
+          ${kickBtn}
+        </div>`;
+      }).join('');
+    }
+
+    async function fetchUsersMap(ids){
+      if(ids.length === 0) return {};
+      const {data, error} = await supabase.from('users')
+        .select('id,name,avatar_color')
+        .in('id', ids);
+      if(error){ console.error(error); return {}; }
+      const map = {}; data.forEach(u => map[u.id] = u); return map;
+    }
+    
+    async function fetchUser(id){
+      const {data, error} = await supabase.from('users')
+        .select('id,name')
+        .eq('id', id)
+        .single();
+      return error ? null : data;
+    }
+
+    // -------- POPUP NOTIFICATIONS --------
+    function showPopupNotification(message, title = 'Notification') {
+      if (Notification.permission === 'granted') {
+        new Notification(title, {
+          body: message,
+          icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiM2NjdlZWEiLz4KPHN2ZyB4PSIxNiIgeT0iMTYiIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj4KPHA+8J+TsjwvcD4KPC9zdmc+Cjwvc3ZnPgo='
+        });
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') showPopupNotification(message, title);
+        });
+      }
+      toast(message, 'info', title);
+    }
+
+    // -------- UTILITY --------
     function populateRoomSubjects(grade){
       const selectText = translations[currentLanguage]['selectSubject'] || 'Select Subject';
       roomSubjectSelect.innerHTML = `<option value="">-- ${selectText} --</option>`;
@@ -1395,31 +1502,29 @@
 
     function copyRoomCode(){ 
       navigator.clipboard.writeText(currentRoom.code)
-        .then(() => toast('Room code copied!', 'success', 'Copied')); 
+        .then(() => toast(currentLanguage==='ar'?'تم نسخ كود الغرفة!':'Room code copied!', 'success', currentLanguage==='ar'?'نُسخ':'Copied')); 
     }
     
     function shareRoom(){ 
       const link = `${window.location.origin}${window.location.pathname}?room=${currentRoom.code}`;
       if(navigator.share){
-        navigator.share({
-          title: 'Study Partner', 
-          text: 'Join my study room:', 
-          url: link
-        }).catch(() => {});
+        navigator.share({ title:'Study Partner', text: currentLanguage==='ar'?'انضم إلى غرفتي الدراسية:':'Join my study room:', url:link }).catch(() => {});
       }
       navigator.clipboard.writeText(link)
-        .then(() => toast('Invite link copied!', 'success', 'Shared')); 
+        .then(() => toast(currentLanguage==='ar'?'تم نسخ رابط الدعوة!':'Invite link copied!', 'success', currentLanguage==='ar'?'تمت المشاركة':'Shared')); 
     }
     
-    function showJoinForm(){ 
-      document.getElementById('join-form').style.display = 'block'; 
-    }
+    function showJoinForm(){ document.getElementById('join-form').style.display = 'block'; }
 
     function switchTab(tabName){
-      document.querySelector('.tab.active').classList.remove('active');
-      document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-      document.querySelector('.tab-content.active').classList.remove('active');
-      document.getElementById(`${tabName}-content`).classList.add('active');
+      const activeTab = document.querySelector('.tab.active');
+      if(activeTab) activeTab.classList.remove('active');
+      const newTab = document.querySelector(`[data-tab="${tabName}"]`);
+      if(newTab) newTab.classList.add('active');
+      const activeContent = document.querySelector('.tab-content.active');
+      if(activeContent) activeContent.classList.remove('active');
+      const newContent = document.getElementById(`${tabName}-content`);
+      if(newContent) newContent.classList.add('active');
     }
 
     function escapeHtml(text){
@@ -1428,6 +1533,9 @@
       div.textContent = text;
       return div.innerHTML;
     }
+
+    // Placeholder to avoid errors when kicking (you can wire to chat if needed)
+    async function sendSystemMessage(_msg){ /* no-op */ }
   </script>
 </body>
 </html>
