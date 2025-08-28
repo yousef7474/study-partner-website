@@ -144,6 +144,42 @@
     [dir=rtl] .toast{left:20px;right:auto}
     [dir=rtl] .ltr-arrow{transform:scaleX(-1)}
     [dir=rtl] .connection-status{left:20px;right:auto}
+
+    /* ===== Segmented & animated progress bar ===== */
+    #timer-progress-container{
+      position: relative;
+      overflow: hidden;
+      background-color: var(--bg-tertiary);
+      /* thin breaks every 12px */
+      background-image: repeating-linear-gradient(
+        to right,
+        var(--bg-tertiary) 0 10px,
+        transparent 10px 12px
+      );
+    }
+    #timer-progress-bar{
+      height:100%;
+      width:100%;
+      transition:width 1s linear;
+      border-radius:4px;
+      /* gradient + moving stripes */
+      background-image:
+        repeating-linear-gradient(
+          45deg,
+          rgba(255,255,255,.25) 0 8px,
+          rgba(255,255,255,0) 8px 16px
+        ),
+        var(--primary-gradient);
+      background-size:auto, 100% 100%;
+      background-blend-mode:overlay;
+    }
+    #timer-progress-bar.running{
+      animation: stripesMove 2s linear infinite;
+    }
+    @keyframes stripesMove {
+      from { background-position: 0 0, 0 0; }
+      to   { background-position: 32px 0, 0 0; }
+    }
   </style>
 </head>
 <body data-theme="light">
@@ -305,7 +341,7 @@
           <div id="participants-list"></div>
         </div>
 
-        <!-- UPDATED TIMER PANEL -->
+        <!-- TIMER PANEL -->
         <div id="timer-content" class="tab-content" style="background:var(--bg-secondary);padding:2rem;border-radius:20px;text-align:center">
           <!-- Quick presets -->
           <div>
@@ -315,8 +351,8 @@
 
           <!-- Display -->
           <div id="timer-display" style="font-size:4rem;font-weight:700;margin:2rem 0">25:00</div>
-          <div id="timer-progress-container" style="width:100%;height:8px;background:var(--bg-tertiary);border-radius:4px;margin:1rem 0;overflow:hidden;">
-            <div id="timer-progress-bar" style="height:100%;background:var(--primary-gradient);width:100%;transition:width 1s linear;border-radius:4px;"></div>
+          <div id="timer-progress-container" style="width:100%;height:8px;border-radius:4px;margin:1rem 0;overflow:hidden;">
+            <div id="timer-progress-bar"></div>
           </div>
           <div id="timer-status" style="font-size:1.2rem;color:var(--text-secondary);margin-bottom:1rem;"></div>
 
@@ -325,6 +361,8 @@
             <button id="start-timer-btn" class="btn" onclick="startTimer()" data-translate="start">Start</button>
             <button id="pause-timer-btn" class="btn btn-secondary" onclick="pauseTimer()" style="display:none;" data-translate="pause">Pause</button>
             <button class="btn btn-secondary" onclick="resetTimer()" data-translate="reset">Reset</button>
+            <!-- NEW End Session -->
+            <button class="btn btn-secondary" style="background:var(--error-color)" onclick="endSession()" data-translate="endSession">End Session</button>
           </div>
 
           <!-- Custom duration -->
@@ -444,7 +482,8 @@
         hours:"Hours", minutes:"Minutes", seconds:"Seconds", customDuration:"Custom Duration",
         start:"Start", pause:"Pause", reset:"Reset", startEndHeading:"Start–End",
         preferences:"Preferences", theme:"Theme", language:"Language",
-        personalInfo:"Personal Information", nameLabel:"Name", subjectLabel:"Subject", saveChanges:"Save Changes"
+        personalInfo:"Personal Information", nameLabel:"Name", subjectLabel:"Subject", saveChanges:"Save Changes",
+        endSession:"End Session"
       },
       ar:{
         home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة",
@@ -470,7 +509,8 @@
         hours:"ساعات", minutes:"دقائق", seconds:"ثواني", customDuration:"مدة مخصصة",
         start:"بدء", pause:"إيقاف مؤقت", reset:"إعادة ضبط", startEndHeading:"من–إلى",
         preferences:"التفضيلات", theme:"الثيم", language:"اللغة",
-        personalInfo:"المعلومات الشخصية", nameLabel:"الاسم", subjectLabel:"المادة", saveChanges:"حفظ التغييرات"
+        personalInfo:"المعلومات الشخصية", nameLabel:"الاسم", subjectLabel:"المادة", saveChanges:"حفظ التغييرات",
+        endSession:"إنهاء الجلسة"
       }
     };
     
@@ -720,12 +760,10 @@
     // -------- THEME & LANGUAGE --------
     function applyTheme(){
       document.body.setAttribute('data-theme', currentTheme);
-      // icons
       const themeIcon = document.getElementById('theme-icon');
       const regThemeIcon = document.getElementById('reg-theme-icon');
       if(themeIcon) themeIcon.textContent = currentTheme === 'light' ? '🌙' : '☀️';
       if(regThemeIcon) regThemeIcon.textContent = currentTheme === 'light' ? '🌙' : '☀️';
-      // button labels in settings
       const themeText = document.getElementById('theme-text'); 
       if(themeText) themeText.textContent = currentTheme === 'light' ? '🌙 Dark' : '☀️ Light';
     }
@@ -740,7 +778,6 @@
       document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
       document.documentElement.lang = currentLanguage;
 
-      // icons
       const langIcon = document.getElementById('lang-icon');
       const regLangIcon = document.getElementById('reg-lang-icon');
       if(langIcon) langIcon.textContent = currentLanguage === 'ar' ? 'EN' : 'ع';
@@ -775,28 +812,19 @@
       updateLanguage();
     }
 
-    function syncQuickControls(){
-      // keep registration screen icons in sync (handled in applyTheme/updateLanguage)
-    }
+    function syncQuickControls(){ /* icons updated in applyTheme/updateLanguage */ }
 
     function updateSidebarUserInfo(){
       if(!currentUser) return;
-
-      // Avatar
       const avatar = document.getElementById('sidebar-avatar');
       avatar.style.background = currentUser.avatar_color || '#667eea';
       avatar.textContent = (currentUser.name?.[0] || 'U').toUpperCase();
-
-      // Name
       document.getElementById('sidebar-user-name').textContent = currentUser.name;
-
-      // Grade (localized) + Subject
       const gradeKey = String(currentUser.grade || '');
       const gradeLabel =
         (gradeTranslations[currentLanguage] && gradeTranslations[currentLanguage][gradeKey]) ?
           gradeTranslations[currentLanguage][gradeKey] :
           (currentLanguage === 'ar' ? `الصف ${gradeKey}` : `Grade ${gradeKey}`);
-
       const subjectDisplay = getSubjectDisplayName(currentUser.subject, currentUser.grade, currentLanguage);
       document.getElementById('sidebar-user-grade').textContent =
         subjectDisplay ? `${gradeLabel} - ${subjectDisplay}` : gradeLabel;
@@ -818,15 +846,12 @@
       optionPlaceholder.value = '';
       optionPlaceholder.textContent = currentLanguage === 'ar' ? '-- اختر الصف الدراسي --' : '-- Select Grade --';
       gradeSelect.appendChild(optionPlaceholder);
-
       ['10','11','12'].forEach(val=>{
         const opt = document.createElement('option');
         opt.value = val;
         opt.textContent = gradeTranslations[currentLanguage][val];
         gradeSelect.appendChild(opt);
       });
-
-      // restore selection if present
       if(previous) gradeSelect.value = previous;
     }
 
@@ -840,12 +865,10 @@
       if(!currentUser) return;
       const name = document.getElementById('settings-name-input').value.trim();
       const subject = document.getElementById('settings-subject-input').value.trim() || null;
-      
       if(!name){
         alert(currentLanguage==='ar' ? 'لا يمكن أن يكون الاسم فارغاً.' : 'Name cannot be empty.');
         return;
       }
-      
       try{
         currentUser.name = name;
         currentUser.subject = subject;
@@ -966,24 +989,18 @@
     async function leaveRoom(isLoggingOut = false){
       if(!currentRoom) return;
       cleanupSubscriptions();
-      
       if (!isLoggingOut) {
         try {
           await supabase.from('room_participants')
             .delete().match({room_id: currentRoom.id, user_id: currentUser.id});
-        } catch (error) {
-          console.error('Error removing participant:', error);
-        }
+        } catch (error) { console.error('Error removing participant:', error); }
       }
-      
       currentRoom = null;
       connectionRetryCount = 0;
       localStorage.removeItem('studyTogether_room');
       updateConnectionStatus('disconnected');
-      
       resetTimerUI();
       roomTimerState = { isRunning:false, seconds:1500, duration:1500, startedBy:null, startTime:null };
-      
       if(!isLoggingOut) navigateToScreen('study-rooms-screen');
     }
 
@@ -1016,15 +1033,12 @@
         await supabase.from('room_participants')
           .delete().match({room_id: currentRoom.id, user_id: userId});
         await sendSystemMessage(`${userName} was removed by the host.`);
-      }catch(e){
-        console.error(e);
-      }
+      }catch(e){ console.error(e); }
     }
 
     // -------- REAL-TIME SUBSCRIPTIONS --------
     function setupRoomSubscriptions(){
       cleanupSubscriptions();
-
       const participantsChannelName = `room-participants-${currentRoom.id}`;
       const timerChannelName = `room-timer-${currentRoom.id}`;
 
@@ -1082,7 +1096,7 @@
 
     async function loadRoomData(){ await loadParticipants(); }
 
-    // -------- TIMER SYNC (updated with schedule) --------
+    // -------- TIMER SYNC (with schedule & stop) --------
     function handleTimerBroadcast(data) {
       if (data.action === 'schedule') {
         lastScheduleBy = data.userId || null;
@@ -1123,26 +1137,19 @@
       } else if (data.action === 'stop' || data.action === 'complete') {
         roomTimerState.isRunning = false;
         resetTimerUI();
+        if (data.action === 'stop') {
+          toast(currentLanguage==='ar'?'تم إيقاف المؤقت من قِبل أحد المشاركين.':'Timer was stopped by a participant.', 'info', currentLanguage==='ar'?'تم الإيقاف':'Stopped');
+        }
       }
     }
 
     function broadcastTimerAction(action, extraData = {}) {
       if (!timerSubscription || !currentRoom) { console.error('Cannot broadcast: no timer subscription or room'); return; }
-
-      const payload = {
-        action,
-        startedBy: currentUser.name,
-        userId: currentUser.id,
-        roomId: currentRoom.id,
-        timestamp: Date.now(),
-        ...extraData
-      };
-
+      const payload = { action, startedBy: currentUser.name, userId: currentUser.id, roomId: currentRoom.id, timestamp: Date.now(), ...extraData };
       if (action === 'start' && !payload.startTime) {
         payload.duration = timerDuration;
         payload.startTime = Date.now();
       }
-
       try {
         timerSubscription.send({ type:'broadcast', event:'timer_sync', payload });
       } catch (error) {
@@ -1232,21 +1239,17 @@
 
     function scheduleTimerAt(ts, duration){
       if(scheduledStartTimeout) clearTimeout(scheduledStartTimeout);
-
       scheduledStartTime = ts;
       timerDuration = duration;
       timerSeconds  = duration;
-
       resetTimerUI();
       timerDuration = duration;
       timerSeconds  = duration;
       updateTimerDisplay();
       updateProgressBar();
-
       const ms = ts - Date.now();
       const startLabel = new Date(ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
       updateTimerStatus((currentLanguage==='ar' ? 'تمت الجدولة للساعة ' : 'Scheduled for ') + startLabel);
-
       scheduledStartTimeout = setTimeout(() => {
         if(lastScheduleBy === currentUser.id){
           broadcastTimerAction('start', { duration, startTime: ts });
@@ -1266,6 +1269,7 @@
       document.getElementById('start-timer-btn').style.display = 'none';
       document.getElementById('pause-timer-btn').style.display = 'inline-block';
       timerRunning = true;
+      document.getElementById('timer-progress-bar')?.classList.add('running');
       updateTimerDisplay();
       updateProgressBar();
 
@@ -1289,6 +1293,7 @@
       timerRunning = true;
       document.getElementById('start-timer-btn').style.display = 'none';
       document.getElementById('pause-timer-btn').style.display = 'inline-block';
+      document.getElementById('timer-progress-bar')?.classList.add('running');
       timerInterval = setInterval(() => {
         timerSeconds--;
         updateTimerDisplay();
@@ -1309,13 +1314,38 @@
       resetTimerUI();
     }
 
+    async function endSession(){
+      // Stop for everyone
+      broadcastTimerAction('stop');
+      resetTimerUI();
+      toast(currentLanguage==='ar' ? 'تم إنهاء المؤقت والجلسة.' : 'Timer and session ended.', 'success',
+            currentLanguage==='ar' ? 'انتهت الجلسة' : 'Session Ended');
+
+      // If host, offer to close the room
+      const isHost = currentRoom && currentUser && currentUser.id === currentRoom.host_id;
+      if(isHost && currentRoom){
+        const confirmClose = confirm(currentLanguage==='ar'
+          ? 'هل تريد إغلاق الغرفة للجميع؟'
+          : 'Do you want to close the room for everyone?');
+        if(confirmClose){
+          try{
+            await supabase.from('rooms').update({ is_active: false }).eq('id', currentRoom.id);
+            await leaveRoom();
+            toast(currentLanguage==='ar' ? 'تم إغلاق الغرفة.' : 'Room closed.', 'success',
+                  currentLanguage==='ar' ? 'أُغلِقت' : 'Closed');
+          }catch(e){
+            console.error(e);
+            alert(currentLanguage==='ar' ? 'تعذر إغلاق الغرفة.' : 'Failed to close the room.');
+          }
+        }
+      }
+    }
+
     function updateTimerDisplay(){
       const minutes = Math.floor(timerSeconds / 60);
       const seconds = timerSeconds % 60;
       const display = document.getElementById('timer-display');
-      if (display) {
-        display.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-      }
+      if (display) display.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
 
     function updateProgressBar(){
@@ -1333,17 +1363,14 @@
 
     function resetTimerUI(){
       timerRunning = false;
-
-      // cancel scheduled start
       if (scheduledStartTimeout) { clearTimeout(scheduledStartTimeout); scheduledStartTimeout = null; }
       scheduledStartTime = null;
-
       if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-      
       const startBtn = document.getElementById('start-timer-btn');
       const pauseBtn = document.getElementById('pause-timer-btn');
       if (startBtn) startBtn.style.display = 'inline-block';
       if (pauseBtn) pauseBtn.style.display = 'none';
+      document.getElementById('timer-progress-bar')?.classList.remove('running');
       updateTimerDisplay();
       updateProgressBar();
       updateTimerStatus('');
@@ -1356,6 +1383,7 @@
       const pauseBtn = document.getElementById('pause-timer-btn');
       if (startBtn) startBtn.style.display = 'inline-block';
       if (pauseBtn) pauseBtn.style.display = 'none';
+      document.getElementById('timer-progress-bar')?.classList.remove('running');
       updateTimerStatus('');
       showPopupNotification(currentLanguage==='ar'?'انتهى الوقت! عمل رائع للجميع!':"Time's up! Great work everyone!", currentLanguage==='ar'?'انتهى المؤقت':'Timer Complete');
       toast(currentLanguage==='ar'?'اكتمل المؤقت!':'Timer complete!', 'success', currentLanguage==='ar'?'تم':'Done');
@@ -1415,9 +1443,7 @@
 
       document.getElementById('student-name').addEventListener('input', e => {
         const first = e.target.value.trim().charAt(0).toUpperCase() || 'A';
-        document.querySelectorAll('.avatar-choice').forEach(div => {
-          div.textContent = first;
-        });
+        document.querySelectorAll('.avatar-choice').forEach(div => { div.textContent = first; });
       });
 
       if ('Notification' in window && Notification.permission === 'default') {
@@ -1433,12 +1459,10 @@
         .eq('room_id', currentRoom.id)
         .eq('is_online', true);
       if(error){ console.error(error); return; }
-      
       const userIds = [...new Set(data.map(p => p.user_id))];
       const usersMap = await fetchUsersMap(userIds);
       const container = document.getElementById('participants-list');
       const isHost = currentUser.id === currentRoom.host_id;
-      
       container.innerHTML = data.map(p => {
         const user = usersMap[p.user_id];
         if(!user) return '';
