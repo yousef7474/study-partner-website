@@ -79,6 +79,23 @@
     .form-input{width:100%;padding:1rem 1.25rem;border:2px solid var(--border-color);border-radius:16px;font-size:1.1rem;background:var(--bg-tertiary);color:var(--text-primary);transition:all .3s ease}
     .form-input:focus{outline:none;border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(102,126,234,.2)}
 
+    .chapter-selector{background:var(--bg-secondary);border-radius:16px;padding:1.5rem;margin-top:1rem;border:2px solid var(--border-color);transition:all .3s ease}
+    .chapter-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;cursor:pointer;padding:.5rem;border-radius:8px;transition:background .2s}
+    .chapter-header:hover{background:var(--bg-tertiary)}
+    .chapter-title{font-weight:600;font-size:1.1rem;color:var(--text-primary)}
+    .chapter-toggle{font-size:1.2rem;transition:transform .3s ease}
+    .chapter-toggle.expanded{transform:rotate(180deg)}
+    .units-list{display:none;padding-left:1rem;border-left:3px solid var(--border-color);margin-left:.5rem}
+    .units-list.expanded{display:block}
+    .unit-item{display:flex;align-items:center;gap:.75rem;padding:.75rem;margin:.5rem 0;border-radius:8px;background:var(--bg-tertiary);transition:all .2s ease;cursor:pointer}
+    .unit-item:hover{background:var(--primary-color);color:#fff;transform:translateX(4px)}
+    .unit-item.selected{background:var(--primary-color);color:#fff;box-shadow:var(--shadow-light)}
+    .unit-checkbox{width:18px;height:18px;border-radius:4px;border:2px solid var(--border-color);transition:all .2s}
+    .unit-item:hover .unit-checkbox{border-color:#fff}
+    .unit-item.selected .unit-checkbox{background:#fff;border-color:#fff}
+    .unit-text{flex:1;font-size:.95rem;line-height:1.4}
+    .chapter-units-summary{font-size:.9rem;color:var(--text-secondary);margin-top:.25rem}
+
     .avatar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(60px,1fr));gap:1rem}
     .avatar-choice{width:100%;aspect-ratio:1/1;border-radius:20px;border:3px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.8rem;transition:all .3s ease;overflow:hidden}
     .avatar-choice.selected{border-color:var(--accent-color);transform:scale(1.08);box-shadow:0 0 0 4px rgba(79,70,229,.2)}
@@ -325,8 +342,16 @@
           <div style="flex-basis:100%;height:0"></div>
           <div style="display:flex;gap:.75rem;align-items:center">
             <label class="form-label" style="margin:0" data-translate="subject">Subject</label>
-            <select id="room-subject-select" class="form-input" style="width:auto;min-width:260px"></select>
+            <select id="room-subject-select" class="form-input" style="width:auto;min-width:260px" onchange="onRoomSubjectChange()"></select>
             <button class="btn btn-small" onclick="saveRoomSubject()" data-translate="save">Save</button>
+          </div>
+          
+          <!-- Chapter and Unit Selector -->
+          <div id="chapter-unit-selector" style="display:none;margin-top:1rem">
+            <div class="form-label" style="margin-bottom:1rem">
+              <span data-translate="selectChaptersUnits">Select Chapters & Units</span>
+            </div>
+            <div id="chapters-container"></div>
           </div>
         </div>
 
@@ -491,7 +516,9 @@
         start:"Start", pause:"Pause", reset:"Reset", startEndHeading:"Start–End",
         preferences:"Preferences", theme:"Theme", language:"Language",
         personalInfo:"Personal Information", nameLabel:"Name", subjectLabel:"Subject", saveChanges:"Save Changes",
-        endSession:"End Session", gradeLabel:"Grade"
+        endSession:"End Session", gradeLabel:"Grade",
+        selectChaptersUnits:"Select Chapters & Units", chapter:"Chapter", unit:"Unit", 
+        unitsSelected:"units selected", selectAll:"Select All", deselectAll:"Deselect All"
       },
       ar:{
         home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة",
@@ -518,7 +545,9 @@
         start:"بدء", pause:"إيقاف مؤقت", reset:"إعادة ضبط", startEndHeading:"من–إلى",
         preferences:"التفضيلات", theme:"الثيم", language:"اللغة",
         personalInfo:"المعلومات الشخصية", nameLabel:"الاسم", subjectLabel:"المادة", saveChanges:"حفظ التغييرات",
-        endSession:"إنهاء الجلسة", gradeLabel:"الصف"
+        endSession:"إنهاء الجلسة", gradeLabel:"الصف",
+        selectChaptersUnits:"اختر الفصول والدروس", chapter:"الفصل", unit:"الدرس",
+        unitsSelected:"دروس مختارة", selectAll:"تحديد الكل", deselectAll:"إلغاء تحديد الكل"
       }
     };
     
@@ -533,7 +562,65 @@
       10: [
         {name:"Mathematics", nameAr:"الرياضيات"},
         {name:"Physics", nameAr:"الفيزياء"},
-        {name:"Chemistry", nameAr:"الكيمياء"},
+        {
+          name:"Chemistry", 
+          nameAr:"الكيمياء",
+          chapters: [
+            {
+              id: "ch1",
+              name: "Chapter 1",
+              nameAr: "الفصل 1",
+              units: [
+                {id: "1.1", name: "Story of Two Substances", nameAr: "قصة مادتين"},
+                {id: "1.2", name: "Chemistry and Matter", nameAr: "الكيمياء والمادة"},
+                {id: "1.3", name: "Scientific Methods", nameAr: "الطرائق العلمية"},
+                {id: "1.4", name: "Scientific Research", nameAr: "البحث العلمي"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "Chapter 2",
+              nameAr: "الفصل 2",
+              units: [
+                {id: "2.1", name: "Properties of Matter", nameAr: "خواص المادة"},
+                {id: "2.2", name: "Changes in Matter", nameAr: "تغيرات المادة"},
+                {id: "2.3", name: "Mixtures", nameAr: "المخاليط"},
+                {id: "2.4", name: "Elements and Compounds", nameAr: "العناصر والمركبات"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "Chapter 3",
+              nameAr: "الفصل 3",
+              units: [
+                {id: "3.1", name: "Ancient Ideas of Matter", nameAr: "الأفكار القديمة للمادة"},
+                {id: "3.2", name: "Definition of Atom", nameAr: "تعريف الذرة"},
+                {id: "3.3", name: "How Atoms Differ?", nameAr: "كيف تختلف الذرات؟"},
+                {id: "3.4", name: "Unstable Nuclei and Radioactive Decay", nameAr: "الأنوية غير المستقرة والتحلل الإشعاعي"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "Chapter 4",
+              nameAr: "الفصل 4",
+              units: [
+                {id: "4.1", name: "Reactions and Equations", nameAr: "التفاعلات والمعادلات"},
+                {id: "4.2", name: "Classification of Chemical Reactions", nameAr: "تصنيف التفاعلات الكيميائية"},
+                {id: "4.3", name: "Reactions in Aqueous Solutions", nameAr: "التفاعلات في المحاليل المائية"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "Chapter 5",
+              nameAr: "الفصل 5",
+              units: [
+                {id: "5.1", name: "Measuring Matter", nameAr: "قياس المادة"},
+                {id: "5.2", name: "Mass and Mole", nameAr: "الكتلة والمول"},
+                {id: "5.3", name: "Moles of Compounds", nameAr: "مولات المركبات"}
+              ]
+            }
+          ]
+        },
         {name:"Biology", nameAr:"الأحياء"},
         {name:"Quran", nameAr:"القرآن"},
         {name:"Digital Technology", nameAr:"التقنية الرقمية"},
@@ -1142,22 +1229,61 @@
     async function saveRoomSubject(){
       if(!currentRoom) return;
       const subject = roomSubjectSelect.value || null;
+      const selectedUnitsArray = getSelectedUnitsData();
+      
       try{
+        // Update user data with subject and selected units
+        const updateData = {
+          subject: subject,
+          selected_units: selectedUnitsArray.length > 0 ? selectedUnitsArray : null
+        };
+        
         currentUser.subject = subject;
-        await supabase.from('users').update({subject}).eq('id', currentUser.id);
+        currentUser.selected_units = selectedUnitsArray;
+        
+        await supabase.from('users').update(updateData).eq('id', currentUser.id);
         localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
         populateSettings();
         updateSidebarUserInfo();
-        toast((currentLanguage==='ar'?'تم تعيين المادة إلى ':'Subject set to ') + (getSubjectDisplayName(subject, currentUser.grade, currentLanguage) || '—'), 'success', currentLanguage==='ar'?'تم التحديث':'Updated');
+        
+        const unitsMessage = selectedUnitsArray.length > 0 ? 
+          ` (${selectedUnitsArray.length} ${translations[currentLanguage]['unitsSelected'] || 'units selected'})` : '';
+        
+        toast((currentLanguage==='ar'?'تم تعيين المادة إلى ':'Subject set to ') + 
+              (getSubjectDisplayName(subject, currentUser.grade, currentLanguage) || '—') + unitsMessage, 
+              'success', currentLanguage==='ar'?'تم التحديث':'Updated');
       }catch(e){
         console.error(e);
-        alert(currentLanguage==='ar'?'فشل حفظ المادة.':'Failed saving subject.');
+        alert(currentLanguage==='ar'?'فشل حفظ المادة والدروس.':'Failed saving subject and units.');
       }
     }
 
     async function loadRoomSubjectIntoUI(){
       if(!currentRoom) return;
       roomSubjectSelect.value = currentUser.subject || '';
+      
+      // Trigger chapter/unit loading if subject has chapters
+      onRoomSubjectChange();
+      
+      // Load previously selected units if any
+      if(currentUser.selected_units && currentUser.selected_units.length > 0){
+        selectedUnits = new Set(currentUser.selected_units);
+        
+        // Update UI to show selected units
+        setTimeout(() => {
+          currentUser.selected_units.forEach(unitId => {
+            const unitElement = document.getElementById(`unit-${unitId}`);
+            if(unitElement){
+              unitElement.classList.add('selected');
+              
+              // Update chapter summary for this unit's chapter
+              const chapterId = unitId.split('.')[0]; // Extract chapter from unit id like "1.1"
+              updateChapterSummary(`ch${chapterId}`);
+            }
+          });
+        }, 100);
+      }
+      
       populateSettings();
       updateSidebarUserInfo();
     }
@@ -1660,6 +1786,155 @@
         const exists = subjects.some(s => s.name === currentUser.subject || s.nameAr === currentUser.subject);
         roomSubjectSelect.value = exists ? subjects.find(s => s.name === currentUser.subject || s.nameAr === currentUser.subject).name : '';
       }
+    }
+
+    // -------- CHAPTER AND UNIT SELECTION --------
+    let selectedUnits = new Set(); // Store selected unit IDs
+
+    function onRoomSubjectChange(){
+      const selectedSubject = roomSubjectSelect.value;
+      const chapterSelector = document.getElementById('chapter-unit-selector');
+      
+      if(!selectedSubject){
+        chapterSelector.style.display = 'none';
+        return;
+      }
+
+      // Find the subject with chapters
+      const subjects = subjectsByGrade[currentUser?.grade] || [];
+      const subjectData = subjects.find(s => s.name === selectedSubject);
+      
+      if(subjectData && subjectData.chapters){
+        chapterSelector.style.display = 'block';
+        populateChaptersAndUnits(subjectData.chapters);
+      } else {
+        chapterSelector.style.display = 'none';
+      }
+    }
+
+    function populateChaptersAndUnits(chapters){
+      const container = document.getElementById('chapters-container');
+      container.innerHTML = '';
+      selectedUnits.clear();
+
+      chapters.forEach((chapter, chapterIndex) => {
+        const chapterDiv = document.createElement('div');
+        chapterDiv.className = 'chapter-selector';
+        
+        const chapterName = currentLanguage === 'ar' ? chapter.nameAr : chapter.name;
+        const selectedCount = 0;
+        const totalUnits = chapter.units.length;
+        
+        chapterDiv.innerHTML = `
+          <div class="chapter-header" onclick="toggleChapter('${chapter.id}')">
+            <div>
+              <div class="chapter-title">${chapterName}</div>
+              <div class="chapter-units-summary" id="summary-${chapter.id}">
+                ${selectedCount}/${totalUnits} ${translations[currentLanguage]['unitsSelected'] || 'units selected'}
+              </div>
+            </div>
+            <div class="chapter-toggle" id="toggle-${chapter.id}">▼</div>
+          </div>
+          <div class="units-list" id="units-${chapter.id}">
+            ${chapter.units.map(unit => {
+              const unitName = currentLanguage === 'ar' ? unit.nameAr : unit.name;
+              return `
+                <div class="unit-item" onclick="toggleUnit('${unit.id}', '${chapter.id}')" id="unit-${unit.id}">
+                  <div class="unit-checkbox" id="checkbox-${unit.id}">✓</div>
+                  <div class="unit-text">
+                    <strong>${unit.id}</strong> ${unitName}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+            <div style="margin-top:1rem;display:flex;gap:.5rem">
+              <button class="btn btn-small" onclick="selectAllUnits('${chapter.id}')" data-translate="selectAll">Select All</button>
+              <button class="btn btn-secondary btn-small" onclick="deselectAllUnits('${chapter.id}')" data-translate="deselectAll">Deselect All</button>
+            </div>
+          </div>
+        `;
+        
+        container.appendChild(chapterDiv);
+      });
+
+      // Update translations for dynamically created buttons
+      container.querySelectorAll('[data-translate]').forEach(el => {
+        const key = el.getAttribute('data-translate');
+        if(translations[currentLanguage][key]) el.textContent = translations[currentLanguage][key];
+      });
+    }
+
+    function toggleChapter(chapterId){
+      const unitsList = document.getElementById(`units-${chapterId}`);
+      const toggle = document.getElementById(`toggle-${chapterId}`);
+      
+      const isExpanded = unitsList.classList.contains('expanded');
+      unitsList.classList.toggle('expanded');
+      toggle.classList.toggle('expanded');
+    }
+
+    function toggleUnit(unitId, chapterId){
+      const unitElement = document.getElementById(`unit-${unitId}`);
+      const isSelected = selectedUnits.has(unitId);
+      
+      if(isSelected){
+        selectedUnits.delete(unitId);
+        unitElement.classList.remove('selected');
+      } else {
+        selectedUnits.add(unitId);
+        unitElement.classList.add('selected');
+      }
+      
+      updateChapterSummary(chapterId);
+    }
+
+    function selectAllUnits(chapterId){
+      const unitsList = document.getElementById(`units-${chapterId}`);
+      const unitElements = unitsList.querySelectorAll('.unit-item');
+      
+      unitElements.forEach(element => {
+        const unitId = element.id.replace('unit-', '');
+        if(unitId && unitId !== chapterId){ // Avoid selecting the chapter itself
+          selectedUnits.add(unitId);
+          element.classList.add('selected');
+        }
+      });
+      
+      updateChapterSummary(chapterId);
+    }
+
+    function deselectAllUnits(chapterId){
+      const unitsList = document.getElementById(`units-${chapterId}`);
+      const unitElements = unitsList.querySelectorAll('.unit-item');
+      
+      unitElements.forEach(element => {
+        const unitId = element.id.replace('unit-', '');
+        if(unitId && unitId !== chapterId){
+          selectedUnits.delete(unitId);
+          element.classList.remove('selected');
+        }
+      });
+      
+      updateChapterSummary(chapterId);
+    }
+
+    function updateChapterSummary(chapterId){
+      const unitsList = document.getElementById(`units-${chapterId}`);
+      const summaryElement = document.getElementById(`summary-${chapterId}`);
+      const totalUnits = unitsList.querySelectorAll('.unit-item').length;
+      
+      let selectedCount = 0;
+      unitsList.querySelectorAll('.unit-item.selected').forEach(element => {
+        selectedCount++;
+      });
+      
+      const unitsText = translations[currentLanguage]['unitsSelected'] || 'units selected';
+      summaryElement.textContent = `${selectedCount}/${totalUnits} ${unitsText}`;
+    }
+
+    function getSelectedUnitsData(){
+      // Return the selected units for saving/using elsewhere
+      return Array.from(selectedUnits);
     }
 
     function copyRoomCode(){ 
