@@ -110,6 +110,24 @@
     .participant-study-units{font-size:.8rem;color:var(--text-secondary);display:flex;flex-wrap:wrap;gap:.25rem}
     .study-unit-badge{background:var(--primary-color);color:#fff;padding:.1rem .4rem;border-radius:10px;font-size:.7rem}
 
+    .study-session-card{background:var(--bg-secondary);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;border-left:4px solid var(--primary-color);box-shadow:var(--shadow-light);transition:all .3s ease}
+    .study-session-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-medium)}
+    .study-session-subject{font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:1rem;display:flex;align-items:center;gap:.75rem}
+    .study-session-subject-icon{width:40px;height:40px;background:var(--primary-gradient);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+    .study-participants{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+    .study-participant-card{background:var(--bg-tertiary);border-radius:12px;padding:1rem;transition:all .2s ease}
+    .study-participant-card:hover{background:var(--bg-primary);transform:translateY(-1px)}
+    .study-participant-header{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+    .study-participant-avatar{width:35px;height:35px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:.9rem;flex-shrink:0}
+    .study-participant-name{font-weight:600;color:var(--text-primary)}
+    .study-chapters-grid{display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:1rem}
+    .study-chapter-badge{background:var(--accent-color);color:#fff;padding:.4rem .8rem;border-radius:8px;font-size:.85rem;font-weight:500}
+    .study-units-list{display:flex;flex-wrap:wrap;gap:.4rem}
+    .study-unit-small{background:var(--primary-color);color:#fff;padding:.2rem .5rem;border-radius:6px;font-size:.75rem}
+
+    .tab-badge{position:absolute;top:-5px;right:-5px;background:var(--error-color);color:#fff;border-radius:10px;padding:.15rem .4rem;font-size:.7rem;font-weight:600;min-width:18px;text-align:center}
+    .tab{position:relative}
+
     .avatar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(60px,1fr));gap:1rem}
     .avatar-choice{width:100%;aspect-ratio:1/1;border-radius:20px;border:3px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.8rem;transition:all .3s ease;overflow:hidden}
     .avatar-choice.selected{border-color:var(--accent-color);transform:scale(1.08);box-shadow:0 0 0 4px rgba(79,70,229,.2)}
@@ -371,17 +389,36 @@
 
         <div class="tabs">
           <button class="tab active" data-tab="participants">👥 Participants</button>
+          <button class="tab" data-tab="study-focus">📚 <span data-translate="studyFocus">Study Focus</span></button>
           <button class="tab" data-tab="timer">⏱️ Timer</button>
         </div>
 
         <div id="participants-content" class="tab-content active">
-          <!-- Shared Study Focus Display -->
-          <div id="study-focus-display" class="study-focus-display" style="display:none">
-            <div class="focus-header" data-translate="currentStudyFocus">Current Study Focus</div>
-            <div id="participants-study-list" class="participants-study-list"></div>
+          <div id="participants-list"></div>
+        </div>
+
+        <!-- STUDY FOCUS TAB -->
+        <div id="study-focus-content" class="tab-content">
+          <div class="study-focus-header">
+            <h3 style="margin-bottom:1rem;color:var(--text-primary);display:flex;align-items:center;gap:.5rem">
+              📚 <span data-translate="roomStudyFocus">Room Study Focus</span>
+            </h3>
+            <p style="color:var(--text-secondary);margin-bottom:1.5rem;font-size:.95rem" data-translate="studyFocusDesc">
+              See what everyone in the room is currently studying. Select your own subject and chapters above to join the focus session.
+            </p>
           </div>
           
-          <div id="participants-list"></div>
+          <!-- Active Study Sessions -->
+          <div id="active-study-sessions"></div>
+          
+          <!-- No Study Focus Message -->
+          <div id="no-study-focus" style="display:none;text-align:center;padding:2rem;background:var(--bg-tertiary);border-radius:12px;border:2px dashed var(--border-color)">
+            <div style="font-size:3rem;margin-bottom:1rem">📖</div>
+            <h4 style="margin-bottom:.5rem;color:var(--text-primary)" data-translate="noActiveStudy">No Active Study Sessions</h4>
+            <p style="color:var(--text-secondary)" data-translate="noActiveStudyDesc">
+              Participants haven't selected their study topics yet. Choose your subject and chapters above to start a study session!
+            </p>
+          </div>
         </div>
 
         <!-- TIMER PANEL -->
@@ -539,7 +576,10 @@
         endSession:"End Session", gradeLabel:"Grade",
         selectChaptersUnits:"Select Chapters & Units", chapter:"Chapter", unit:"Unit", 
         unitsSelected:"units selected", selectAll:"Select All", deselectAll:"Deselect All",
-        currentStudyFocus:"Current Study Focus", studyingUnits:"studying units", noStudyFocus:"No specific study focus selected"
+        currentStudyFocus:"Current Study Focus", studyingUnits:"studying units", noStudyFocus:"No specific study focus selected",
+        studyFocus:"Study Focus", roomStudyFocus:"Room Study Focus", studyFocusDesc:"See what everyone in the room is currently studying. Select your own subject and chapters above to join the focus session.",
+        noActiveStudy:"No Active Study Sessions", noActiveStudyDesc:"Participants haven't selected their study topics yet. Choose your subject and chapters above to start a study session!",
+        studyingChapters:"studying chapters", joinStudySession:"Join Study Session"
       },
       ar:{
         home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة",
@@ -569,7 +609,10 @@
         endSession:"إنهاء الجلسة", gradeLabel:"الصف",
         selectChaptersUnits:"اختر الفصول والدروس", chapter:"الفصل", unit:"الدرس",
         unitsSelected:"دروس مختارة", selectAll:"تحديد الكل", deselectAll:"إلغاء تحديد الكل",
-        currentStudyFocus:"التركيز الدراسي الحالي", studyingUnits:"يدرس وحدات", noStudyFocus:"لم يتم تحديد تركيز دراسي محدد"
+        currentStudyFocus:"التركيز الدراسي الحالي", studyingUnits:"يدرس وحدات", noStudyFocus:"لم يتم تحديد تركيز دراسي محدد",
+        studyFocus:"التركيز الدراسي", roomStudyFocus:"التركيز الدراسي للغرفة", studyFocusDesc:"اطلع على ما يدرسه الجميع في الغرفة حالياً. اختر مادتك والفصول أعلاه للانضمام إلى جلسة الدراسة.",
+        noActiveStudy:"لا توجد جلسات دراسة نشطة", noActiveStudyDesc:"لم يختر المشاركون مواضيع دراستهم بعد. اختر مادتك والفصول أعلاه لبدء جلسة دراسة!",
+        studyingChapters:"يدرس فصول", joinStudySession:"انضم لجلسة الدراسة"
       }
     };
     
@@ -2010,8 +2053,13 @@
     }
 
     function displaySharedStudyFocus(participants){
-      const focusDisplay = document.getElementById('study-focus-display');
-      const studyList = document.getElementById('participants-study-list');
+      // Update the new study focus tab
+      displayStudyFocusTab(participants);
+    }
+
+    function displayStudyFocusTab(participants){
+      const sessionsContainer = document.getElementById('active-study-sessions');
+      const noStudyDiv = document.getElementById('no-study-focus');
       
       // Filter participants who have study selections
       const studyingParticipants = participants.filter(p => 
@@ -2019,40 +2067,102 @@
       );
 
       if(studyingParticipants.length === 0){
-        focusDisplay.style.display = 'none';
+        sessionsContainer.innerHTML = '';
+        noStudyDiv.style.display = 'block';
+        updateStudyFocusTabBadge(0);
         return;
       }
 
-      focusDisplay.style.display = 'block';
-      studyList.innerHTML = '';
+      noStudyDiv.style.display = 'none';
 
+      // Group participants by subject
+      const subjectGroups = {};
       studyingParticipants.forEach(participant => {
         const user = participant.users;
-        const subjectName = getSubjectDisplayName(user.subject, currentUser.grade, currentLanguage);
+        const subject = user.subject;
+        if(!subjectGroups[subject]) {
+          subjectGroups[subject] = [];
+        }
+        subjectGroups[subject].push(user);
+      });
+
+      // Create study session cards for each subject
+      sessionsContainer.innerHTML = '';
+      Object.keys(subjectGroups).forEach(subject => {
+        const participants = subjectGroups[subject];
+        const subjectName = getSubjectDisplayName(subject, currentUser.grade, currentLanguage);
         
-        // Get unit details from the subject structure
-        const unitDetails = getUnitDetails(user.selected_units, user.subject, currentUser.grade);
+        const sessionCard = document.createElement('div');
+        sessionCard.className = 'study-session-card';
         
-        const participantDiv = document.createElement('div');
-        participantDiv.className = 'participant-study-item';
-        participantDiv.innerHTML = `
-          <div class="participant-study-avatar" style="background:${user.avatar_color || '#667eea'}">
-            ${(user.name?.[0] || 'U').toUpperCase()}
-          </div>
-          <div class="participant-study-info">
-            <div class="participant-study-name">${escapeHtml(user.name)} - ${subjectName}</div>
-            <div class="participant-study-units">
-              ${unitDetails.map(unit => `
-                <span class="study-unit-badge">${unit.id}</span>
-              `).join('')}
-              <span style="color:var(--text-secondary);font-size:.8rem;margin-left:.5rem">
-                (${unitDetails.length} ${translations[currentLanguage]['unitsSelected'] || 'units'})
-              </span>
+        sessionCard.innerHTML = `
+          <div class="study-session-subject">
+            <div class="study-session-subject-icon">📚</div>
+            <div>
+              <div>${subjectName}</div>
+              <div style="font-size:.9rem;font-weight:400;color:var(--text-secondary)">${participants.length} ${participants.length === 1 ? 'participant' : 'participants'}</div>
             </div>
           </div>
+          <div class="study-participants">
+            ${participants.map(user => createStudyParticipantCard(user, subject)).join('')}
+          </div>
         `;
-        studyList.appendChild(participantDiv);
+        
+        sessionsContainer.appendChild(sessionCard);
       });
+      
+      // Update tab badge with number of studying participants
+      updateStudyFocusTabBadge(studyingParticipants.length);
+    }
+
+    function createStudyParticipantCard(user, subject){
+      const unitDetails = getUnitDetails(user.selected_units, subject, currentUser.grade);
+      
+      // Group units by chapter
+      const chapterGroups = {};
+      unitDetails.forEach(unit => {
+        const chapterId = unit.id.split('.')[0]; // Get chapter number from unit id like "1.1"
+        if(!chapterGroups[chapterId]) {
+          chapterGroups[chapterId] = {
+            name: unit.chapterName,
+            units: []
+          };
+        }
+        chapterGroups[chapterId].units.push(unit);
+      });
+
+      return `
+        <div class="study-participant-card">
+          <div class="study-participant-header">
+            <div class="study-participant-avatar" style="background:${user.avatar_color || '#667eea'}">
+              ${(user.name?.[0] || 'U').toUpperCase()}
+            </div>
+            <div class="study-participant-name">${escapeHtml(user.name)}</div>
+          </div>
+          
+          ${Object.keys(chapterGroups).length > 0 ? `
+            <div class="study-chapters-grid">
+              ${Object.keys(chapterGroups).map(chapterId => {
+                const chapter = chapterGroups[chapterId];
+                return `<div class="study-chapter-badge">${chapter.name}</div>`;
+              }).join('')}
+            </div>
+            
+            <div style="margin-bottom:.5rem;font-size:.85rem;color:var(--text-secondary);font-weight:500">
+              ${translations[currentLanguage]['unitsSelected'] || 'Units selected'}:
+            </div>
+            <div class="study-units-list">
+              ${unitDetails.map(unit => `
+                <span class="study-unit-small" title="${unit.name}">${unit.id}</span>
+              `).join('')}
+            </div>
+          ` : `
+            <div style="color:var(--text-secondary);font-style:italic;font-size:.9rem">
+              ${translations[currentLanguage]['noStudyFocus'] || 'No specific units selected'}
+            </div>
+          `}
+        </div>
+      `;
     }
 
     function getUnitDetails(selectedUnitIds, subject, grade){
@@ -2077,6 +2187,23 @@
       });
       
       return unitDetails;
+    }
+
+    function updateStudyFocusTabBadge(count){
+      const studyFocusTab = document.querySelector('[data-tab="study-focus"]');
+      if(!studyFocusTab) return;
+      
+      // Remove existing badge
+      const existingBadge = studyFocusTab.querySelector('.tab-badge');
+      if(existingBadge) existingBadge.remove();
+      
+      // Add new badge if there are studying participants
+      if(count > 0){
+        const badge = document.createElement('span');
+        badge.className = 'tab-badge';
+        badge.textContent = count;
+        studyFocusTab.appendChild(badge);
+      }
     }
 
     function copyRoomCode(){ 
@@ -2104,6 +2231,11 @@
       if(activeContent) activeContent.classList.remove('active');
       const newContent = document.getElementById(`${tabName}-content`);
       if(newContent) newContent.classList.add('active');
+      
+      // Update study focus when switching to that tab
+      if(tabName === 'study-focus') {
+        setTimeout(() => updateSharedStudyFocus(), 100);
+      }
     }
 
     function escapeHtml(text){
