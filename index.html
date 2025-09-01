@@ -79,22 +79,36 @@
     .form-input{width:100%;padding:1rem 1.25rem;border:2px solid var(--border-color);border-radius:16px;font-size:1.1rem;background:var(--bg-tertiary);color:var(--text-primary);transition:all .3s ease}
     .form-input:focus{outline:none;border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(102,126,234,.2)}
 
-    .chapter-selector{background:var(--bg-secondary);border-radius:16px;padding:1.5rem;margin-top:1rem;border:2px solid var(--border-color);transition:all .3s ease}
-    .chapter-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;cursor:pointer;padding:.5rem;border-radius:8px;transition:background .2s}
+    .chapters-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem;margin-top:1rem}
+    @media(max-width:768px){.chapters-grid{grid-template-columns:1fr}}
+    .chapter-selector{background:var(--bg-secondary);border-radius:12px;padding:1rem;border:2px solid var(--border-color);transition:all .3s ease;height:fit-content}
+    .chapter-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;cursor:pointer;padding:.5rem;border-radius:8px;transition:background .2s}
     .chapter-header:hover{background:var(--bg-tertiary)}
-    .chapter-title{font-weight:600;font-size:1.1rem;color:var(--text-primary)}
-    .chapter-toggle{font-size:1.2rem;transition:transform .3s ease}
+    .chapter-title{font-weight:600;font-size:1rem;color:var(--text-primary)}
+    .chapter-toggle{font-size:1rem;transition:transform .3s ease}
     .chapter-toggle.expanded{transform:rotate(180deg)}
-    .units-list{display:none;padding-left:1rem;border-left:3px solid var(--border-color);margin-left:.5rem}
+    .units-list{display:none;max-height:250px;overflow-y:auto;border-left:3px solid var(--border-color);margin-left:.25rem;padding-left:.75rem}
     .units-list.expanded{display:block}
-    .unit-item{display:flex;align-items:center;gap:.75rem;padding:.75rem;margin:.5rem 0;border-radius:8px;background:var(--bg-tertiary);transition:all .2s ease;cursor:pointer}
-    .unit-item:hover{background:var(--primary-color);color:#fff;transform:translateX(4px)}
+    .unit-item{display:flex;align-items:center;gap:.5rem;padding:.5rem;margin:.25rem 0;border-radius:6px;background:var(--bg-tertiary);transition:all .2s ease;cursor:pointer;font-size:.9rem}
+    .unit-item:hover{background:var(--primary-color);color:#fff;transform:translateX(2px)}
     .unit-item.selected{background:var(--primary-color);color:#fff;box-shadow:var(--shadow-light)}
-    .unit-checkbox{width:18px;height:18px;border-radius:4px;border:2px solid var(--border-color);transition:all .2s}
+    .unit-checkbox{width:16px;height:16px;border-radius:3px;border:2px solid var(--border-color);transition:all .2s;flex-shrink:0}
     .unit-item:hover .unit-checkbox{border-color:#fff}
     .unit-item.selected .unit-checkbox{background:#fff;border-color:#fff}
-    .unit-text{flex:1;font-size:.95rem;line-height:1.4}
-    .chapter-units-summary{font-size:.9rem;color:var(--text-secondary);margin-top:.25rem}
+    .unit-text{flex:1;line-height:1.3}
+    .chapter-units-summary{font-size:.85rem;color:var(--text-secondary);margin-top:.25rem}
+    .chapter-controls{display:flex;gap:.5rem;margin-top:.75rem;flex-wrap:wrap}
+    .chapter-controls .btn{font-size:.8rem;padding:.4rem .8rem}
+
+    .study-focus-display{background:var(--bg-secondary);border-radius:12px;padding:1rem;margin-bottom:1rem;border-left:4px solid var(--primary-color)}
+    .focus-header{font-weight:600;font-size:1rem;color:var(--text-primary);margin-bottom:.5rem}
+    .participants-study-list{max-height:150px;overflow-y:auto}
+    .participant-study-item{display:flex;align-items:center;gap:.75rem;padding:.5rem;margin:.25rem 0;border-radius:8px;background:var(--bg-tertiary);font-size:.9rem}
+    .participant-study-avatar{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:.8rem;flex-shrink:0}
+    .participant-study-info{flex:1}
+    .participant-study-name{font-weight:500;margin-bottom:.25rem}
+    .participant-study-units{font-size:.8rem;color:var(--text-secondary);display:flex;flex-wrap:wrap;gap:.25rem}
+    .study-unit-badge{background:var(--primary-color);color:#fff;padding:.1rem .4rem;border-radius:10px;font-size:.7rem}
 
     .avatar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(60px,1fr));gap:1rem}
     .avatar-choice{width:100%;aspect-ratio:1/1;border-radius:20px;border:3px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.8rem;transition:all .3s ease;overflow:hidden}
@@ -351,7 +365,7 @@
             <div class="form-label" style="margin-bottom:1rem">
               <span data-translate="selectChaptersUnits">Select Chapters & Units</span>
             </div>
-            <div id="chapters-container"></div>
+            <div id="chapters-container" class="chapters-grid"></div>
           </div>
         </div>
 
@@ -361,6 +375,12 @@
         </div>
 
         <div id="participants-content" class="tab-content active">
+          <!-- Shared Study Focus Display -->
+          <div id="study-focus-display" class="study-focus-display" style="display:none">
+            <div class="focus-header" data-translate="currentStudyFocus">Current Study Focus</div>
+            <div id="participants-study-list" class="participants-study-list"></div>
+          </div>
+          
           <div id="participants-list"></div>
         </div>
 
@@ -518,7 +538,8 @@
         personalInfo:"Personal Information", nameLabel:"Name", subjectLabel:"Subject", saveChanges:"Save Changes",
         endSession:"End Session", gradeLabel:"Grade",
         selectChaptersUnits:"Select Chapters & Units", chapter:"Chapter", unit:"Unit", 
-        unitsSelected:"units selected", selectAll:"Select All", deselectAll:"Deselect All"
+        unitsSelected:"units selected", selectAll:"Select All", deselectAll:"Deselect All",
+        currentStudyFocus:"Current Study Focus", studyingUnits:"studying units", noStudyFocus:"No specific study focus selected"
       },
       ar:{
         home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة",
@@ -547,7 +568,8 @@
         personalInfo:"المعلومات الشخصية", nameLabel:"الاسم", subjectLabel:"المادة", saveChanges:"حفظ التغييرات",
         endSession:"إنهاء الجلسة", gradeLabel:"الصف",
         selectChaptersUnits:"اختر الفصول والدروس", chapter:"الفصل", unit:"الدرس",
-        unitsSelected:"دروس مختارة", selectAll:"تحديد الكل", deselectAll:"إلغاء تحديد الكل"
+        unitsSelected:"دروس مختارة", selectAll:"تحديد الكل", deselectAll:"إلغاء تحديد الكل",
+        currentStudyFocus:"التركيز الدراسي الحالي", studyingUnits:"يدرس وحدات", noStudyFocus:"لم يتم تحديد تركيز دراسي محدد"
       }
     };
     
@@ -1252,6 +1274,23 @@
         toast((currentLanguage==='ar'?'تم تعيين المادة إلى ':'Subject set to ') + 
               (getSubjectDisplayName(subject, currentUser.grade, currentLanguage) || '—') + unitsMessage, 
               'success', currentLanguage==='ar'?'تم التحديث':'Updated');
+              
+        // Update shared study focus display for all participants
+        setTimeout(() => updateSharedStudyFocus(), 500);
+        
+        // Broadcast study focus update to other participants
+        if(participantsSubscription) {
+          participantsSubscription.send({
+            type: 'broadcast',
+            event: 'study_focus_update',
+            payload: { 
+              action: 'update',
+              user_id: currentUser.id,
+              subject: subject,
+              selected_units: selectedUnitsArray
+            }
+          });
+        }
       }catch(e){
         console.error(e);
         alert(currentLanguage==='ar'?'فشل حفظ المادة والدروس.':'Failed saving subject and units.');
@@ -1326,6 +1365,8 @@
         }
       }).on('broadcast', { event: 'participant_update' }, () => {
         loadParticipants();
+      }).on('broadcast', { event: 'study_focus_update' }, () => {
+        updateSharedStudyFocus();
       }).subscribe();
 
       timerSubscription = supabase.channel(timerChannelName, {
@@ -1355,7 +1396,10 @@
       }
     }
 
-    async function loadRoomData(){ await loadParticipants(); }
+    async function loadRoomData(){ 
+      await loadParticipants(); 
+      await updateSharedStudyFocus();
+    }
 
     // -------- TIMER SYNC --------
     function handleTimerBroadcast(data) {
@@ -1847,7 +1891,7 @@
                 </div>
               `;
             }).join('')}
-            <div style="margin-top:1rem;display:flex;gap:.5rem">
+            <div class="chapter-controls">
               <button class="btn btn-small" onclick="selectAllUnits('${chapter.id}')" data-translate="selectAll">Select All</button>
               <button class="btn btn-secondary btn-small" onclick="deselectAllUnits('${chapter.id}')" data-translate="deselectAll">Deselect All</button>
             </div>
@@ -1935,6 +1979,104 @@
     function getSelectedUnitsData(){
       // Return the selected units for saving/using elsewhere
       return Array.from(selectedUnits);
+    }
+
+    // -------- SHARED STUDY FOCUS DISPLAY --------
+    async function updateSharedStudyFocus(){
+      if(!currentRoom) return;
+      
+      try {
+        // Get all participants with their study data
+        const {data: participants, error} = await supabase
+          .from('room_participants')
+          .select(`
+            user_id,
+            users (
+              id, name, avatar_color, subject, selected_units
+            )
+          `)
+          .eq('room_id', currentRoom.id)
+          .eq('is_online', true);
+
+        if(error) {
+          console.error('Error fetching participants study data:', error);
+          return;
+        }
+
+        displaySharedStudyFocus(participants || []);
+      } catch(e) {
+        console.error('Error updating shared study focus:', e);
+      }
+    }
+
+    function displaySharedStudyFocus(participants){
+      const focusDisplay = document.getElementById('study-focus-display');
+      const studyList = document.getElementById('participants-study-list');
+      
+      // Filter participants who have study selections
+      const studyingParticipants = participants.filter(p => 
+        p.users && p.users.subject && p.users.selected_units && p.users.selected_units.length > 0
+      );
+
+      if(studyingParticipants.length === 0){
+        focusDisplay.style.display = 'none';
+        return;
+      }
+
+      focusDisplay.style.display = 'block';
+      studyList.innerHTML = '';
+
+      studyingParticipants.forEach(participant => {
+        const user = participant.users;
+        const subjectName = getSubjectDisplayName(user.subject, currentUser.grade, currentLanguage);
+        
+        // Get unit details from the subject structure
+        const unitDetails = getUnitDetails(user.selected_units, user.subject, currentUser.grade);
+        
+        const participantDiv = document.createElement('div');
+        participantDiv.className = 'participant-study-item';
+        participantDiv.innerHTML = `
+          <div class="participant-study-avatar" style="background:${user.avatar_color || '#667eea'}">
+            ${(user.name?.[0] || 'U').toUpperCase()}
+          </div>
+          <div class="participant-study-info">
+            <div class="participant-study-name">${escapeHtml(user.name)} - ${subjectName}</div>
+            <div class="participant-study-units">
+              ${unitDetails.map(unit => `
+                <span class="study-unit-badge">${unit.id}</span>
+              `).join('')}
+              <span style="color:var(--text-secondary);font-size:.8rem;margin-left:.5rem">
+                (${unitDetails.length} ${translations[currentLanguage]['unitsSelected'] || 'units'})
+              </span>
+            </div>
+          </div>
+        `;
+        studyList.appendChild(participantDiv);
+      });
+    }
+
+    function getUnitDetails(selectedUnitIds, subject, grade){
+      if(!selectedUnitIds || !subject) return [];
+      
+      const subjects = subjectsByGrade[grade] || [];
+      const subjectData = subjects.find(s => s.name === subject || s.nameAr === subject);
+      
+      if(!subjectData || !subjectData.chapters) return [];
+
+      const unitDetails = [];
+      subjectData.chapters.forEach(chapter => {
+        chapter.units.forEach(unit => {
+          if(selectedUnitIds.includes(unit.id)){
+            unitDetails.push({
+              id: unit.id,
+              name: currentLanguage === 'ar' ? unit.nameAr : unit.name,
+              chapterName: currentLanguage === 'ar' ? chapter.nameAr : chapter.name
+            });
+          }
+        });
+      });
+      
+      return unitDetails;
     }
 
     function copyRoomCode(){ 
