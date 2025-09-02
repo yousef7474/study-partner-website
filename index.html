@@ -79,26 +79,26 @@
     .form-input{width:100%;padding:1rem 1.25rem;border:2px solid var(--border-color);border-radius:16px;font-size:1.1rem;background:var(--bg-tertiary);color:var(--text-primary);transition:all .3s ease}
     .form-input:focus{outline:none;border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(102,126,234,.2)}
 
-    .chapters-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem;margin-top:1rem}
-    @media(max-width:768px){.chapters-grid{grid-template-columns:1fr}}
-    .chapter-selector{background:var(--bg-secondary);border-radius:12px;padding:1rem;border:2px solid var(--border-color);transition:all .3s ease;height:fit-content}
-    .chapter-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;cursor:pointer;padding:.5rem;border-radius:8px;transition:background .2s}
-    .chapter-header:hover{background:var(--bg-tertiary)}
-    .chapter-title{font-weight:600;font-size:1rem;color:var(--text-primary)}
-    .chapter-toggle{font-size:1rem;transition:transform .3s ease}
-    .chapter-toggle.expanded{transform:rotate(180deg)}
-    .units-list{display:none;max-height:250px;overflow-y:auto;border-left:3px solid var(--border-color);margin-left:.25rem;padding-left:.75rem}
-    .units-list.expanded{display:block}
-    .unit-item{display:flex;align-items:center;gap:.5rem;padding:.5rem;margin:.25rem 0;border-radius:6px;background:var(--bg-tertiary);transition:all .2s ease;cursor:pointer;font-size:.9rem}
-    .unit-item:hover{background:var(--primary-color);color:#fff;transform:translateX(2px)}
-    .unit-item.selected{background:var(--primary-color);color:#fff;box-shadow:var(--shadow-light)}
-    .unit-checkbox{width:16px;height:16px;border-radius:3px;border:2px solid var(--border-color);transition:all .2s;flex-shrink:0}
-    .unit-item:hover .unit-checkbox{border-color:#fff}
-    .unit-item.selected .unit-checkbox{background:#fff;border-color:#fff}
-    .unit-text{flex:1;line-height:1.3}
-    .chapter-units-summary{font-size:.85rem;color:var(--text-secondary);margin-top:.25rem}
-    .chapter-controls{display:flex;gap:.5rem;margin-top:.75rem;flex-wrap:wrap}
-    .chapter-controls .btn{font-size:.8rem;padding:.4rem .8rem}
+    .chapters-container{background:var(--bg-secondary);border-radius:16px;padding:1.5rem;margin-top:1rem;border:2px solid var(--border-color)}
+    .chapters-tabs{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;border-bottom:2px solid var(--border-color);padding-bottom:1rem}
+    .chapter-tab{background:var(--bg-tertiary);border:none;padding:.75rem 1.25rem;border-radius:8px 8px 0 0;cursor:pointer;font-weight:500;transition:all .2s ease;font-size:.9rem;position:relative}
+    .chapter-tab:hover{background:var(--primary-color);color:#fff}
+    .chapter-tab.active{background:var(--primary-color);color:#fff;box-shadow:var(--shadow-light)}
+    .chapter-tab-badge{position:absolute;top:-8px;right:-8px;background:var(--accent-color);color:#fff;border-radius:10px;padding:.15rem .4rem;font-size:.7rem;font-weight:600;min-width:16px;text-align:center}
+    
+    .chapter-content{display:none}
+    .chapter-content.active{display:block}
+    .units-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;margin-bottom:1rem}
+    @media(max-width:768px){.units-grid{grid-template-columns:1fr}}
+    .unit-card{background:var(--bg-tertiary);border-radius:8px;padding:.75rem;cursor:pointer;transition:all .2s ease;border:2px solid transparent}
+    .unit-card:hover{background:var(--primary-color);color:#fff;transform:translateY(-1px);box-shadow:var(--shadow-light)}
+    .unit-card.selected{background:var(--primary-color);color:#fff;border-color:var(--accent-color);box-shadow:var(--shadow-medium)}
+    .unit-id{font-weight:600;font-size:.9rem;margin-bottom:.25rem}
+    .unit-title{font-size:.85rem;line-height:1.3;opacity:.9}
+    
+    .chapter-summary{background:var(--bg-tertiary);border-radius:8px;padding:1rem;margin-bottom:1rem;text-align:center}
+    .chapter-controls{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+    .chapter-controls .btn{font-size:.85rem;padding:.5rem 1rem}
 
     .study-focus-display{background:var(--bg-secondary);border-radius:12px;padding:1rem;margin-bottom:1rem;border-left:4px solid var(--primary-color)}
     .focus-header{font-weight:600;font-size:1rem;color:var(--text-primary);margin-bottom:.5rem}
@@ -383,7 +383,14 @@
             <div class="form-label" style="margin-bottom:1rem">
               <span data-translate="selectChaptersUnits">Select Chapters & Units</span>
             </div>
-            <div id="chapters-container" class="chapters-grid"></div>
+            <div id="chapters-container" class="chapters-container">
+              <div id="chapters-tabs" class="chapters-tabs"></div>
+              <div id="chapters-content"></div>
+              <div id="selection-summary" class="chapter-summary" style="display:none">
+                <div style="font-size:.9rem;color:var(--text-secondary);margin-bottom:.5rem" data-translate="totalSelected">Total Selected</div>
+                <div id="total-units-count" style="font-size:1.2rem;font-weight:600;color:var(--primary-color)">0 units</div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -579,7 +586,7 @@
         currentStudyFocus:"Current Study Focus", studyingUnits:"studying units", noStudyFocus:"No specific study focus selected",
         studyFocus:"Study Focus", roomStudyFocus:"Room Study Focus", studyFocusDesc:"See what everyone in the room is currently studying. Select your own subject and chapters above to join the focus session.",
         noActiveStudy:"No Active Study Sessions", noActiveStudyDesc:"Participants haven't selected their study topics yet. Choose your subject and chapters above to start a study session!",
-        studyingChapters:"studying chapters", joinStudySession:"Join Study Session"
+        studyingChapters:"studying chapters", joinStudySession:"Join Study Session", totalSelected:"Total Selected"
       },
       ar:{
         home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة",
@@ -612,7 +619,7 @@
         currentStudyFocus:"التركيز الدراسي الحالي", studyingUnits:"يدرس وحدات", noStudyFocus:"لم يتم تحديد تركيز دراسي محدد",
         studyFocus:"التركيز الدراسي", roomStudyFocus:"التركيز الدراسي للغرفة", studyFocusDesc:"اطلع على ما يدرسه الجميع في الغرفة حالياً. اختر مادتك والفصول أعلاه للانضمام إلى جلسة الدراسة.",
         noActiveStudy:"لا توجد جلسات دراسة نشطة", noActiveStudyDesc:"لم يختر المشاركون مواضيع دراستهم بعد. اختر مادتك والفصول أعلاه لبدء جلسة دراسة!",
-        studyingChapters:"يدرس فصول", joinStudySession:"انضم لجلسة الدراسة"
+        studyingChapters:"يدرس فصول", joinStudySession:"انضم لجلسة الدراسة", totalSelected:"المجموع المختار"
       }
     };
     
@@ -1357,12 +1364,15 @@
             const unitElement = document.getElementById(`unit-${unitId}`);
             if(unitElement){
               unitElement.classList.add('selected');
-              
-              // Update chapter summary for this unit's chapter
-              const chapterId = unitId.split('.')[0]; // Extract chapter from unit id like "1.1"
-              updateChapterSummary(`ch${chapterId}`);
             }
           });
+          
+          // Update all chapter badges and total summary
+          document.querySelectorAll('.chapter-tab').forEach(tab => {
+            const chapterId = tab.dataset.chapterId;
+            updateChapterBadge(chapterId);
+          });
+          updateTotalSummary();
         }, 100);
       }
       
@@ -1823,12 +1833,15 @@
           ${kickBtn}
         </div>`;
       }).join('');
+      
+      // Update study focus display with the fetched participant data
+      updateStudyFocusFromParticipants(data, usersMap);
     }
 
     async function fetchUsersMap(ids){
       if(ids.length === 0) return {};
       const {data, error} = await supabase.from('users')
-        .select('id,name,avatar_color')
+        .select('id,name,avatar_color,subject,selected_units')
         .in('id', ids);
       if(error){ console.error(error); return {}; }
       const map = {}; data.forEach(u => map[u.id] = u); return map;
@@ -1900,64 +1913,74 @@
     }
 
     function populateChaptersAndUnits(chapters){
-      const container = document.getElementById('chapters-container');
-      container.innerHTML = '';
+      const tabsContainer = document.getElementById('chapters-tabs');
+      const contentContainer = document.getElementById('chapters-content');
+      const summaryDiv = document.getElementById('selection-summary');
+      
+      tabsContainer.innerHTML = '';
+      contentContainer.innerHTML = '';
       selectedUnits.clear();
 
       chapters.forEach((chapter, chapterIndex) => {
-        const chapterDiv = document.createElement('div');
-        chapterDiv.className = 'chapter-selector';
-        
         const chapterName = currentLanguage === 'ar' ? chapter.nameAr : chapter.name;
-        const selectedCount = 0;
-        const totalUnits = chapter.units.length;
         
-        chapterDiv.innerHTML = `
-          <div class="chapter-header" onclick="toggleChapter('${chapter.id}')">
-            <div>
-              <div class="chapter-title">${chapterName}</div>
-              <div class="chapter-units-summary" id="summary-${chapter.id}">
-                ${selectedCount}/${totalUnits} ${translations[currentLanguage]['unitsSelected'] || 'units selected'}
-              </div>
-            </div>
-            <div class="chapter-toggle" id="toggle-${chapter.id}">▼</div>
-          </div>
-          <div class="units-list" id="units-${chapter.id}">
+        // Create tab button
+        const tabButton = document.createElement('button');
+        tabButton.className = `chapter-tab ${chapterIndex === 0 ? 'active' : ''}`;
+        tabButton.dataset.chapterId = chapter.id;
+        tabButton.onclick = () => switchChapterTab(chapter.id);
+        tabButton.innerHTML = `
+          ${chapterName}
+          <span class="chapter-tab-badge" id="badge-${chapter.id}">0</span>
+        `;
+        tabsContainer.appendChild(tabButton);
+        
+        // Create content panel
+        const contentPanel = document.createElement('div');
+        contentPanel.className = `chapter-content ${chapterIndex === 0 ? 'active' : ''}`;
+        contentPanel.id = `content-${chapter.id}`;
+        
+        contentPanel.innerHTML = `
+          <div class="units-grid">
             ${chapter.units.map(unit => {
               const unitName = currentLanguage === 'ar' ? unit.nameAr : unit.name;
               return `
-                <div class="unit-item" onclick="toggleUnit('${unit.id}', '${chapter.id}')" id="unit-${unit.id}">
-                  <div class="unit-checkbox" id="checkbox-${unit.id}">✓</div>
-                  <div class="unit-text">
-                    <strong>${unit.id}</strong> ${unitName}
-                  </div>
+                <div class="unit-card" onclick="toggleUnit('${unit.id}', '${chapter.id}')" id="unit-${unit.id}">
+                  <div class="unit-id">${unit.id}</div>
+                  <div class="unit-title">${unitName}</div>
                 </div>
               `;
             }).join('')}
-            <div class="chapter-controls">
-              <button class="btn btn-small" onclick="selectAllUnits('${chapter.id}')" data-translate="selectAll">Select All</button>
-              <button class="btn btn-secondary btn-small" onclick="deselectAllUnits('${chapter.id}')" data-translate="deselectAll">Deselect All</button>
-            </div>
+          </div>
+          
+          <div class="chapter-controls">
+            <button class="btn btn-small" onclick="selectAllUnits('${chapter.id}')" data-translate="selectAll">Select All</button>
+            <button class="btn btn-secondary btn-small" onclick="deselectAllUnits('${chapter.id}')" data-translate="deselectAll">Deselect All</button>
           </div>
         `;
         
-        container.appendChild(chapterDiv);
+        contentContainer.appendChild(contentPanel);
       });
+      
+      // Show summary section
+      summaryDiv.style.display = 'block';
+      updateTotalSummary();
 
       // Update translations for dynamically created buttons
-      container.querySelectorAll('[data-translate]').forEach(el => {
+      contentContainer.querySelectorAll('[data-translate]').forEach(el => {
         const key = el.getAttribute('data-translate');
         if(translations[currentLanguage][key]) el.textContent = translations[currentLanguage][key];
       });
     }
 
-    function toggleChapter(chapterId){
-      const unitsList = document.getElementById(`units-${chapterId}`);
-      const toggle = document.getElementById(`toggle-${chapterId}`);
+    function switchChapterTab(chapterId){
+      // Remove active class from all tabs and contents
+      document.querySelectorAll('.chapter-tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.chapter-content').forEach(content => content.classList.remove('active'));
       
-      const isExpanded = unitsList.classList.contains('expanded');
-      unitsList.classList.toggle('expanded');
-      toggle.classList.toggle('expanded');
+      // Add active class to selected tab and content
+      document.querySelector(`[data-chapter-id="${chapterId}"]`).classList.add('active');
+      document.getElementById(`content-${chapterId}`).classList.add('active');
     }
 
     function toggleUnit(unitId, chapterId){
@@ -1972,51 +1995,59 @@
         unitElement.classList.add('selected');
       }
       
-      updateChapterSummary(chapterId);
+      updateChapterBadge(chapterId);
+      updateTotalSummary();
     }
 
     function selectAllUnits(chapterId){
-      const unitsList = document.getElementById(`units-${chapterId}`);
-      const unitElements = unitsList.querySelectorAll('.unit-item');
+      const contentPanel = document.getElementById(`content-${chapterId}`);
+      const unitElements = contentPanel.querySelectorAll('.unit-card');
       
       unitElements.forEach(element => {
         const unitId = element.id.replace('unit-', '');
-        if(unitId && unitId !== chapterId){ // Avoid selecting the chapter itself
-          selectedUnits.add(unitId);
-          element.classList.add('selected');
-        }
+        selectedUnits.add(unitId);
+        element.classList.add('selected');
       });
       
-      updateChapterSummary(chapterId);
+      updateChapterBadge(chapterId);
+      updateTotalSummary();
     }
 
     function deselectAllUnits(chapterId){
-      const unitsList = document.getElementById(`units-${chapterId}`);
-      const unitElements = unitsList.querySelectorAll('.unit-item');
+      const contentPanel = document.getElementById(`content-${chapterId}`);
+      const unitElements = contentPanel.querySelectorAll('.unit-card');
       
       unitElements.forEach(element => {
         const unitId = element.id.replace('unit-', '');
-        if(unitId && unitId !== chapterId){
-          selectedUnits.delete(unitId);
-          element.classList.remove('selected');
-        }
+        selectedUnits.delete(unitId);
+        element.classList.remove('selected');
       });
       
-      updateChapterSummary(chapterId);
+      updateChapterBadge(chapterId);
+      updateTotalSummary();
     }
 
-    function updateChapterSummary(chapterId){
-      const unitsList = document.getElementById(`units-${chapterId}`);
-      const summaryElement = document.getElementById(`summary-${chapterId}`);
-      const totalUnits = unitsList.querySelectorAll('.unit-item').length;
+    function updateChapterBadge(chapterId){
+      const contentPanel = document.getElementById(`content-${chapterId}`);
+      const badgeElement = document.getElementById(`badge-${chapterId}`);
+      
+      if(!contentPanel || !badgeElement) return;
       
       let selectedCount = 0;
-      unitsList.querySelectorAll('.unit-item.selected').forEach(element => {
+      contentPanel.querySelectorAll('.unit-card.selected').forEach(() => {
         selectedCount++;
       });
       
+      badgeElement.textContent = selectedCount;
+      badgeElement.style.display = selectedCount > 0 ? 'block' : 'none';
+    }
+
+    function updateTotalSummary(){
+      const totalCountElement = document.getElementById('total-units-count');
+      const totalSelected = selectedUnits.size;
+      
       const unitsText = translations[currentLanguage]['unitsSelected'] || 'units selected';
-      summaryElement.textContent = `${selectedCount}/${totalUnits} ${unitsText}`;
+      totalCountElement.textContent = `${totalSelected} ${totalSelected === 1 ? 'unit' : 'units'}`;
     }
 
     function getSelectedUnitsData(){
@@ -2113,6 +2144,16 @@
       
       // Update tab badge with number of studying participants
       updateStudyFocusTabBadge(studyingParticipants.length);
+    }
+
+    function updateStudyFocusFromParticipants(participantData, usersMap){
+      // Convert the loadParticipants format to updateSharedStudyFocus format
+      const participants = participantData.map(p => ({
+        user_id: p.user_id,
+        users: usersMap[p.user_id]
+      }));
+      
+      displayStudyFocusTab(participants);
     }
 
     function createStudyParticipantCard(user, subject){
