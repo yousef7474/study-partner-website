@@ -3,486 +3,551 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Study Partner</title>
+  <title>Study Partner - Ù…Ù†ØµØ© Ø§Ù„Ø¯Ø±Ø§Ø³Ø© Ø§Ù„ØªØ¹Ø§ÙˆÙ†ÙŠØ©</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --primary: #667eea;
-      --primary-dark: #5a67d8;
-      --secondary: #764ba2;
-      --bg-light: #f8fafc;
-      --bg-card: #ffffff;
-      --text-primary: #1e293b;
-      --text-secondary: #64748b;
-      --border: #e2e8f0;
-      --success: #10b981;
-      --error: #ef4444;
-      --shadow: 0 4px 6px rgba(0,0,0,0.1);
+    :root{
+      --primary-gradient: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+      --primary-color:#667eea;--secondary-color:#764ba2;--accent-color:#4f46e5;
+      --bg-primary:#f8fafc;--bg-secondary:#ffffff;--bg-tertiary:#f1f5f9;
+      --text-primary:#1e293b;--text-secondary:#64748b;--text-muted:#94a3b8;
+      --border-color:#e2e8f0;--shadow-light:0 4px 6px rgba(0,0,0,.05);
+      --shadow-medium:0 10px 25px rgba(0,0,0,.1);--shadow-heavy:0 20px 40px rgba(0,0,0,.15);
+      --success-color:#10b981;--error-color:#ef4444;--sidebar-width:280px
+    }
+    [data-theme=dark]{--bg-primary:#0f172a;--bg-secondary:#1e293b;--bg-tertiary:#334155;--text-primary:#f1f5f9;--text-secondary:#cbd5e1;--text-muted:#64748b;--border-color:#334155}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter','Tajawal',sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;transition:background .3s,color .3s;overflow-x:hidden}
+    body[dir=rtl]{font-family:'Tajawal','Inter',sans-serif}
+
+    .header{position:fixed;top:0;left:0;right:0;height:70px;background:var(--bg-primary);border-bottom:1px solid var(--border-color);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;box-shadow:var(--shadow-light);transition:margin-left .3s ease,margin-right .3s ease}
+    .logo{display:flex;align-items:center;gap:12px;font-size:1.5rem;font-weight:700;color:var(--primary-color)}
+    .logo-icon{width:40px;height:40px;background:var(--primary-gradient);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#fff}
+    .header-controls{display:flex;align-items:center;gap:1rem}
+    .theme-toggle,.lang-toggle,.menu-toggle{width:45px;height:45px;border:none;border-radius:12px;background:var(--bg-secondary);color:var(--text-primary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem;transition:all .3s ease;box-shadow:var(--shadow-light)}
+    .theme-toggle:hover,.lang-toggle:hover,.menu-toggle:hover{transform:translateY(-2px);box-shadow:var(--shadow-medium)}
+    .menu-toggle:active{transform:scale(0.95)}
+    .menu-toggle.active{background:var(--primary-color);color:#fff}
+
+    .sidebar{position:fixed;top:70px;left:-var(--sidebar-width);width:var(--sidebar-width);height:calc(100vh - 70px);background:var(--bg-secondary);border-right:1px solid var(--border-color);z-index:1001;transition:all .4s cubic-bezier(0.25, 0.46, 0.45, 0.94);display:flex;flex-direction:column;box-shadow:var(--shadow-medium);opacity:0;visibility:hidden;transform:translateX(-20px)}
+    .sidebar.active{left:0;opacity:1;visibility:visible;transform:translateX(0)}
+    .sidebar.mobile-active{left:0;opacity:1;visibility:visible;transform:translateX(0)}
+    
+    .sidebar-header{padding:1.5rem;border-bottom:1px solid var(--border-color);background:var(--bg-primary);transform:translateY(-20px);opacity:0;transition:all .3s cubic-bezier(0.25, 0.46, 0.45, 0.94)}
+    .sidebar.active .sidebar-header, .sidebar.mobile-active .sidebar-header{transform:translateY(0);opacity:1;transition-delay:0.05s}
+    .sidebar-user{display:flex;align-items:center;gap:1rem}
+    .sidebar-avatar{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.5rem;flex-shrink:0;overflow:hidden;transition:transform .2s ease}
+    .sidebar-user:hover .sidebar-avatar{transform:scale(1.05)}
+    .sidebar-user-info{overflow:hidden}
+    .sidebar-user-info h4{font-size:1.1rem;margin-bottom:.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sidebar-user-info p{font-size:.9rem;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-secondary)}
+    
+    .sidebar-nav{padding:1rem 0;flex-grow:1;overflow-y:auto}
+    .nav-item{display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;color:var(--text-primary);text-decoration:none;font-weight:500;transition:all .3s cubic-bezier(0.25, 0.46, 0.45, 0.94);border:none;background:none;width:100%;text-align:left;cursor:pointer;border-left:4px solid transparent;transform:translateX(-20px);opacity:0}
+    .sidebar.active .nav-item, .sidebar.mobile-active .nav-item{transform:translateX(0);opacity:1}
+    .sidebar.active .nav-item:nth-child(1), .sidebar.mobile-active .nav-item:nth-child(1){transition-delay:0.1s}
+    .sidebar.active .nav-item:nth-child(2), .sidebar.mobile-active .nav-item:nth-child(2){transition-delay:0.15s}
+    .sidebar.active .nav-item:nth-child(3), .sidebar.mobile-active .nav-item:nth-child(3){transition-delay:0.2s}
+    .sidebar.active .nav-item:nth-child(4), .sidebar.mobile-active .nav-item:nth-child(4){transition-delay:0.25s}
+    .sidebar.active .nav-item:nth-child(5), .sidebar.mobile-active .nav-item:nth-child(5){transition-delay:0.3s}
+    .nav-item:hover{background:var(--bg-tertiary);color:var(--primary-color);border-left-color:var(--primary-color);transform:translateX(8px)}
+    .nav-item.active{background:var(--primary-color);color:#fff;border-left-color:var(--accent-color);font-weight:600;transform:translateX(8px)}
+    .nav-icon{font-size:1.2rem;width:24px;text-align:center;transition:transform .2s ease}
+    .nav-item:hover .nav-icon{transform:scale(1.1)}
+    
+    .sidebar-footer{padding:1.5rem;border-top:1px solid var(--border-color);transform:translateY(20px);opacity:0;transition:all .3s cubic-bezier(0.25, 0.46, 0.45, 0.94)}
+    .sidebar.active .sidebar-footer, .sidebar.mobile-active .sidebar-footer{transform:translateY(0);opacity:1;transition-delay:0.35s}
+
+    .main-container{min-height:100vh;padding-top:70px;transition:margin-left .3s ease,margin-right .3s ease}
+    .main-container.with-sidebar{margin-left:var(--sidebar-width)}
+    .content{padding:2rem 3rem}
+
+    .sidebar-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;opacity:0;visibility:hidden;transition:all .4s cubic-bezier(0.25, 0.46, 0.45, 0.94);backdrop-filter:blur(2px)}
+    .sidebar-overlay.active{opacity:1;visibility:visible}
+
+    .screen{display:none;animation:fadeIn .5s ease-in-out}
+    .screen.active{display:block}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    .title{font-size:3rem;text-align:center;margin-bottom:1rem;background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .subtitle{font-size:1.2rem;color:var(--text-secondary);text-align:center;margin-bottom:1rem;line-height:1.6}
+    .page-title{font-size:2.5rem;font-weight:700;margin-bottom:2rem;color:var(--text-primary)}
+
+    .form-section{max-width:600px;margin:0 auto;background:var(--bg-secondary);padding:3rem;border-radius:24px;box-shadow:var(--shadow-medium)}
+    .form-group{margin-bottom:2rem}
+    .form-label{display:block;font-size:1.1rem;font-weight:600;color:var(--text-primary);margin-bottom:.75rem}
+    .form-input{width:100%;padding:1rem 1.25rem;border:2px solid var(--border-color);border-radius:16px;font-size:1.1rem;background:var(--bg-tertiary);color:var(--text-primary);transition:all .3s ease}
+    .form-input:focus{outline:none;border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(102,126,234,.2)}
+
+    .chapters-container{background:var(--bg-secondary);border-radius:16px;padding:1.5rem;margin-top:1rem;border:2px solid var(--border-color)}
+    .chapters-tabs{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;border-bottom:2px solid var(--border-color);padding-bottom:1rem}
+    .chapter-tab{background:var(--bg-tertiary);border:none;padding:.75rem 1.25rem;border-radius:8px 8px 0 0;cursor:pointer;font-weight:500;transition:all .2s ease;font-size:.9rem;position:relative}
+    .chapter-tab:hover{background:var(--primary-color);color:#fff}
+    .chapter-tab.active{background:var(--primary-color);color:#fff;box-shadow:var(--shadow-light)}
+    .chapter-tab-badge{position:absolute;top:-8px;right:-8px;background:var(--accent-color);color:#fff;border-radius:10px;padding:.15rem .4rem;font-size:.7rem;font-weight:600;min-width:16px;text-align:center}
+    
+    .chapter-content{display:none}
+    .chapter-content.active{display:block}
+    .units-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;margin-bottom:1rem}
+    @media(max-width:768px){.units-grid{grid-template-columns:1fr}}
+    .unit-card{background:var(--bg-tertiary);border-radius:8px;padding:.75rem;cursor:pointer;transition:all .2s ease;border:2px solid transparent}
+    .unit-card:hover{background:var(--primary-color);color:#fff;transform:translateY(-1px);box-shadow:var(--shadow-light)}
+    .unit-card.selected{background:var(--primary-color);color:#fff;border-color:var(--accent-color);box-shadow:var(--shadow-medium)}
+    .unit-id{font-weight:600;font-size:.9rem;margin-bottom:.25rem}
+    .unit-title{font-size:.85rem;line-height:1.3;opacity:.9}
+    
+    .chapter-summary{background:var(--bg-tertiary);border-radius:8px;padding:1rem;margin-bottom:1rem;text-align:center}
+    .chapter-controls{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+    .chapter-controls .btn{font-size:.85rem;padding:.5rem 1rem}
+
+    .study-focus-display{background:var(--bg-secondary);border-radius:12px;padding:1rem;margin-bottom:1rem;border-left:4px solid var(--primary-color)}
+    .focus-header{font-weight:600;font-size:1rem;color:var(--text-primary);margin-bottom:.5rem}
+    .participants-study-list{max-height:150px;overflow-y:auto}
+    .participant-study-item{display:flex;align-items:center;gap:.75rem;padding:.5rem;margin:.25rem 0;border-radius:8px;background:var(--bg-tertiary);font-size:.9rem}
+    .participant-study-avatar{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:.8rem;flex-shrink:0}
+    .participant-study-info{flex:1}
+    .participant-study-name{font-weight:500;margin-bottom:.25rem}
+    .participant-study-units{font-size:.8rem;color:var(--text-secondary);display:flex;flex-wrap:wrap;gap:.25rem}
+    .study-unit-badge{background:var(--primary-color);color:#fff;padding:.1rem .4rem;border-radius:10px;font-size:.7rem}
+
+    .study-session-card{background:var(--bg-secondary);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;border-left:4px solid var(--primary-color);box-shadow:var(--shadow-light);transition:all .3s ease}
+    .study-session-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-medium)}
+    .study-session-subject{font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:1rem;display:flex;align-items:center;gap:.75rem}
+    .study-session-subject-icon{width:40px;height:40px;background:var(--primary-gradient);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+    .study-participants{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+    .study-participant-card{background:var(--bg-tertiary);border-radius:12px;padding:1rem;transition:all .2s ease}
+    .study-participant-card:hover{background:var(--bg-primary);transform:translateY(-1px)}
+    .study-participant-header{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+    .study-participant-avatar{width:35px;height:35px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:.9rem;flex-shrink:0}
+    .study-participant-name{font-weight:600;color:var(--text-primary)}
+    .study-chapters-grid{display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:1rem}
+    .study-chapter-badge{background:var(--accent-color);color:#fff;padding:.4rem .8rem;border-radius:8px;font-size:.85rem;font-weight:500}
+    .study-units-list{display:flex;flex-wrap:wrap;gap:.4rem}
+    .study-unit-small{background:var(--primary-color);color:#fff;padding:.2rem .5rem;border-radius:6px;font-size:.75rem}
+
+    .tab-badge{position:absolute;top:-5px;right:-5px;background:var(--error-color);color:#fff;border-radius:10px;padding:.15rem .4rem;font-size:.7rem;font-weight:600;min-width:18px;text-align:center}
+    .tab{position:relative}
+
+    .avatar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(60px,1fr));gap:1rem}
+    .avatar-choice{width:100%;aspect-ratio:1/1;border-radius:20px;border:3px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.8rem;transition:all .3s ease;overflow:hidden}
+    .avatar-choice.selected{border-color:var(--accent-color);transform:scale(1.08);box-shadow:0 0 0 4px rgba(79,70,229,.2)}
+
+    .btn{background:var(--primary-gradient);color:#fff;border:none;padding:1rem 2rem;border-radius:16px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all .3s ease;box-shadow:var(--shadow-light)}
+    .btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-medium)}
+    .btn-secondary{background:var(--bg-tertiary);color:var(--text-primary);border:2px solid var(--border-color)}
+    .btn-block{width:100%;display:block;text-align:center}
+    .btn-small{padding:.75rem 1.25rem;font-size:.95rem}
+
+    .main-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem}
+    .action-card{background:var(--bg-secondary);border:2px solid var(--border-color);border-radius:24px;padding:3rem 2rem;text-align:center;cursor:pointer;transition:all .3s ease}
+    .action-card:hover{transform:translateY(-8px);box-shadow:var(--shadow-heavy);border-color:var(--primary-color)}
+    .action-icon{font-size:4rem;margin-bottom:1.5rem}
+
+    .chat-box{border:2px solid var(--border-color);border-radius:20px;min-height:400px;display:flex;flex-direction:column;background:var(--bg-tertiary)}
+    .chat-messages{flex:1;padding:1.5rem;overflow-y:auto;background:var(--bg-secondary)}
+    .chat-message{max-width:80%;margin-bottom:1rem;padding:1rem 1.25rem;border-radius:16px;background:var(--bg-tertiary);box-shadow:var(--shadow-light);word-wrap:break-word}
+    .chat-message.own{background:var(--primary-color);color:#fff;margin-left:auto}
+    .chat-input-area{display:flex;padding:1.5rem;border-top:1px solid var(--border-color);gap:1rem}
+    .chat-input{flex:1;padding:1rem 1.25rem;border:1px solid var(--border-color);border-radius:25px;background:var(--bg-secondary)}
+
+    .connection-status{position:fixed;bottom:20px;right:20px;padding:0.5rem 1rem;border-radius:20px;font-size:0.9rem;z-index:1002;transition:all 0.3s ease}
+    .connection-status.connected{background:#10b981;color:#fff}
+    .connection-status.disconnected{background:#ef4444;color:#fff}
+    .connection-status.connecting{background:#f59e0b;color:#fff}
+
+    .tabs{display:flex;gap:.5rem;margin-bottom:1rem}
+    .tab{border:none;padding:.7rem 1rem;border-radius:12px;background:var(--bg-tertiary);cursor:pointer}
+    .tab.active{background:var(--primary-color);color:#fff}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+
+    .toast{position:fixed;top:90px;right:20px;min-width:240px;background:var(--bg-secondary);border:1px solid var(--border-color);box-shadow:var(--shadow-medium);border-radius:12px;padding:.9rem 1rem;z-index:1003;display:flex;gap:.8rem;align-items:flex-start;animation:slideInRight .4s ease-out}
+    .toast .title{font-size:1rem;margin:0;background:none;-webkit-text-fill-color:unset}
+    .toast .msg{color:var(--text-secondary);font-size:.95rem}
+    .toast.success{border-left:5px solid var(--success-color)}
+    .toast.error{border-left:5px solid var(--error-color)}
+    .toast.info{border-left:5px solid var(--primary-color)}
+    @keyframes slideInRight{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+    @media (max-width:1024px){
+      .main-container.with-sidebar{margin-left:0}
+      .sidebar{box-shadow:var(--shadow-heavy);top:0;height:100vh}
+      .sidebar.mobile-active{left:0}
+      [dir=rtl] .sidebar{top:0}
+    }
+    @media (max-width:768px){
+      .header{padding:0 1rem}
+      .content{padding:2rem 1.5rem}
+      .title{font-size:2.5rem}
+      .page-title{font-size:2rem}
+      .form-section{padding:2rem}
     }
 
-    [data-theme="dark"] {
-      --bg-light: #0f172a;
-      --bg-card: #1e293b;
-      --text-primary: #f1f5f9;
-      --text-secondary: #cbd5e1;
-      --border: #334155;
-    }
+    [dir=rtl] .sidebar{left:auto;right:-var(--sidebar-width);border-right:none;border-left:1px solid var(--border-color);top:70px;transform:translateX(20px)}
+    [dir=rtl] .sidebar.active,[dir=rtl] .sidebar.mobile-active{right:0;transform:translateX(0)}
+    [dir=rtl] .main-container.with-sidebar{margin-left:0;margin-right:var(--sidebar-width)}
+    [dir=rtl] .header.with-sidebar{margin-left:0;margin-right:var(--sidebar-width)}
+    [dir=rtl] .nav-item{border-left:none;border-right:4px solid transparent}
+    [dir=rtl] .nav-item:hover,[dir=rtl] .nav-item.active{border-right-color:var(--primary-color);transform:translateX(-8px)}
+    [dir=rtl] .chat-message.own{margin-left:0;margin-right:auto}
+    [dir=rtl] .toast{left:20px;right:auto}
+    [dir=rtl] .ltr-arrow{transform:scaleX(-1)}
+    [dir=rtl] .connection-status{left:20px;right:auto}
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    /* ===== Segmented & animated progress bar ===== */
+    #timer-progress-container{
+      position: relative;
+      overflow: hidden;
+      background-color: var(--bg-tertiary);
+      background-image: repeating-linear-gradient(
+        to right,
+        var(--bg-tertiary) 0 10px,
+        transparent 10px 12px
+      );
     }
-
-    body {
-      font-family: 'Inter', 'Tajawal', sans-serif;
-      background: var(--bg-light);
-      color: var(--text-primary);
-      transition: all 0.3s ease;
+    #timer-progress-bar{
+      height:100%;
+      width:100%;
+      transition:width 1s linear;
+      border-radius:4px;
+      background-image:
+        repeating-linear-gradient(
+          45deg,
+          rgba(255,255,255,.25) 0 8px,
+          rgba(255,255,255,0) 8px 16px
+        ),
+        var(--primary-gradient);
+      background-size:auto, 100% 100%;
+      background-blend-mode:overlay;
     }
-
-    body[dir="rtl"] {
-      font-family: 'Tajawal', 'Inter', sans-serif;
+    #timer-progress-bar.running{
+      animation: stripesMove 2s linear infinite;
     }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-      padding: 1rem 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .controls {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .btn:hover {
-      background: var(--primary-dark);
-      transform: translateY(-1px);
-    }
-
-    .btn-secondary {
-      background: var(--bg-card);
-      color: var(--text-primary);
-      border: 1px solid var(--border);
-    }
-
-    .btn-small {
-      padding: 0.5rem 1rem;
-      font-size: 0.9rem;
-    }
-
-    .card {
-      background: var(--bg-card);
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-      margin-bottom: 1.5rem;
-    }
-
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-
-    .form-label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: var(--text-primary);
-    }
-
-    .form-input {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 1rem;
-      background: var(--bg-light);
-      color: var(--text-primary);
-    }
-
-    .form-input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .screen {
-      display: none;
-    }
-
-    .screen.active {
-      display: block;
-    }
-
-    .avatar-grid {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 0.5rem;
-    }
-
-    .avatar-choice {
-      aspect-ratio: 1;
-      border-radius: 8px;
-      border: 2px solid transparent;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .avatar-choice.selected {
-      border-color: var(--primary);
-      transform: scale(1.1);
-    }
-
-    .participants-list {
-      display: grid;
-      gap: 1rem;
-    }
-
-    .participant-card {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem;
-      background: var(--bg-light);
-      border-radius: 8px;
-      border: 1px solid var(--border);
-    }
-
-    .participant-info {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .participant-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 700;
-    }
-
-    .timer-display {
-      font-size: 4rem;
-      font-weight: 700;
-      text-align: center;
-      margin: 2rem 0;
-      color: var(--primary);
-    }
-
-    .timer-controls {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin: 2rem 0;
-    }
-
-    .subject-selector {
-      background: var(--bg-light);
-      padding: 1.5rem;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      margin-bottom: 1rem;
-    }
-
-    .chapters-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .chapter-card {
-      background: var(--bg-card);
-      padding: 1rem;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .chapter-card:hover {
-      border-color: var(--primary);
-      transform: translateY(-2px);
-    }
-
-    .chapter-card.selected {
-      border-color: var(--primary);
-      background: rgba(102, 126, 234, 0.1);
-    }
-
-    .toast {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: var(--bg-card);
-      padding: 1rem 1.5rem;
-      border-radius: 8px;
-      box-shadow: var(--shadow);
-      border-left: 4px solid var(--success);
-      z-index: 1000;
-      animation: slideIn 0.3s ease;
-    }
-
-    .toast.error {
-      border-left-color: var(--error);
-    }
-
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    .study-focus-card {
-      background: var(--bg-light);
-      padding: 1.5rem;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      margin-bottom: 1rem;
-    }
-
-    .study-focus-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .units-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-
-    .unit-badge {
-      background: var(--primary);
-      color: white;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      font-size: 0.8rem;
-    }
-
-    @media (max-width: 768px) {
-      .container {
-        padding: 1rem;
-      }
-      
-      .timer-display {
-        font-size: 3rem;
-      }
-      
-      .grid {
-        grid-template-columns: 1fr;
-      }
+    @keyframes stripesMove {
+      from { background-position: 0 0, 0 0; }
+      to   { background-position: 32px 0, 0 0; }
     }
   </style>
 </head>
 <body data-theme="light">
-  <div class="container">
-    <!-- Header -->
-    <div class="header">
-      <div class="logo">
-        <span>📚</span>
-        <span id="app-title">Study Partner</span>
-      </div>
-      <div class="controls">
-        <button class="btn btn-secondary btn-small" onclick="toggleTheme()">
-          <span id="theme-icon">🌙</span>
-        </button>
-        <button class="btn btn-secondary btn-small" onclick="toggleLanguage()">
-          <span id="lang-icon">ع</span>
-        </button>
+  <!-- overlay for mobile -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar(false)"></div>
+
+  <!-- Connection Status -->
+  <div id="connection-status" class="connection-status connecting" style="display:none;">
+    <span id="connection-text">Connecting...</span>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar" style="display:none;">
+    <div class="sidebar-header">
+      <div class="sidebar-user">
+        <div id="sidebar-avatar" class="sidebar-avatar">S</div>
+        <div class="sidebar-user-info">
+          <h4 id="sidebar-user-name">Student</h4>
+          <p id="sidebar-user-grade">Grade & Subject</p>
+        </div>
       </div>
     </div>
-
-    <!-- Registration Screen -->
-    <div id="registration-screen" class="screen active">
-      <div class="card" style="max-width: 500px; margin: 0 auto;">
-        <h1 style="text-align: center; margin-bottom: 2rem;" id="welcome-title">Welcome to Study Partner</h1>
-        
-        <div class="form-group">
-          <label class="form-label" id="name-label">Your Name</label>
-          <input type="text" id="student-name" class="form-input" placeholder="Enter your name">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" id="avatar-label">Choose Avatar Color</label>
-          <div class="avatar-grid">
-            <div class="avatar-choice selected" data-color="#667eea" style="background:#667eea">A</div>
-            <div class="avatar-choice" data-color="#dc2626" style="background:#dc2626">A</div>
-            <div class="avatar-choice" data-color="#16a34a" style="background:#16a34a">A</div>
-            <div class="avatar-choice" data-color="#ea580c" style="background:#ea580c">A</div>
-            <div class="avatar-choice" data-color="#7c3aed" style="background:#7c3aed">A</div>
-            <div class="avatar-choice" data-color="#1f2937" style="background:#1f2937">A</div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" id="grade-label">Select Grade</label>
-          <select id="grade-select" class="form-input">
-            <option value="">-- Select Grade --</option>
-            <option value="10">Grade 10</option>
-            <option value="11">Grade 11</option>
-            <option value="12">Grade 12</option>
-          </select>
-        </div>
-
-        <button class="btn" style="width: 100%;" onclick="completeRegistration()" id="join-btn">Join Platform</button>
-      </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item" data-screen="home-screen" onclick="navigateToScreen('home-screen')"><span class="nav-icon">ðŸ </span><span data-translate="home">Home</span></button>
+      <button class="nav-item" data-screen="study-rooms-screen" onclick="navigateToScreen('study-rooms-screen')"><span class="nav-icon">ðŸ‘¥</span><span data-translate="studyRooms">Study Rooms</span></button>
+      <button class="nav-item" data-screen="library-screen" onclick="navigateToScreen('library-screen')"><span class="nav-icon">ðŸ“š</span><span data-translate="digitalLibrary">Digital Library</span></button>
+      <button class="nav-item" data-screen="about-screen" onclick="navigateToScreen('about-screen')"><span class="nav-icon">â„¹ï¸</span><span data-translate="about">About</span></button>
+      <button class="nav-item" data-screen="settings-screen" onclick="navigateToScreen('settings-screen')"><span class="nav-icon">âš™ï¸</span><span data-translate="settings">Settings</span></button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn btn-secondary btn-block" onclick="logout()" data-translate="logout">Logout</button>
     </div>
+  </div>
 
-    <!-- Main App Screen -->
-    <div id="main-screen" class="screen">
-      <!-- Navigation -->
-      <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
-        <button class="btn btn-secondary" onclick="showScreen('home')" id="nav-home">Home</button>
-        <button class="btn btn-secondary" onclick="showScreen('rooms')" id="nav-rooms">Study Rooms</button>
-        <button class="btn btn-secondary" onclick="logout()" id="nav-logout">Logout</button>
-      </div>
+  <!-- Header -->
+  <header class="header" id="header" style="display:none;">
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <button class="menu-toggle" id="menu-toggle" data-translate-title="toggleSidebar" title="Toggle sidebar" onclick="toggleSidebar()"><span>â˜°</span></button>
+      <div class="logo"><div class="logo-icon">ðŸ“š</div><span data-translate="appName">Study Partner</span></div>
+    </div>
+    <div class="header-controls">
+      <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">ðŸŒ™</span></button>
+      <button class="lang-toggle" onclick="toggleLanguage()"><span id="lang-icon">Ø¹</span></button>
+    </div>
+  </header>
 
-      <!-- Home View -->
-      <div id="home-view" class="view active">
-        <div class="grid">
-          <div class="card" style="text-align: center; cursor: pointer;" onclick="showScreen('rooms')">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🏫</div>
-            <h3 id="rooms-title">Study Rooms</h3>
-            <p id="rooms-desc">Join or create study rooms</p>
-          </div>
-          <div class="card" style="text-align: center;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
-            <h3 id="library-title">Digital Library</h3>
-            <p id="library-desc">Coming soon!</p>
-          </div>
+  <!-- Main -->
+  <div class="main-container" id="main-container">
+    <div class="content">
+      <!-- Registration -->
+      <div id="registration-screen" class="screen active">
+        <!-- Quick controls visible before login -->
+        <div class="header-controls" style="justify-content:flex-end;margin-bottom:1rem;">
+          <button class="theme-toggle" onclick="toggleTheme()" title="Theme"><span id="reg-theme-icon">ðŸŒ™</span></button>
+          <button class="lang-toggle" onclick="toggleLanguage()" title="Language"><span id="reg-lang-icon">Ø¹</span></button>
         </div>
-      </div>
 
-      <!-- Rooms View -->
-      <div id="rooms-view" class="view">
-        <div class="grid">
-          <div class="card" style="text-align: center; cursor: pointer;" onclick="createRoom()">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">➕</div>
-            <h3 id="create-title">Create Room</h3>
-            <p id="create-desc">Start a new study session</p>
-            <button class="btn" id="create-btn">Create Now</button>
+        <h1 class="title" data-translate="welcome">Welcome to Study Partner</h1>
+        <p class="subtitle" data-translate="welcomeDesc">Create your profile to start</p>
+        <div class="form-section">
+          <div class="form-group">
+            <label class="form-label" data-translate="yourName">Your Name</label>
+            <input type="text" id="student-name" class="form-input" placeholder="Enter your full name">
           </div>
-          <div class="card" style="text-align: center;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🚪</div>
-            <h3 id="join-title">Join Room</h3>
-            <p id="join-desc">Enter a room code</p>
-            <div style="margin-top: 1rem;">
-              <input type="text" id="room-code-input" class="form-input" placeholder="Room Code" style="text-align: center; text-transform: uppercase; margin-bottom: 1rem;" maxlength="6">
-              <button class="btn" onclick="joinRoom()" id="join-btn-action">Join Room</button>
+
+          <div class="form-group">
+            <label class="form-label" data-translate="chooseAvatar">Choose Avatar Color</label>
+            <div class="avatar-grid" id="avatar-grid">
+              <div class="avatar-choice selected" data-color="#667eea" style="background:#667eea">A</div>
+              <div class="avatar-choice" data-color="#dc2626" style="background:#dc2626">A</div>
+              <div class="avatar-choice" data-color="#16a34a" style="background:#16a34a">A</div>
+              <div class="avatar-choice" data-color="#ea580c" style="background:#ea580c">A</div>
+              <div class="avatar-choice" data-color="#7c3aed" style="background:#7c3aed">A</div>
+              <div class="avatar-choice" data-color="#1f2937" style="background:#1f2937">A</div>
             </div>
           </div>
+
+          <div class="form-group">
+            <label class="form-label" data-translate="selectGrade">Select Grade</label>
+            <select id="grade-select" class="form-input"></select>
+          </div>
+
+          <button class="btn btn-block" onclick="completeRegistration()" data-translate="joinPlatform">Join Platform</button>
         </div>
       </div>
 
-      <!-- Room View -->
-      <div id="room-view" class="view">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-          <h2 id="room-title">Study Room</h2>
-          <button class="btn btn-secondary" onclick="leaveRoom()" id="leave-btn">Leave Room</button>
-        </div>
-
-        <!-- Room Info -->
-        <div class="card">
-          <div style="display: flex; gap: 2rem; align-items: center; flex-wrap: wrap;">
-            <div>
-              <div style="font-size: 0.9rem; color: var(--text-secondary);" id="code-label">Room Code</div>
-              <div id="current-room-code" style="font-size: 2rem; font-weight: 700; color: var(--primary);">------</div>
-            </div>
-            <button class="btn btn-small" onclick="copyRoomCode()" id="copy-btn">Copy Code</button>
+      <div id="home-screen" class="screen">
+        <h1 class="page-title" data-translate="dashboard">Dashboard</h1>
+        <div class="main-actions">
+          <div class="action-card" onclick="navigateToScreen('study-rooms-screen')">
+            <div class="action-icon">ðŸ«</div>
+            <h3 data-translate="studyRooms">Study Rooms</h3>
+            <p data-translate="joinOrCreateRooms">Join or create virtual study rooms</p>
+            <button class="btn" data-translate="enterRooms">Enter Rooms</button>
+          </div>
+          <div class="action-card" onclick="navigateToScreen('library-screen')">
+            <div class="action-icon">ðŸ“š</div>
+            <h3 data-translate="digitalLibrary">Digital Library</h3>
+            <p data-translate="accessStudyMaterials">Access study materials and resources</p>
+            <button class="btn btn-secondary" data-translate="browse">Browse</button>
           </div>
         </div>
+      </div>
 
-        <!-- Study Focus Selection -->
-        <div class="card">
-          <h3 style="margin-bottom: 1rem;" id="focus-title">Study Focus</h3>
-          <div class="subject-selector">
-            <div class="form-group">
-              <label class="form-label" id="subject-label">Subject</label>
-              <select id="room-subject-select" class="form-input" onchange="updateStudyFocus()">
-                <option value="">-- Select Subject --</option>
-              </select>
+      <div id="study-rooms-screen" class="screen">
+        <h1 class="page-title" data-translate="studyRooms">Study Rooms</h1>
+        <div class="main-actions">
+          <div class="action-card" onclick="createRoom()">
+            <div class="action-icon">âž•</div>
+            <h3 data-translate="createRoom">Create Room</h3>
+            <p data-translate="startNewSession">Start a new study session</p>
+            <button class="btn" data-translate="createNow">Create Now</button>
+          </div>
+          <div class="action-card" onclick="showJoinForm()">
+            <div class="action-icon">ðŸšª</div>
+            <h3 data-translate="joinRoom">Join Room</h3>
+            <p data-translate="enterRoomCodeToJoin">Enter a room code to join</p>
+            <button class="btn btn-secondary" data-translate="joinNow">Join Now</button>
+          </div>
+        </div>
+        <div id="join-form" style="display:none;max-width:400px;margin:2rem auto;padding:2rem;background:var(--bg-secondary);border-radius:20px;">
+          <label class="form-label" data-translate="enterRoomCode">Enter Room Code</label>
+          <input type="text" id="room-code-input" class="form-input" style="text-align:center;text-transform:uppercase" placeholder="XXXXXX" maxlength="6">
+          <button class="btn btn-block" onclick="joinRoom()" data-translate="joinRoom">Join Room</button>
+        </div>
+      </div>
+
+      <div id="room-screen" class="screen">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+          <h1 class="page-title" style="margin:0" data-translate="studyRoom">Study Room</h1>
+          <button class="btn btn-secondary btn-small" onclick="leaveRoom()">
+            <span class="ltr-arrow">â†</span> <span data-translate="leaveRoom">Leave Room</span>
+          </button>
+        </div>
+
+        <div style="background:var(--bg-secondary);padding:1rem 1.25rem;border-radius:16px;margin-bottom:1.25rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+          <div>
+            <div style="font-size:.9rem;color:var(--text-secondary)" data-translate="roomCode">Room Code</div>
+            <div id="current-room-code" style="font-size:1.5rem;font-weight:700;color:var(--primary-color)">------</div>
+          </div>
+          <div style="display:flex;gap:.5rem;margin-left:auto;flex-wrap:wrap">
+            <button class="btn btn-small" onclick="copyRoomCode()" data-translate="copyCode">Copy Code</button>
+            <button class="btn btn-secondary btn-small" onclick="shareRoom()" data-translate="shareLink">Share Link</button>
+          </div>
+          <div style="flex-basis:100%;height:0"></div>
+          <div style="display:flex;gap:.75rem;align-items:center">
+            <label class="form-label" style="margin:0" data-translate="subject">Subject</label>
+            <select id="room-subject-select" class="form-input" style="width:auto;min-width:260px" onchange="onRoomSubjectChange()"></select>
+            <button class="btn btn-small" onclick="saveRoomSubject()" data-translate="save">Save</button>
+          </div>
+          
+          <!-- Chapter and Unit Selector -->
+          <div id="chapter-unit-selector" style="display:none;margin-top:1rem">
+            <div class="form-label" style="margin-bottom:1rem">
+              <span data-translate="selectChaptersUnits">Select Chapters & Units</span>
             </div>
-            <div id="chapters-section" style="display: none;">
-              <label class="form-label" id="chapters-label">Chapters</label>
-              <div id="chapters-grid" class="chapters-grid"></div>
-              <div style="margin-top: 1rem; text-align: center;">
-                <span id="selected-count">0 chapters selected</span>
+            <div id="chapters-container" class="chapters-container">
+              <div id="chapters-tabs" class="chapters-tabs"></div>
+              <div id="chapters-content"></div>
+              <div id="selection-summary" class="chapter-summary" style="display:none">
+                <div style="font-size:.9rem;color:var(--text-secondary);margin-bottom:.5rem" data-translate="totalSelected">Total Selected</div>
+                <div id="total-units-count" style="font-size:1.2rem;font-weight:600;color:var(--primary-color)">0 units</div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Participants & Study Status -->
-        <div class="grid">
-          <div class="card">
-            <h3 style="margin-bottom: 1rem;" id="participants-title">Participants</h3>
-            <div id="participants-list" class="participants-list"></div>
-          </div>
+        <div class="tabs">
+          <button class="tab active" data-tab="participants">ðŸ‘¥ Participants</button>
+          <button class="tab" data-tab="study-focus">ðŸ“š <span data-translate="studyFocus">Study Focus</span></button>
+          <button class="tab" data-tab="timer">â±ï¸ Timer</button>
+        </div>
 
-          <div class="card">
-            <h3 style="margin-bottom: 1rem;" id="study-status-title">Study Status</h3>
-            <div id="study-status-list"></div>
+        <div id="participants-content" class="tab-content active">
+          <div id="participants-list"></div>
+        </div>
+
+        <!-- STUDY FOCUS TAB -->
+        <div id="study-focus-content" class="tab-content">
+          <div class="study-focus-header">
+            <h3 style="margin-bottom:1rem;color:var(--text-primary);display:flex;align-items:center;gap:.5rem">
+              ðŸ“š <span data-translate="roomStudyFocus">Room Study Focus</span>
+            </h3>
+            <p style="color:var(--text-secondary);margin-bottom:1.5rem;font-size:.95rem" data-translate="studyFocusDesc">
+              See what everyone in the room is currently studying. Select your own subject and chapters above to join the focus session.
+            </p>
+          </div>
+          
+          <!-- Active Study Sessions -->
+          <div id="active-study-sessions"></div>
+          
+          <!-- No Study Focus Message -->
+          <div id="no-study-focus" style="display:none;text-align:center;padding:2rem;background:var(--bg-tertiary);border-radius:12px;border:2px dashed var(--border-color)">
+            <div style="font-size:3rem;margin-bottom:1rem">ðŸ“–</div>
+            <h4 style="margin-bottom:.5rem;color:var(--text-primary)" data-translate="noActiveStudy">No Active Study Sessions</h4>
+            <p style="color:var(--text-secondary)" data-translate="noActiveStudyDesc">
+              Participants haven't selected their study topics yet. Choose your subject and chapters above to start a study session!
+            </p>
           </div>
         </div>
 
-        <!-- Timer -->
-        <div class="card" style="text-align: center;">
-          <h3 style="margin-bottom: 1rem;" id="timer-title">Study Timer</h3>
-          <div class="timer-display" id="timer-display">25:00</div>
-          <div class="timer-controls">
-            <button class="btn btn-small" onclick="setTimer(25)">25 min</button>
-            <button class="btn btn-small" onclick="setTimer(5)">5 min</button>
-            <button class="btn" onclick="startTimer()" id="start-timer">Start</button>
-            <button class="btn btn-secondary" onclick="resetTimer()" id="reset-timer">Reset</button>
+        <!-- TIMER PANEL -->
+        <div id="timer-content" class="tab-content" style="background:var(--bg-secondary);padding:2rem;border-radius:20px;text-align:center">
+          <!-- Quick presets -->
+          <div>
+            <button class="btn btn-small" data-timer="25">25 min Focus</button> 
+            <button class="btn btn-small" data-timer="5">5 min Break</button>
           </div>
+
+          <!-- Display -->
+          <div id="timer-display" style="font-size:4rem;font-weight:700;margin:2rem 0">25:00</div>
+          <div id="timer-progress-container" style="width:100%;height:8px;border-radius:4px;margin:1rem 0;overflow:hidden;">
+            <div id="timer-progress-bar"></div>
+          </div>
+          <div id="timer-status" style="font-size:1.2rem;color:var(--text-secondary);margin-bottom:1rem;"></div>
+
+          <!-- Controls -->
+          <div style="margin-bottom:1.5rem">
+            <button id="start-timer-btn" class="btn" onclick="startTimer()" data-translate="start">Start</button>
+            <button id="pause-timer-btn" class="btn btn-secondary" onclick="pauseTimer()" style="display:none;" data-translate="pause">Pause</button>
+            <button class="btn btn-secondary" onclick="resetTimer()" data-translate="reset">Reset</button>
+            <!-- End Session -->
+            <button class="btn btn-secondary" style="background:var(--error-color)" onclick="endSession()" data-translate="endSession">End Session</button>
+          </div>
+
+          <!-- Custom duration -->
+          <h3 data-translate="customTimer" style="margin-top:1rem;">Custom Timer</h3>
+          <div id="custom-duration" style="display:flex;gap:.75rem;align-items:flex-end;justify-content:center;margin:1rem 0;flex-wrap:wrap">
+            <div>
+              <label class="form-label" data-translate="hours">Hours</label>
+              <input type="number" id="custom-hours" class="form-input" min="0" value="0" style="width:110px">
+            </div>
+            <div>
+              <label class="form-label" data-translate="minutes">Minutes</label>
+              <input type="number" id="custom-minutes" class="form-input" min="0" value="25" style="width:110px">
+            </div>
+            <div>
+              <label class="form-label" data-translate="seconds">Seconds</label>
+              <input type="number" id="custom-seconds" class="form-input" min="0" value="0" style="width:110px">
+            </div>
+            <button class="btn btn-small" onclick="applyCustomDuration()" data-translate="setTimer">Set Timer</button>
+          </div>
+
+          <!-- Start / End scheduling -->
+          <h3 data-translate="startEndHeading" style="margin-top:1rem">Startâ€“End</h3>
+          <div id="start-end" style="display:flex;gap:.75rem;align-items:flex-end;justify-content:center;margin:1rem 0;flex-wrap:wrap">
+            <div>
+              <label class="form-label" data-translate="startTime">Start Time</label>
+              <input type="time" id="start-time-input" class="form-input" style="width:170px">
+            </div>
+            <div>
+              <label class="form-label" data-translate="endTime">End Time</label>
+              <input type="time" id="end-time-input" class="form-input" style="width:170px">
+            </div>
+            <button class="btn btn-small" onclick="applyStartEndTimer()" data-translate="setTimer">Set Timer</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="library-screen" class="screen">
+        <h1 class="page-title">Digital Library</h1>
+        <div style="text-align:center;padding:4rem 0">
+          ðŸš§<h3>Coming Soon!</h3><p>This feature is under development.</p>
+        </div>
+      </div>
+
+      <div id="about-screen" class="screen">
+        <h1 class="page-title">About Study Partner</h1>
+        <div style="max-width:800px;margin:0 auto;background:var(--bg-secondary);padding:3rem;border-radius:24px;box-shadow:var(--shadow-medium);text-align:center;">
+          <p style="font-size:1.4rem;color:var(--text-primary);margin-bottom:2rem;font-weight:600;" data-translate="aboutTitle">
+            Empowering Students Through Collaborative Learning
+          </p>
+          <p style="font-size:1.1rem;color:var(--text-secondary);line-height:1.8;margin-bottom:1.5rem;" data-translate="aboutDesc1">
+            Study Partner is a revolutionary platform designed to transform the way students learn and collaborate. Our mission is to break down the barriers of traditional studying by creating virtual spaces where students can connect, share knowledge, and achieve academic excellence together.
+          </p>
+          <p style="font-size:1.1rem;color:var(--text-secondary);line-height:1.8;margin-bottom:1.5rem;" data-translate="aboutDesc2">
+            Whether you're preparing for exams, working on group projects, or simply seeking study companions, Study Partner provides the tools and environment you need. From real-time chat rooms to collaborative timers and subject-specific spaces, we've built everything with one goal in mind: helping students succeed together.
+          </p>
+          <p style="font-size:1.1rem;color:var(--text-secondary);line-height:1.8;" data-translate="aboutDesc3">
+            Join thousands of students who have discovered the power of collaborative learning. Because when we study together, we succeed together.
+          </p>
+        </div>
+      </div>
+
+      <div id="settings-screen" class="screen">
+        <h1 class="page-title" data-translate="settings">Settings</h1>
+        <div style="max-width:700px;margin:0 auto;background:var(--bg-secondary);padding:2rem;border-radius:20px;">
+          <h3 data-translate="preferences">Preferences</h3>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin:1.5rem 0;">
+            <span data-translate="theme">Theme</span>
+            <button class="btn btn-secondary btn-small" onclick="toggleTheme()">
+              <span id="theme-text"></span>
+            </button>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span data-translate="language">Language</span>
+            <button class="btn btn-secondary btn-small" onclick="toggleLanguage()">
+              <span id="lang-text"></span>
+            </button>
+          </div>
+          <hr style="margin:2rem 0;border:none;border-top:1px solid var(--border-color)">
+          <h3 data-translate="personalInfo">Personal Information</h3>
+
+          <div class="form-group">
+            <label class="form-label" data-translate="nameLabel">Name</label>
+            <input type="text" id="settings-name-input" class="form-input" placeholder="Enter your name">
+          </div>
+
+          <!-- Grade shown in settings -->
+          <div class="form-group">
+            <label class="form-label" data-translate="gradeLabel">Grade</label>
+            <select id="settings-grade-select" class="form-input"></select>
+          </div>
+
+          <!-- Subject tied to grade -->
+          <div class="form-group">
+            <label class="form-label" data-translate="subjectLabel">Subject</label>
+            <select id="settings-subject-select" class="form-input"></select>
+          </div>
+
+          <button class="btn btn-block" onclick="savePersonalInfo()" data-translate="saveChanges">Save Changes</button>
         </div>
       </div>
     </div>
@@ -490,812 +555,1738 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Global state
-    let currentUser = null;
-    let currentRoom = null;
-    let currentLanguage = 'en';
-    let currentTheme = 'light';
-    let selectedColor = '#667eea';
-    let selectedChapters = new Set();
-    let supabase = null;
-    let timerInterval = null;
-    let timerSeconds = 1500;
-    let timerRunning = false;
-    let subscription = null;
-
-    // Translations
-    const translations = {
-      en: {
-        "app-title": "Study Partner",
-        "welcome-title": "Welcome to Study Partner",
-        "name-label": "Your Name",
-        "avatar-label": "Choose Avatar Color",
-        "grade-label": "Select Grade",
-        "join-btn": "Join Platform",
-        "nav-home": "Home",
-        "nav-rooms": "Study Rooms",
-        "nav-logout": "Logout",
-        "rooms-title": "Study Rooms",
-        "rooms-desc": "Join or create study rooms",
-        "library-title": "Digital Library",
-        "library-desc": "Coming soon!",
-        "create-title": "Create Room",
-        "create-desc": "Start a new study session",
-        "create-btn": "Create Now",
-        "join-title": "Join Room",
-        "join-desc": "Enter a room code",
-        "join-btn-action": "Join Room",
-        "room-title": "Study Room",
-        "leave-btn": "Leave Room",
-        "code-label": "Room Code",
-        "copy-btn": "Copy Code",
-        "focus-title": "Study Focus",
-        "subject-label": "Subject",
-        "chapters-label": "Chapters",
-        "participants-title": "Participants",
-        "study-status-title": "Study Status",
-        "timer-title": "Study Timer",
-        "start-timer": "Start",
-        "reset-timer": "Reset"
+    // -------- TRANSLATIONS & STATIC DATA --------
+    const translations={
+      en:{
+        home:"Home", dashboard:"Dashboard", studyRooms:"Study Rooms", digitalLibrary:"Digital Library",
+        about:"About", settings:"Settings", logout:"Logout", welcome:"Welcome",
+        welcomeDesc:"Create your profile to start", yourName:"Your Name",
+        chooseAvatar:"Choose Avatar Color", selectGrade:"Select Grade", joinPlatform:"Join Platform",
+        appName:"Study Partner", toggleSidebar:"Toggle Sidebar", menuToggle:"Menu",
+        copyCode:"Copy Code", shareLink:"Share Link", save:"Save", enterRooms:"Enter Rooms",
+        browse:"Browse", createNow:"Create Now", joinNow:"Join Now", joinRoom:"Join Room",
+        createRoom:"Create Room", enterRoomCode:"Enter Room Code", leaveRoom:"Leave Room",
+        roomCode:"Room Code", subject:"Subject", selectSubject:"Select Subject",
+        studyRoom:"Study Room", startNewSession:"Start a new study session",
+        enterRoomCodeToJoin:"Enter a room code to join",
+        joinOrCreateRooms:"Join or create virtual study rooms",
+        accessStudyMaterials:"Access study materials and resources",
+        aboutTitle:"Empowering Students Through Collaborative Learning",
+        aboutDesc1:"Study Partner is a revolutionary platform designed to transform the way students learn and collaborate. Our mission is to break down the barriers of traditional studying by creating virtual spaces where students can connect, share knowledge, and achieve academic excellence together.",
+        aboutDesc2:"Whether you're preparing for exams, working on group projects, or simply seeking study companions, Study Partner provides the tools and environment you need. From real-time chat rooms to collaborative timers and subject-specific spaces, we've built everything with one goal in mind: helping students succeed together.",
+        aboutDesc3:"Join thousands of students who have discovered the power of collaborative learning. Because when we study together, we succeed together.",
+        customTimer:"Custom Timer", startTime:"Start Time", endTime:"End Time", setTimer:"Set Timer",
+        hours:"Hours", minutes:"Minutes", seconds:"Seconds", customDuration:"Custom Duration",
+        start:"Start", pause:"Pause", reset:"Reset", startEndHeading:"Startâ€“End",
+        preferences:"Preferences", theme:"Theme", language:"Language",
+        personalInfo:"Personal Information", nameLabel:"Name", subjectLabel:"Subject", saveChanges:"Save Changes",
+        endSession:"End Session", gradeLabel:"Grade",
+        selectChaptersUnits:"Select Chapters & Units", chapter:"Chapter", unit:"Unit", 
+        unitsSelected:"units selected", selectAll:"Select All", deselectAll:"Deselect All",
+        currentStudyFocus:"Current Study Focus", studyingUnits:"studying units", noStudyFocus:"No specific study focus selected",
+        studyFocus:"Study Focus", roomStudyFocus:"Room Study Focus", studyFocusDesc:"See what everyone in the room is currently studying. Select your own subject and chapters above to join the focus session.",
+        noActiveStudy:"No Active Study Sessions", noActiveStudyDesc:"Participants haven't selected their study topics yet. Choose your subject and chapters above to start a study session!",
+        studyingChapters:"studying chapters", joinStudySession:"Join Study Session", totalSelected:"Total Selected"
       },
-      ar: {
-        "app-title": "شريك الدراسة",
-        "welcome-title": "مرحباً بك في شريك الدراسة",
-        "name-label": "اسمك",
-        "avatar-label": "اختر لون الصورة الرمزية",
-        "grade-label": "اختر الصف الدراسي",
-        "join-btn": "انضم للمنصة",
-        "nav-home": "الرئيسية",
-        "nav-rooms": "غرف الدراسة",
-        "nav-logout": "خروج",
-        "rooms-title": "غرف الدراسة",
-        "rooms-desc": "انضم أو أنشئ غرف دراسة",
-        "library-title": "المكتبة الرقمية",
-        "library-desc": "قريباً!",
-        "create-title": "إنشاء غرفة",
-        "create-desc": "ابدأ جلسة دراسة جديدة",
-        "create-btn": "إنشاء الآن",
-        "join-title": "انضم لغرفة",
-        "join-desc": "أدخل كود الغرفة",
-        "join-btn-action": "انضم للغرفة",
-        "room-title": "غرفة الدراسة",
-        "leave-btn": "مغادرة الغرفة",
-        "code-label": "كود الغرفة",
-        "copy-btn": "نسخ الكود",
-        "focus-title": "التركيز الدراسي",
-        "subject-label": "المادة",
-        "chapters-label": "الفصول",
-        "participants-title": "المشاركون",
-        "study-status-title": "حالة الدراسة",
-        "timer-title": "مؤقت الدراسة",
-        "start-timer": "بدء",
-        "reset-timer": "إعادة ضبط"
+      ar:{
+        home:"Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©", dashboard:"Ù„ÙˆØ­Ø© Ø§Ù„ØªØ­ÙƒÙ…", studyRooms:"ØºØ±Ù Ø§Ù„Ø¯Ø±Ø§Ø³Ø©",
+        digitalLibrary:"Ø§Ù„Ù…ÙƒØªØ¨Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©", about:"Ø­ÙˆÙ„", settings:"Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª",
+        logout:"Ø®Ø±ÙˆØ¬", welcome:"Ù…Ø±Ø­Ø¨Ø§Ù‹ Ø¨Ùƒ", welcomeDesc:"Ø£Ù†Ø´Ø¦ Ù…Ù„ÙÙƒ Ø§Ù„Ø´Ø®ØµÙŠ Ù„Ù„Ø¨Ø¯Ø¡",
+        yourName:"Ø§Ø³Ù…Ùƒ", chooseAvatar:"Ø§Ø®ØªØ± Ù„ÙˆÙ† Ø§Ù„ØµÙˆØ±Ø© Ø§Ù„Ø±Ù…Ø²ÙŠØ©",
+        selectGrade:"Ø§Ø®ØªØ± Ø§Ù„ØµÙ Ø§Ù„Ø¯Ø±Ø§Ø³ÙŠ", joinPlatform:"Ø§Ù†Ø¶Ù… Ù„Ù„Ù…Ù†ØµØ©",
+        appName:"Ø´Ø±ÙŠÙƒ Ø§Ù„Ø¯Ø±Ø§Ø³Ø©", toggleSidebar:"Ø¥Ø¸Ù‡Ø§Ø±/Ø¥Ø®ÙØ§Ø¡ Ø§Ù„Ø´Ø±ÙŠØ· Ø§Ù„Ø¬Ø§Ù†Ø¨ÙŠ",
+        menuToggle:"Ø§Ù„Ù‚Ø§Ø¦Ù…Ø©", copyCode:"Ù†Ø³Ø® Ø§Ù„ÙƒÙˆØ¯", shareLink:"Ù…Ø´Ø§Ø±ÙƒØ© Ø§Ù„Ø±Ø§Ø¨Ø·",
+        save:"Ø­ÙØ¸", enterRooms:"Ø¯Ø®ÙˆÙ„ Ø§Ù„ØºØ±Ù", browse:"ØªØµÙØ­", createNow:"Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ø¢Ù†",
+        joinNow:"Ø§Ù†Ø¶Ù…Ø§Ù… Ø§Ù„Ø¢Ù†", joinRoom:"Ø§Ù†Ø¶Ù… Ù„Ù„ØºØ±ÙØ©", createRoom:"Ø¥Ù†Ø´Ø§Ø¡ ØºØ±ÙØ©",
+        enterRoomCode:"Ø£Ø¯Ø®Ù„ ÙƒÙˆØ¯ Ø§Ù„ØºØ±ÙØ©", leaveRoom:"Ù…ØºØ§Ø¯Ø±Ø© Ø§Ù„ØºØ±ÙØ©",
+        roomCode:"ÙƒÙˆØ¯ Ø§Ù„ØºØ±ÙØ©", subject:"Ø§Ù„Ù…Ø§Ø¯Ø©", selectSubject:"Ø§Ø®ØªØ± Ø§Ù„Ù…Ø§Ø¯Ø©",
+        studyRoom:"ØºØ±ÙØ© Ø§Ù„Ø¯Ø±Ø§Ø³Ø©", startNewSession:"Ø§Ø¨Ø¯Ø£ Ø¬Ù„Ø³Ø© Ø¯Ø±Ø§Ø³Ø© Ø¬Ø¯ÙŠØ¯Ø©",
+        enterRoomCodeToJoin:"Ø£Ø¯Ø®Ù„ ÙƒÙˆØ¯ Ø§Ù„ØºØ±ÙØ© Ù„Ù„Ø§Ù†Ø¶Ù…Ø§Ù…",
+        joinOrCreateRooms:"Ø§Ù†Ø¶Ù… Ø£Ùˆ Ø£Ù†Ø´Ø¦ ØºØ±Ù Ø¯Ø±Ø§Ø³Ø© Ø§ÙØªØ±Ø§Ø¶ÙŠØ©",
+        accessStudyMaterials:"Ø§Ù„ÙˆØµÙˆÙ„ Ø¥Ù„Ù‰ Ù…ÙˆØ§Ø¯ ÙˆÙ…ØµØ§Ø¯Ø± Ø§Ù„Ø¯Ø±Ø§Ø³Ø©",
+        aboutTitle:"ØªÙ…ÙƒÙŠÙ† Ø§Ù„Ø·Ù„Ø§Ø¨ Ù…Ù† Ø®Ù„Ø§Ù„ Ø§Ù„ØªØ¹Ù„Ù… Ø§Ù„ØªØ¹Ø§ÙˆÙ†ÙŠ",
+        aboutDesc1:"Ø¯Ø±Ø§Ø³Ø© Ø´Ø±ÙŠÙƒ Ù‡ÙŠ Ù…Ù†ØµØ© Ø«ÙˆØ±ÙŠØ© Ù…ØµÙ…Ù…Ø© Ù„ØªØºÙŠÙŠØ± Ø·Ø±ÙŠÙ‚Ø© ØªØ¹Ù„Ù… ÙˆØªØ¹Ø§ÙˆÙ† Ø§Ù„Ø·Ù„Ø§Ø¨. Ù…Ù‡Ù…ØªÙ†Ø§ Ù‡ÙŠ ÙƒØ³Ø± Ø­ÙˆØ§Ø¬Ø² Ø§Ù„Ø¯Ø±Ø§Ø³Ø© Ø§Ù„ØªÙ‚Ù„ÙŠØ¯ÙŠØ© Ù…Ù† Ø®Ù„Ø§Ù„ Ø¥Ù†Ø´Ø§Ø¡ Ù…Ø³Ø§Ø­Ø§Øª Ø§ÙØªØ±Ø§Ø¶ÙŠØ© Ø­ÙŠØ« ÙŠÙ…ÙƒÙ† Ù„Ù„Ø·Ù„Ø§Ø¨ Ø§Ù„ØªÙˆØ§ØµÙ„ ÙˆÙ…Ø´Ø§Ø±ÙƒØ© Ø§Ù„Ù…Ø¹Ø±ÙØ© ÙˆØªØ­Ù‚ÙŠÙ‚ Ø§Ù„ØªÙ…ÙŠØ² Ø§Ù„Ø£ÙƒØ§Ø¯ÙŠÙ…ÙŠ Ù…Ø¹Ø§Ù‹.",
+        aboutDesc2:"Ø³ÙˆØ§Ø¡ ÙƒÙ†Øª ØªØ³ØªØ¹Ø¯ Ù„Ù„Ø§Ù…ØªØ­Ø§Ù†Ø§ØªØŒ Ø£Ùˆ ØªØ¹Ù…Ù„ Ø¹Ù„Ù‰ Ù…Ø´Ø§Ø±ÙŠØ¹ Ø¬Ù…Ø§Ø¹ÙŠØ©ØŒ Ø£Ùˆ ØªØ¨Ø­Ø« Ø¹Ù† Ø±ÙÙ‚Ø§Ø¡ Ø¯Ø±Ø§Ø³Ø©ØŒ ØªÙˆÙØ± Ø¯Ø±Ø§Ø³Ø© Ø´Ø±ÙŠÙƒ Ø§Ù„Ø£Ø¯ÙˆØ§Øª ÙˆØ§Ù„Ø¨ÙŠØ¦Ø© Ø§Ù„ØªÙŠ ØªØ­ØªØ§Ø¬Ù‡Ø§. Ù…Ù† ØºØ±Ù Ø§Ù„Ø¯Ø±Ø¯Ø´Ø© ÙÙŠ Ø§Ù„ÙˆÙ‚Øª Ø§Ù„ÙØ¹Ù„ÙŠ Ø¥Ù„Ù‰ Ø§Ù„Ù…Ø¤Ù‚ØªØ§Øª Ø§Ù„ØªØ¹Ø§ÙˆÙ†ÙŠØ© ÙˆØ§Ù„Ù…Ø³Ø§Ø­Ø§Øª Ø§Ù„Ø®Ø§ØµØ© Ø¨Ø§Ù„Ù…ÙˆØ§Ø¯ØŒ Ù„Ù‚Ø¯ Ø¨Ù†ÙŠÙ†Ø§ ÙƒÙ„ Ø´ÙŠØ¡ Ø¨Ù‡Ø¯Ù ÙˆØ§Ø­Ø¯: Ù…Ø³Ø§Ø¹Ø¯Ø© Ø§Ù„Ø·Ù„Ø§Ø¨ Ø¹Ù„Ù‰ Ø§Ù„Ù†Ø¬Ø§Ø­ Ù…Ø¹Ø§Ù‹.",
+        aboutDesc3:"Ø§Ù†Ø¶Ù… Ø¥Ù„Ù‰ Ø¢Ù„Ø§Ù Ø§Ù„Ø·Ù„Ø§Ø¨ Ø§Ù„Ø°ÙŠÙ† Ø§ÙƒØªØ´ÙÙˆØ§ Ù‚ÙˆØ© Ø§Ù„ØªØ¹Ù„Ù… Ø§Ù„ØªØ¹Ø§ÙˆÙ†ÙŠ. Ù„Ø£Ù†Ù‡ Ø¹Ù†Ø¯Ù…Ø§ Ù†Ø¯Ø±Ø³ Ù…Ø¹Ø§Ù‹ØŒ Ù†Ù†Ø¬Ø­ Ù…Ø¹Ø§Ù‹.",
+        customTimer:"Ù…Ø¤Ù‚Øª Ù…Ø®ØµØµ", startTime:"ÙˆÙ‚Øª Ø§Ù„Ø¨Ø¯Ø§ÙŠØ©", endTime:"ÙˆÙ‚Øª Ø§Ù„Ù†Ù‡Ø§ÙŠØ©", setTimer:"Ø¶Ø¨Ø· Ø§Ù„Ù…Ø¤Ù‚Øª",
+        hours:"Ø³Ø§Ø¹Ø§Øª", minutes:"Ø¯Ù‚Ø§Ø¦Ù‚", seconds:"Ø«ÙˆØ§Ù†ÙŠ", customDuration:"Ù…Ø¯Ø© Ù…Ø®ØµØµØ©",
+        start:"Ø¨Ø¯Ø¡", pause:"Ø¥ÙŠÙ‚Ø§Ù Ù…Ø¤Ù‚Øª", reset:"Ø¥Ø¹Ø§Ø¯Ø© Ø¶Ø¨Ø·", startEndHeading:"Ù…Ù†â€“Ø¥Ù„Ù‰",
+        preferences:"Ø§Ù„ØªÙØ¶ÙŠÙ„Ø§Øª", theme:"Ø§Ù„Ø«ÙŠÙ…", language:"Ø§Ù„Ù„ØºØ©",
+        personalInfo:"Ø§Ù„Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø§Ù„Ø´Ø®ØµÙŠØ©", nameLabel:"Ø§Ù„Ø§Ø³Ù…", subjectLabel:"Ø§Ù„Ù…Ø§Ø¯Ø©", saveChanges:"Ø­ÙØ¸ Ø§Ù„ØªØºÙŠÙŠØ±Ø§Øª",
+        endSession:"Ø¥Ù†Ù‡Ø§Ø¡ Ø§Ù„Ø¬Ù„Ø³Ø©", gradeLabel:"Ø§Ù„ØµÙ",
+        selectChaptersUnits:"Ø§Ø®ØªØ± Ø§Ù„ÙØµÙˆÙ„ ÙˆØ§Ù„Ø¯Ø±ÙˆØ³", chapter:"Ø§Ù„ÙØµÙ„", unit:"Ø§Ù„Ø¯Ø±Ø³",
+        unitsSelected:"Ø¯Ø±ÙˆØ³ Ù…Ø®ØªØ§Ø±Ø©", selectAll:"ØªØ­Ø¯ÙŠØ¯ Ø§Ù„ÙƒÙ„", deselectAll:"Ø¥Ù„ØºØ§Ø¡ ØªØ­Ø¯ÙŠØ¯ Ø§Ù„ÙƒÙ„",
+        currentStudyFocus:"Ø§Ù„ØªØ±ÙƒÙŠØ² Ø§Ù„Ø¯Ø±Ø§Ø³ÙŠ Ø§Ù„Ø­Ø§Ù„ÙŠ", studyingUnits:"ÙŠØ¯Ø±Ø³ ÙˆØ­Ø¯Ø§Øª", noStudyFocus:"Ù„Ù… ÙŠØªÙ… ØªØ­Ø¯ÙŠØ¯ ØªØ±ÙƒÙŠØ² Ø¯Ø±Ø§Ø³ÙŠ Ù…Ø­Ø¯Ø¯",
+        studyFocus:"Ø§Ù„ØªØ±ÙƒÙŠØ² Ø§Ù„Ø¯Ø±Ø§Ø³ÙŠ", roomStudyFocus:"Ø§Ù„ØªØ±ÙƒÙŠØ² Ø§Ù„Ø¯Ø±Ø§Ø³ÙŠ Ù„Ù„ØºØ±ÙØ©", studyFocusDesc:"Ø§Ø·Ù„Ø¹ Ø¹Ù„Ù‰ Ù…Ø§ ÙŠØ¯Ø±Ø³Ù‡ Ø§Ù„Ø¬Ù…ÙŠØ¹ ÙÙŠ Ø§Ù„ØºØ±ÙØ© Ø­Ø§Ù„ÙŠØ§Ù‹. Ø§Ø®ØªØ± Ù…Ø§Ø¯ØªÙƒ ÙˆØ§Ù„ÙØµÙˆÙ„ Ø£Ø¹Ù„Ø§Ù‡ Ù„Ù„Ø§Ù†Ø¶Ù…Ø§Ù… Ø¥Ù„Ù‰ Ø¬Ù„Ø³Ø© Ø§Ù„Ø¯Ø±Ø§Ø³Ø©.",
+        noActiveStudy:"Ù„Ø§ ØªÙˆØ¬Ø¯ Ø¬Ù„Ø³Ø§Øª Ø¯Ø±Ø§Ø³Ø© Ù†Ø´Ø·Ø©", noActiveStudyDesc:"Ù„Ù… ÙŠØ®ØªØ± Ø§Ù„Ù…Ø´Ø§Ø±ÙƒÙˆÙ† Ù…ÙˆØ§Ø¶ÙŠØ¹ Ø¯Ø±Ø§Ø³ØªÙ‡Ù… Ø¨Ø¹Ø¯. Ø§Ø®ØªØ± Ù…Ø§Ø¯ØªÙƒ ÙˆØ§Ù„ÙØµÙˆÙ„ Ø£Ø¹Ù„Ø§Ù‡ Ù„Ø¨Ø¯Ø¡ Ø¬Ù„Ø³Ø© Ø¯Ø±Ø§Ø³Ø©!",
+        studyingChapters:"ÙŠØ¯Ø±Ø³ ÙØµÙˆÙ„", joinStudySession:"Ø§Ù†Ø¶Ù… Ù„Ø¬Ù„Ø³Ø© Ø§Ù„Ø¯Ø±Ø§Ø³Ø©", totalSelected:"Ø§Ù„Ù…Ø¬Ù…ÙˆØ¹ Ø§Ù„Ù…Ø®ØªØ§Ø±"
       }
     };
+    
+    // Grade translation mapping
+    const gradeTranslations = {
+      en: { "10": "Grade 10", "11": "Grade 11", "12": "Grade 12" },
+      ar: { "10": "Ø§Ù„ØµÙ Ø§Ù„Ø£ÙˆÙ„ Ø§Ù„Ø«Ø§Ù†ÙˆÙŠ", "11": "Ø§Ù„ØµÙ Ø§Ù„Ø«Ø§Ù†ÙŠ Ø§Ù„Ø«Ø§Ù†ÙˆÙŠ", "12": "Ø§Ù„ØµÙ Ø§Ù„Ø«Ø§Ù„Ø« Ø§Ù„Ø«Ø§Ù†ÙˆÙŠ" }
+    };
 
-    // Subjects data (simplified)
+    // -------- SUBJECT CATALOG BY GRADE (EN/AR) --------
     const subjectsByGrade = {
       10: [
-        { name: "Mathematics", nameAr: "الرياضيات", chapters: ["Algebra", "Geometry", "Statistics"] },
-        { name: "Chemistry", nameAr: "الكيمياء", chapters: ["Atoms & Elements", "Chemical Reactions", "Acids & Bases"] },
-        { name: "Physics", nameAr: "الفيزياء", chapters: ["Motion", "Forces", "Energy"] },
-        { name: "Biology", nameAr: "الأحياء", chapters: ["Cell Biology", "Genetics", "Ecology"] }
+        {name:"Mathematics", nameAr:"Ø§Ù„Ø±ÙŠØ§Ø¶ÙŠØ§Øª"},
+        {name:"Physics", nameAr:"Ø§Ù„ÙÙŠØ²ÙŠØ§Ø¡"},
+        {
+          name:"Chemistry", 
+          nameAr:"Ø§Ù„ÙƒÙŠÙ…ÙŠØ§Ø¡",
+          chapters: [
+            {
+              id: "ch1",
+              name: "Chapter 1",
+              nameAr: "Ø§Ù„ÙØµÙ„ 1",
+              units: [
+                {id: "1.1", name: "Story of Two Substances", nameAr: "Ù‚ØµØ© Ù…Ø§Ø¯ØªÙŠÙ†"},
+                {id: "1.2", name: "Chemistry and Matter", nameAr: "Ø§Ù„ÙƒÙŠÙ…ÙŠØ§Ø¡ ÙˆØ§Ù„Ù…Ø§Ø¯Ø©"},
+                {id: "1.3", name: "Scientific Methods", nameAr: "Ø§Ù„Ø·Ø±Ø§Ø¦Ù‚ Ø§Ù„Ø¹Ù„Ù…ÙŠØ©"},
+                {id: "1.4", name: "Scientific Research", nameAr: "Ø§Ù„Ø¨Ø­Ø« Ø§Ù„Ø¹Ù„Ù…ÙŠ"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "Chapter 2",
+              nameAr: "Ø§Ù„ÙØµÙ„ 2",
+              units: [
+                {id: "2.1", name: "Properties of Matter", nameAr: "Ø®ÙˆØ§Øµ Ø§Ù„Ù…Ø§Ø¯Ø©"},
+                {id: "2.2", name: "Changes in Matter", nameAr: "ØªØºÙŠØ±Ø§Øª Ø§Ù„Ù…Ø§Ø¯Ø©"},
+                {id: "2.3", name: "Mixtures", nameAr: "Ø§Ù„Ù…Ø®Ø§Ù„ÙŠØ·"},
+                {id: "2.4", name: "Elements and Compounds", nameAr: "Ø§Ù„Ø¹Ù†Ø§ØµØ± ÙˆØ§Ù„Ù…Ø±ÙƒØ¨Ø§Øª"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "Chapter 3",
+              nameAr: "Ø§Ù„ÙØµÙ„ 3",
+              units: [
+                {id: "3.1", name: "Ancient Ideas of Matter", nameAr: "Ø§Ù„Ø£ÙÙƒØ§Ø± Ø§Ù„Ù‚Ø¯ÙŠÙ…Ø© Ù„Ù„Ù…Ø§Ø¯Ø©"},
+                {id: "3.2", name: "Definition of Atom", nameAr: "ØªØ¹Ø±ÙŠÙ Ø§Ù„Ø°Ø±Ø©"},
+                {id: "3.3", name: "How Atoms Differ?", nameAr: "ÙƒÙŠÙ ØªØ®ØªÙ„Ù Ø§Ù„Ø°Ø±Ø§ØªØŸ"},
+                {id: "3.4", name: "Unstable Nuclei and Radioactive Decay", nameAr: "Ø§Ù„Ø£Ù†ÙˆÙŠØ© ØºÙŠØ± Ø§Ù„Ù…Ø³ØªÙ‚Ø±Ø© ÙˆØ§Ù„ØªØ­Ù„Ù„ Ø§Ù„Ø¥Ø´Ø¹Ø§Ø¹ÙŠ"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "Chapter 4",
+              nameAr: "Ø§Ù„ÙØµÙ„ 4",
+              units: [
+                {id: "4.1", name: "Reactions and Equations", nameAr: "Ø§Ù„ØªÙØ§Ø¹Ù„Ø§Øª ÙˆØ§Ù„Ù…Ø¹Ø§Ø¯Ù„Ø§Øª"},
+                {id: "4.2", name: "Classification of Chemical Reactions", nameAr: "ØªØµÙ†ÙŠÙ Ø§Ù„ØªÙØ§Ø¹Ù„Ø§Øª Ø§Ù„ÙƒÙŠÙ…ÙŠØ§Ø¦ÙŠØ©"},
+                {id: "4.3", name: "Reactions in Aqueous Solutions", nameAr: "Ø§Ù„ØªÙØ§Ø¹Ù„Ø§Øª ÙÙŠ Ø§Ù„Ù…Ø­Ø§Ù„ÙŠÙ„ Ø§Ù„Ù…Ø§Ø¦ÙŠØ©"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "Chapter 5",
+              nameAr: "Ø§Ù„ÙØµÙ„ 5",
+              units: [
+                {id: "5.1", name: "Measuring Matter", nameAr: "Ù‚ÙŠØ§Ø³ Ø§Ù„Ù…Ø§Ø¯Ø©"},
+                {id: "5.2", name: "Mass and Mole", nameAr: "Ø§Ù„ÙƒØªÙ„Ø© ÙˆØ§Ù„Ù…ÙˆÙ„"},
+                {id: "5.3", name: "Moles of Compounds", nameAr: "Ù…ÙˆÙ„Ø§Øª Ø§Ù„Ù…Ø±ÙƒØ¨Ø§Øª"}
+              ]
+            }
+          ]
+        },
+        {name:"Biology", nameAr:"Ø§Ù„Ø£Ø­ÙŠØ§Ø¡"},
+        {name:"Quran", nameAr:"Ø§Ù„Ù‚Ø±Ø¢Ù†"},
+        {name:"Digital Technology", nameAr:"Ø§Ù„ØªÙ‚Ù†ÙŠØ© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©"},
+        {name:"English", nameAr:"Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠØ©"},
+        {name:"Arabic", nameAr:"Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©"},
+        {name:"Environmental Science", nameAr:"Ø§Ù„Ø¹Ù„ÙˆÙ… Ø§Ù„Ø¨ÙŠØ¦ÙŠØ©"}
       ],
       11: [
-        { name: "Mathematics", nameAr: "الرياضيات", chapters: ["Calculus", "Probability", "Vectors"] },
-        { name: "Chemistry", nameAr: "الكيمياء", chapters: ["Organic Chemistry", "Thermodynamics", "Equilibrium"] },
-        { name: "Physics", nameAr: "الفيزياء", chapters: ["Waves", "Electricity", "Magnetism"] },
-        { name: "Biology", nameAr: "الأحياء", chapters: ["Human Biology", "Plant Biology", "Evolution"] }
+        {name:"Mathematics", nameAr:"Ø§Ù„Ø±ÙŠØ§Ø¶ÙŠØ§Øª"},
+        {name:"Language Proficiency (Arabic)", nameAr:"Ø§Ù„ÙƒÙØ§ÙŠØ§Øª Ø§Ù„Ù„ØºÙˆÙŠØ©"},
+        {name:"Chemistry", nameAr:"Ø§Ù„ÙƒÙŠÙ…ÙŠØ§Ø¡"},
+        {name:"Biology", nameAr:"Ø§Ù„Ø£Ø­ÙŠØ§Ø¡"},
+        {name:"Physics", nameAr:"Ø§Ù„ÙÙŠØ²ÙŠØ§Ø¡"},
+        {name:"History", nameAr:"Ø§Ù„ØªØ§Ø±ÙŠØ®"},
+        {name:"Tawhid (Monotheism)", nameAr:"Ø§Ù„ØªÙˆØ­ÙŠØ¯"},
+        {name:"Hadith", nameAr:"Ø§Ù„Ø­Ø¯ÙŠØ«"},
+        {name:"Quran", nameAr:"Ø§Ù„Ù‚Ø±Ø¢Ù†"},
+        {name:"Qur'anic Readings", nameAr:"Ø§Ù„Ù‚Ø±Ø§Ø¡Ø§Øª"},
+        {name:"English", nameAr:"Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠ"},
+        {name:"Digital Technology", nameAr:"Ø§Ù„ØªÙ‚Ù†ÙŠØ© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©"},
+        {name:"Engineering", nameAr:"Ø§Ù„Ù‡Ù†Ø¯Ø³Ø©"},
+        {name:"Principles of Health Sciences", nameAr:"Ù…Ø¨Ø§Ø¯Ø¦ Ø§Ù„Ø¹Ù„ÙˆÙ… Ø§Ù„ØµØ­ÙŠØ©"},
+        {name:"Financial Management", nameAr:"Ø§Ù„Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…Ø§Ù„ÙŠØ©"},
+        {name:"Introduction to Business", nameAr:"Ù…Ù‚Ø¯Ù…Ø© ÙÙŠ Ø§Ù„Ø£Ø¹Ù…Ø§Ù„"},
+        {name:"Data Science", nameAr:"Ø¹Ù„Ù… Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª"},
+        {name:"Principles of Economics", nameAr:"Ù…Ø¨Ø§Ø¯Ø¦ Ø§Ù„Ø§Ù‚ØªØµØ§Ø¯"},
+        {name:"Internet of Things", nameAr:"Ø¥Ù†ØªØ±Ù†Øª Ø§Ù„Ø£Ø´ÙŠØ§Ø¡"}
       ],
       12: [
-        { name: "Mathematics", nameAr: "الرياضيات", chapters: ["Advanced Calculus", "Complex Numbers", "Statistics"] },
-        { name: "Chemistry", nameAr: "الكيمياء", chapters: ["Analytical Chemistry", "Biochemistry", "Environmental Chemistry"] },
-        { name: "Physics", nameAr: "الفيزياء", chapters: ["Quantum Physics", "Nuclear Physics", "Astrophysics"] },
-        { name: "Biology", nameAr: "الأحياء", chapters: ["Molecular Biology", "Biotechnology", "Neuroscience"] }
+        {name:"Mathematics", nameAr:"Ø§Ù„Ø±ÙŠØ§Ø¶ÙŠØ§Øª"},
+        {name:"Physics", nameAr:"Ø§Ù„ÙÙŠØ²ÙŠØ§Ø¡"},
+        {name:"Chemistry", nameAr:"Ø§Ù„ÙƒÙŠÙ…ÙŠØ§Ø¡"},
+        {name:"Biology", nameAr:"Ø§Ù„Ø£Ø­ÙŠØ§Ø¡"},
+        {name:"Fiqh (Jurisprudence)", nameAr:"Ø§Ù„ÙÙ‚Ù‡"},
+        {name:"Hadith Terminology", nameAr:"Ù…ØµØ·Ù„Ø­ Ø§Ù„Ø­Ø¯ÙŠØ«"},
+        {name:"Tafsir (Quran Exegesis)", nameAr:"Ø§Ù„ØªÙØ³ÙŠØ±"},
+        {name:"English", nameAr:"Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠ"},
+        {name:"Geography", nameAr:"Ø§Ù„Ø¬ØºØ±Ø§ÙÙŠØ§"},
+        {name:"Managerial Skills", nameAr:"Ø§Ù„Ù…Ù‡Ø§Ø±Ø§Øª Ø§Ù„Ø¥Ø¯Ø§Ø±ÙŠØ©"},
+        {name:"Sustainable Development", nameAr:"Ø§Ù„ØªÙ†Ù…ÙŠØ© Ø§Ù„Ù…Ø³ØªØ¯Ø§Ù…Ø©"},
+        {name:"Earth & Space Sciences", nameAr:"Ø¹Ù„ÙˆÙ… Ø§Ù„Ø£Ø±Ø¶ ÙˆØ§Ù„ÙØ¶Ø§Ø¡"},
+        {name:"Research & Information Sources", nameAr:"Ø§Ù„Ø¨Ø­Ø« ÙˆÙ…ØµØ§Ø¯Ø± Ø§Ù„Ù…Ø¹Ù„ÙˆÙ…Ø§Øª"},
+        {name:"Digital Technology", nameAr:"Ø§Ù„ØªÙ‚Ù†ÙŠØ© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©"},
+        {name:"Functional & Creative Writing", nameAr:"Ø§Ù„ÙƒØªØ§Ø¨Ø© Ø§Ù„ÙˆØ¸ÙŠÙÙŠØ© ÙˆØ§Ù„Ø¥Ø¨Ø¯Ø§Ø¹ÙŠØ©"},
+        {name:"Literary Studies", nameAr:"Ø§Ù„Ø¯Ø±Ø§Ø³Ø§Øª Ø§Ù„Ø£Ø¯Ø¨ÙŠØ©"},
+        {name:"Principles of Law", nameAr:"Ù…Ø¨Ø§Ø¯Ø¦ Ø§Ù„Ù‚Ø§Ù†ÙˆÙ†"},
+        {name:"Statistics", nameAr:"Ø§Ù„Ø¥Ø­ØµØ§Ø¡"},
+        {name:"Healthcare", nameAr:"Ø§Ù„Ø±Ø¹Ø§ÙŠØ© Ø§Ù„ØµØ­ÙŠØ©"},
+        {name:"Human Body Systems", nameAr:"Ø£Ù†Ø¸Ù…Ø© Ø¬Ø³Ù… Ø§Ù„Ø¥Ù†Ø³Ø§Ù†"},
+        {name:"Digital Design", nameAr:"Ø§Ù„ØªØµÙ…ÙŠÙ… Ø§Ù„Ø±Ù‚Ù…ÙŠ"},
+        {name:"Artificial Intelligence", nameAr:"Ø§Ù„Ø°ÙƒØ§Ø¡ Ø§Ù„Ø§ØµØ·Ù†Ø§Ø¹ÙŠ"},
+        {name:"Cybersecurity", nameAr:"Ø§Ù„Ø£Ù…Ù† Ø§Ù„Ø³ÙŠØ¨Ø±Ø§Ù†ÙŠ"},
+        {name:"Engineering Design", nameAr:"Ø§Ù„ØªØµÙ…ÙŠÙ… Ø§Ù„Ù‡Ù†Ø¯Ø³ÙŠ"},
+        {name:"Principles of Management", nameAr:"Ù…Ø¨Ø§Ø¯Ø¦ Ø§Ù„Ø¥Ø¯Ø§Ø±Ø©"},
+        {name:"Event Management", nameAr:"Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„ÙØ¹Ø§Ù„ÙŠØ§Øª"},
+        {name:"Marketing Campaigns", nameAr:"Ø§Ù„Ø­Ù…Ù„Ø§Øª Ø§Ù„ØªØ³ÙˆÙŠÙ‚ÙŠØ©"},
+        {name:"Digital Citizenship", nameAr:"Ø§Ù„Ù…ÙˆØ§Ø·Ù†Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©"},
+        {name:"Life Skills", nameAr:"Ø§Ù„Ù…Ù‡Ø§Ø±Ø§Øª Ø§Ù„Ø­ÙŠØ§ØªÙŠØ©"},
+        {name:"Let's Learn Chinese", nameAr:"Ù‡ÙŠØ§ Ù†ØªØ¹Ù„Ù… Ø§Ù„Ù„ØºØ© Ø§Ù„ØµÙŠÙ†ÙŠØ©"},
+        {name:"Inheritance Law (Faraid)", nameAr:"Ø§Ù„ÙØ±Ø§Ø¦Ø¶"},
+        {name:"Usul al-Fiqh (Principles of Jurisprudence)", nameAr:"Ø£ØµÙˆÙ„ Ø§Ù„ÙÙ‚Ù‡"},
+        {name:"Software Engineering", nameAr:"Ù‡Ù†Ø¯Ø³Ø© Ø§Ù„Ø¨Ø±Ù…Ø¬ÙŠØ§Øª"},
+        {name:"Rhetoric & Literary Criticism", nameAr:"Ø§Ù„Ø¯Ø±Ø§Ø³Ø§Øª Ø§Ù„Ø¨Ù„Ø§ØºÙŠØ© ÙˆØ§Ù„Ù†Ù‚Ø¯ÙŠØ©"},
+        {name:"Secretarial & Office Administration", nameAr:"Ø§Ù„Ø³ÙƒØ±ØªØ§Ø±ÙŠØ© ÙˆØ§Ù„Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…ÙƒØªØ¨ÙŠØ©"}
       ]
     };
 
-    // Initialize app
-    document.addEventListener('DOMContentLoaded', async () => {
-      try {
+    // -------- DOM ELEMENTS --------
+    const sidebar=document.getElementById('sidebar');
+    const header=document.getElementById('header');
+    const mainContainer=document.getElementById('main-container');
+    const sidebarOverlay=document.getElementById('sidebar-overlay');
+    const gradeSelect=document.getElementById('grade-select');
+    const roomSubjectSelect=document.getElementById('room-subject-select');
+    const connectionStatus=document.getElementById('connection-status');
+
+    // -------- GLOBAL STATE --------
+    let currentUser=null, currentRoom=null, currentLanguage='en', currentTheme='light';
+    let timerInterval=null, timerSeconds=1500, timerRunning=false, timerStartedBy=null, timerDuration=1500;
+    let supabase=null, participantsSubscription=null, timerSubscription=null, roomCodeFromUrl=null;
+    let selectedColor='#667eea';
+    let sidebarOpen=JSON.parse(localStorage.getItem('studyTogether_sidebarOpen')||'false');
+    let connectionRetryCount=0;
+
+    // scheduling globals
+    let scheduledStartTimeout = null;
+    let scheduledStartTime = null;
+    let lastScheduleBy = null;
+
+    // -------- ROOM TIMER STATE --------
+    let roomTimerState = {
+      isRunning: false,
+      seconds: 1500,
+      duration: 1500,
+      startedBy: null,
+      startTime: null
+    };
+
+    document.addEventListener('DOMContentLoaded', initApp);
+
+    function initApp(){
+      try{
         supabase = window.supabase.createClient(
           'https://lpabkpwepnbvgkznzlkf.supabase.co',
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwYWJrcHdlcG5idmdrem56bGtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4ODI2MTUsImV4cCI6MjA3MTQ1ODYxNX0.d4eKNAu3KjVXFnXuQlPUnST0eC2ynL1al9w8AQE16R0'
         );
-      } catch (e) {
-        console.error('Failed to initialize Supabase:', e);
+        updateConnectionStatus('connected');
+      }catch(e){
+        console.error('Supabase initialization failed:', e);
+        updateConnectionStatus('disconnected');
       }
-
       loadPreferences();
+      populateGradeSelect();
       setupEventListeners();
+      handleUrlParams();
       checkSavedUser();
       updateLanguage();
       applyTheme();
-    });
+      syncQuickControls();
+    }
 
-    function loadPreferences() {
-      const saved = localStorage.getItem('studyPartner_preferences');
-      if (saved) {
-        const prefs = JSON.parse(saved);
-        currentLanguage = prefs.language || 'en';
-        currentTheme = prefs.theme || 'light';
+    function loadPreferences(){
+      currentLanguage = localStorage.getItem('studyTogether_language') || 'en';
+      currentTheme = localStorage.getItem('studyTogether_theme') || 'light';
+    }
+
+    function handleUrlParams(){
+      const params = new URLSearchParams(window.location.search);
+      roomCodeFromUrl = params.get('room');
+      if(roomCodeFromUrl) window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // -------- CONNECTION STATUS --------
+    function updateConnectionStatus(status) {
+      if (!connectionStatus) return;
+      connectionStatus.className = `connection-status ${status}`;
+      const statusText = {
+        connected: 'ðŸŸ¢ Connected',
+        connecting: 'ðŸŸ¡ Connecting...',
+        disconnected: 'ðŸ”´ Disconnected'
+      };
+      document.getElementById('connection-text').textContent = statusText[status] || 'Unknown';
+      connectionStatus.style.display = currentRoom ? 'block' : 'none';
+    }
+
+    // -------- USER AUTH --------
+    function checkSavedUser(){
+      const savedUser = localStorage.getItem('studyTogether_user');
+      if(savedUser){
+        currentUser = JSON.parse(savedUser);
+        showLoggedInLayout();
+        const savedRoomStr = localStorage.getItem('studyTogether_room');
+        if(savedRoomStr){
+          const saved = JSON.parse(savedRoomStr);
+          supabase.from('rooms').select('*').eq('id', saved.id).eq('is_active', true).single()
+            .then(async ({data, error}) => {
+              if(!error && data){
+                await joinRoomById(data.id, data.room_code, data.host_id);
+                toast('Rejoined your room after refresh.', 'info', 'Welcome back');
+              } else if(roomCodeFromUrl){
+                joinRoom(roomCodeFromUrl.toUpperCase()); 
+                roomCodeFromUrl = null;
+              } else {
+                navigateToScreen('home-screen');
+              }
+            });
+        } else if(roomCodeFromUrl){
+          joinRoom(roomCodeFromUrl.toUpperCase());
+          roomCodeFromUrl = null;
+        } else {
+          navigateToScreen('home-screen');
+        }
+      } else {
+        showLoggedOutLayout();
+        if(roomCodeFromUrl){
+          toast('Complete registration to join the invited room.', 'info', 'Invite detected');
+        }
       }
     }
 
-    function savePreferences() {
-      localStorage.setItem('studyPartner_preferences', JSON.stringify({
-        language: currentLanguage,
-        theme: currentTheme
-      }));
-    }
-
-    function checkSavedUser() {
-      const saved = localStorage.getItem('studyPartner_user');
-      if (saved) {
-        currentUser = JSON.parse(saved);
-        showMainApp();
-      }
-    }
-
-    async function completeRegistration() {
+    async function completeRegistration(){
       const name = document.getElementById('student-name').value.trim();
-      const grade = document.getElementById('grade-select').value;
-
-      if (!name || !grade) {
-        alert('Please enter your name and select a grade.');
+      const grade = gradeSelect.value;
+      if(!name || !grade){
+        alert(currentLanguage==='ar' ? 'ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ø§Ù„Ø§Ø³Ù… ÙˆØ§Ø®ØªÙŠØ§Ø± Ø§Ù„ØµÙ.' : 'Please enter your name and select a grade.');
         return;
       }
-
-      try {
-        const userData = {
-          name,
-          avatar_color: selectedColor,
-          grade: parseInt(grade),
-          created_at: new Date().toISOString()
-        };
-
-        const { data, error } = await supabase
-          .from('users')
-          .insert([userData])
-          .select()
-          .single();
-
-        if (error) throw error;
-
+      try{
+        const payload = { name, avatar_color: selectedColor, grade, subject: null };
+        const {data, error} = await supabase.from('users').insert([payload]).select().single();
+        if(error) throw error;
         currentUser = data;
-        localStorage.setItem('studyPartner_user', JSON.stringify(currentUser));
-        showMainApp();
-        toast('Registration successful!');
-      } catch (e) {
-        console.error('Registration failed:', e);
-        alert('Registration failed. Please try again.');
-      }
-    }
-
-    function showMainApp() {
-      document.getElementById('registration-screen').classList.remove('active');
-      document.getElementById('main-screen').classList.add('active');
-      populateSubjects();
-    }
-
-    function populateSubjects() {
-      const select = document.getElementById('room-subject-select');
-      select.innerHTML = '<option value="">-- Select Subject --</option>';
-      
-      const subjects = subjectsByGrade[currentUser.grade] || [];
-      subjects.forEach(subject => {
-        const option = document.createElement('option');
-        option.value = subject.name;
-        option.textContent = currentLanguage === 'ar' ? subject.nameAr : subject.name;
-        select.appendChild(option);
-      });
-    }
-
-    async function createRoom() {
-      if (!currentUser) return;
-
-      try {
-        const roomCode = generateRoomCode();
-        const roomData = {
-          room_code: roomCode,
-          host_id: currentUser.id,
-          is_active: true,
-          created_at: new Date().toISOString()
-        };
-
-        const { data, error } = await supabase
-          .from('rooms')
-          .insert([roomData])
-          .select()
-          .single();
-
-        if (error) throw error;
-
-        await joinRoomById(data.id, data.room_code);
-        toast('Room created successfully!');
-      } catch (e) {
-        console.error('Failed to create room:', e);
-        alert('Failed to create room.');
-      }
-    }
-
-    async function joinRoom() {
-      const code = document.getElementById('room-code-input').value.toUpperCase().trim();
-      if (!code) return;
-
-      try {
-        const { data, error } = await supabase
-          .from('rooms')
-          .select('*')
-          .eq('room_code', code)
-          .eq('is_active', true)
-          .single();
-
-        if (error || !data) {
-          alert('Room not found or inactive.');
-          return;
+        localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
+        showLoggedInLayout();
+        if(roomCodeFromUrl){
+          await joinRoom(roomCodeFromUrl.toUpperCase());
+          roomCodeFromUrl = null;
+        } else {
+          navigateToScreen('home-screen');
         }
-
-        await joinRoomById(data.id, data.room_code);
-      } catch (e) {
-        console.error('Failed to join room:', e);
-        alert('Failed to join room.');
+      }catch(e){
+        console.error('Registration error:', e);
+        alert(currentLanguage==='ar' ? 'ÙØ´Ù„ Ø§Ù„ØªØ³Ø¬ÙŠÙ„.' : 'Registration failed.');
       }
     }
 
-    async function joinRoomById(roomId, roomCode) {
-      try {
-        // Join as participant
-        const { error } = await supabase
-          .from('room_participants')
-          .upsert({
-            room_id: roomId,
-            user_id: currentUser.id,
-            joined_at: new Date().toISOString()
-          }, { onConflict: 'room_id,user_id' });
-
-        if (error) throw error;
-
-        currentRoom = { id: roomId, code: roomCode };
-        localStorage.setItem('studyPartner_room', JSON.stringify(currentRoom));
-        
-        document.getElementById('current-room-code').textContent = roomCode;
-        showScreen('room');
-        setupRoomSubscription();
-        loadRoomData();
-      } catch (e) {
-        console.error('Failed to join room:', e);
-        alert('Failed to join room.');
-      }
-    }
-
-    async function leaveRoom() {
-      if (!currentRoom) return;
-
-      try {
-        await supabase
-          .from('room_participants')
-          .delete()
-          .match({ room_id: currentRoom.id, user_id: currentUser.id });
-
-        if (subscription) {
-          subscription.unsubscribe();
-          subscription = null;
-        }
-
-        currentRoom = null;
-        localStorage.removeItem('studyPartner_room');
-        showScreen('rooms');
-        resetTimer();
-      } catch (e) {
-        console.error('Failed to leave room:', e);
-      }
-    }
-
-    function setupRoomSubscription() {
-      if (subscription) subscription.unsubscribe();
-
-              subscription = supabase
-        .channel(`room-${currentRoom.id}`)
-        .on('postgres_changes', {
-          event: '*',
-          schema: 'public',
-          table: 'room_participants',
-          filter: `room_id=eq.${currentRoom.id}`
-        }, () => {
-          loadRoomData();
-        })
-        .on('postgres_changes', {
-          event: '*',
-          schema: 'public',
-          table: 'study_sessions',
-          filter: `room_id=eq.${currentRoom.id}`
-        }, () => {
-          loadStudyStatus();
-        })
-        .on('broadcast', { event: 'timer_update' }, (payload) => {
-          handleTimerUpdate(payload.payload);
-        })
-        .subscribe();
-    }
-
-    async function loadRoomData() {
-      await loadParticipants();
-      await loadStudyStatus();
-    }
-
-    async function loadParticipants() {
-      if (!currentRoom) return;
-
-      try {
-        const { data, error } = await supabase
-          .from('room_participants')
-          .select(`
-            user_id,
-            users (id, name, avatar_color)
-          `)
-          .eq('room_id', currentRoom.id);
-
-        if (error) throw error;
-
-        const container = document.getElementById('participants-list');
-        container.innerHTML = data.map(p => {
-          const user = p.users;
-          return `
-            <div class="participant-card">
-              <div class="participant-info">
-                <div class="participant-avatar" style="background: ${user.avatar_color}">
-                  ${user.name[0].toUpperCase()}
-                </div>
-                <div>${user.name}</div>
-              </div>
-            </div>
-          `;
-        }).join('');
-      } catch (e) {
-        console.error('Failed to load participants:', e);
-      }
-    }
-
-    async function loadStudyStatus() {
-      if (!currentRoom) return;
-
-      try {
-        const { data, error } = await supabase
-          .from('study_sessions')
-          .select(`
-            *,
-            users (id, name, avatar_color)
-          `)
-          .eq('room_id', currentRoom.id)
-          .eq('is_active', true);
-
-        if (error) throw error;
-
-        const container = document.getElementById('study-status-list');
-        if (data.length === 0) {
-          container.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">No active study sessions</p>';
-          return;
-        }
-
-        container.innerHTML = data.map(session => {
-          const user = session.users;
-          const chaptersText = session.chapters ? session.chapters.join(', ') : 'All chapters';
-          
-          return `
-            <div class="study-focus-card">
-              <div class="study-focus-header">
-                <div class="participant-avatar" style="background: ${user.avatar_color}">
-                  ${user.name[0].toUpperCase()}
-                </div>
-                <div>
-                  <div style="font-weight: 600;">${user.name}</div>
-                  <div style="font-size: 0.9rem; color: var(--text-secondary);">${session.subject}</div>
-                </div>
-              </div>
-              <div class="units-list">
-                ${session.chapters ? session.chapters.map(chapter => 
-                  `<span class="unit-badge">${chapter}</span>`
-                ).join('') : ''}
-              </div>
-            </div>
-          `;
-        }).join('');
-      } catch (e) {
-        console.error('Failed to load study status:', e);
-      }
-    }
-
-    async function updateStudyFocus() {
-      const subject = document.getElementById('room-subject-select').value;
-      const chaptersSection = document.getElementById('chapters-section');
-      
-      if (!subject) {
-        chaptersSection.style.display = 'none';
-        await clearStudySession();
-        return;
-      }
-
-      // Show chapters for the selected subject
-      const subjects = subjectsByGrade[currentUser.grade] || [];
-      const subjectData = subjects.find(s => s.name === subject);
-      
-      if (subjectData && subjectData.chapters) {
-        chaptersSection.style.display = 'block';
-        populateChapters(subjectData.chapters);
-      } else {
-        chaptersSection.style.display = 'none';
-      }
-
-      await saveStudySession();
-    }
-
-    function populateChapters(chapters) {
-      const grid = document.getElementById('chapters-grid');
-      selectedChapters.clear();
-      
-      grid.innerHTML = chapters.map(chapter => `
-        <div class="chapter-card" onclick="toggleChapter('${chapter}')">
-          <div style="font-weight: 600; margin-bottom: 0.5rem;">${chapter}</div>
-          <div style="font-size: 0.8rem; color: var(--text-secondary);">Click to select</div>
-        </div>
-      `).join('');
-      
-      updateSelectedCount();
-    }
-
-    function toggleChapter(chapter) {
-      const card = event.currentTarget;
-      
-      if (selectedChapters.has(chapter)) {
-        selectedChapters.delete(chapter);
-        card.classList.remove('selected');
-      } else {
-        selectedChapters.add(chapter);
-        card.classList.add('selected');
-      }
-      
-      updateSelectedCount();
-      saveStudySession();
-    }
-
-    function updateSelectedCount() {
-      const count = selectedChapters.size;
-      const countEl = document.getElementById('selected-count');
-      countEl.textContent = `${count} chapters selected`;
-    }
-
-    async function saveStudySession() {
-      if (!currentRoom || !currentUser) return;
-
-      const subject = document.getElementById('room-subject-select').value;
-      const chapters = Array.from(selectedChapters);
-
-      if (!subject) {
-        await clearStudySession();
-        return;
-      }
-
-      try {
-        const sessionData = {
-          room_id: currentRoom.id,
-          user_id: currentUser.id,
-          subject,
-          chapters: chapters.length > 0 ? chapters : null,
-          is_active: true,
-          updated_at: new Date().toISOString()
-        };
-
-        const { error } = await supabase
-          .from('study_sessions')
-          .upsert(sessionData, { onConflict: 'room_id,user_id' });
-
-        if (error) throw error;
-
-        loadStudyStatus();
-      } catch (e) {
-        console.error('Failed to save study session:', e);
-      }
-    }
-
-    async function clearStudySession() {
-      if (!currentRoom || !currentUser) return;
-
-      try {
-        await supabase
-          .from('study_sessions')
-          .delete()
-          .match({ room_id: currentRoom.id, user_id: currentUser.id });
-
-        loadStudyStatus();
-      } catch (e) {
-        console.error('Failed to clear study session:', e);
-      }
-    }
-
-    // Timer functions
-    function setTimer(minutes) {
-      timerSeconds = minutes * 60;
-      updateTimerDisplay();
-      resetTimer();
-    }
-
-    function startTimer() {
-      if (timerRunning) return;
-      
-      timerRunning = true;
-      document.getElementById('start-timer').style.display = 'none';
-      document.getElementById('start-timer').insertAdjacentHTML('afterend', 
-        '<button class="btn btn-secondary" onclick="pauseTimer()" id="pause-timer">Pause</button>'
-      );
-
-      // Broadcast timer start
-      if (subscription) {
-        subscription.send({
-          type: 'broadcast',
-          event: 'timer_update',
-          payload: {
-            action: 'start',
-            seconds: timerSeconds,
-            startedBy: currentUser.name,
-            timestamp: Date.now()
-          }
-        });
-      }
-
-      timerInterval = setInterval(() => {
-        timerSeconds--;
-        updateTimerDisplay();
-        
-        if (timerSeconds <= 0) {
-          timerComplete();
-        }
-      }, 1000);
-    }
-
-    function pauseTimer() {
-      timerRunning = false;
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-      }
-
-      document.getElementById('pause-timer').remove();
-      document.getElementById('start-timer').style.display = 'inline-block';
-
-      // Broadcast timer pause
-      if (subscription) {
-        subscription.send({
-          type: 'broadcast',
-          event: 'timer_update',
-          payload: {
-            action: 'pause',
-            seconds: timerSeconds,
-            startedBy: currentUser.name
-          }
-        });
-      }
-    }
-
-    function resetTimer() {
-      timerRunning = false;
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-      }
-
-      const pauseBtn = document.getElementById('pause-timer');
-      if (pauseBtn) pauseBtn.remove();
-      document.getElementById('start-timer').style.display = 'inline-block';
-
-      updateTimerDisplay();
-
-      // Broadcast timer reset
-      if (subscription) {
-        subscription.send({
-          type: 'broadcast',
-          event: 'timer_update',
-          payload: {
-            action: 'reset',
-            seconds: timerSeconds,
-            startedBy: currentUser.name
-          }
-        });
-      }
-    }
-
-    function updateTimerDisplay() {
-      const minutes = Math.floor(timerSeconds / 60);
-      const seconds = timerSeconds % 60;
-      document.getElementById('timer-display').textContent = 
-        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    }
-
-    function timerComplete() {
-      timerRunning = false;
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-      }
-
-      const pauseBtn = document.getElementById('pause-timer');
-      if (pauseBtn) pauseBtn.remove();
-      document.getElementById('start-timer').style.display = 'inline-block';
-
-      toast('Timer completed!', 'success');
-      
-      // Broadcast timer completion
-      if (subscription) {
-        subscription.send({
-          type: 'broadcast',
-          event: 'timer_update',
-          payload: {
-            action: 'complete',
-            startedBy: currentUser.name
-          }
-        });
-      }
-    }
-
-    function handleTimerUpdate(data) {
-      if (data.action === 'start') {
-        toast(`Timer started by ${data.startedBy}`);
-      } else if (data.action === 'pause') {
-        toast(`Timer paused by ${data.startedBy}`);
-      } else if (data.action === 'reset') {
-        toast(`Timer reset by ${data.startedBy}`);
-      } else if (data.action === 'complete') {
-        toast(`Timer completed! Started by ${data.startedBy}`, 'success');
-      }
-    }
-
-    // Utility functions
-    function generateRoomCode() {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      return Array(6).fill(0).map(() => chars[Math.floor(Math.random() * chars.length)]).join('');
-    }
-
-    function copyRoomCode() {
-      if (currentRoom) {
-        navigator.clipboard.writeText(currentRoom.code)
-          .then(() => toast('Room code copied!'))
-          .catch(() => toast('Failed to copy', 'error'));
-      }
-    }
-
-    function showScreen(screen) {
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      document.getElementById(`${screen}-view`).classList.add('active');
-      
-      // Update nav buttons
-      document.querySelectorAll('[onclick^="showScreen"]').forEach(btn => {
-        btn.classList.remove('btn');
-        btn.classList.add('btn', 'btn-secondary');
-      });
-      document.getElementById(`nav-${screen}`).classList.remove('btn-secondary');
-      document.getElementById(`nav-${screen}`).classList.add('btn');
-    }
-
-    function logout() {
-      if (currentRoom) leaveRoom();
+    function logout(){
+      if(currentRoom) leaveRoom(true);
       currentUser = null;
-      localStorage.removeItem('studyPartner_user');
-      document.getElementById('main-screen').classList.remove('active');
-      document.getElementById('registration-screen').classList.add('active');
-      
-      // Reset form
-      document.getElementById('student-name').value = '';
-      document.getElementById('grade-select').value = '';
-      selectedChapters.clear();
+      localStorage.clear();
+      showLoggedOutLayout();
     }
 
-    function toggleTheme() {
+    // -------- LAYOUT --------
+    function showLoggedInLayout(){
+      sidebar.style.display = 'flex';
+      header.style.display = 'flex';
+      mainContainer.style.display = 'block';
+      document.getElementById('registration-screen').classList.remove('active');
+      updateSidebarUserInfo();
+      setTimeout(() => updateLayoutForSidebar(true), 50);
+    }
+
+    function showLoggedOutLayout(){
+      sidebar.style.display = 'none';
+      header.style.display = 'none';
+      mainContainer.style.display = 'block';
+      mainContainer.classList.remove('with-sidebar');
+      header.classList.remove('with-sidebar');
+      sidebar.classList.remove('active', 'mobile-active');
+      sidebarOverlay.classList.remove('active');
+      updateConnectionStatus('disconnected');
+      navigateToScreen('registration-screen');
+    }
+
+    function navigateToScreen(screenId){
+      if(screenId !== 'room-screen' && currentRoom){
+        if(!confirm(currentLanguage==='ar'?'Ø³ÙŠØªÙ… Ù…ØºØ§Ø¯Ø±Ø© Ø§Ù„ØºØ±ÙØ© Ø§Ù„Ø­Ø§Ù„ÙŠØ©. Ø§Ù„Ù…ØªØ§Ø¨Ø¹Ø©ØŸ':'This will leave your current study room. Proceed?')) return;
+        leaveRoom();
+      }
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(item => 
+        item.classList.toggle('active', item.dataset.screen === screenId)
+      );
+      if(screenId === 'settings-screen') populateSettings();
+      toggleSidebar(false);
+      if(screenId !== 'room-screen') updateConnectionStatus('disconnected');
+    }
+
+    function toggleSidebar(force){
+      const isMobile = window.innerWidth <= 1024;
+      const menuToggleBtn = document.getElementById('menu-toggle');
+      if(isMobile){
+        const shouldBeActive = (force !== undefined) ? force : !sidebar.classList.contains('mobile-active');
+        sidebar.classList.toggle('mobile-active', shouldBeActive);
+        sidebarOverlay.classList.toggle('active', shouldBeActive);
+        menuToggleBtn?.classList.toggle('active', shouldBeActive);
+      } else {
+        const shouldBeActive = (force !== undefined) ? force : !sidebar.classList.contains('active');
+        sidebarOpen = shouldBeActive;
+        localStorage.setItem('studyTogether_sidebarOpen', JSON.stringify(sidebarOpen));
+        sidebar.classList.toggle('active', shouldBeActive);
+        sidebarOverlay.classList.toggle('active', shouldBeActive);
+        menuToggleBtn?.classList.toggle('active', shouldBeActive);
+      }
+    }
+
+    function updateLayoutForSidebar(){
+      const isDesktop = window.innerWidth > 1024;
+      const menuToggleBtn = document.getElementById('menu-toggle');
+      if(isDesktop){
+        sidebar.classList.remove('mobile-active');
+        if(sidebarOpen){
+          sidebar.classList.add('active');
+          sidebarOverlay.classList.add('active');
+          menuToggleBtn?.classList.add('active');
+        } else {
+          sidebar.classList.remove('active');
+          sidebarOverlay.classList.remove('active');
+          menuToggleBtn?.classList.remove('active');
+        }
+        mainContainer.classList.remove('with-sidebar');
+        header.classList.remove('with-sidebar');
+      } else {
+        sidebar.classList.remove('active');
+        mainContainer.classList.remove('with-sidebar');
+        header.classList.remove('with-sidebar');
+        if(!sidebar.classList.contains('mobile-active')){
+          sidebarOverlay.classList.remove('active');
+          menuToggleBtn?.classList.remove('active');
+        }
+      }
+    }
+
+    // -------- THEME & LANGUAGE --------
+    function applyTheme(){
+      document.body.setAttribute('data-theme', currentTheme);
+      const themeIcon = document.getElementById('theme-icon');
+      const regThemeIcon = document.getElementById('reg-theme-icon');
+      if(themeIcon) themeIcon.textContent = currentTheme === 'light' ? 'ðŸŒ™' : 'â˜€ï¸';
+      if(regThemeIcon) regThemeIcon.textContent = currentTheme === 'light' ? 'ðŸŒ™' : 'â˜€ï¸';
+      const themeText = document.getElementById('theme-text'); 
+      if(themeText) themeText.textContent = currentTheme === 'light' ? 'ðŸŒ™ Dark' : 'â˜€ï¸ Light';
+    }
+    
+    function toggleTheme(){
       currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-      savePreferences();
+      localStorage.setItem('studyTogether_theme', currentTheme);
       applyTheme();
     }
 
-    function applyTheme() {
-      document.body.setAttribute('data-theme', currentTheme);
-      const icons = document.querySelectorAll('#theme-icon, #reg-theme-icon');
-      icons.forEach(icon => {
-        icon.textContent = currentTheme === 'light' ? '🌙' : '☀️';
-      });
-    }
+    function updateLanguage(){
+      document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.lang = currentLanguage;
 
-    function toggleLanguage() {
+      const langIcon = document.getElementById('lang-icon');
+      const regLangIcon = document.getElementById('reg-lang-icon');
+      if(langIcon) langIcon.textContent = currentLanguage === 'ar' ? 'EN' : 'Ø¹';
+      if(regLangIcon) regLangIcon.textContent = currentLanguage === 'ar' ? 'EN' : 'Ø¹';
+
+      const langText = document.getElementById('lang-text'); 
+      if(langText) langText.textContent = currentLanguage === 'ar' ? 'English' : 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©';
+      
+      document.querySelectorAll('[data-translate]').forEach(el => {
+        const key = el.getAttribute('data-translate');
+        if(translations[currentLanguage][key]) el.textContent = translations[currentLanguage][key];
+      });
+      document.querySelectorAll('[data-translate-title]').forEach(el => {
+        const key = el.getAttribute('data-translate-title');
+        if(translations[currentLanguage][key]) el.title = translations[currentLanguage][key];
+      });
+
+      // repopulate selects according to language
+      populateGradeSelect();
+      populateRoomSubjects(currentUser?.grade || gradeSelect.value);
+      if(currentUser) populateSettings();
+
+      updateSidebarUserInfo();
+      syncQuickControls();
+    }
+    
+    function toggleLanguage(){
       currentLanguage = currentLanguage === 'en' ? 'ar' : 'en';
-      savePreferences();
+      localStorage.setItem('studyTogether_language', currentLanguage);
       updateLanguage();
     }
 
-    function updateLanguage() {
-      document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
-      
-      // Update language icon
-      const langIcons = document.querySelectorAll('#lang-icon, #reg-lang-icon');
-      langIcons.forEach(icon => {
-        icon.textContent = currentLanguage === 'ar' ? 'EN' : 'ع';
+    function syncQuickControls(){}
+
+    // -------- SIDEBAR USER LINE --------
+    function updateSidebarUserInfo(){
+      if(!currentUser) return;
+      const avatar = document.getElementById('sidebar-avatar');
+      avatar.style.background = currentUser.avatar_color || '#667eea';
+      avatar.textContent = (currentUser.name?.[0] || 'U').toUpperCase();
+      document.getElementById('sidebar-user-name').textContent = currentUser.name;
+      const gradeKey = String(currentUser.grade || '');
+      const gradeLabel =
+        (gradeTranslations[currentLanguage] && gradeTranslations[currentLanguage][gradeKey]) ?
+          gradeTranslations[currentLanguage][gradeKey] :
+          (currentLanguage === 'ar' ? `Ø§Ù„ØµÙ ${gradeKey}` : `Grade ${gradeKey}`);
+      const subjectDisplay = getSubjectDisplayName(currentUser.subject, currentUser.grade, currentLanguage);
+      document.getElementById('sidebar-user-grade').textContent =
+        subjectDisplay ? `${gradeLabel} - ${subjectDisplay}` : gradeLabel;
+    }
+
+    function getSubjectDisplayName(subject, grade, lang){
+      if(!subject) return '';
+      const arr = subjectsByGrade[grade] || [];
+      const found = arr.find(s => s.name === subject || s.nameAr === subject);
+      if(!found) return subject;
+      return (lang === 'ar' ? found.nameAr : found.name);
+    }
+
+    // -------- REGISTRATION: Grade select --------
+    function populateGradeSelect(){
+      const previous = gradeSelect.value || '';
+      gradeSelect.innerHTML = '';
+      const optionPlaceholder = document.createElement('option');
+      optionPlaceholder.value = '';
+      optionPlaceholder.textContent = currentLanguage === 'ar' ? '-- Ø§Ø®ØªØ± Ø§Ù„ØµÙ Ø§Ù„Ø¯Ø±Ø§Ø³ÙŠ --' : '-- Select Grade --';
+      gradeSelect.appendChild(optionPlaceholder);
+      ['10','11','12'].forEach(val=>{
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = gradeTranslations[currentLanguage][val];
+        gradeSelect.appendChild(opt);
+      });
+      if(previous) gradeSelect.value = previous;
+    }
+
+    // -------- SETTINGS POPULATION --------
+    function populateSettings(){
+      if(!currentUser) return;
+      document.getElementById('settings-name-input').value = currentUser.name || '';
+
+      // Grade dropdown in settings
+      const gradeSel = document.getElementById('settings-grade-select');
+      gradeSel.innerHTML = '';
+      ['10','11','12'].forEach(val=>{
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = gradeTranslations[currentLanguage][val];
+        gradeSel.appendChild(opt);
+      });
+      gradeSel.value = String(currentUser.grade || '');
+
+      // Subject dropdown depends on grade
+      populateSettingsSubjectsForGrade(gradeSel.value, currentUser.subject);
+      gradeSel.onchange = () => {
+        populateSettingsSubjectsForGrade(gradeSel.value, null);
+      };
+    }
+
+    function populateSettingsSubjectsForGrade(gradeVal, selectedSubject){
+      const subjSel = document.getElementById('settings-subject-select');
+      subjSel.innerHTML = '';
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = currentLanguage === 'ar' ? '-- Ø§Ø®ØªØ± Ø§Ù„Ù…Ø§Ø¯Ø© --' : '-- Select Subject --';
+      subjSel.appendChild(placeholder);
+
+      const list = subjectsByGrade[gradeVal] || [];
+      list.forEach(s=>{
+        const opt = document.createElement('option');
+        opt.value = s.name; // store canonical English
+        opt.textContent = currentLanguage==='ar' ? s.nameAr : s.name;
+        subjSel.appendChild(opt);
       });
 
-      // Update all translatable elements
-      document.querySelectorAll('[id]').forEach(el => {
-        const key = el.id;
-        if (translations[currentLanguage][key]) {
-          if (el.tagName === 'INPUT' && el.type !== 'button') {
-            el.placeholder = translations[currentLanguage][key];
-          } else {
-            el.textContent = translations[currentLanguage][key];
+      // If selectedSubject is provided and exists, set it
+      if(selectedSubject){
+        const exists = list.some(s => s.name === selectedSubject || s.nameAr === selectedSubject);
+        if(exists){
+          subjSel.value = list.find(s => s.name === selectedSubject || s.nameAr === selectedSubject).name;
+        } else {
+          // add a fallback option for legacy/custom subjects
+          const extra = document.createElement('option');
+          extra.value = selectedSubject;
+          extra.textContent = selectedSubject;
+          subjSel.appendChild(extra);
+          subjSel.value = selectedSubject;
+        }
+      } else {
+        subjSel.value = '';
+      }
+    }
+
+    async function savePersonalInfo(){
+      if(!currentUser) return;
+      const name    = document.getElementById('settings-name-input').value.trim();
+      const newGrade= document.getElementById('settings-grade-select').value;
+      const newSubj = document.getElementById('settings-subject-select').value || null;
+
+      if(!name){
+        alert(currentLanguage==='ar' ? 'Ù„Ø§ ÙŠÙ…ÙƒÙ† Ø£Ù† ÙŠÙƒÙˆÙ† Ø§Ù„Ø§Ø³Ù… ÙØ§Ø±ØºØ§Ù‹.' : 'Name cannot be empty.');
+        return;
+      }
+      if(!newGrade){
+        alert(currentLanguage==='ar' ? 'Ø§Ø®ØªØ± Ø§Ù„ØµÙ.' : 'Please choose a grade.');
+        return;
+      }
+
+      try{
+        currentUser.name  = name;
+        currentUser.grade = newGrade;
+        currentUser.subject = newSubj;
+
+        await supabase.from('users').update({name, grade:newGrade, subject:newSubj}).eq('id', currentUser.id);
+        localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
+
+        // Refresh dependent UI
+        updateSidebarUserInfo();
+        populateRoomSubjects(newGrade);
+
+        toast(currentLanguage==='ar'?'ØªÙ… ØªØ­Ø¯ÙŠØ« Ø§Ù„Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø¨Ù†Ø¬Ø§Ø­!':'Personal information updated successfully!', 'success', currentLanguage==='ar'?'ØªÙ… Ø§Ù„ØªØ­Ø¯ÙŠØ«':'Updated');
+      }catch(e){
+        console.error(e);
+        alert(currentLanguage==='ar'?'ÙØ´Ù„ Ø­ÙØ¸ Ø§Ù„Ù…Ø¹Ù„ÙˆÙ…Ø§Øª.':'Failed to save personal information.');
+      }
+    }
+
+    // -------- NOTIFICATIONS --------
+    function toast(message, type = 'info', titleText){
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `<div><div class="title">${titleText || (type === 'success' ? 'Success' : 'Notice')}</div><div class="msg">${escapeHtml(message)}</div></div>`;
+      document.body.appendChild(toast);
+      setTimeout(() => { 
+        toast.style.opacity = '0'; 
+        toast.style.transform = 'translateX(20px)'; 
+        setTimeout(() => toast.remove(), 250); 
+      }, 3500);
+    }
+
+    // -------- ROOM MANAGEMENT --------
+    async function createRoom(){
+      if(!currentUser){
+        alert(currentLanguage==='ar'?'ÙŠØ±Ø¬Ù‰ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ø£ÙˆÙ„Ø§Ù‹.':'Please log in first.');
+        return;
+      }
+      try{
+        updateConnectionStatus('connecting');
+        const roomCode = Array(6).fill(0).map(() => 
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]
+        ).join('');
+        const roomData = { room_code: roomCode, host_id: currentUser.id, is_active: true };
+        const {data, error} = await supabase.from('rooms').insert([roomData]).select().single();
+        if(error){
+          console.error('Room creation error:', error);
+          updateConnectionStatus('disconnected');
+          alert((currentLanguage==='ar'?'ÙØ´Ù„ Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„ØºØ±ÙØ©: ':'Failed to create room: ') + (error.message || 'Unknown error'));
+          return;
+        }
+        await joinRoomById(data.id, data.room_code, data.host_id);
+        toast(currentLanguage==='ar'?'ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„ØºØ±ÙØ© Ø¨Ù†Ø¬Ø§Ø­!':'Room created successfully!', 'success', currentLanguage==='ar'?'ØªÙ… Ø§Ù„Ø¥Ù†Ø´Ø§Ø¡':'Created');
+      }catch(e){
+        console.error('Room creation exception:', e);
+        updateConnectionStatus('disconnected');
+        alert((currentLanguage==='ar'?'ÙØ´Ù„ Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„ØºØ±ÙØ©: ':'Failed to create room: ') + (e.message || 'Unknown error'));
+      }
+    }
+
+    async function joinRoom(codeOverride = null){
+      const code = (codeOverride || document.getElementById('room-code-input').value).toUpperCase().trim();
+      if(!code) return;
+      try{
+        updateConnectionStatus('connecting');
+        const {data, error} = await supabase.from('rooms')
+          .select('*').eq('room_code', code).eq('is_active', true).single();
+        if(error || !data){
+          updateConnectionStatus('disconnected');
+          alert(currentLanguage==='ar'?'Ø§Ù„ØºØ±ÙØ© ØºÙŠØ± Ù…ÙˆØ¬ÙˆØ¯Ø© Ø£Ùˆ ØºÙŠØ± ÙØ¹Ù‘Ø§Ù„Ø©.':'Room not found or is inactive.');
+          return;
+        }
+        await joinRoomById(data.id, data.room_code, data.host_id);
+      }catch(e){
+        console.error(e);
+        updateConnectionStatus('disconnected');
+        alert(currentLanguage==='ar'?'ÙØ´Ù„ Ø§Ù„Ø§Ù†Ø¶Ù…Ø§Ù… Ø¥Ù„Ù‰ Ø§Ù„ØºØ±ÙØ©.':'Failed to join room.');
+      }
+    }
+
+    async function joinRoomById(roomId, roomCode, roomHostId){
+      try{
+        updateConnectionStatus('connecting');
+        const {error} = await supabase.from('room_participants').upsert({
+          room_id: roomId,
+          user_id: currentUser.id,
+          is_online: true,
+          joined_at: new Date().toISOString()
+        }, {onConflict: 'room_id,user_id'});
+        
+        if(error){
+          console.error('Failed to join room as participant:', error);
+          updateConnectionStatus('disconnected');
+          alert((currentLanguage==='ar'?'ÙØ´Ù„ Ø§Ù„Ø§Ù†Ø¶Ù…Ø§Ù… Ø¥Ù„Ù‰ Ø§Ù„ØºØ±ÙØ©: ':'Failed to join room: ') + (error.message || 'Unknown error'));
+          return;
+        }
+        
+        currentRoom = {id: roomId, code: roomCode, host_id: roomHostId};
+        localStorage.setItem('studyTogether_room', JSON.stringify(currentRoom));
+        document.getElementById('current-room-code').textContent = roomCode;
+        populateRoomSubjects(currentUser.grade);
+        await loadRoomSubjectIntoUI();
+        setupRoomSubscriptions();
+        await loadRoomData();
+        navigateToScreen('room-screen');
+        updateConnectionStatus('connected');
+        
+        setTimeout(() => {
+          if (participantsSubscription) {
+            participantsSubscription.send({
+              type: 'broadcast',
+              event: 'participant_update',
+              payload: { action: 'join', user_id: currentUser.id }
+            });
           }
+        }, 1000);
+      }catch(e){
+        console.error('Exception joining room:', e);
+        updateConnectionStatus('disconnected');
+        alert((currentLanguage==='ar'?'ÙØ´Ù„ Ø§Ù„Ø§Ù†Ø¶Ù…Ø§Ù… Ø¥Ù„Ù‰ Ø§Ù„ØºØ±ÙØ©: ':'Failed to join room: ') + (e.message || 'Unknown error'));
+      }
+    }
+
+    async function leaveRoom(isLoggingOut = false){
+      if(!currentRoom) return;
+      cleanupSubscriptions();
+      if (!isLoggingOut) {
+        try {
+          await supabase.from('room_participants')
+            .delete().match({room_id: currentRoom.id, user_id: currentUser.id});
+        } catch (error) { console.error('Error removing participant:', error); }
+      }
+      currentRoom = null;
+      connectionRetryCount = 0;
+      localStorage.removeItem('studyTogether_room');
+      updateConnectionStatus('disconnected');
+      resetTimerUI();
+      roomTimerState = { isRunning:false, seconds:1500, duration:1500, startedBy:null, startTime:null };
+      if(!isLoggingOut) navigateToScreen('study-rooms-screen');
+    }
+
+    async function saveRoomSubject(){
+      if(!currentRoom) return;
+      const subject = roomSubjectSelect.value || null;
+      const selectedUnitsArray = getSelectedUnitsData();
+      
+      try{
+        // Update user data with subject and selected units
+        const updateData = {
+          subject: subject,
+          selected_units: selectedUnitsArray.length > 0 ? selectedUnitsArray : null
+        };
+        
+        currentUser.subject = subject;
+        currentUser.selected_units = selectedUnitsArray;
+        
+        await supabase.from('users').update(updateData).eq('id', currentUser.id);
+        localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
+        populateSettings();
+        updateSidebarUserInfo();
+        
+        const unitsMessage = selectedUnitsArray.length > 0 ? 
+          ` (${selectedUnitsArray.length} ${translations[currentLanguage]['unitsSelected'] || 'units selected'})` : '';
+        
+        toast((currentLanguage==='ar'?'ØªÙ… ØªØ¹ÙŠÙŠÙ† Ø§Ù„Ù…Ø§Ø¯Ø© Ø¥Ù„Ù‰ ':'Subject set to ') + 
+              (getSubjectDisplayName(subject, currentUser.grade, currentLanguage) || 'â€”') + unitsMessage, 
+              'success', currentLanguage==='ar'?'ØªÙ… Ø§Ù„ØªØ­Ø¯ÙŠØ«':'Updated');
+              
+        // Update shared study focus display for all participants
+        setTimeout(() => updateSharedStudyFocus(), 500);
+        
+        // Broadcast study focus update to other participants
+        if(participantsSubscription) {
+          participantsSubscription.send({
+            type: 'broadcast',
+            event: 'study_focus_update',
+            payload: { 
+              action: 'update',
+              user_id: currentUser.id,
+              subject: subject,
+              selected_units: selectedUnitsArray
+            }
+          });
+        }
+      }catch(e){
+        console.error(e);
+        alert(currentLanguage==='ar'?'ÙØ´Ù„ Ø­ÙØ¸ Ø§Ù„Ù…Ø§Ø¯Ø© ÙˆØ§Ù„Ø¯Ø±ÙˆØ³.':'Failed saving subject and units.');
+      }
+    }
+
+    async function loadRoomSubjectIntoUI(){
+      if(!currentRoom) return;
+      roomSubjectSelect.value = currentUser.subject || '';
+      
+      // Trigger chapter/unit loading if subject has chapters
+      onRoomSubjectChange();
+      
+      // Load previously selected units if any
+      if(currentUser.selected_units && currentUser.selected_units.length > 0){
+        selectedUnits = new Set(currentUser.selected_units);
+        
+        // Update UI to show selected units
+        setTimeout(() => {
+          currentUser.selected_units.forEach(unitId => {
+            const unitElement = document.getElementById(`unit-${unitId}`);
+            if(unitElement){
+              unitElement.classList.add('selected');
+            }
+          });
+          
+          // Update all chapter badges and total summary
+          document.querySelectorAll('.chapter-tab').forEach(tab => {
+            const chapterId = tab.dataset.chapterId;
+            updateChapterBadge(chapterId);
+          });
+          updateTotalSummary();
+        }, 100);
+      }
+      
+      populateSettings();
+      updateSidebarUserInfo();
+    }
+
+    async function kickParticipant(userId, userName){
+      if(!confirm(currentLanguage==='ar'?`Ù‡Ù„ ØªØ±ÙŠØ¯ Ø¥Ø²Ø§Ù„Ø© ${userName}ØŸ`:`Are you sure you want to kick ${userName}?`)) return;
+      try{
+        await supabase.from('room_participants')
+          .delete().match({room_id: currentRoom.id, user_id: userId});
+        await sendSystemMessage(`${userName} was removed by the host.`);
+      }catch(e){ console.error(e); }
+    }
+
+    // -------- REAL-TIME --------
+    function setupRoomSubscriptions(){
+      cleanupSubscriptions();
+      const participantsChannelName = `room-participants-${currentRoom.id}`;
+      const timerChannelName = `room-timer-${currentRoom.id}`;
+
+      participantsSubscription = supabase.channel(participantsChannelName, {
+        config: { broadcast: { self: false }, presence: { key: currentUser.id } }
+      }).on('postgres_changes', {
+        event: '*', schema: 'public', table: 'room_participants', filter: `room_id=eq.${currentRoom.id}`
+      }, async (payload) => {
+        try {
+          await loadParticipants();
+          if (payload.eventType === 'INSERT' && payload.new?.user_id !== currentUser.id) {
+            const user = await fetchUser(payload.new.user_id);
+            if (user) showPopupNotification(`${user.name} joined the room`, currentLanguage==='ar'?'Ø§Ù†Ø¶Ù… Ù…Ø´Ø§Ø±Ùƒ':'Participant joined');
+          }
+          if (payload.eventType === 'DELETE' && payload.old?.user_id !== currentUser.id) {
+            const user = await fetchUser(payload.old.user_id);
+            if (user) showPopupNotification(`${user.name} left the room`, currentLanguage==='ar'?'ØºØ§Ø¯Ø± Ù…Ø´Ø§Ø±Ùƒ':'Participant left');
+          }
+          updateConnectionStatus('connected');
+          connectionRetryCount = 0;
+        } catch (error) {
+          console.error('Error handling participants change:', error);
+          updateConnectionStatus('disconnected');
+        }
+      }).on('broadcast', { event: 'participant_update' }, () => {
+        loadParticipants();
+      }).on('broadcast', { event: 'study_focus_update' }, () => {
+        updateSharedStudyFocus();
+      }).subscribe();
+
+      timerSubscription = supabase.channel(timerChannelName, {
+        config: { broadcast: { self: false }, presence: { key: currentUser.id } }
+      }).on('broadcast', { event: 'timer_sync' }, (payload) => {
+        handleTimerBroadcast(payload.payload);
+      }).subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          updateConnectionStatus('connected');
+          connectionRetryCount = 0;
+        } else if (status === 'CHANNEL_ERROR') {
+          updateConnectionStatus('disconnected');
+          retryConnection();
+        }
+      });
+    }
+
+    function cleanupSubscriptions() {
+      if (participantsSubscription) { try { participantsSubscription.unsubscribe(); } catch (e) {} participantsSubscription = null; }
+      if (timerSubscription) { try { timerSubscription.unsubscribe(); } catch (e) {} timerSubscription = null; }
+    }
+
+    function retryConnection() {
+      connectionRetryCount++;
+      if (connectionRetryCount < 3) {
+        setTimeout(() => { setupRoomSubscriptions(); }, 2000 * connectionRetryCount);
+      }
+    }
+
+    async function loadRoomData(){ 
+      await loadParticipants(); 
+      await updateSharedStudyFocus();
+    }
+
+    // -------- TIMER SYNC --------
+    function handleTimerBroadcast(data) {
+      if (data.action === 'schedule') {
+        lastScheduleBy = data.userId || null;
+        scheduleTimerAt(data.scheduledStartTime, data.duration);
+        const at = new Date(data.scheduledStartTime).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        updateTimerStatus((currentLanguage==='ar' ? 'ØªÙ…Øª Ø§Ù„Ø¬Ø¯ÙˆÙ„Ø© Ù„Ù„Ø³Ø§Ø¹Ø© ' : 'Scheduled for ') + at);
+        toast(`${currentLanguage==='ar' ? 'ØªÙ…Øª Ø¬Ø¯ÙˆÙ„Ø© Ø§Ù„Ù…Ø¤Ù‚Øª Ø¨ÙˆØ§Ø³Ø·Ø©' : 'Timer scheduled by'} ${data.startedBy}`, 'info', currentLanguage==='ar' ? 'ØªÙ…Øª Ø§Ù„Ø¬Ø¯ÙˆÙ„Ø©' : 'Scheduled');
+
+      } else if (data.action === 'start') {
+        const now = Date.now();
+        const elapsed = Math.floor((now - data.startTime) / 1000);
+        const remainingSeconds = Math.max(0, data.duration - elapsed);
+
+        roomTimerState = { isRunning:true, seconds:remainingSeconds, duration:data.duration, startedBy:data.startedBy, startTime:data.startTime };
+
+        timerSeconds = remainingSeconds;
+        timerDuration = data.duration;
+        timerStartedBy = data.startedBy;
+
+        updateTimerDisplay();
+        updateProgressBar();
+        updateTimerStatus(`${currentLanguage==='ar'?'Ø¨Ø¯Ø£ Ø¨ÙˆØ§Ø³Ø·Ø©':'Started by'} ${data.startedBy}`);
+
+        if (!timerRunning && remainingSeconds > 0) {
+          startLocalTimerCountdown();
+        } else if (remainingSeconds <= 0) {
+          timerComplete();
+        }
+
+        toast(`${currentLanguage==='ar'?'Ø¨Ø¯Ø£ Ø§Ù„Ù…Ø¤Ù‚Øª Ø¨ÙˆØ§Ø³Ø·Ø©':'Timer started by'} ${data.startedBy}`, 'info', currentLanguage==='ar'?'ØªÙ… Ø§Ù„Ø¨Ø¯Ø¡':'Timer Started');
+
+      } else if (data.action === 'pause' || data.action === 'reset') {
+        roomTimerState.isRunning = false;
+        resetTimerUI();
+        const cap = data.action.charAt(0).toUpperCase() + data.action.slice(1);
+        toast(`Timer ${data.action}d by ${data.startedBy}`, 'info', `Timer ${cap}d`);
+
+      } else if (data.action === 'stop' || data.action === 'complete') {
+        roomTimerState.isRunning = false;
+        resetTimerUI();
+        if (data.action === 'stop') {
+          toast(currentLanguage==='ar'?'ØªÙ… Ø¥ÙŠÙ‚Ø§Ù Ø§Ù„Ù…Ø¤Ù‚Øª Ù…Ù† Ù‚ÙØ¨Ù„ Ø£Ø­Ø¯ Ø§Ù„Ù…Ø´Ø§Ø±ÙƒÙŠÙ†.':'Timer was stopped by a participant.', 'info', currentLanguage==='ar'?'ØªÙ… Ø§Ù„Ø¥ÙŠÙ‚Ø§Ù':'Stopped');
+        }
+      }
+    }
+
+    function broadcastTimerAction(action, extraData = {}) {
+      if (!timerSubscription || !currentRoom) { console.error('Cannot broadcast: no timer subscription or room'); return; }
+      const payload = { action, startedBy: currentUser.name, userId: currentUser.id, roomId: currentRoom.id, timestamp: Date.now(), ...extraData };
+      if (action === 'start' && !payload.startTime) {
+        payload.duration = timerDuration;
+        payload.startTime = Date.now();
+      }
+      try {
+        timerSubscription.send({ type:'broadcast', event:'timer_sync', payload });
+      } catch (error) {
+        console.error('Error broadcasting timer action:', error);
+        toast(currentLanguage==='ar'?'ÙØ´Ù„ Ù…Ø²Ø§Ù…Ù†Ø© Ø§Ù„Ù…Ø¤Ù‚Øª':'Failed to sync timer', 'error', currentLanguage==='ar'?'Ø®Ø·Ø£ Ù…Ø²Ø§Ù…Ù†Ø©':'Sync Error');
+      }
+    }
+
+    // -------- TIMER CORE --------
+    function formatTime(totalSeconds){
+      const h = Math.floor(totalSeconds / 3600);
+      const m = Math.floor((totalSeconds % 3600) / 60);
+      const s = totalSeconds % 60;
+      return (h > 0)
+        ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+        : `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }
+
+    function applyCustomDuration(){
+      const h = parseInt(document.getElementById('custom-hours').value || '0', 10);
+      const m = parseInt(document.getElementById('custom-minutes').value || '0', 10);
+      const s = parseInt(document.getElementById('custom-seconds').value || '0', 10);
+      const total = (isNaN(h)?0:h)*3600 + (isNaN(m)?0:m)*60 + (isNaN(s)?0:s);
+
+      if(total <= 0){
+        alert(currentLanguage === 'ar' ? 'ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ù…Ø¯Ø© ØµØ­ÙŠØ­Ø©.' : 'Please enter a valid duration.');
+        return;
+      }
+
+      timerSeconds = total;
+      timerDuration = total;
+      resetTimerUI();
+      updateTimerDisplay();
+      updateProgressBar();
+      toast(`${currentLanguage==='ar'?'ØªÙ… Ø¶Ø¨Ø· Ø§Ù„Ù…Ø¤Ù‚Øª Ø¥Ù„Ù‰':'Timer set to'} ${formatTime(total)}`, 'success', currentLanguage==='ar'?'ØªÙ… Ø§Ù„Ø¶Ø¨Ø·':'Custom Duration');
+    }
+
+    function applyStartEndTimer(){
+      const startVal = document.getElementById('start-time-input').value;
+      const endVal   = document.getElementById('end-time-input').value;
+
+      if(!startVal || !endVal){
+        alert(currentLanguage==='ar' ? 'ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ ÙˆÙ‚ØªÙŠ Ø§Ù„Ø¨Ø¯Ø§ÙŠØ© ÙˆØ§Ù„Ù†Ù‡Ø§ÙŠØ©.' : 'Please provide both start and end times.');
+        return;
+      }
+
+      const now = new Date();
+      const [sh, sm] = startVal.split(':').map(Number);
+      const [eh, em] = endVal.split(':').map(Number);
+
+      let start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), sh||0, sm||0, 0, 0);
+      let end   = new Date(now.getFullYear(), now.getMonth(), now.getDate(), eh||0, em||0, 0, 0);
+
+      if(end <= start){ end = new Date(end.getTime() + 24*3600*1000); }
+
+      const durationSec = Math.floor((end - start) / 1000);
+      if(durationSec <= 0){
+        alert(currentLanguage==='ar' ? 'ÙˆÙ‚Øª Ø§Ù„Ù†Ù‡Ø§ÙŠØ© ÙŠØ¬Ø¨ Ø£Ù† ÙŠÙƒÙˆÙ† Ø¨Ø¹Ø¯ Ø§Ù„Ø¨Ø¯Ø§ÙŠØ©.' : 'End time must be after start time.');
+        return;
+      }
+
+      const msUntilStart = start.getTime() - now.getTime();
+      const endsAtText = end.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+
+      if(msUntilStart > 0){
+        lastScheduleBy = currentUser.id;
+        scheduleTimerAt(start.getTime(), durationSec);
+        broadcastTimerAction('schedule', { duration: durationSec, scheduledStartTime: start.getTime() });
+        updateTimerStatus((currentLanguage==='ar' ? 'ØªÙ…Øª Ø§Ù„Ø¬Ø¯ÙˆÙ„Ø© Ù„Ù„Ø³Ø§Ø¹Ø© ' : 'Scheduled for ') + start.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + (currentLanguage==='ar' ? `ØŒ ÙŠÙ†ØªÙ‡ÙŠ ${endsAtText}` : `, ends ${endsAtText}`));
+        toast(currentLanguage==='ar' ? 'ØªÙ…Øª Ø¬Ø¯ÙˆÙ„Ø© Ø§Ù„Ù…Ø¤Ù‚Øª' : 'Timer scheduled', 'info', currentLanguage==='ar' ? 'ØªÙ…Øª Ø§Ù„Ø¬Ø¯ÙˆÙ„Ø©' : 'Scheduled');
+      } else {
+        const remaining = Math.max(0, Math.floor((end.getTime() - now.getTime()) / 1000));
+        if(remaining <= 0){
+          alert(currentLanguage==='ar' ? 'ÙˆÙ‚Øª Ø§Ù„Ù†Ù‡Ø§ÙŠØ© ÙÙŠ Ø§Ù„Ù…Ø§Ø¶ÙŠ.' : 'End time is in the past.');
+          return;
+        }
+        timerDuration = remaining;
+        timerSeconds  = remaining;
+        resetTimerUI();
+        updateTimerDisplay();
+        updateProgressBar();
+        updateTimerStatus((currentLanguage==='ar' ? 'ÙŠÙ†ØªÙ‡ÙŠ ' : 'Ends ') + endsAtText);
+        broadcastTimerAction('start', { duration: remaining, startTime: Date.now() });
+        startLocalTimerCountdown();
+      }
+    }
+
+    function scheduleTimerAt(ts, duration){
+      if(scheduledStartTimeout) clearTimeout(scheduledStartTimeout);
+      scheduledStartTime = ts;
+      timerDuration = duration;
+      timerSeconds  = duration;
+      resetTimerUI();
+      timerDuration = duration;
+      timerSeconds  = duration;
+      updateTimerDisplay();
+      updateProgressBar();
+      const ms = ts - Date.now();
+      const startLabel = new Date(ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      updateTimerStatus((currentLanguage==='ar' ? 'ØªÙ…Øª Ø§Ù„Ø¬Ø¯ÙˆÙ„Ø© Ù„Ù„Ø³Ø§Ø¹Ø© ' : 'Scheduled for ') + startLabel);
+      scheduledStartTimeout = setTimeout(() => {
+        if(lastScheduleBy === currentUser.id){
+          broadcastTimerAction('start', { duration, startTime: ts });
+        }
+        startTimerAt(ts, duration);
+      }, Math.max(0, ms));
+    }
+
+    function startTimerAt(startTs, duration){
+      const elapsed   = Math.floor((Date.now() - startTs) / 1000);
+      const remaining = Math.max(0, duration - elapsed);
+      timerDuration   = duration;
+      timerSeconds    = remaining;
+      timerStartedBy  = currentUser.name;
+
+      resetTimerUI();
+      document.getElementById('start-timer-btn').style.display = 'none';
+      document.getElementById('pause-timer-btn').style.display = 'inline-block';
+      timerRunning = true;
+      document.getElementById('timer-progress-bar')?.classList.add('running');
+      updateTimerDisplay();
+      updateProgressBar();
+
+      const endsAt = new Date(startTs + duration*1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      updateTimerStatus((currentLanguage==='ar' ? 'ÙŠÙ†ØªÙ‡ÙŠ ' : 'Ends ') + endsAt);
+
+      startLocalTimerCountdown();
+    }
+
+    async function startTimer(){
+      if(timerRunning || !currentRoom) return;
+      timerDuration = timerSeconds;
+      timerStartedBy = currentUser.name;
+      broadcastTimerAction('start');
+      startLocalTimerCountdown();
+      updateTimerStatus(`${currentLanguage==='ar'?'Ø¨Ø¯Ø£ Ø¨ÙˆØ§Ø³Ø·Ø©':'Started by'} ${currentUser.name}`);
+    }
+
+    function startLocalTimerCountdown() {
+      if(timerRunning) { clearInterval(timerInterval); }
+      timerRunning = true;
+      document.getElementById('start-timer-btn').style.display = 'none';
+      document.getElementById('pause-timer-btn').style.display = 'inline-block';
+      document.getElementById('timer-progress-bar')?.classList.add('running');
+      timerInterval = setInterval(() => {
+        timerSeconds--;
+        updateTimerDisplay();
+        updateProgressBar();
+        if(timerSeconds <= 0) { timerComplete(); }
+      }, 1000);
+    }
+
+    async function pauseTimer(){
+      if (!currentRoom) return;
+      broadcastTimerAction('pause');
+      resetTimerUI();
+    }
+
+    async function resetTimer(){
+      timerSeconds = timerDuration || 1500;
+      if (currentRoom) broadcastTimerAction('reset');
+      resetTimerUI();
+    }
+
+    async function endSession(){
+      broadcastTimerAction('stop');
+      resetTimerUI();
+      toast(currentLanguage==='ar' ? 'ØªÙ… Ø¥Ù†Ù‡Ø§Ø¡ Ø§Ù„Ù…Ø¤Ù‚Øª ÙˆØ§Ù„Ø¬Ù„Ø³Ø©.' : 'Timer and session ended.', 'success',
+            currentLanguage==='ar' ? 'Ø§Ù†ØªÙ‡Øª Ø§Ù„Ø¬Ù„Ø³Ø©' : 'Session Ended');
+
+      const isHost = currentRoom && currentUser && currentUser.id === currentRoom.host_id;
+      if(isHost && currentRoom){
+        const confirmClose = confirm(currentLanguage==='ar'
+          ? 'Ù‡Ù„ ØªØ±ÙŠØ¯ Ø¥ØºÙ„Ø§Ù‚ Ø§Ù„ØºØ±ÙØ© Ù„Ù„Ø¬Ù…ÙŠØ¹ØŸ'
+          : 'Do you want to close the room for everyone?');
+        if(confirmClose){
+          try{
+            await supabase.from('rooms').update({ is_active: false }).eq('id', currentRoom.id);
+            await leaveRoom();
+            toast(currentLanguage==='ar' ? 'ØªÙ… Ø¥ØºÙ„Ø§Ù‚ Ø§Ù„ØºØ±ÙØ©.' : 'Room closed.', 'success',
+                  currentLanguage==='ar' ? 'Ø£ÙØºÙ„ÙÙ‚Øª' : 'Closed');
+          }catch(e){
+            console.error(e);
+            alert(currentLanguage==='ar' ? 'ØªØ¹Ø°Ø± Ø¥ØºÙ„Ø§Ù‚ Ø§Ù„ØºØ±ÙØ©.' : 'Failed to close the room.');
+          }
+        }
+      }
+    }
+
+    function updateTimerDisplay(){
+      const minutes = Math.floor(timerSeconds / 60);
+      const seconds = timerSeconds % 60;
+      const display = document.getElementById('timer-display');
+      if (display) display.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function updateProgressBar(){
+      const progressBar = document.getElementById('timer-progress-bar');
+      if (progressBar && timerDuration > 0) {
+        const percentage = Math.max(0, (timerSeconds / timerDuration) * 100);
+        progressBar.style.width = `${percentage}%`;
+      }
+    }
+
+    function updateTimerStatus(status) {
+      const statusEl = document.getElementById('timer-status');
+      if (statusEl) statusEl.textContent = status || '';
+    }
+
+    function resetTimerUI(){
+      timerRunning = false;
+      if (scheduledStartTimeout) { clearTimeout(scheduledStartTimeout); scheduledStartTimeout = null; }
+      scheduledStartTime = null;
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+      const startBtn = document.getElementById('start-timer-btn');
+      const pauseBtn = document.getElementById('pause-timer-btn');
+      if (startBtn) startBtn.style.display = 'inline-block';
+      if (pauseBtn) pauseBtn.style.display = 'none';
+      document.getElementById('timer-progress-bar')?.classList.remove('running');
+      updateTimerDisplay();
+      updateProgressBar();
+      updateTimerStatus('');
+    }
+
+    function timerComplete(){
+      timerRunning = false;
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+      const startBtn = document.getElementById('start-timer-btn');
+      const pauseBtn = document.getElementById('pause-timer-btn');
+      if (startBtn) startBtn.style.display = 'inline-block';
+      if (pauseBtn) pauseBtn.style.display = 'none';
+      document.getElementById('timer-progress-bar')?.classList.remove('running');
+      updateTimerStatus('');
+      showPopupNotification(currentLanguage==='ar'?'Ø§Ù†ØªÙ‡Ù‰ Ø§Ù„ÙˆÙ‚Øª! Ø¹Ù…Ù„ Ø±Ø§Ø¦Ø¹ Ù„Ù„Ø¬Ù…ÙŠØ¹!':"Time's up! Great work everyone!", currentLanguage==='ar'?'Ø§Ù†ØªÙ‡Ù‰ Ø§Ù„Ù…Ø¤Ù‚Øª':'Timer Complete');
+      toast(currentLanguage==='ar'?'Ø§ÙƒØªÙ…Ù„ Ø§Ù„Ù…Ø¤Ù‚Øª!':'Timer complete!', 'success', currentLanguage==='ar'?'ØªÙ…':'Done');
+      if (timerStartedBy === currentUser.name) broadcastTimerAction('complete');
+    }
+
+    function setTimerMinutes(minutes){
+      timerSeconds = minutes * 60;
+      timerDuration = timerSeconds;
+      resetTimer();
+    }
+
+    // -------- EVENT LISTENERS --------
+    function setupEventListeners(){
+      window.addEventListener('resize', () => updateLayoutForSidebar());
+
+      setInterval(() => {
+        if(currentRoom && currentUser){
+          supabase.from('room_participants')
+            .update({is_online: true})
+            .match({room_id: currentRoom.id, user_id: currentUser.id});
+        }
+      }, 20000);
+
+      window.addEventListener('beforeunload', () => {
+        if (currentRoom && currentUser) {
+          supabase.from('room_participants')
+            .update({ is_online: false })
+            .match({ user_id: currentUser.id, room_id: currentRoom.id });
         }
       });
 
-      // Update grade select options
-      const gradeSelect = document.getElementById('grade-select');
-      if (gradeSelect) {
-        const gradeTranslations = {
-          en: { "10": "Grade 10", "11": "Grade 11", "12": "Grade 12" },
-          ar: { "10": "الصف الأول الثانوي", "11": "الصف الثاني الثانوي", "12": "الصف الثالث الثانوي" }
-        };
-        
-        const currentValue = gradeSelect.value;
-        gradeSelect.innerHTML = '<option value="">-- Select Grade --</option>';
-        
-        ['10', '11', '12'].forEach(grade => {
-          const option = document.createElement('option');
-          option.value = grade;
-          option.textContent = gradeTranslations[currentLanguage][grade];
-          gradeSelect.appendChild(option);
-        });
-        
-        gradeSelect.value = currentValue;
-      }
+      document.querySelectorAll('.tab').forEach(t => 
+        t.onclick = () => switchTab(t.dataset.tab)
+      );
+      
+      document.querySelectorAll('[data-timer]').forEach(b => 
+        b.onclick = () => setTimerMinutes(parseInt(b.dataset.timer))
+      );
 
-      // Repopulate subjects if user is logged in
-      if (currentUser) {
-        populateSubjects();
-      }
-    }
+      document.addEventListener('keydown', (e) => {
+        if(e.key === 'Escape') toggleSidebar(false);
+        if((e.ctrlKey || e.metaKey) && e.key === 'b'){
+          e.preventDefault();
+          toggleSidebar();
+        }
+      });
 
-    function setupEventListeners() {
-      // Avatar selection
-      document.querySelectorAll('.avatar-choice').forEach(choice => {
-        choice.onclick = function() {
-          document.querySelectorAll('.avatar-choice').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('.avatar-choice').forEach(c => 
+        c.onclick = function(){
+          const prev = document.querySelector('.avatar-choice.selected');
+          if(prev) prev.classList.remove('selected');
           this.classList.add('selected');
           selectedColor = this.dataset.color;
-        };
+        }
+      );
+
+      document.getElementById('student-name').addEventListener('input', e => {
+        const first = e.target.value.trim().charAt(0).toUpperCase() || 'A';
+        document.querySelectorAll('.avatar-choice').forEach(div => { div.textContent = first; });
       });
 
-      // Update avatar letter when name changes
-      document.getElementById('student-name').addEventListener('input', (e) => {
-        const letter = e.target.value.trim()[0]?.toUpperCase() || 'A';
-        document.querySelectorAll('.avatar-choice').forEach(choice => {
-          choice.textContent = letter;
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
+    }
+
+    // -------- PARTICIPANTS HELPERS --------
+    async function loadParticipants(){
+      if(!currentRoom) return;
+      const {data, error} = await supabase.from('room_participants')
+        .select('user_id,is_online,room_id')
+        .eq('room_id', currentRoom.id)
+        .eq('is_online', true);
+      if(error){ console.error(error); return; }
+      const userIds = [...new Set(data.map(p => p.user_id))];
+      const usersMap = await fetchUsersMap(userIds);
+      const container = document.getElementById('participants-list');
+      const isHost = currentUser.id === currentRoom.host_id;
+      container.innerHTML = data.map(p => {
+        const user = usersMap[p.user_id];
+        if(!user) return '';
+        const isParticipantHost = user.id === currentRoom.host_id;
+        const kickBtn = isHost && !isParticipantHost ? 
+          `<button class="btn btn-small" style="background:var(--error-color)" onclick="kickParticipant('${user.id}','${escapeHtml(user.name)}')">${currentLanguage==='ar'?'Ø¥Ø²Ø§Ù„Ø©':'Kick'}</button>` : '';
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;background:var(--bg-tertiary);border-radius:12px;margin-bottom:1rem;">
+          <div style="display:flex;align-items:center;gap:1rem;">
+            <div class="sidebar-avatar" style="width:40px;height:40px;border-radius:10px;background:${user.avatar_color || '#667eea'};">${escapeHtml((user.name?.[0]||'U').toUpperCase())}</div>
+            <div>${escapeHtml(user.name)} ${isParticipantHost?'<b style="color:var(--accent-color)">(Host)</b>':''}</div>
+          </div>
+          ${kickBtn}
+        </div>`;
+      }).join('');
+      
+      // Update study focus display with the fetched participant data
+      updateStudyFocusFromParticipants(data, usersMap);
+    }
+
+    async function fetchUsersMap(ids){
+      if(ids.length === 0) return {};
+      const {data, error} = await supabase.from('users')
+        .select('id,name,avatar_color,subject,selected_units')
+        .in('id', ids);
+      if(error){ console.error(error); return {}; }
+      const map = {}; data.forEach(u => map[u.id] = u); return map;
+    }
+    
+    async function fetchUser(id){
+      const {data, error} = await supabase.from('users')
+        .select('id,name')
+        .eq('id', id)
+        .single();
+      return error ? null : data;
+    }
+
+    // -------- POPUP NOTIFICATIONS --------
+    function showPopupNotification(message, title = 'Notification') {
+      if (Notification.permission === 'granted') {
+        new Notification(title, {
+          body: message,
+          icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiM2NjdlZWEiLz4KPHN2ZyB4PSIxNiIgeT0iMTYiIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj4KPHA+8J+TsjwvcD4KPC9zdmc+Cjwvc3ZnPgo='
+        });
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') showPopupNotification(message, title);
+        });
+      }
+      toast(message, 'info', title);
+    }
+
+    // -------- UTILS --------
+    function populateRoomSubjects(grade){
+      const selectText = translations[currentLanguage]['selectSubject'] || 'Select Subject';
+      roomSubjectSelect.innerHTML = `<option value="">-- ${selectText} --</option>`;
+      const subjects = subjectsByGrade[grade] || [];
+      subjects.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.name; // canonical English
+        opt.textContent = currentLanguage === 'ar' ? s.nameAr : s.name;
+        roomSubjectSelect.appendChild(opt);
+      });
+      if(currentUser && currentUser.subject){
+        // set current subject if still valid
+        const exists = subjects.some(s => s.name === currentUser.subject || s.nameAr === currentUser.subject);
+        roomSubjectSelect.value = exists ? subjects.find(s => s.name === currentUser.subject || s.nameAr === currentUser.subject).name : '';
+      }
+    }
+
+    // -------- CHAPTER AND UNIT SELECTION --------
+    let selectedUnits = new Set(); // Store selected unit IDs
+
+    function onRoomSubjectChange(){
+      const selectedSubject = roomSubjectSelect.value;
+      const chapterSelector = document.getElementById('chapter-unit-selector');
+      
+      if(!selectedSubject){
+        chapterSelector.style.display = 'none';
+        return;
+      }
+
+      // Find the subject with chapters
+      const subjects = subjectsByGrade[currentUser?.grade] || [];
+      const subjectData = subjects.find(s => s.name === selectedSubject);
+      
+      if(subjectData && subjectData.chapters){
+        chapterSelector.style.display = 'block';
+        populateChaptersAndUnits(subjectData.chapters);
+      } else {
+        chapterSelector.style.display = 'none';
+      }
+    }
+
+    function populateChaptersAndUnits(chapters){
+      const tabsContainer = document.getElementById('chapters-tabs');
+      const contentContainer = document.getElementById('chapters-content');
+      const summaryDiv = document.getElementById('selection-summary');
+      
+      tabsContainer.innerHTML = '';
+      contentContainer.innerHTML = '';
+      selectedUnits.clear();
+
+      chapters.forEach((chapter, chapterIndex) => {
+        const chapterName = currentLanguage === 'ar' ? chapter.nameAr : chapter.name;
+        
+        // Create tab button
+        const tabButton = document.createElement('button');
+        tabButton.className = `chapter-tab ${chapterIndex === 0 ? 'active' : ''}`;
+        tabButton.dataset.chapterId = chapter.id;
+        tabButton.onclick = () => switchChapterTab(chapter.id);
+        tabButton.innerHTML = `
+          ${chapterName}
+          <span class="chapter-tab-badge" id="badge-${chapter.id}">0</span>
+        `;
+        tabsContainer.appendChild(tabButton);
+        
+        // Create content panel
+        const contentPanel = document.createElement('div');
+        contentPanel.className = `chapter-content ${chapterIndex === 0 ? 'active' : ''}`;
+        contentPanel.id = `content-${chapter.id}`;
+        
+        contentPanel.innerHTML = `
+          <div class="units-grid">
+            ${chapter.units.map(unit => {
+              const unitName = currentLanguage === 'ar' ? unit.nameAr : unit.name;
+              return `
+                <div class="unit-card" onclick="toggleUnit('${unit.id}', '${chapter.id}')" id="unit-${unit.id}">
+                  <div class="unit-id">${unit.id}</div>
+                  <div class="unit-title">${unitName}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          
+          <div class="chapter-controls">
+            <button class="btn btn-small" onclick="selectAllUnits('${chapter.id}')" data-translate="selectAll">Select All</button>
+            <button class="btn btn-secondary btn-small" onclick="deselectAllUnits('${chapter.id}')" data-translate="deselectAll">Deselect All</button>
+          </div>
+        `;
+        
+        contentContainer.appendChild(contentPanel);
+      });
+      
+      // Show summary section
+      summaryDiv.style.display = 'block';
+      updateTotalSummary();
+
+      // Update translations for dynamically created buttons
+      contentContainer.querySelectorAll('[data-translate]').forEach(el => {
+        const key = el.getAttribute('data-translate');
+        if(translations[currentLanguage][key]) el.textContent = translations[currentLanguage][key];
+      });
+    }
+
+    function switchChapterTab(chapterId){
+      // Remove active class from all tabs and contents
+      document.querySelectorAll('.chapter-tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.chapter-content').forEach(content => content.classList.remove('active'));
+      
+      // Add active class to selected tab and content
+      document.querySelector(`[data-chapter-id="${chapterId}"]`).classList.add('active');
+      document.getElementById(`content-${chapterId}`).classList.add('active');
+    }
+
+    function toggleUnit(unitId, chapterId){
+      const unitElement = document.getElementById(`unit-${unitId}`);
+      const isSelected = selectedUnits.has(unitId);
+      
+      if(isSelected){
+        selectedUnits.delete(unitId);
+        unitElement.classList.remove('selected');
+      } else {
+        selectedUnits.add(unitId);
+        unitElement.classList.add('selected');
+      }
+      
+      updateChapterBadge(chapterId);
+      updateTotalSummary();
+    }
+
+    function selectAllUnits(chapterId){
+      const contentPanel = document.getElementById(`content-${chapterId}`);
+      const unitElements = contentPanel.querySelectorAll('.unit-card');
+      
+      unitElements.forEach(element => {
+        const unitId = element.id.replace('unit-', '');
+        selectedUnits.add(unitId);
+        element.classList.add('selected');
+      });
+      
+      updateChapterBadge(chapterId);
+      updateTotalSummary();
+    }
+
+    function deselectAllUnits(chapterId){
+      const contentPanel = document.getElementById(`content-${chapterId}`);
+      const unitElements = contentPanel.querySelectorAll('.unit-card');
+      
+      unitElements.forEach(element => {
+        const unitId = element.id.replace('unit-', '');
+        selectedUnits.delete(unitId);
+        element.classList.remove('selected');
+      });
+      
+      updateChapterBadge(chapterId);
+      updateTotalSummary();
+    }
+
+    function updateChapterBadge(chapterId){
+      const contentPanel = document.getElementById(`content-${chapterId}`);
+      const badgeElement = document.getElementById(`badge-${chapterId}`);
+      
+      if(!contentPanel || !badgeElement) return;
+      
+      let selectedCount = 0;
+      contentPanel.querySelectorAll('.unit-card.selected').forEach(() => {
+        selectedCount++;
+      });
+      
+      badgeElement.textContent = selectedCount;
+      badgeElement.style.display = selectedCount > 0 ? 'block' : 'none';
+    }
+
+    function updateTotalSummary(){
+      const totalCountElement = document.getElementById('total-units-count');
+      const totalSelected = selectedUnits.size;
+      
+      const unitsText = translations[currentLanguage]['unitsSelected'] || 'units selected';
+      totalCountElement.textContent = `${totalSelected} ${totalSelected === 1 ? 'unit' : 'units'}`;
+    }
+
+    function getSelectedUnitsData(){
+      // Return the selected units for saving/using elsewhere
+      return Array.from(selectedUnits);
+    }
+
+    // -------- SHARED STUDY FOCUS DISPLAY --------
+    async function updateSharedStudyFocus(){
+      if(!currentRoom) return;
+      
+      try {
+        // Get all participants with their study data
+        const {data: participants, error} = await supabase
+          .from('room_participants')
+          .select(`
+            user_id,
+            users (
+              id, name, avatar_color, subject, selected_units
+            )
+          `)
+          .eq('room_id', currentRoom.id)
+          .eq('is_online', true);
+
+        if(error) {
+          console.error('Error fetching participants study data:', error);
+          return;
+        }
+
+        displaySharedStudyFocus(participants || []);
+      } catch(e) {
+        console.error('Error updating shared study focus:', e);
+      }
+    }
+
+    function displaySharedStudyFocus(participants){
+      // Update the new study focus tab
+      displayStudyFocusTab(participants);
+    }
+
+    function displayStudyFocusTab(participants){
+      const sessionsContainer = document.getElementById('active-study-sessions');
+      const noStudyDiv = document.getElementById('no-study-focus');
+      
+      // Filter participants who have study selections
+      const studyingParticipants = participants.filter(p => 
+        p.users && p.users.subject && p.users.selected_units && p.users.selected_units.length > 0
+      );
+
+      if(studyingParticipants.length === 0){
+        sessionsContainer.innerHTML = '';
+        noStudyDiv.style.display = 'block';
+        updateStudyFocusTabBadge(0);
+        return;
+      }
+
+      noStudyDiv.style.display = 'none';
+
+      // Group participants by subject
+      const subjectGroups = {};
+      studyingParticipants.forEach(participant => {
+        const user = participant.users;
+        const subject = user.subject;
+        if(!subjectGroups[subject]) {
+          subjectGroups[subject] = [];
+        }
+        subjectGroups[subject].push(user);
+      });
+
+      // Create study session cards for each subject
+      sessionsContainer.innerHTML = '';
+      Object.keys(subjectGroups).forEach(subject => {
+        const participants = subjectGroups[subject];
+        const subjectName = getSubjectDisplayName(subject, currentUser.grade, currentLanguage);
+        
+        const sessionCard = document.createElement('div');
+        sessionCard.className = 'study-session-card';
+        
+        sessionCard.innerHTML = `
+          <div class="study-session-subject">
+            <div class="study-session-subject-icon">ðŸ“š</div>
+            <div>
+              <div>${subjectName}</div>
+              <div style="font-size:.9rem;font-weight:400;color:var(--text-secondary)">${participants.length} ${participants.length === 1 ? 'participant' : 'participants'}</div>
+            </div>
+          </div>
+          <div class="study-participants">
+            ${participants.map(user => createStudyParticipantCard(user, subject)).join('')}
+          </div>
+        `;
+        
+        sessionsContainer.appendChild(sessionCard);
+      });
+      
+      // Update tab badge with number of studying participants
+      updateStudyFocusTabBadge(studyingParticipants.length);
+    }
+
+    function updateStudyFocusFromParticipants(participantData, usersMap){
+      // Convert the loadParticipants format to updateSharedStudyFocus format
+      const participants = participantData.map(p => ({
+        user_id: p.user_id,
+        users: usersMap[p.user_id]
+      }));
+      
+      displayStudyFocusTab(participants);
+    }
+
+    function createStudyParticipantCard(user, subject){
+      const unitDetails = getUnitDetails(user.selected_units, subject, currentUser.grade);
+      
+      // Group units by chapter
+      const chapterGroups = {};
+      unitDetails.forEach(unit => {
+        const chapterId = unit.id.split('.')[0]; // Get chapter number from unit id like "1.1"
+        if(!chapterGroups[chapterId]) {
+          chapterGroups[chapterId] = {
+            name: unit.chapterName,
+            units: []
+          };
+        }
+        chapterGroups[chapterId].units.push(unit);
+      });
+
+      return `
+        <div class="study-participant-card">
+          <div class="study-participant-header">
+            <div class="study-participant-avatar" style="background:${user.avatar_color || '#667eea'}">
+              ${(user.name?.[0] || 'U').toUpperCase()}
+            </div>
+            <div class="study-participant-name">${escapeHtml(user.name)}</div>
+          </div>
+          
+          ${Object.keys(chapterGroups).length > 0 ? `
+            <div class="study-chapters-grid">
+              ${Object.keys(chapterGroups).map(chapterId => {
+                const chapter = chapterGroups[chapterId];
+                return `<div class="study-chapter-badge">${chapter.name}</div>`;
+              }).join('')}
+            </div>
+            
+            <div style="margin-bottom:.5rem;font-size:.85rem;color:var(--text-secondary);font-weight:500">
+              ${translations[currentLanguage]['unitsSelected'] || 'Units selected'}:
+            </div>
+            <div class="study-units-list">
+              ${unitDetails.map(unit => `
+                <span class="study-unit-small" title="${unit.name}">${unit.id}</span>
+              `).join('')}
+            </div>
+          ` : `
+            <div style="color:var(--text-secondary);font-style:italic;font-size:.9rem">
+              ${translations[currentLanguage]['noStudyFocus'] || 'No specific units selected'}
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function getUnitDetails(selectedUnitIds, subject, grade){
+      if(!selectedUnitIds || !subject) return [];
+      
+      const subjects = subjectsByGrade[grade] || [];
+      const subjectData = subjects.find(s => s.name === subject || s.nameAr === subject);
+      
+      if(!subjectData || !subjectData.chapters) return [];
+
+      const unitDetails = [];
+      subjectData.chapters.forEach(chapter => {
+        chapter.units.forEach(unit => {
+          if(selectedUnitIds.includes(unit.id)){
+            unitDetails.push({
+              id: unit.id,
+              name: currentLanguage === 'ar' ? unit.nameAr : unit.name,
+              chapterName: currentLanguage === 'ar' ? chapter.nameAr : chapter.name
+            });
+          }
         });
       });
-
-      // Handle room code input formatting
-      document.getElementById('room-code-input').addEventListener('input', (e) => {
-        e.target.value = e.target.value.toUpperCase();
-      });
+      
+      return unitDetails;
     }
 
-    function toast(message, type = 'success') {
-      const toast = document.createElement('div');
-      toast.className = `toast ${type}`;
-      toast.textContent = message;
-      document.body.appendChild(toast);
-
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 300);
-      }, 3000);
+    function updateStudyFocusTabBadge(count){
+      const studyFocusTab = document.querySelector('[data-tab="study-focus"]');
+      if(!studyFocusTab) return;
+      
+      // Remove existing badge
+      const existingBadge = studyFocusTab.querySelector('.tab-badge');
+      if(existingBadge) existingBadge.remove();
+      
+      // Add new badge if there are studying participants
+      if(count > 0){
+        const badge = document.createElement('span');
+        badge.className = 'tab-badge';
+        badge.textContent = count;
+        studyFocusTab.appendChild(badge);
+      }
     }
 
-    // Initialize views
-    document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
-    document.getElementById('home-view').classList.add('active');
+    function copyRoomCode(){ 
+      navigator.clipboard.writeText(currentRoom.code)
+        .then(() => toast(currentLanguage==='ar'?'ØªÙ… Ù†Ø³Ø® ÙƒÙˆØ¯ Ø§Ù„ØºØ±ÙØ©!':'Room code copied!', 'success', currentLanguage==='ar'?'Ù†ÙØ³Ø®':'Copied')); 
+    }
+    
+    function shareRoom(){ 
+      const link = `${window.location.origin}${window.location.pathname}?room=${currentRoom.code}`;
+      if(navigator.share){
+        navigator.share({ title:'Study Partner', text: currentLanguage==='ar'?'Ø§Ù†Ø¶Ù… Ø¥Ù„Ù‰ ØºØ±ÙØªÙŠ Ø§Ù„Ø¯Ø±Ø§Ø³ÙŠØ©:':'Join my study room:', url:link }).catch(() => {});
+      }
+      navigator.clipboard.writeText(link)
+        .then(() => toast(currentLanguage==='ar'?'ØªÙ… Ù†Ø³Ø® Ø±Ø§Ø¨Ø· Ø§Ù„Ø¯Ø¹ÙˆØ©!':'Invite link copied!', 'success', currentLanguage==='ar'?'ØªÙ…Øª Ø§Ù„Ù…Ø´Ø§Ø±ÙƒØ©':'Shared')); 
+    }
+    
+    function showJoinForm(){ document.getElementById('join-form').style.display = 'block'; }
+
+    function switchTab(tabName){
+      const activeTab = document.querySelector('.tab.active');
+      if(activeTab) activeTab.classList.remove('active');
+      const newTab = document.querySelector(`[data-tab="${tabName}"]`);
+      if(newTab) newTab.classList.add('active');
+      const activeContent = document.querySelector('.tab-content.active');
+      if(activeContent) activeContent.classList.remove('active');
+      const newContent = document.getElementById(`${tabName}-content`);
+      if(newContent) newContent.classList.add('active');
+      
+      // Update study focus when switching to that tab
+      if(tabName === 'study-focus') {
+        setTimeout(() => updateSharedStudyFocus(), 100);
+      }
+    }
+
+    function escapeHtml(text){
+      if (typeof text !== 'string') return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    async function sendSystemMessage(_msg){ /* no-op placeholder */ }
   </script>
 </body>
 </html>
