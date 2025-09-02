@@ -1480,6 +1480,94 @@ async function deleteSelectedSubject(){
   }
 }
 
+async function deleteParticipantStudyFocus(userId){
+  if(!currentRoom) return;
+  
+  // Get user info for confirmation message
+  let targetUser;
+  if(userId === currentUser.id) {
+    targetUser = currentUser;
+  } else {
+    try {
+      const {data, error} = await supabase
+        .from('users')
+        .select('name')
+        .eq('id', userId)
+        .single();
+      if(error) throw error;
+      targetUser = data;
+    } catch(e) {
+      console.error('Error fetching user:', e);
+      return;
+    }
+  }
+  
+  const confirmMessage = userId === currentUser.id 
+    ? (currentLanguage==='ar'?'هل أنت متأكد من حذف المادة المختارة والوحدات؟':'Are you sure you want to delete your selected subject and units?')
+    : (currentLanguage==='ar'?`هل أنت متأكد من حذف دراسة ${targetUser.name}؟`:`Are you sure you want to delete ${targetUser.name}'s study focus?`);
+  
+  if(!confirm(confirmMessage)) {
+    return;
+  }
+  
+  try{
+    // Clear user data in users table
+    const userUpdateData = {
+      subject: null,
+      selected_units: null
+    };
+    
+    await supabase.from('users').update(userUpdateData).eq('id', userId);
+    
+    // Delete from study_sessions table
+    await supabase
+      .from('study_sessions')
+      .delete()
+      .match({ room_id: currentRoom.id, user_id: userId });
+    
+    // If deleting current user's data, also update local state and UI
+    if(userId === currentUser.id) {
+      currentUser.subject = null;
+      currentUser.selected_units = null;
+      
+      // Clear UI
+      roomSubjectSelect.value = '';
+      selectedUnits.clear();
+      document.getElementById('chapter-unit-selector').style.display = 'none';
+      
+      // Update localStorage and UI
+      localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
+      populateSettings();
+      updateSidebarUserInfo();
+    }
+    
+    const successMessage = userId === currentUser.id
+      ? (currentLanguage==='ar'?'تم حذف المادة المختارة':'Selected subject deleted successfully')
+      : (currentLanguage==='ar'?`تم حذف دراسة ${targetUser.name}`:`${targetUser.name}'s study focus deleted successfully`);
+    
+    toast(successMessage, 'success', currentLanguage==='ar'?'تم الحذف':'Deleted');
+    
+    // Update shared study focus
+    setTimeout(() => updateSharedStudyFocus(), 500);
+    
+    // Broadcast deletion to other participants
+    if(participantsSubscription) {
+      participantsSubscription.send({
+        type: 'broadcast',
+        event: 'study_focus_update',
+        payload: { 
+          action: 'delete',
+          user_id: userId,
+          deleted_by: currentUser.id
+        }
+      });
+    }
+  }catch(e){
+    console.error('Error deleting participant study focus:', e);
+    alert(currentLanguage==='ar'?'فشل حذف المادة والدروس.':'Failed deleting subject and units.');
+  }
+}
+
     async function loadRoomSubjectIntoUI(){
       if(!currentRoom) return;
       roomSubjectSelect.value = currentUser.subject || '';
@@ -2332,8 +2420,6 @@ function displayStudyFocusTab(studySessions){
         chapterGroups[chapterId].units.push(unit);
       });
 
-      const isCurrentUser = user.id === currentUser.id;
-      
       return `
         <div class="study-participant-card">
           <div class="study-participant-header">
@@ -2341,13 +2427,11 @@ function displayStudyFocusTab(studySessions){
               ${(user.name?.[0] || 'U').toUpperCase()}
             </div>
             <div class="study-participant-name">${escapeHtml(user.name)}</div>
-            ${isCurrentUser ? `
-              <button class="delete-study-focus-btn" onclick="deleteSelectedSubject()" title="${currentLanguage === 'ar' ? 'حذف' : 'Delete'}">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
-                </svg>
-              </button>
-            ` : ''}
+            <button class="delete-study-focus-btn" onclick="deleteParticipantStudyFocus('${user.id}')" title="${currentLanguage === 'ar' ? 'حذف' : 'Delete'}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+              </svg>
+            </button>
           </div>
           
           ${Object.keys(chapterGroups).length > 0 ? `
