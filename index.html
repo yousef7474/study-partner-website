@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Study Partner - Ù…Ù†ØµØ© Ø§Ù„Ø¯Ø±Ø§Ø³Ø© Ø§Ù„ØªØ¹Ø§ÙˆÙ†ÙŠØ©</title>
+  <title>Study Partner - منصة الدراسة التعاونية</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
     :root{
@@ -250,11 +250,11 @@
       </div>
     </div>
     <nav class="sidebar-nav">
-      <button class="nav-item" data-screen="home-screen" onclick="navigateToScreen('home-screen')"><span class="nav-icon">ðŸ </span><span data-translate="home">Home</span></button>
-      <button class="nav-item" data-screen="study-rooms-screen" onclick="navigateToScreen('study-rooms-screen')"><span class="nav-icon">ðŸ‘¥</span><span data-translate="studyRooms">Study Rooms</span></button>
-      <button class="nav-item" data-screen="library-screen" onclick="navigateToScreen('library-screen')"><span class="nav-icon">ðŸ“š</span><span data-translate="digitalLibrary">Digital Library</span></button>
-      <button class="nav-item" data-screen="about-screen" onclick="navigateToScreen('about-screen')"><span class="nav-icon">â„¹ï¸</span><span data-translate="about">About</span></button>
-      <button class="nav-item" data-screen="settings-screen" onclick="navigateToScreen('settings-screen')"><span class="nav-icon">âš™ï¸</span><span data-translate="settings">Settings</span></button>
+      <button class="nav-item" data-screen="home-screen" onclick="navigateToScreen('home-screen')"><span class="nav-icon">🏠</span><span data-translate="home">Home</span></button>
+      <button class="nav-item" data-screen="study-rooms-screen" onclick="navigateToScreen('study-rooms-screen')"><span class="nav-icon">👥</span><span data-translate="studyRooms">Study Rooms</span></button>
+      <button class="nav-item" data-screen="library-screen" onclick="navigateToScreen('library-screen')"><span class="nav-icon">📚</span><span data-translate="digitalLibrary">Digital Library</span></button>
+      <button class="nav-item" data-screen="about-screen" onclick="navigateToScreen('about-screen')"><span class="nav-icon">ℹ️</span><span data-translate="about">About</span></button>
+      <button class="nav-item" data-screen="settings-screen" onclick="navigateToScreen('settings-screen')"><span class="nav-icon">⚙️</span><span data-translate="settings">Settings</span></button>
     </nav>
     <div class="sidebar-footer">
       <button class="btn btn-secondary btn-block" onclick="logout()" data-translate="logout">Logout</button>
@@ -264,12 +264,12 @@
   <!-- Header -->
   <header class="header" id="header" style="display:none;">
     <div style="display:flex;align-items:center;gap:1rem;">
-      <button class="menu-toggle" id="menu-toggle" data-translate-title="toggleSidebar" title="Toggle sidebar" onclick="toggleSidebar()"><span>â˜°</span></button>
-      <div class="logo"><div class="logo-icon">ðŸ“š</div><span data-translate="appName">Study Partner</span></div>
+      <button class="menu-toggle" id="menu-toggle" data-translate-title="toggleSidebar" title="Toggle sidebar" onclick="toggleSidebar()"><span>☰</span></button>
+      <div class="logo"><div class="logo-icon">📚</div><span data-translate="appName">Study Partner</span></div>
     </div>
     <div class="header-controls">
-      <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">ðŸŒ™</span></button>
-      <button class="lang-toggle" onclick="toggleLanguage()"><span id="lang-icon">Ø¹</span></button>
+      <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+      <button class="lang-toggle" onclick="toggleLanguage()"><span id="lang-icon">ع</span></button>
     </div>
   </header>
 
@@ -280,8 +280,8 @@
       <div id="registration-screen" class="screen active">
         <!-- Quick controls visible before login -->
         <div class="header-controls" style="justify-content:flex-end;margin-bottom:1rem;">
-          <button class="theme-toggle" onclick="toggleTheme()" title="Theme"><span id="reg-theme-icon">ðŸŒ™</span></button>
-          <button class="lang-toggle" onclick="toggleLanguage()" title="Language"><span id="reg-lang-icon">Ø¹</span></button>
+          <button class="theme-toggle" onclick="toggleTheme()" title="Theme"><span id="reg-theme-icon">🌙</span></button>
+          <button class="lang-toggle" onclick="toggleLanguage()" title="Language"><span id="reg-lang-icon">ع</span></button>
         </div>
 
         <h1 class="title" data-translate="welcome">Welcome to Study Partner</h1>
@@ -317,13 +317,13 @@
         <h1 class="page-title" data-translate="dashboard">Dashboard</h1>
         <div class="main-actions">
           <div class="action-card" onclick="navigateToScreen('study-rooms-screen')">
-            <div class="action-icon">ðŸ«</div>
+            <div class="action-icon">🏫</div>
             <h3 data-translate="studyRooms">Study Rooms</h3>
             <p data-translate="joinOrCreateRooms">Join or create virtual study rooms</p>
             <button class="btn" data-translate="enterRooms">Enter Rooms</button>
           </div>
           <div class="action-card" onclick="navigateToScreen('library-screen')">
-            <div class="action-icon">ðŸ“š</div>
+            <div class="action-icon">📚</div>
             <h3 data-translate="digitalLibrary">Digital Library</h3>
             <p data-translate="accessStudyMaterials">Access study materials and resources</p>
             <button class="btn btn-secondary" data-translate="browse">Browse</button>
@@ -335,13 +335,13 @@
         <h1 class="page-title" data-translate="studyRooms">Study Rooms</h1>
         <div class="main-actions">
           <div class="action-card" onclick="createRoom()">
-            <div class="action-icon">âž•</div>
+            <div class="action-icon">➕</div>
             <h3 data-translate="createRoom">Create Room</h3>
             <p data-translate="startNewSession">Start a new study session</p>
             <button class="btn" data-translate="createNow">Create Now</button>
           </div>
           <div class="action-card" onclick="showJoinForm()">
-            <div class="action-icon">ðŸšª</div>
+            <div class="action-icon">🚪</div>
             <h3 data-translate="joinRoom">Join Room</h3>
             <p data-translate="enterRoomCodeToJoin">Enter a room code to join</p>
             <button class="btn btn-secondary" data-translate="joinNow">Join Now</button>
@@ -358,7 +358,7 @@
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
           <h1 class="page-title" style="margin:0" data-translate="studyRoom">Study Room</h1>
           <button class="btn btn-secondary btn-small" onclick="leaveRoom()">
-            <span class="ltr-arrow">â†</span> <span data-translate="leaveRoom">Leave Room</span>
+            <span class="ltr-arrow">←</span> <span data-translate="leaveRoom">Leave Room</span>
           </button>
         </div>
 
@@ -395,9 +395,9 @@
         </div>
 
         <div class="tabs">
-          <button class="tab active" data-tab="participants">ðŸ‘¥ Participants</button>
-          <button class="tab" data-tab="study-focus">ðŸ“š <span data-translate="studyFocus">Study Focus</span></button>
-          <button class="tab" data-tab="timer">â±ï¸ Timer</button>
+          <button class="tab active" data-tab="participants">👥 Participants</button>
+          <button class="tab" data-tab="study-focus">📚 <span data-translate="studyFocus">Study Focus</span></button>
+          <button class="tab" data-tab="timer">⏱️ Timer</button>
         </div>
 
         <div id="participants-content" class="tab-content active">
@@ -408,7 +408,7 @@
         <div id="study-focus-content" class="tab-content">
           <div class="study-focus-header">
             <h3 style="margin-bottom:1rem;color:var(--text-primary);display:flex;align-items:center;gap:.5rem">
-              ðŸ“š <span data-translate="roomStudyFocus">Room Study Focus</span>
+              📚 <span data-translate="roomStudyFocus">Room Study Focus</span>
             </h3>
             <p style="color:var(--text-secondary);margin-bottom:1.5rem;font-size:.95rem" data-translate="studyFocusDesc">
               See what everyone in the room is currently studying. Select your own subject and chapters above to join the focus session.
@@ -420,7 +420,7 @@
           
           <!-- No Study Focus Message -->
           <div id="no-study-focus" style="display:none;text-align:center;padding:2rem;background:var(--bg-tertiary);border-radius:12px;border:2px dashed var(--border-color)">
-            <div style="font-size:3rem;margin-bottom:1rem">ðŸ“–</div>
+            <div style="font-size:3rem;margin-bottom:1rem">📖</div>
             <h4 style="margin-bottom:.5rem;color:var(--text-primary)" data-translate="noActiveStudy">No Active Study Sessions</h4>
             <p style="color:var(--text-secondary)" data-translate="noActiveStudyDesc">
               Participants haven't selected their study topics yet. Choose your subject and chapters above to start a study session!
@@ -471,7 +471,7 @@
           </div>
 
           <!-- Start / End scheduling -->
-          <h3 data-translate="startEndHeading" style="margin-top:1rem">Startâ€“End</h3>
+          <h3 data-translate="startEndHeading" style="margin-top:1rem">Start–End</h3>
           <div id="start-end" style="display:flex;gap:.75rem;align-items:flex-end;justify-content:center;margin:1rem 0;flex-wrap:wrap">
             <div>
               <label class="form-label" data-translate="startTime">Start Time</label>
@@ -489,7 +489,7 @@
       <div id="library-screen" class="screen">
         <h1 class="page-title">Digital Library</h1>
         <div style="text-align:center;padding:4rem 0">
-          ðŸš§<h3>Coming Soon!</h3><p>This feature is under development.</p>
+          🚧<h3>Coming Soon!</h3><p>This feature is under development.</p>
         </div>
       </div>
 
@@ -577,7 +577,7 @@
         aboutDesc3:"Join thousands of students who have discovered the power of collaborative learning. Because when we study together, we succeed together.",
         customTimer:"Custom Timer", startTime:"Start Time", endTime:"End Time", setTimer:"Set Timer",
         hours:"Hours", minutes:"Minutes", seconds:"Seconds", customDuration:"Custom Duration",
-        start:"Start", pause:"Pause", reset:"Reset", startEndHeading:"Startâ€“End",
+        start:"Start", pause:"Pause", reset:"Reset", startEndHeading:"Start–End",
         preferences:"Preferences", theme:"Theme", language:"Language",
         personalInfo:"Personal Information", nameLabel:"Name", subjectLabel:"Subject", saveChanges:"Save Changes",
         endSession:"End Session", gradeLabel:"Grade",
@@ -589,174 +589,174 @@
         studyingChapters:"studying chapters", joinStudySession:"Join Study Session", totalSelected:"Total Selected"
       },
       ar:{
-        home:"Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©", dashboard:"Ù„ÙˆØ­Ø© Ø§Ù„ØªØ­ÙƒÙ…", studyRooms:"ØºØ±Ù Ø§Ù„Ø¯Ø±Ø§Ø³Ø©",
-        digitalLibrary:"Ø§Ù„Ù…ÙƒØªØ¨Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©", about:"Ø­ÙˆÙ„", settings:"Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª",
-        logout:"Ø®Ø±ÙˆØ¬", welcome:"Ù…Ø±Ø­Ø¨Ø§Ù‹ Ø¨Ùƒ", welcomeDesc:"Ø£Ù†Ø´Ø¦ Ù…Ù„ÙÙƒ Ø§Ù„Ø´Ø®ØµÙŠ Ù„Ù„Ø¨Ø¯Ø¡",
-        yourName:"Ø§Ø³Ù…Ùƒ", chooseAvatar:"Ø§Ø®ØªØ± Ù„ÙˆÙ† Ø§Ù„ØµÙˆØ±Ø© Ø§Ù„Ø±Ù…Ø²ÙŠØ©",
-        selectGrade:"Ø§Ø®ØªØ± Ø§Ù„ØµÙ Ø§Ù„Ø¯Ø±Ø§Ø³ÙŠ", joinPlatform:"Ø§Ù†Ø¶Ù… Ù„Ù„Ù…Ù†ØµØ©",
-        appName:"Ø´Ø±ÙŠÙƒ Ø§Ù„Ø¯Ø±Ø§Ø³Ø©", toggleSidebar:"Ø¥Ø¸Ù‡Ø§Ø±/Ø¥Ø®ÙØ§Ø¡ Ø§Ù„Ø´Ø±ÙŠØ· Ø§Ù„Ø¬Ø§Ù†Ø¨ÙŠ",
-        menuToggle:"Ø§Ù„Ù‚Ø§Ø¦Ù…Ø©", copyCode:"Ù†Ø³Ø® Ø§Ù„ÙƒÙˆØ¯", shareLink:"Ù…Ø´Ø§Ø±ÙƒØ© Ø§Ù„Ø±Ø§Ø¨Ø·",
-        save:"Ø­ÙØ¸", enterRooms:"Ø¯Ø®ÙˆÙ„ Ø§Ù„ØºØ±Ù", browse:"ØªØµÙØ­", createNow:"Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ø¢Ù†",
-        joinNow:"Ø§Ù†Ø¶Ù…Ø§Ù… Ø§Ù„Ø¢Ù†", joinRoom:"Ø§Ù†Ø¶Ù… Ù„Ù„ØºØ±ÙØ©", createRoom:"Ø¥Ù†Ø´Ø§Ø¡ ØºØ±ÙØ©",
-        enterRoomCode:"Ø£Ø¯Ø®Ù„ ÙƒÙˆØ¯ Ø§Ù„ØºØ±ÙØ©", leaveRoom:"Ù…ØºØ§Ø¯Ø±Ø© Ø§Ù„ØºØ±ÙØ©",
-        roomCode:"ÙƒÙˆØ¯ Ø§Ù„ØºØ±ÙØ©", subject:"Ø§Ù„Ù…Ø§Ø¯Ø©", selectSubject:"Ø§Ø®ØªØ± Ø§Ù„Ù…Ø§Ø¯Ø©",
-        studyRoom:"ØºØ±ÙØ© Ø§Ù„Ø¯Ø±Ø§Ø³Ø©", startNewSession:"Ø§Ø¨Ø¯Ø£ Ø¬Ù„Ø³Ø© Ø¯Ø±Ø§Ø³Ø© Ø¬Ø¯ÙŠØ¯Ø©",
-        enterRoomCodeToJoin:"Ø£Ø¯Ø®Ù„ ÙƒÙˆØ¯ Ø§Ù„ØºØ±ÙØ© Ù„Ù„Ø§Ù†Ø¶Ù…Ø§Ù…",
-        joinOrCreateRooms:"Ø§Ù†Ø¶Ù… Ø£Ùˆ Ø£Ù†Ø´Ø¦ ØºØ±Ù Ø¯Ø±Ø§Ø³Ø© Ø§ÙØªØ±Ø§Ø¶ÙŠØ©",
-        accessStudyMaterials:"Ø§Ù„ÙˆØµÙˆÙ„ Ø¥Ù„Ù‰ Ù…ÙˆØ§Ø¯ ÙˆÙ…ØµØ§Ø¯Ø± Ø§Ù„Ø¯Ø±Ø§Ø³Ø©",
-        aboutTitle:"ØªÙ…ÙƒÙŠÙ† Ø§Ù„Ø·Ù„Ø§Ø¨ Ù…Ù† Ø®Ù„Ø§Ù„ Ø§Ù„ØªØ¹Ù„Ù… Ø§Ù„ØªØ¹Ø§ÙˆÙ†ÙŠ",
-        aboutDesc1:"Ø¯Ø±Ø§Ø³Ø© Ø´Ø±ÙŠÙƒ Ù‡ÙŠ Ù…Ù†ØµØ© Ø«ÙˆØ±ÙŠØ© Ù…ØµÙ…Ù…Ø© Ù„ØªØºÙŠÙŠØ± Ø·Ø±ÙŠÙ‚Ø© ØªØ¹Ù„Ù… ÙˆØªØ¹Ø§ÙˆÙ† Ø§Ù„Ø·Ù„Ø§Ø¨. Ù…Ù‡Ù…ØªÙ†Ø§ Ù‡ÙŠ ÙƒØ³Ø± Ø­ÙˆØ§Ø¬Ø² Ø§Ù„Ø¯Ø±Ø§Ø³Ø© Ø§Ù„ØªÙ‚Ù„ÙŠØ¯ÙŠØ© Ù…Ù† Ø®Ù„Ø§Ù„ Ø¥Ù†Ø´Ø§Ø¡ Ù…Ø³Ø§Ø­Ø§Øª Ø§ÙØªØ±Ø§Ø¶ÙŠØ© Ø­ÙŠØ« ÙŠÙ…ÙƒÙ† Ù„Ù„Ø·Ù„Ø§Ø¨ Ø§Ù„ØªÙˆØ§ØµÙ„ ÙˆÙ…Ø´Ø§Ø±ÙƒØ© Ø§Ù„Ù…Ø¹Ø±ÙØ© ÙˆØªØ­Ù‚ÙŠÙ‚ Ø§Ù„ØªÙ…ÙŠØ² Ø§Ù„Ø£ÙƒØ§Ø¯ÙŠÙ…ÙŠ Ù…Ø¹Ø§Ù‹.",
-        aboutDesc2:"Ø³ÙˆØ§Ø¡ ÙƒÙ†Øª ØªØ³ØªØ¹Ø¯ Ù„Ù„Ø§Ù…ØªØ­Ø§Ù†Ø§ØªØŒ Ø£Ùˆ ØªØ¹Ù…Ù„ Ø¹Ù„Ù‰ Ù…Ø´Ø§Ø±ÙŠØ¹ Ø¬Ù…Ø§Ø¹ÙŠØ©ØŒ Ø£Ùˆ ØªØ¨Ø­Ø« Ø¹Ù† Ø±ÙÙ‚Ø§Ø¡ Ø¯Ø±Ø§Ø³Ø©ØŒ ØªÙˆÙØ± Ø¯Ø±Ø§Ø³Ø© Ø´Ø±ÙŠÙƒ Ø§Ù„Ø£Ø¯ÙˆØ§Øª ÙˆØ§Ù„Ø¨ÙŠØ¦Ø© Ø§Ù„ØªÙŠ ØªØ­ØªØ§Ø¬Ù‡Ø§. Ù…Ù† ØºØ±Ù Ø§Ù„Ø¯Ø±Ø¯Ø´Ø© ÙÙŠ Ø§Ù„ÙˆÙ‚Øª Ø§Ù„ÙØ¹Ù„ÙŠ Ø¥Ù„Ù‰ Ø§Ù„Ù…Ø¤Ù‚ØªØ§Øª Ø§Ù„ØªØ¹Ø§ÙˆÙ†ÙŠØ© ÙˆØ§Ù„Ù…Ø³Ø§Ø­Ø§Øª Ø§Ù„Ø®Ø§ØµØ© Ø¨Ø§Ù„Ù…ÙˆØ§Ø¯ØŒ Ù„Ù‚Ø¯ Ø¨Ù†ÙŠÙ†Ø§ ÙƒÙ„ Ø´ÙŠØ¡ Ø¨Ù‡Ø¯Ù ÙˆØ§Ø­Ø¯: Ù…Ø³Ø§Ø¹Ø¯Ø© Ø§Ù„Ø·Ù„Ø§Ø¨ Ø¹Ù„Ù‰ Ø§Ù„Ù†Ø¬Ø§Ø­ Ù…Ø¹Ø§Ù‹.",
-        aboutDesc3:"Ø§Ù†Ø¶Ù… Ø¥Ù„Ù‰ Ø¢Ù„Ø§Ù Ø§Ù„Ø·Ù„Ø§Ø¨ Ø§Ù„Ø°ÙŠÙ† Ø§ÙƒØªØ´ÙÙˆØ§ Ù‚ÙˆØ© Ø§Ù„ØªØ¹Ù„Ù… Ø§Ù„ØªØ¹Ø§ÙˆÙ†ÙŠ. Ù„Ø£Ù†Ù‡ Ø¹Ù†Ø¯Ù…Ø§ Ù†Ø¯Ø±Ø³ Ù…Ø¹Ø§Ù‹ØŒ Ù†Ù†Ø¬Ø­ Ù…Ø¹Ø§Ù‹.",
-        customTimer:"Ù…Ø¤Ù‚Øª Ù…Ø®ØµØµ", startTime:"ÙˆÙ‚Øª Ø§Ù„Ø¨Ø¯Ø§ÙŠØ©", endTime:"ÙˆÙ‚Øª Ø§Ù„Ù†Ù‡Ø§ÙŠØ©", setTimer:"Ø¶Ø¨Ø· Ø§Ù„Ù…Ø¤Ù‚Øª",
-        hours:"Ø³Ø§Ø¹Ø§Øª", minutes:"Ø¯Ù‚Ø§Ø¦Ù‚", seconds:"Ø«ÙˆØ§Ù†ÙŠ", customDuration:"Ù…Ø¯Ø© Ù…Ø®ØµØµØ©",
-        start:"Ø¨Ø¯Ø¡", pause:"Ø¥ÙŠÙ‚Ø§Ù Ù…Ø¤Ù‚Øª", reset:"Ø¥Ø¹Ø§Ø¯Ø© Ø¶Ø¨Ø·", startEndHeading:"Ù…Ù†â€“Ø¥Ù„Ù‰",
-        preferences:"Ø§Ù„ØªÙØ¶ÙŠÙ„Ø§Øª", theme:"Ø§Ù„Ø«ÙŠÙ…", language:"Ø§Ù„Ù„ØºØ©",
-        personalInfo:"Ø§Ù„Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø§Ù„Ø´Ø®ØµÙŠØ©", nameLabel:"Ø§Ù„Ø§Ø³Ù…", subjectLabel:"Ø§Ù„Ù…Ø§Ø¯Ø©", saveChanges:"Ø­ÙØ¸ Ø§Ù„ØªØºÙŠÙŠØ±Ø§Øª",
-        endSession:"Ø¥Ù†Ù‡Ø§Ø¡ Ø§Ù„Ø¬Ù„Ø³Ø©", gradeLabel:"Ø§Ù„ØµÙ",
-        selectChaptersUnits:"Ø§Ø®ØªØ± Ø§Ù„ÙØµÙˆÙ„ ÙˆØ§Ù„Ø¯Ø±ÙˆØ³", chapter:"Ø§Ù„ÙØµÙ„", unit:"Ø§Ù„Ø¯Ø±Ø³",
-        unitsSelected:"Ø¯Ø±ÙˆØ³ Ù…Ø®ØªØ§Ø±Ø©", selectAll:"ØªØ­Ø¯ÙŠØ¯ Ø§Ù„ÙƒÙ„", deselectAll:"Ø¥Ù„ØºØ§Ø¡ ØªØ­Ø¯ÙŠØ¯ Ø§Ù„ÙƒÙ„",
-        currentStudyFocus:"Ø§Ù„ØªØ±ÙƒÙŠØ² Ø§Ù„Ø¯Ø±Ø§Ø³ÙŠ Ø§Ù„Ø­Ø§Ù„ÙŠ", studyingUnits:"ÙŠØ¯Ø±Ø³ ÙˆØ­Ø¯Ø§Øª", noStudyFocus:"Ù„Ù… ÙŠØªÙ… ØªØ­Ø¯ÙŠØ¯ ØªØ±ÙƒÙŠØ² Ø¯Ø±Ø§Ø³ÙŠ Ù…Ø­Ø¯Ø¯",
-        studyFocus:"Ø§Ù„ØªØ±ÙƒÙŠØ² Ø§Ù„Ø¯Ø±Ø§Ø³ÙŠ", roomStudyFocus:"Ø§Ù„ØªØ±ÙƒÙŠØ² Ø§Ù„Ø¯Ø±Ø§Ø³ÙŠ Ù„Ù„ØºØ±ÙØ©", studyFocusDesc:"Ø§Ø·Ù„Ø¹ Ø¹Ù„Ù‰ Ù…Ø§ ÙŠØ¯Ø±Ø³Ù‡ Ø§Ù„Ø¬Ù…ÙŠØ¹ ÙÙŠ Ø§Ù„ØºØ±ÙØ© Ø­Ø§Ù„ÙŠØ§Ù‹. Ø§Ø®ØªØ± Ù…Ø§Ø¯ØªÙƒ ÙˆØ§Ù„ÙØµÙˆÙ„ Ø£Ø¹Ù„Ø§Ù‡ Ù„Ù„Ø§Ù†Ø¶Ù…Ø§Ù… Ø¥Ù„Ù‰ Ø¬Ù„Ø³Ø© Ø§Ù„Ø¯Ø±Ø§Ø³Ø©.",
-        noActiveStudy:"Ù„Ø§ ØªÙˆØ¬Ø¯ Ø¬Ù„Ø³Ø§Øª Ø¯Ø±Ø§Ø³Ø© Ù†Ø´Ø·Ø©", noActiveStudyDesc:"Ù„Ù… ÙŠØ®ØªØ± Ø§Ù„Ù…Ø´Ø§Ø±ÙƒÙˆÙ† Ù…ÙˆØ§Ø¶ÙŠØ¹ Ø¯Ø±Ø§Ø³ØªÙ‡Ù… Ø¨Ø¹Ø¯. Ø§Ø®ØªØ± Ù…Ø§Ø¯ØªÙƒ ÙˆØ§Ù„ÙØµÙˆÙ„ Ø£Ø¹Ù„Ø§Ù‡ Ù„Ø¨Ø¯Ø¡ Ø¬Ù„Ø³Ø© Ø¯Ø±Ø§Ø³Ø©!",
-        studyingChapters:"ÙŠØ¯Ø±Ø³ ÙØµÙˆÙ„", joinStudySession:"Ø§Ù†Ø¶Ù… Ù„Ø¬Ù„Ø³Ø© Ø§Ù„Ø¯Ø±Ø§Ø³Ø©", totalSelected:"Ø§Ù„Ù…Ø¬Ù…ÙˆØ¹ Ø§Ù„Ù…Ø®ØªØ§Ø±"
+        home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة",
+        digitalLibrary:"المكتبة الرقمية", about:"حول", settings:"الإعدادات",
+        logout:"خروج", welcome:"مرحباً بك", welcomeDesc:"أنشئ ملفك الشخصي للبدء",
+        yourName:"اسمك", chooseAvatar:"اختر لون الصورة الرمزية",
+        selectGrade:"اختر الصف الدراسي", joinPlatform:"انضم للمنصة",
+        appName:"شريك الدراسة", toggleSidebar:"إظهار/إخفاء الشريط الجانبي",
+        menuToggle:"القائمة", copyCode:"نسخ الكود", shareLink:"مشاركة الرابط",
+        save:"حفظ", enterRooms:"دخول الغرف", browse:"تصفح", createNow:"إنشاء الآن",
+        joinNow:"انضمام الآن", joinRoom:"انضم للغرفة", createRoom:"إنشاء غرفة",
+        enterRoomCode:"أدخل كود الغرفة", leaveRoom:"مغادرة الغرفة",
+        roomCode:"كود الغرفة", subject:"المادة", selectSubject:"اختر المادة",
+        studyRoom:"غرفة الدراسة", startNewSession:"ابدأ جلسة دراسة جديدة",
+        enterRoomCodeToJoin:"أدخل كود الغرفة للانضمام",
+        joinOrCreateRooms:"انضم أو أنشئ غرف دراسة افتراضية",
+        accessStudyMaterials:"الوصول إلى مواد ومصادر الدراسة",
+        aboutTitle:"تمكين الطلاب من خلال التعلم التعاوني",
+        aboutDesc1:"دراسة شريك هي منصة ثورية مصممة لتغيير طريقة تعلم وتعاون الطلاب. مهمتنا هي كسر حواجز الدراسة التقليدية من خلال إنشاء مساحات افتراضية حيث يمكن للطلاب التواصل ومشاركة المعرفة وتحقيق التميز الأكاديمي معاً.",
+        aboutDesc2:"سواء كنت تستعد للامتحانات، أو تعمل على مشاريع جماعية، أو تبحث عن رفقاء دراسة، توفر دراسة شريك الأدوات والبيئة التي تحتاجها. من غرف الدردشة في الوقت الفعلي إلى المؤقتات التعاونية والمساحات الخاصة بالمواد، لقد بنينا كل شيء بهدف واحد: مساعدة الطلاب على النجاح معاً.",
+        aboutDesc3:"انضم إلى آلاف الطلاب الذين اكتشفوا قوة التعلم التعاوني. لأنه عندما ندرس معاً، ننجح معاً.",
+        customTimer:"مؤقت مخصص", startTime:"وقت البداية", endTime:"وقت النهاية", setTimer:"ضبط المؤقت",
+        hours:"ساعات", minutes:"دقائق", seconds:"ثواني", customDuration:"مدة مخصصة",
+        start:"بدء", pause:"إيقاف مؤقت", reset:"إعادة ضبط", startEndHeading:"من–إلى",
+        preferences:"التفضيلات", theme:"الثيم", language:"اللغة",
+        personalInfo:"المعلومات الشخصية", nameLabel:"الاسم", subjectLabel:"المادة", saveChanges:"حفظ التغييرات",
+        endSession:"إنهاء الجلسة", gradeLabel:"الصف",
+        selectChaptersUnits:"اختر الفصول والدروس", chapter:"الفصل", unit:"الدرس",
+        unitsSelected:"دروس مختارة", selectAll:"تحديد الكل", deselectAll:"إلغاء تحديد الكل",
+        currentStudyFocus:"التركيز الدراسي الحالي", studyingUnits:"يدرس وحدات", noStudyFocus:"لم يتم تحديد تركيز دراسي محدد",
+        studyFocus:"التركيز الدراسي", roomStudyFocus:"التركيز الدراسي للغرفة", studyFocusDesc:"اطلع على ما يدرسه الجميع في الغرفة حالياً. اختر مادتك والفصول أعلاه للانضمام إلى جلسة الدراسة.",
+        noActiveStudy:"لا توجد جلسات دراسة نشطة", noActiveStudyDesc:"لم يختر المشاركون مواضيع دراستهم بعد. اختر مادتك والفصول أعلاه لبدء جلسة دراسة!",
+        studyingChapters:"يدرس فصول", joinStudySession:"انضم لجلسة الدراسة", totalSelected:"المجموع المختار"
       }
     };
     
     // Grade translation mapping
     const gradeTranslations = {
       en: { "10": "Grade 10", "11": "Grade 11", "12": "Grade 12" },
-      ar: { "10": "Ø§Ù„ØµÙ Ø§Ù„Ø£ÙˆÙ„ Ø§Ù„Ø«Ø§Ù†ÙˆÙŠ", "11": "Ø§Ù„ØµÙ Ø§Ù„Ø«Ø§Ù†ÙŠ Ø§Ù„Ø«Ø§Ù†ÙˆÙŠ", "12": "Ø§Ù„ØµÙ Ø§Ù„Ø«Ø§Ù„Ø« Ø§Ù„Ø«Ø§Ù†ÙˆÙŠ" }
+      ar: { "10": "الصف الأول الثانوي", "11": "الصف الثاني الثانوي", "12": "الصف الثالث الثانوي" }
     };
 
     // -------- SUBJECT CATALOG BY GRADE (EN/AR) --------
     const subjectsByGrade = {
       10: [
-        {name:"Mathematics", nameAr:"Ø§Ù„Ø±ÙŠØ§Ø¶ÙŠØ§Øª"},
-        {name:"Physics", nameAr:"Ø§Ù„ÙÙŠØ²ÙŠØ§Ø¡"},
+        {name:"Mathematics", nameAr:"الرياضيات"},
+        {name:"Physics", nameAr:"الفيزياء"},
         {
           name:"Chemistry", 
-          nameAr:"Ø§Ù„ÙƒÙŠÙ…ÙŠØ§Ø¡",
+          nameAr:"الكيمياء",
           chapters: [
             {
               id: "ch1",
               name: "Chapter 1",
-              nameAr: "Ø§Ù„ÙØµÙ„ 1",
+              nameAr: "الفصل 1",
               units: [
-                {id: "1.1", name: "Story of Two Substances", nameAr: "Ù‚ØµØ© Ù…Ø§Ø¯ØªÙŠÙ†"},
-                {id: "1.2", name: "Chemistry and Matter", nameAr: "Ø§Ù„ÙƒÙŠÙ…ÙŠØ§Ø¡ ÙˆØ§Ù„Ù…Ø§Ø¯Ø©"},
-                {id: "1.3", name: "Scientific Methods", nameAr: "Ø§Ù„Ø·Ø±Ø§Ø¦Ù‚ Ø§Ù„Ø¹Ù„Ù…ÙŠØ©"},
-                {id: "1.4", name: "Scientific Research", nameAr: "Ø§Ù„Ø¨Ø­Ø« Ø§Ù„Ø¹Ù„Ù…ÙŠ"}
+                {id: "1.1", name: "Story of Two Substances", nameAr: "قصة مادتين"},
+                {id: "1.2", name: "Chemistry and Matter", nameAr: "الكيمياء والمادة"},
+                {id: "1.3", name: "Scientific Methods", nameAr: "الطرائق العلمية"},
+                {id: "1.4", name: "Scientific Research", nameAr: "البحث العلمي"}
               ]
             },
             {
               id: "ch2",
               name: "Chapter 2",
-              nameAr: "Ø§Ù„ÙØµÙ„ 2",
+              nameAr: "الفصل 2",
               units: [
-                {id: "2.1", name: "Properties of Matter", nameAr: "Ø®ÙˆØ§Øµ Ø§Ù„Ù…Ø§Ø¯Ø©"},
-                {id: "2.2", name: "Changes in Matter", nameAr: "ØªØºÙŠØ±Ø§Øª Ø§Ù„Ù…Ø§Ø¯Ø©"},
-                {id: "2.3", name: "Mixtures", nameAr: "Ø§Ù„Ù…Ø®Ø§Ù„ÙŠØ·"},
-                {id: "2.4", name: "Elements and Compounds", nameAr: "Ø§Ù„Ø¹Ù†Ø§ØµØ± ÙˆØ§Ù„Ù…Ø±ÙƒØ¨Ø§Øª"}
+                {id: "2.1", name: "Properties of Matter", nameAr: "خواص المادة"},
+                {id: "2.2", name: "Changes in Matter", nameAr: "تغيرات المادة"},
+                {id: "2.3", name: "Mixtures", nameAr: "المخاليط"},
+                {id: "2.4", name: "Elements and Compounds", nameAr: "العناصر والمركبات"}
               ]
             },
             {
               id: "ch3",
               name: "Chapter 3",
-              nameAr: "Ø§Ù„ÙØµÙ„ 3",
+              nameAr: "الفصل 3",
               units: [
-                {id: "3.1", name: "Ancient Ideas of Matter", nameAr: "Ø§Ù„Ø£ÙÙƒØ§Ø± Ø§Ù„Ù‚Ø¯ÙŠÙ…Ø© Ù„Ù„Ù…Ø§Ø¯Ø©"},
-                {id: "3.2", name: "Definition of Atom", nameAr: "ØªØ¹Ø±ÙŠÙ Ø§Ù„Ø°Ø±Ø©"},
-                {id: "3.3", name: "How Atoms Differ?", nameAr: "ÙƒÙŠÙ ØªØ®ØªÙ„Ù Ø§Ù„Ø°Ø±Ø§ØªØŸ"},
-                {id: "3.4", name: "Unstable Nuclei and Radioactive Decay", nameAr: "Ø§Ù„Ø£Ù†ÙˆÙŠØ© ØºÙŠØ± Ø§Ù„Ù…Ø³ØªÙ‚Ø±Ø© ÙˆØ§Ù„ØªØ­Ù„Ù„ Ø§Ù„Ø¥Ø´Ø¹Ø§Ø¹ÙŠ"}
+                {id: "3.1", name: "Ancient Ideas of Matter", nameAr: "الأفكار القديمة للمادة"},
+                {id: "3.2", name: "Definition of Atom", nameAr: "تعريف الذرة"},
+                {id: "3.3", name: "How Atoms Differ?", nameAr: "كيف تختلف الذرات؟"},
+                {id: "3.4", name: "Unstable Nuclei and Radioactive Decay", nameAr: "الأنوية غير المستقرة والتحلل الإشعاعي"}
               ]
             },
             {
               id: "ch4",
               name: "Chapter 4",
-              nameAr: "Ø§Ù„ÙØµÙ„ 4",
+              nameAr: "الفصل 4",
               units: [
-                {id: "4.1", name: "Reactions and Equations", nameAr: "Ø§Ù„ØªÙØ§Ø¹Ù„Ø§Øª ÙˆØ§Ù„Ù…Ø¹Ø§Ø¯Ù„Ø§Øª"},
-                {id: "4.2", name: "Classification of Chemical Reactions", nameAr: "ØªØµÙ†ÙŠÙ Ø§Ù„ØªÙØ§Ø¹Ù„Ø§Øª Ø§Ù„ÙƒÙŠÙ…ÙŠØ§Ø¦ÙŠØ©"},
-                {id: "4.3", name: "Reactions in Aqueous Solutions", nameAr: "Ø§Ù„ØªÙØ§Ø¹Ù„Ø§Øª ÙÙŠ Ø§Ù„Ù…Ø­Ø§Ù„ÙŠÙ„ Ø§Ù„Ù…Ø§Ø¦ÙŠØ©"}
+                {id: "4.1", name: "Reactions and Equations", nameAr: "التفاعلات والمعادلات"},
+                {id: "4.2", name: "Classification of Chemical Reactions", nameAr: "تصنيف التفاعلات الكيميائية"},
+                {id: "4.3", name: "Reactions in Aqueous Solutions", nameAr: "التفاعلات في المحاليل المائية"}
               ]
             },
             {
               id: "ch5",
               name: "Chapter 5",
-              nameAr: "Ø§Ù„ÙØµÙ„ 5",
+              nameAr: "الفصل 5",
               units: [
-                {id: "5.1", name: "Measuring Matter", nameAr: "Ù‚ÙŠØ§Ø³ Ø§Ù„Ù…Ø§Ø¯Ø©"},
-                {id: "5.2", name: "Mass and Mole", nameAr: "Ø§Ù„ÙƒØªÙ„Ø© ÙˆØ§Ù„Ù…ÙˆÙ„"},
-                {id: "5.3", name: "Moles of Compounds", nameAr: "Ù…ÙˆÙ„Ø§Øª Ø§Ù„Ù…Ø±ÙƒØ¨Ø§Øª"}
+                {id: "5.1", name: "Measuring Matter", nameAr: "قياس المادة"},
+                {id: "5.2", name: "Mass and Mole", nameAr: "الكتلة والمول"},
+                {id: "5.3", name: "Moles of Compounds", nameAr: "مولات المركبات"}
               ]
             }
           ]
         },
-        {name:"Biology", nameAr:"Ø§Ù„Ø£Ø­ÙŠØ§Ø¡"},
-        {name:"Quran", nameAr:"Ø§Ù„Ù‚Ø±Ø¢Ù†"},
-        {name:"Digital Technology", nameAr:"Ø§Ù„ØªÙ‚Ù†ÙŠØ© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©"},
-        {name:"English", nameAr:"Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠØ©"},
-        {name:"Arabic", nameAr:"Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©"},
-        {name:"Environmental Science", nameAr:"Ø§Ù„Ø¹Ù„ÙˆÙ… Ø§Ù„Ø¨ÙŠØ¦ÙŠØ©"}
+        {name:"Biology", nameAr:"الأحياء"},
+        {name:"Quran", nameAr:"القرآن"},
+        {name:"Digital Technology", nameAr:"التقنية الرقمية"},
+        {name:"English", nameAr:"الإنجليزية"},
+        {name:"Arabic", nameAr:"العربية"},
+        {name:"Environmental Science", nameAr:"العلوم البيئية"}
       ],
       11: [
-        {name:"Mathematics", nameAr:"Ø§Ù„Ø±ÙŠØ§Ø¶ÙŠØ§Øª"},
-        {name:"Language Proficiency (Arabic)", nameAr:"Ø§Ù„ÙƒÙØ§ÙŠØ§Øª Ø§Ù„Ù„ØºÙˆÙŠØ©"},
-        {name:"Chemistry", nameAr:"Ø§Ù„ÙƒÙŠÙ…ÙŠØ§Ø¡"},
-        {name:"Biology", nameAr:"Ø§Ù„Ø£Ø­ÙŠØ§Ø¡"},
-        {name:"Physics", nameAr:"Ø§Ù„ÙÙŠØ²ÙŠØ§Ø¡"},
-        {name:"History", nameAr:"Ø§Ù„ØªØ§Ø±ÙŠØ®"},
-        {name:"Tawhid (Monotheism)", nameAr:"Ø§Ù„ØªÙˆØ­ÙŠØ¯"},
-        {name:"Hadith", nameAr:"Ø§Ù„Ø­Ø¯ÙŠØ«"},
-        {name:"Quran", nameAr:"Ø§Ù„Ù‚Ø±Ø¢Ù†"},
-        {name:"Qur'anic Readings", nameAr:"Ø§Ù„Ù‚Ø±Ø§Ø¡Ø§Øª"},
-        {name:"English", nameAr:"Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠ"},
-        {name:"Digital Technology", nameAr:"Ø§Ù„ØªÙ‚Ù†ÙŠØ© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©"},
-        {name:"Engineering", nameAr:"Ø§Ù„Ù‡Ù†Ø¯Ø³Ø©"},
-        {name:"Principles of Health Sciences", nameAr:"Ù…Ø¨Ø§Ø¯Ø¦ Ø§Ù„Ø¹Ù„ÙˆÙ… Ø§Ù„ØµØ­ÙŠØ©"},
-        {name:"Financial Management", nameAr:"Ø§Ù„Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…Ø§Ù„ÙŠØ©"},
-        {name:"Introduction to Business", nameAr:"Ù…Ù‚Ø¯Ù…Ø© ÙÙŠ Ø§Ù„Ø£Ø¹Ù…Ø§Ù„"},
-        {name:"Data Science", nameAr:"Ø¹Ù„Ù… Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª"},
-        {name:"Principles of Economics", nameAr:"Ù…Ø¨Ø§Ø¯Ø¦ Ø§Ù„Ø§Ù‚ØªØµØ§Ø¯"},
-        {name:"Internet of Things", nameAr:"Ø¥Ù†ØªØ±Ù†Øª Ø§Ù„Ø£Ø´ÙŠØ§Ø¡"}
+        {name:"Mathematics", nameAr:"الرياضيات"},
+        {name:"Language Proficiency (Arabic)", nameAr:"الكفايات اللغوية"},
+        {name:"Chemistry", nameAr:"الكيمياء"},
+        {name:"Biology", nameAr:"الأحياء"},
+        {name:"Physics", nameAr:"الفيزياء"},
+        {name:"History", nameAr:"التاريخ"},
+        {name:"Tawhid (Monotheism)", nameAr:"التوحيد"},
+        {name:"Hadith", nameAr:"الحديث"},
+        {name:"Quran", nameAr:"القرآن"},
+        {name:"Qur'anic Readings", nameAr:"القراءات"},
+        {name:"English", nameAr:"إنجليزي"},
+        {name:"Digital Technology", nameAr:"التقنية الرقمية"},
+        {name:"Engineering", nameAr:"الهندسة"},
+        {name:"Principles of Health Sciences", nameAr:"مبادئ العلوم الصحية"},
+        {name:"Financial Management", nameAr:"الإدارة المالية"},
+        {name:"Introduction to Business", nameAr:"مقدمة في الأعمال"},
+        {name:"Data Science", nameAr:"علم البيانات"},
+        {name:"Principles of Economics", nameAr:"مبادئ الاقتصاد"},
+        {name:"Internet of Things", nameAr:"إنترنت الأشياء"}
       ],
       12: [
-        {name:"Mathematics", nameAr:"Ø§Ù„Ø±ÙŠØ§Ø¶ÙŠØ§Øª"},
-        {name:"Physics", nameAr:"Ø§Ù„ÙÙŠØ²ÙŠØ§Ø¡"},
-        {name:"Chemistry", nameAr:"Ø§Ù„ÙƒÙŠÙ…ÙŠØ§Ø¡"},
-        {name:"Biology", nameAr:"Ø§Ù„Ø£Ø­ÙŠØ§Ø¡"},
-        {name:"Fiqh (Jurisprudence)", nameAr:"Ø§Ù„ÙÙ‚Ù‡"},
-        {name:"Hadith Terminology", nameAr:"Ù…ØµØ·Ù„Ø­ Ø§Ù„Ø­Ø¯ÙŠØ«"},
-        {name:"Tafsir (Quran Exegesis)", nameAr:"Ø§Ù„ØªÙØ³ÙŠØ±"},
-        {name:"English", nameAr:"Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠ"},
-        {name:"Geography", nameAr:"Ø§Ù„Ø¬ØºØ±Ø§ÙÙŠØ§"},
-        {name:"Managerial Skills", nameAr:"Ø§Ù„Ù…Ù‡Ø§Ø±Ø§Øª Ø§Ù„Ø¥Ø¯Ø§Ø±ÙŠØ©"},
-        {name:"Sustainable Development", nameAr:"Ø§Ù„ØªÙ†Ù…ÙŠØ© Ø§Ù„Ù…Ø³ØªØ¯Ø§Ù…Ø©"},
-        {name:"Earth & Space Sciences", nameAr:"Ø¹Ù„ÙˆÙ… Ø§Ù„Ø£Ø±Ø¶ ÙˆØ§Ù„ÙØ¶Ø§Ø¡"},
-        {name:"Research & Information Sources", nameAr:"Ø§Ù„Ø¨Ø­Ø« ÙˆÙ…ØµØ§Ø¯Ø± Ø§Ù„Ù…Ø¹Ù„ÙˆÙ…Ø§Øª"},
-        {name:"Digital Technology", nameAr:"Ø§Ù„ØªÙ‚Ù†ÙŠØ© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©"},
-        {name:"Functional & Creative Writing", nameAr:"Ø§Ù„ÙƒØªØ§Ø¨Ø© Ø§Ù„ÙˆØ¸ÙŠÙÙŠØ© ÙˆØ§Ù„Ø¥Ø¨Ø¯Ø§Ø¹ÙŠØ©"},
-        {name:"Literary Studies", nameAr:"Ø§Ù„Ø¯Ø±Ø§Ø³Ø§Øª Ø§Ù„Ø£Ø¯Ø¨ÙŠØ©"},
-        {name:"Principles of Law", nameAr:"Ù…Ø¨Ø§Ø¯Ø¦ Ø§Ù„Ù‚Ø§Ù†ÙˆÙ†"},
-        {name:"Statistics", nameAr:"Ø§Ù„Ø¥Ø­ØµØ§Ø¡"},
-        {name:"Healthcare", nameAr:"Ø§Ù„Ø±Ø¹Ø§ÙŠØ© Ø§Ù„ØµØ­ÙŠØ©"},
-        {name:"Human Body Systems", nameAr:"Ø£Ù†Ø¸Ù…Ø© Ø¬Ø³Ù… Ø§Ù„Ø¥Ù†Ø³Ø§Ù†"},
-        {name:"Digital Design", nameAr:"Ø§Ù„ØªØµÙ…ÙŠÙ… Ø§Ù„Ø±Ù‚Ù…ÙŠ"},
-        {name:"Artificial Intelligence", nameAr:"Ø§Ù„Ø°ÙƒØ§Ø¡ Ø§Ù„Ø§ØµØ·Ù†Ø§Ø¹ÙŠ"},
-        {name:"Cybersecurity", nameAr:"Ø§Ù„Ø£Ù…Ù† Ø§Ù„Ø³ÙŠØ¨Ø±Ø§Ù†ÙŠ"},
-        {name:"Engineering Design", nameAr:"Ø§Ù„ØªØµÙ…ÙŠÙ… Ø§Ù„Ù‡Ù†Ø¯Ø³ÙŠ"},
-        {name:"Principles of Management", nameAr:"Ù…Ø¨Ø§Ø¯Ø¦ Ø§Ù„Ø¥Ø¯Ø§Ø±Ø©"},
-        {name:"Event Management", nameAr:"Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„ÙØ¹Ø§Ù„ÙŠØ§Øª"},
-        {name:"Marketing Campaigns", nameAr:"Ø§Ù„Ø­Ù…Ù„Ø§Øª Ø§Ù„ØªØ³ÙˆÙŠÙ‚ÙŠØ©"},
-        {name:"Digital Citizenship", nameAr:"Ø§Ù„Ù…ÙˆØ§Ø·Ù†Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©"},
-        {name:"Life Skills", nameAr:"Ø§Ù„Ù…Ù‡Ø§Ø±Ø§Øª Ø§Ù„Ø­ÙŠØ§ØªÙŠØ©"},
-        {name:"Let's Learn Chinese", nameAr:"Ù‡ÙŠØ§ Ù†ØªØ¹Ù„Ù… Ø§Ù„Ù„ØºØ© Ø§Ù„ØµÙŠÙ†ÙŠØ©"},
-        {name:"Inheritance Law (Faraid)", nameAr:"Ø§Ù„ÙØ±Ø§Ø¦Ø¶"},
-        {name:"Usul al-Fiqh (Principles of Jurisprudence)", nameAr:"Ø£ØµÙˆÙ„ Ø§Ù„ÙÙ‚Ù‡"},
-        {name:"Software Engineering", nameAr:"Ù‡Ù†Ø¯Ø³Ø© Ø§Ù„Ø¨Ø±Ù…Ø¬ÙŠØ§Øª"},
-        {name:"Rhetoric & Literary Criticism", nameAr:"Ø§Ù„Ø¯Ø±Ø§Ø³Ø§Øª Ø§Ù„Ø¨Ù„Ø§ØºÙŠØ© ÙˆØ§Ù„Ù†Ù‚Ø¯ÙŠØ©"},
-        {name:"Secretarial & Office Administration", nameAr:"Ø§Ù„Ø³ÙƒØ±ØªØ§Ø±ÙŠØ© ÙˆØ§Ù„Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…ÙƒØªØ¨ÙŠØ©"}
+        {name:"Mathematics", nameAr:"الرياضيات"},
+        {name:"Physics", nameAr:"الفيزياء"},
+        {name:"Chemistry", nameAr:"الكيمياء"},
+        {name:"Biology", nameAr:"الأحياء"},
+        {name:"Fiqh (Jurisprudence)", nameAr:"الفقه"},
+        {name:"Hadith Terminology", nameAr:"مصطلح الحديث"},
+        {name:"Tafsir (Quran Exegesis)", nameAr:"التفسير"},
+        {name:"English", nameAr:"الإنجليزي"},
+        {name:"Geography", nameAr:"الجغرافيا"},
+        {name:"Managerial Skills", nameAr:"المهارات الإدارية"},
+        {name:"Sustainable Development", nameAr:"التنمية المستدامة"},
+        {name:"Earth & Space Sciences", nameAr:"علوم الأرض والفضاء"},
+        {name:"Research & Information Sources", nameAr:"البحث ومصادر المعلومات"},
+        {name:"Digital Technology", nameAr:"التقنية الرقمية"},
+        {name:"Functional & Creative Writing", nameAr:"الكتابة الوظيفية والإبداعية"},
+        {name:"Literary Studies", nameAr:"الدراسات الأدبية"},
+        {name:"Principles of Law", nameAr:"مبادئ القانون"},
+        {name:"Statistics", nameAr:"الإحصاء"},
+        {name:"Healthcare", nameAr:"الرعاية الصحية"},
+        {name:"Human Body Systems", nameAr:"أنظمة جسم الإنسان"},
+        {name:"Digital Design", nameAr:"التصميم الرقمي"},
+        {name:"Artificial Intelligence", nameAr:"الذكاء الاصطناعي"},
+        {name:"Cybersecurity", nameAr:"الأمن السيبراني"},
+        {name:"Engineering Design", nameAr:"التصميم الهندسي"},
+        {name:"Principles of Management", nameAr:"مبادئ الإدارة"},
+        {name:"Event Management", nameAr:"إدارة الفعاليات"},
+        {name:"Marketing Campaigns", nameAr:"الحملات التسويقية"},
+        {name:"Digital Citizenship", nameAr:"المواطنة الرقمية"},
+        {name:"Life Skills", nameAr:"المهارات الحياتية"},
+        {name:"Let's Learn Chinese", nameAr:"هيا نتعلم اللغة الصينية"},
+        {name:"Inheritance Law (Faraid)", nameAr:"الفرائض"},
+        {name:"Usul al-Fiqh (Principles of Jurisprudence)", nameAr:"أصول الفقه"},
+        {name:"Software Engineering", nameAr:"هندسة البرمجيات"},
+        {name:"Rhetoric & Literary Criticism", nameAr:"الدراسات البلاغية والنقدية"},
+        {name:"Secretarial & Office Administration", nameAr:"السكرتارية والإدارة المكتبية"}
       ]
     };
 
@@ -830,9 +830,9 @@
       if (!connectionStatus) return;
       connectionStatus.className = `connection-status ${status}`;
       const statusText = {
-        connected: 'ðŸŸ¢ Connected',
-        connecting: 'ðŸŸ¡ Connecting...',
-        disconnected: 'ðŸ”´ Disconnected'
+        connected: '🟢 Connected',
+        connecting: '🟡 Connecting...',
+        disconnected: '🔴 Disconnected'
       };
       document.getElementById('connection-text').textContent = statusText[status] || 'Unknown';
       connectionStatus.style.display = currentRoom ? 'block' : 'none';
@@ -877,7 +877,7 @@
       const name = document.getElementById('student-name').value.trim();
       const grade = gradeSelect.value;
       if(!name || !grade){
-        alert(currentLanguage==='ar' ? 'ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ø§Ù„Ø§Ø³Ù… ÙˆØ§Ø®ØªÙŠØ§Ø± Ø§Ù„ØµÙ.' : 'Please enter your name and select a grade.');
+        alert(currentLanguage==='ar' ? 'يرجى إدخال الاسم واختيار الصف.' : 'Please enter your name and select a grade.');
         return;
       }
       try{
@@ -895,7 +895,7 @@
         }
       }catch(e){
         console.error('Registration error:', e);
-        alert(currentLanguage==='ar' ? 'ÙØ´Ù„ Ø§Ù„ØªØ³Ø¬ÙŠÙ„.' : 'Registration failed.');
+        alert(currentLanguage==='ar' ? 'فشل التسجيل.' : 'Registration failed.');
       }
     }
 
@@ -930,7 +930,7 @@
 
     function navigateToScreen(screenId){
       if(screenId !== 'room-screen' && currentRoom){
-        if(!confirm(currentLanguage==='ar'?'Ø³ÙŠØªÙ… Ù…ØºØ§Ø¯Ø±Ø© Ø§Ù„ØºØ±ÙØ© Ø§Ù„Ø­Ø§Ù„ÙŠØ©. Ø§Ù„Ù…ØªØ§Ø¨Ø¹Ø©ØŸ':'This will leave your current study room. Proceed?')) return;
+        if(!confirm(currentLanguage==='ar'?'سيتم مغادرة الغرفة الحالية. المتابعة؟':'This will leave your current study room. Proceed?')) return;
         leaveRoom();
       }
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -993,10 +993,10 @@
       document.body.setAttribute('data-theme', currentTheme);
       const themeIcon = document.getElementById('theme-icon');
       const regThemeIcon = document.getElementById('reg-theme-icon');
-      if(themeIcon) themeIcon.textContent = currentTheme === 'light' ? 'ðŸŒ™' : 'â˜€ï¸';
-      if(regThemeIcon) regThemeIcon.textContent = currentTheme === 'light' ? 'ðŸŒ™' : 'â˜€ï¸';
+      if(themeIcon) themeIcon.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+      if(regThemeIcon) regThemeIcon.textContent = currentTheme === 'light' ? '🌙' : '☀️';
       const themeText = document.getElementById('theme-text'); 
-      if(themeText) themeText.textContent = currentTheme === 'light' ? 'ðŸŒ™ Dark' : 'â˜€ï¸ Light';
+      if(themeText) themeText.textContent = currentTheme === 'light' ? '🌙 Dark' : '☀️ Light';
     }
     
     function toggleTheme(){
@@ -1011,11 +1011,11 @@
 
       const langIcon = document.getElementById('lang-icon');
       const regLangIcon = document.getElementById('reg-lang-icon');
-      if(langIcon) langIcon.textContent = currentLanguage === 'ar' ? 'EN' : 'Ø¹';
-      if(regLangIcon) regLangIcon.textContent = currentLanguage === 'ar' ? 'EN' : 'Ø¹';
+      if(langIcon) langIcon.textContent = currentLanguage === 'ar' ? 'EN' : 'ع';
+      if(regLangIcon) regLangIcon.textContent = currentLanguage === 'ar' ? 'EN' : 'ع';
 
       const langText = document.getElementById('lang-text'); 
-      if(langText) langText.textContent = currentLanguage === 'ar' ? 'English' : 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©';
+      if(langText) langText.textContent = currentLanguage === 'ar' ? 'English' : 'العربية';
       
       document.querySelectorAll('[data-translate]').forEach(el => {
         const key = el.getAttribute('data-translate');
@@ -1054,7 +1054,7 @@
       const gradeLabel =
         (gradeTranslations[currentLanguage] && gradeTranslations[currentLanguage][gradeKey]) ?
           gradeTranslations[currentLanguage][gradeKey] :
-          (currentLanguage === 'ar' ? `Ø§Ù„ØµÙ ${gradeKey}` : `Grade ${gradeKey}`);
+          (currentLanguage === 'ar' ? `الصف ${gradeKey}` : `Grade ${gradeKey}`);
       const subjectDisplay = getSubjectDisplayName(currentUser.subject, currentUser.grade, currentLanguage);
       document.getElementById('sidebar-user-grade').textContent =
         subjectDisplay ? `${gradeLabel} - ${subjectDisplay}` : gradeLabel;
@@ -1074,7 +1074,7 @@
       gradeSelect.innerHTML = '';
       const optionPlaceholder = document.createElement('option');
       optionPlaceholder.value = '';
-      optionPlaceholder.textContent = currentLanguage === 'ar' ? '-- Ø§Ø®ØªØ± Ø§Ù„ØµÙ Ø§Ù„Ø¯Ø±Ø§Ø³ÙŠ --' : '-- Select Grade --';
+      optionPlaceholder.textContent = currentLanguage === 'ar' ? '-- اختر الصف الدراسي --' : '-- Select Grade --';
       gradeSelect.appendChild(optionPlaceholder);
       ['10','11','12'].forEach(val=>{
         const opt = document.createElement('option');
@@ -1113,7 +1113,7 @@
       subjSel.innerHTML = '';
       const placeholder = document.createElement('option');
       placeholder.value = '';
-      placeholder.textContent = currentLanguage === 'ar' ? '-- Ø§Ø®ØªØ± Ø§Ù„Ù…Ø§Ø¯Ø© --' : '-- Select Subject --';
+      placeholder.textContent = currentLanguage === 'ar' ? '-- اختر المادة --' : '-- Select Subject --';
       subjSel.appendChild(placeholder);
 
       const list = subjectsByGrade[gradeVal] || [];
@@ -1149,11 +1149,11 @@
       const newSubj = document.getElementById('settings-subject-select').value || null;
 
       if(!name){
-        alert(currentLanguage==='ar' ? 'Ù„Ø§ ÙŠÙ…ÙƒÙ† Ø£Ù† ÙŠÙƒÙˆÙ† Ø§Ù„Ø§Ø³Ù… ÙØ§Ø±ØºØ§Ù‹.' : 'Name cannot be empty.');
+        alert(currentLanguage==='ar' ? 'لا يمكن أن يكون الاسم فارغاً.' : 'Name cannot be empty.');
         return;
       }
       if(!newGrade){
-        alert(currentLanguage==='ar' ? 'Ø§Ø®ØªØ± Ø§Ù„ØµÙ.' : 'Please choose a grade.');
+        alert(currentLanguage==='ar' ? 'اختر الصف.' : 'Please choose a grade.');
         return;
       }
 
@@ -1169,10 +1169,10 @@
         updateSidebarUserInfo();
         populateRoomSubjects(newGrade);
 
-        toast(currentLanguage==='ar'?'ØªÙ… ØªØ­Ø¯ÙŠØ« Ø§Ù„Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø¨Ù†Ø¬Ø§Ø­!':'Personal information updated successfully!', 'success', currentLanguage==='ar'?'ØªÙ… Ø§Ù„ØªØ­Ø¯ÙŠØ«':'Updated');
+        toast(currentLanguage==='ar'?'تم تحديث المعلومات بنجاح!':'Personal information updated successfully!', 'success', currentLanguage==='ar'?'تم التحديث':'Updated');
       }catch(e){
         console.error(e);
-        alert(currentLanguage==='ar'?'ÙØ´Ù„ Ø­ÙØ¸ Ø§Ù„Ù…Ø¹Ù„ÙˆÙ…Ø§Øª.':'Failed to save personal information.');
+        alert(currentLanguage==='ar'?'فشل حفظ المعلومات.':'Failed to save personal information.');
       }
     }
 
@@ -1192,7 +1192,7 @@
     // -------- ROOM MANAGEMENT --------
     async function createRoom(){
       if(!currentUser){
-        alert(currentLanguage==='ar'?'ÙŠØ±Ø¬Ù‰ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ø£ÙˆÙ„Ø§Ù‹.':'Please log in first.');
+        alert(currentLanguage==='ar'?'يرجى تسجيل الدخول أولاً.':'Please log in first.');
         return;
       }
       try{
@@ -1205,15 +1205,15 @@
         if(error){
           console.error('Room creation error:', error);
           updateConnectionStatus('disconnected');
-          alert((currentLanguage==='ar'?'ÙØ´Ù„ Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„ØºØ±ÙØ©: ':'Failed to create room: ') + (error.message || 'Unknown error'));
+          alert((currentLanguage==='ar'?'فشل إنشاء الغرفة: ':'Failed to create room: ') + (error.message || 'Unknown error'));
           return;
         }
         await joinRoomById(data.id, data.room_code, data.host_id);
-        toast(currentLanguage==='ar'?'ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„ØºØ±ÙØ© Ø¨Ù†Ø¬Ø§Ø­!':'Room created successfully!', 'success', currentLanguage==='ar'?'ØªÙ… Ø§Ù„Ø¥Ù†Ø´Ø§Ø¡':'Created');
+        toast(currentLanguage==='ar'?'تم إنشاء الغرفة بنجاح!':'Room created successfully!', 'success', currentLanguage==='ar'?'تم الإنشاء':'Created');
       }catch(e){
         console.error('Room creation exception:', e);
         updateConnectionStatus('disconnected');
-        alert((currentLanguage==='ar'?'ÙØ´Ù„ Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„ØºØ±ÙØ©: ':'Failed to create room: ') + (e.message || 'Unknown error'));
+        alert((currentLanguage==='ar'?'فشل إنشاء الغرفة: ':'Failed to create room: ') + (e.message || 'Unknown error'));
       }
     }
 
@@ -1226,14 +1226,14 @@
           .select('*').eq('room_code', code).eq('is_active', true).single();
         if(error || !data){
           updateConnectionStatus('disconnected');
-          alert(currentLanguage==='ar'?'Ø§Ù„ØºØ±ÙØ© ØºÙŠØ± Ù…ÙˆØ¬ÙˆØ¯Ø© Ø£Ùˆ ØºÙŠØ± ÙØ¹Ù‘Ø§Ù„Ø©.':'Room not found or is inactive.');
+          alert(currentLanguage==='ar'?'الغرفة غير موجودة أو غير فعّالة.':'Room not found or is inactive.');
           return;
         }
         await joinRoomById(data.id, data.room_code, data.host_id);
       }catch(e){
         console.error(e);
         updateConnectionStatus('disconnected');
-        alert(currentLanguage==='ar'?'ÙØ´Ù„ Ø§Ù„Ø§Ù†Ø¶Ù…Ø§Ù… Ø¥Ù„Ù‰ Ø§Ù„ØºØ±ÙØ©.':'Failed to join room.');
+        alert(currentLanguage==='ar'?'فشل الانضمام إلى الغرفة.':'Failed to join room.');
       }
     }
 
@@ -1250,7 +1250,7 @@
         if(error){
           console.error('Failed to join room as participant:', error);
           updateConnectionStatus('disconnected');
-          alert((currentLanguage==='ar'?'ÙØ´Ù„ Ø§Ù„Ø§Ù†Ø¶Ù…Ø§Ù… Ø¥Ù„Ù‰ Ø§Ù„ØºØ±ÙØ©: ':'Failed to join room: ') + (error.message || 'Unknown error'));
+          alert((currentLanguage==='ar'?'فشل الانضمام إلى الغرفة: ':'Failed to join room: ') + (error.message || 'Unknown error'));
           return;
         }
         
@@ -1276,7 +1276,7 @@
       }catch(e){
         console.error('Exception joining room:', e);
         updateConnectionStatus('disconnected');
-        alert((currentLanguage==='ar'?'ÙØ´Ù„ Ø§Ù„Ø§Ù†Ø¶Ù…Ø§Ù… Ø¥Ù„Ù‰ Ø§Ù„ØºØ±ÙØ©: ':'Failed to join room: ') + (e.message || 'Unknown error'));
+        alert((currentLanguage==='ar'?'فشل الانضمام إلى الغرفة: ':'Failed to join room: ') + (e.message || 'Unknown error'));
       }
     }
 
@@ -1321,9 +1321,9 @@
         const unitsMessage = selectedUnitsArray.length > 0 ? 
           ` (${selectedUnitsArray.length} ${translations[currentLanguage]['unitsSelected'] || 'units selected'})` : '';
         
-        toast((currentLanguage==='ar'?'ØªÙ… ØªØ¹ÙŠÙŠÙ† Ø§Ù„Ù…Ø§Ø¯Ø© Ø¥Ù„Ù‰ ':'Subject set to ') + 
-              (getSubjectDisplayName(subject, currentUser.grade, currentLanguage) || 'â€”') + unitsMessage, 
-              'success', currentLanguage==='ar'?'ØªÙ… Ø§Ù„ØªØ­Ø¯ÙŠØ«':'Updated');
+        toast((currentLanguage==='ar'?'تم تعيين المادة إلى ':'Subject set to ') + 
+              (getSubjectDisplayName(subject, currentUser.grade, currentLanguage) || '—') + unitsMessage, 
+              'success', currentLanguage==='ar'?'تم التحديث':'Updated');
               
         // Update shared study focus display for all participants
         setTimeout(() => updateSharedStudyFocus(), 500);
@@ -1343,7 +1343,7 @@
         }
       }catch(e){
         console.error(e);
-        alert(currentLanguage==='ar'?'ÙØ´Ù„ Ø­ÙØ¸ Ø§Ù„Ù…Ø§Ø¯Ø© ÙˆØ§Ù„Ø¯Ø±ÙˆØ³.':'Failed saving subject and units.');
+        alert(currentLanguage==='ar'?'فشل حفظ المادة والدروس.':'Failed saving subject and units.');
       }
     }
 
@@ -1381,7 +1381,7 @@
     }
 
     async function kickParticipant(userId, userName){
-      if(!confirm(currentLanguage==='ar'?`Ù‡Ù„ ØªØ±ÙŠØ¯ Ø¥Ø²Ø§Ù„Ø© ${userName}ØŸ`:`Are you sure you want to kick ${userName}?`)) return;
+      if(!confirm(currentLanguage==='ar'?`هل تريد إزالة ${userName}؟`:`Are you sure you want to kick ${userName}?`)) return;
       try{
         await supabase.from('room_participants')
           .delete().match({room_id: currentRoom.id, user_id: userId});
@@ -1404,11 +1404,11 @@
           await loadParticipants();
           if (payload.eventType === 'INSERT' && payload.new?.user_id !== currentUser.id) {
             const user = await fetchUser(payload.new.user_id);
-            if (user) showPopupNotification(`${user.name} joined the room`, currentLanguage==='ar'?'Ø§Ù†Ø¶Ù… Ù…Ø´Ø§Ø±Ùƒ':'Participant joined');
+            if (user) showPopupNotification(`${user.name} joined the room`, currentLanguage==='ar'?'انضم مشارك':'Participant joined');
           }
           if (payload.eventType === 'DELETE' && payload.old?.user_id !== currentUser.id) {
             const user = await fetchUser(payload.old.user_id);
-            if (user) showPopupNotification(`${user.name} left the room`, currentLanguage==='ar'?'ØºØ§Ø¯Ø± Ù…Ø´Ø§Ø±Ùƒ':'Participant left');
+            if (user) showPopupNotification(`${user.name} left the room`, currentLanguage==='ar'?'غادر مشارك':'Participant left');
           }
           updateConnectionStatus('connected');
           connectionRetryCount = 0;
@@ -1460,8 +1460,8 @@
         lastScheduleBy = data.userId || null;
         scheduleTimerAt(data.scheduledStartTime, data.duration);
         const at = new Date(data.scheduledStartTime).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-        updateTimerStatus((currentLanguage==='ar' ? 'ØªÙ…Øª Ø§Ù„Ø¬Ø¯ÙˆÙ„Ø© Ù„Ù„Ø³Ø§Ø¹Ø© ' : 'Scheduled for ') + at);
-        toast(`${currentLanguage==='ar' ? 'ØªÙ…Øª Ø¬Ø¯ÙˆÙ„Ø© Ø§Ù„Ù…Ø¤Ù‚Øª Ø¨ÙˆØ§Ø³Ø·Ø©' : 'Timer scheduled by'} ${data.startedBy}`, 'info', currentLanguage==='ar' ? 'ØªÙ…Øª Ø§Ù„Ø¬Ø¯ÙˆÙ„Ø©' : 'Scheduled');
+        updateTimerStatus((currentLanguage==='ar' ? 'تمت الجدولة للساعة ' : 'Scheduled for ') + at);
+        toast(`${currentLanguage==='ar' ? 'تمت جدولة المؤقت بواسطة' : 'Timer scheduled by'} ${data.startedBy}`, 'info', currentLanguage==='ar' ? 'تمت الجدولة' : 'Scheduled');
 
       } else if (data.action === 'start') {
         const now = Date.now();
@@ -1476,7 +1476,7 @@
 
         updateTimerDisplay();
         updateProgressBar();
-        updateTimerStatus(`${currentLanguage==='ar'?'Ø¨Ø¯Ø£ Ø¨ÙˆØ§Ø³Ø·Ø©':'Started by'} ${data.startedBy}`);
+        updateTimerStatus(`${currentLanguage==='ar'?'بدأ بواسطة':'Started by'} ${data.startedBy}`);
 
         if (!timerRunning && remainingSeconds > 0) {
           startLocalTimerCountdown();
@@ -1484,7 +1484,7 @@
           timerComplete();
         }
 
-        toast(`${currentLanguage==='ar'?'Ø¨Ø¯Ø£ Ø§Ù„Ù…Ø¤Ù‚Øª Ø¨ÙˆØ§Ø³Ø·Ø©':'Timer started by'} ${data.startedBy}`, 'info', currentLanguage==='ar'?'ØªÙ… Ø§Ù„Ø¨Ø¯Ø¡':'Timer Started');
+        toast(`${currentLanguage==='ar'?'بدأ المؤقت بواسطة':'Timer started by'} ${data.startedBy}`, 'info', currentLanguage==='ar'?'تم البدء':'Timer Started');
 
       } else if (data.action === 'pause' || data.action === 'reset') {
         roomTimerState.isRunning = false;
@@ -1496,7 +1496,7 @@
         roomTimerState.isRunning = false;
         resetTimerUI();
         if (data.action === 'stop') {
-          toast(currentLanguage==='ar'?'ØªÙ… Ø¥ÙŠÙ‚Ø§Ù Ø§Ù„Ù…Ø¤Ù‚Øª Ù…Ù† Ù‚ÙØ¨Ù„ Ø£Ø­Ø¯ Ø§Ù„Ù…Ø´Ø§Ø±ÙƒÙŠÙ†.':'Timer was stopped by a participant.', 'info', currentLanguage==='ar'?'ØªÙ… Ø§Ù„Ø¥ÙŠÙ‚Ø§Ù':'Stopped');
+          toast(currentLanguage==='ar'?'تم إيقاف المؤقت من قِبل أحد المشاركين.':'Timer was stopped by a participant.', 'info', currentLanguage==='ar'?'تم الإيقاف':'Stopped');
         }
       }
     }
@@ -1512,7 +1512,7 @@
         timerSubscription.send({ type:'broadcast', event:'timer_sync', payload });
       } catch (error) {
         console.error('Error broadcasting timer action:', error);
-        toast(currentLanguage==='ar'?'ÙØ´Ù„ Ù…Ø²Ø§Ù…Ù†Ø© Ø§Ù„Ù…Ø¤Ù‚Øª':'Failed to sync timer', 'error', currentLanguage==='ar'?'Ø®Ø·Ø£ Ù…Ø²Ø§Ù…Ù†Ø©':'Sync Error');
+        toast(currentLanguage==='ar'?'فشل مزامنة المؤقت':'Failed to sync timer', 'error', currentLanguage==='ar'?'خطأ مزامنة':'Sync Error');
       }
     }
 
@@ -1533,7 +1533,7 @@
       const total = (isNaN(h)?0:h)*3600 + (isNaN(m)?0:m)*60 + (isNaN(s)?0:s);
 
       if(total <= 0){
-        alert(currentLanguage === 'ar' ? 'ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ù…Ø¯Ø© ØµØ­ÙŠØ­Ø©.' : 'Please enter a valid duration.');
+        alert(currentLanguage === 'ar' ? 'يرجى إدخال مدة صحيحة.' : 'Please enter a valid duration.');
         return;
       }
 
@@ -1542,7 +1542,7 @@
       resetTimerUI();
       updateTimerDisplay();
       updateProgressBar();
-      toast(`${currentLanguage==='ar'?'ØªÙ… Ø¶Ø¨Ø· Ø§Ù„Ù…Ø¤Ù‚Øª Ø¥Ù„Ù‰':'Timer set to'} ${formatTime(total)}`, 'success', currentLanguage==='ar'?'ØªÙ… Ø§Ù„Ø¶Ø¨Ø·':'Custom Duration');
+      toast(`${currentLanguage==='ar'?'تم ضبط المؤقت إلى':'Timer set to'} ${formatTime(total)}`, 'success', currentLanguage==='ar'?'تم الضبط':'Custom Duration');
     }
 
     function applyStartEndTimer(){
@@ -1550,7 +1550,7 @@
       const endVal   = document.getElementById('end-time-input').value;
 
       if(!startVal || !endVal){
-        alert(currentLanguage==='ar' ? 'ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ ÙˆÙ‚ØªÙŠ Ø§Ù„Ø¨Ø¯Ø§ÙŠØ© ÙˆØ§Ù„Ù†Ù‡Ø§ÙŠØ©.' : 'Please provide both start and end times.');
+        alert(currentLanguage==='ar' ? 'يرجى إدخال وقتي البداية والنهاية.' : 'Please provide both start and end times.');
         return;
       }
 
@@ -1565,7 +1565,7 @@
 
       const durationSec = Math.floor((end - start) / 1000);
       if(durationSec <= 0){
-        alert(currentLanguage==='ar' ? 'ÙˆÙ‚Øª Ø§Ù„Ù†Ù‡Ø§ÙŠØ© ÙŠØ¬Ø¨ Ø£Ù† ÙŠÙƒÙˆÙ† Ø¨Ø¹Ø¯ Ø§Ù„Ø¨Ø¯Ø§ÙŠØ©.' : 'End time must be after start time.');
+        alert(currentLanguage==='ar' ? 'وقت النهاية يجب أن يكون بعد البداية.' : 'End time must be after start time.');
         return;
       }
 
@@ -1576,12 +1576,12 @@
         lastScheduleBy = currentUser.id;
         scheduleTimerAt(start.getTime(), durationSec);
         broadcastTimerAction('schedule', { duration: durationSec, scheduledStartTime: start.getTime() });
-        updateTimerStatus((currentLanguage==='ar' ? 'ØªÙ…Øª Ø§Ù„Ø¬Ø¯ÙˆÙ„Ø© Ù„Ù„Ø³Ø§Ø¹Ø© ' : 'Scheduled for ') + start.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + (currentLanguage==='ar' ? `ØŒ ÙŠÙ†ØªÙ‡ÙŠ ${endsAtText}` : `, ends ${endsAtText}`));
-        toast(currentLanguage==='ar' ? 'ØªÙ…Øª Ø¬Ø¯ÙˆÙ„Ø© Ø§Ù„Ù…Ø¤Ù‚Øª' : 'Timer scheduled', 'info', currentLanguage==='ar' ? 'ØªÙ…Øª Ø§Ù„Ø¬Ø¯ÙˆÙ„Ø©' : 'Scheduled');
+        updateTimerStatus((currentLanguage==='ar' ? 'تمت الجدولة للساعة ' : 'Scheduled for ') + start.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + (currentLanguage==='ar' ? `، ينتهي ${endsAtText}` : `, ends ${endsAtText}`));
+        toast(currentLanguage==='ar' ? 'تمت جدولة المؤقت' : 'Timer scheduled', 'info', currentLanguage==='ar' ? 'تمت الجدولة' : 'Scheduled');
       } else {
         const remaining = Math.max(0, Math.floor((end.getTime() - now.getTime()) / 1000));
         if(remaining <= 0){
-          alert(currentLanguage==='ar' ? 'ÙˆÙ‚Øª Ø§Ù„Ù†Ù‡Ø§ÙŠØ© ÙÙŠ Ø§Ù„Ù…Ø§Ø¶ÙŠ.' : 'End time is in the past.');
+          alert(currentLanguage==='ar' ? 'وقت النهاية في الماضي.' : 'End time is in the past.');
           return;
         }
         timerDuration = remaining;
@@ -1589,7 +1589,7 @@
         resetTimerUI();
         updateTimerDisplay();
         updateProgressBar();
-        updateTimerStatus((currentLanguage==='ar' ? 'ÙŠÙ†ØªÙ‡ÙŠ ' : 'Ends ') + endsAtText);
+        updateTimerStatus((currentLanguage==='ar' ? 'ينتهي ' : 'Ends ') + endsAtText);
         broadcastTimerAction('start', { duration: remaining, startTime: Date.now() });
         startLocalTimerCountdown();
       }
@@ -1607,7 +1607,7 @@
       updateProgressBar();
       const ms = ts - Date.now();
       const startLabel = new Date(ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-      updateTimerStatus((currentLanguage==='ar' ? 'ØªÙ…Øª Ø§Ù„Ø¬Ø¯ÙˆÙ„Ø© Ù„Ù„Ø³Ø§Ø¹Ø© ' : 'Scheduled for ') + startLabel);
+      updateTimerStatus((currentLanguage==='ar' ? 'تمت الجدولة للساعة ' : 'Scheduled for ') + startLabel);
       scheduledStartTimeout = setTimeout(() => {
         if(lastScheduleBy === currentUser.id){
           broadcastTimerAction('start', { duration, startTime: ts });
@@ -1632,7 +1632,7 @@
       updateProgressBar();
 
       const endsAt = new Date(startTs + duration*1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-      updateTimerStatus((currentLanguage==='ar' ? 'ÙŠÙ†ØªÙ‡ÙŠ ' : 'Ends ') + endsAt);
+      updateTimerStatus((currentLanguage==='ar' ? 'ينتهي ' : 'Ends ') + endsAt);
 
       startLocalTimerCountdown();
     }
@@ -1643,7 +1643,7 @@
       timerStartedBy = currentUser.name;
       broadcastTimerAction('start');
       startLocalTimerCountdown();
-      updateTimerStatus(`${currentLanguage==='ar'?'Ø¨Ø¯Ø£ Ø¨ÙˆØ§Ø³Ø·Ø©':'Started by'} ${currentUser.name}`);
+      updateTimerStatus(`${currentLanguage==='ar'?'بدأ بواسطة':'Started by'} ${currentUser.name}`);
     }
 
     function startLocalTimerCountdown() {
@@ -1675,23 +1675,23 @@
     async function endSession(){
       broadcastTimerAction('stop');
       resetTimerUI();
-      toast(currentLanguage==='ar' ? 'ØªÙ… Ø¥Ù†Ù‡Ø§Ø¡ Ø§Ù„Ù…Ø¤Ù‚Øª ÙˆØ§Ù„Ø¬Ù„Ø³Ø©.' : 'Timer and session ended.', 'success',
-            currentLanguage==='ar' ? 'Ø§Ù†ØªÙ‡Øª Ø§Ù„Ø¬Ù„Ø³Ø©' : 'Session Ended');
+      toast(currentLanguage==='ar' ? 'تم إنهاء المؤقت والجلسة.' : 'Timer and session ended.', 'success',
+            currentLanguage==='ar' ? 'انتهت الجلسة' : 'Session Ended');
 
       const isHost = currentRoom && currentUser && currentUser.id === currentRoom.host_id;
       if(isHost && currentRoom){
         const confirmClose = confirm(currentLanguage==='ar'
-          ? 'Ù‡Ù„ ØªØ±ÙŠØ¯ Ø¥ØºÙ„Ø§Ù‚ Ø§Ù„ØºØ±ÙØ© Ù„Ù„Ø¬Ù…ÙŠØ¹ØŸ'
+          ? 'هل تريد إغلاق الغرفة للجميع؟'
           : 'Do you want to close the room for everyone?');
         if(confirmClose){
           try{
             await supabase.from('rooms').update({ is_active: false }).eq('id', currentRoom.id);
             await leaveRoom();
-            toast(currentLanguage==='ar' ? 'ØªÙ… Ø¥ØºÙ„Ø§Ù‚ Ø§Ù„ØºØ±ÙØ©.' : 'Room closed.', 'success',
-                  currentLanguage==='ar' ? 'Ø£ÙØºÙ„ÙÙ‚Øª' : 'Closed');
+            toast(currentLanguage==='ar' ? 'تم إغلاق الغرفة.' : 'Room closed.', 'success',
+                  currentLanguage==='ar' ? 'أُغلِقت' : 'Closed');
           }catch(e){
             console.error(e);
-            alert(currentLanguage==='ar' ? 'ØªØ¹Ø°Ø± Ø¥ØºÙ„Ø§Ù‚ Ø§Ù„ØºØ±ÙØ©.' : 'Failed to close the room.');
+            alert(currentLanguage==='ar' ? 'تعذر إغلاق الغرفة.' : 'Failed to close the room.');
           }
         }
       }
@@ -1741,8 +1741,8 @@
       if (pauseBtn) pauseBtn.style.display = 'none';
       document.getElementById('timer-progress-bar')?.classList.remove('running');
       updateTimerStatus('');
-      showPopupNotification(currentLanguage==='ar'?'Ø§Ù†ØªÙ‡Ù‰ Ø§Ù„ÙˆÙ‚Øª! Ø¹Ù…Ù„ Ø±Ø§Ø¦Ø¹ Ù„Ù„Ø¬Ù…ÙŠØ¹!':"Time's up! Great work everyone!", currentLanguage==='ar'?'Ø§Ù†ØªÙ‡Ù‰ Ø§Ù„Ù…Ø¤Ù‚Øª':'Timer Complete');
-      toast(currentLanguage==='ar'?'Ø§ÙƒØªÙ…Ù„ Ø§Ù„Ù…Ø¤Ù‚Øª!':'Timer complete!', 'success', currentLanguage==='ar'?'ØªÙ…':'Done');
+      showPopupNotification(currentLanguage==='ar'?'انتهى الوقت! عمل رائع للجميع!':"Time's up! Great work everyone!", currentLanguage==='ar'?'انتهى المؤقت':'Timer Complete');
+      toast(currentLanguage==='ar'?'اكتمل المؤقت!':'Timer complete!', 'success', currentLanguage==='ar'?'تم':'Done');
       if (timerStartedBy === currentUser.name) broadcastTimerAction('complete');
     }
 
@@ -1824,7 +1824,7 @@
         if(!user) return '';
         const isParticipantHost = user.id === currentRoom.host_id;
         const kickBtn = isHost && !isParticipantHost ? 
-          `<button class="btn btn-small" style="background:var(--error-color)" onclick="kickParticipant('${user.id}','${escapeHtml(user.name)}')">${currentLanguage==='ar'?'Ø¥Ø²Ø§Ù„Ø©':'Kick'}</button>` : '';
+          `<button class="btn btn-small" style="background:var(--error-color)" onclick="kickParticipant('${user.id}','${escapeHtml(user.name)}')">${currentLanguage==='ar'?'إزالة':'Kick'}</button>` : '';
         return `<div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;background:var(--bg-tertiary);border-radius:12px;margin-bottom:1rem;">
           <div style="display:flex;align-items:center;gap:1rem;">
             <div class="sidebar-avatar" style="width:40px;height:40px;border-radius:10px;background:${user.avatar_color || '#667eea'};">${escapeHtml((user.name?.[0]||'U').toUpperCase())}</div>
@@ -2128,7 +2128,7 @@
         
         sessionCard.innerHTML = `
           <div class="study-session-subject">
-            <div class="study-session-subject-icon">ðŸ“š</div>
+            <div class="study-session-subject-icon">📚</div>
             <div>
               <div>${subjectName}</div>
               <div style="font-size:.9rem;font-weight:400;color:var(--text-secondary)">${participants.length} ${participants.length === 1 ? 'participant' : 'participants'}</div>
@@ -2249,16 +2249,16 @@
 
     function copyRoomCode(){ 
       navigator.clipboard.writeText(currentRoom.code)
-        .then(() => toast(currentLanguage==='ar'?'ØªÙ… Ù†Ø³Ø® ÙƒÙˆØ¯ Ø§Ù„ØºØ±ÙØ©!':'Room code copied!', 'success', currentLanguage==='ar'?'Ù†ÙØ³Ø®':'Copied')); 
+        .then(() => toast(currentLanguage==='ar'?'تم نسخ كود الغرفة!':'Room code copied!', 'success', currentLanguage==='ar'?'نُسخ':'Copied')); 
     }
     
     function shareRoom(){ 
       const link = `${window.location.origin}${window.location.pathname}?room=${currentRoom.code}`;
       if(navigator.share){
-        navigator.share({ title:'Study Partner', text: currentLanguage==='ar'?'Ø§Ù†Ø¶Ù… Ø¥Ù„Ù‰ ØºØ±ÙØªÙŠ Ø§Ù„Ø¯Ø±Ø§Ø³ÙŠØ©:':'Join my study room:', url:link }).catch(() => {});
+        navigator.share({ title:'Study Partner', text: currentLanguage==='ar'?'انضم إلى غرفتي الدراسية:':'Join my study room:', url:link }).catch(() => {});
       }
       navigator.clipboard.writeText(link)
-        .then(() => toast(currentLanguage==='ar'?'ØªÙ… Ù†Ø³Ø® Ø±Ø§Ø¨Ø· Ø§Ù„Ø¯Ø¹ÙˆØ©!':'Invite link copied!', 'success', currentLanguage==='ar'?'ØªÙ…Øª Ø§Ù„Ù…Ø´Ø§Ø±ÙƒØ©':'Shared')); 
+        .then(() => toast(currentLanguage==='ar'?'تم نسخ رابط الدعوة!':'Invite link copied!', 'success', currentLanguage==='ar'?'تمت المشاركة':'Shared')); 
     }
     
     function showJoinForm(){ document.getElementById('join-form').style.display = 'block'; }
