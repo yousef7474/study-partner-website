@@ -1313,8 +1313,14 @@ async function saveRoomSubject(){
   const subject = roomSubjectSelect.value || null;
   const selectedUnitsArray = getSelectedUnitsData();
   
+  console.log('Debug - Starting saveRoomSubject');
+  console.log('Debug - currentRoom:', currentRoom);
+  console.log('Debug - currentUser:', currentUser);
+  console.log('Debug - subject:', subject);
+  console.log('Debug - selectedUnitsArray:', selectedUnitsArray);
+  
   try{
-    // Update user data with subject and selected units (for personal profile)
+    // Update user data
     const userUpdateData = {
       subject: subject,
       selected_units: selectedUnitsArray.length > 0 ? selectedUnitsArray : null
@@ -1323,9 +1329,11 @@ async function saveRoomSubject(){
     currentUser.subject = subject;
     currentUser.selected_units = selectedUnitsArray;
     
+    console.log('Debug - Updating users table...');
     await supabase.from('users').update(userUpdateData).eq('id', currentUser.id);
+    console.log('Debug - Users table updated successfully');
     
-    // SAVE TO STUDY_SESSIONS TABLE FOR ROOM SHARING
+    // Save to study_sessions table
     if(subject && selectedUnitsArray.length > 0){
       const sessionData = {
         room_id: currentRoom.id,
@@ -1336,14 +1344,22 @@ async function saveRoomSubject(){
         updated_at: new Date().toISOString()
       };
       
-      await supabase.from('study_sessions').upsert(sessionData, {
+      console.log('Debug - About to insert session data:', sessionData);
+      
+      const { data, error } = await supabase.from('study_sessions').upsert(sessionData, {
         onConflict: 'room_id,user_id'
       });
+      
+      if (error) {
+        console.error('Debug - Error saving to study_sessions:', error);
+        console.error('Debug - Error details:', error.message, error.details, error.hint);
+      } else {
+        console.log('Debug - Successfully saved to study_sessions:', data);
+      }
     } else {
-      // Clear study session if no subject/units selected
-      await supabase.from('study_sessions')
-        .delete()
-        .match({room_id: currentRoom.id, user_id: currentUser.id});
+      console.log('Debug - Skipping study_sessions insert because subject or units are empty');
+      console.log('Debug - subject exists:', !!subject);
+      console.log('Debug - selectedUnitsArray.length:', selectedUnitsArray.length);
     }
     
     localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
@@ -1357,10 +1373,9 @@ async function saveRoomSubject(){
           (getSubjectDisplayName(subject, currentUser.grade, currentLanguage) || '—') + unitsMessage, 
           'success', currentLanguage==='ar'?'تم التحديث':'Updated');
           
-    // Update shared study focus display for all participants
+    console.log('Debug - About to call updateSharedStudyFocus');
     setTimeout(() => updateSharedStudyFocus(), 500);
     
-    // Broadcast study focus update to other participants
     if(participantsSubscription) {
       participantsSubscription.send({
         type: 'broadcast',
@@ -1374,7 +1389,7 @@ async function saveRoomSubject(){
       });
     }
   }catch(e){
-    console.error(e);
+    console.error('Debug - Exception in saveRoomSubject:', e);
     alert(currentLanguage==='ar'?'فشل حفظ المادة والدروس.':'Failed saving subject and units.');
   }
 }
