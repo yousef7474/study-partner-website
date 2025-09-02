@@ -1342,6 +1342,8 @@ async function saveRoomSubject(){
         selected_units: selectedUnitsArray,
         is_active: true,
         updated_at: new Date().toISOString()
+        duration_minutes: 0, // Set to 0 for study focus entries
+        session_type: 'study_focus' // Distinguish from timer sessions
       };
       
       console.log('Debug - About to insert session data:', sessionData);
