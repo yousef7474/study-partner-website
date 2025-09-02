@@ -1346,9 +1346,31 @@ async function saveRoomSubject(){
       
       console.log('Debug - About to insert session data:', sessionData);
       
-      const { data, error } = await supabase.from('study_sessions').upsert(sessionData, {
-        onConflict: 'room_id,user_id'
-      });
+      console.log('Debug - About to insert session data:', sessionData);
+
+// First try to update existing record
+let { data, error } = await supabase
+  .from('study_sessions')
+  .update(sessionData)
+  .match({ room_id: currentRoom.id, user_id: currentUser.id });
+
+if (error || !data || data.length === 0) {
+  // If update failed or no rows affected, try insert
+  console.log('Debug - Update failed or no rows, trying insert...');
+  const result = await supabase
+    .from('study_sessions')
+    .insert(sessionData);
+  
+  data = result.data;
+  error = result.error;
+}
+
+if (error) {
+  console.error('Debug - Error saving to study_sessions:', error);
+  console.error('Debug - Error details:', error.message, error.details, error.hint);
+} else {
+  console.log('Debug - Successfully saved to study_sessions:', data);
+}
       
       if (error) {
         console.error('Debug - Error saving to study_sessions:', error);
