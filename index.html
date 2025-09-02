@@ -376,6 +376,7 @@
             <label class="form-label" style="margin:0" data-translate="subject">Subject</label>
             <select id="room-subject-select" class="form-input" style="width:auto;min-width:260px" onchange="onRoomSubjectChange()"></select>
             <button class="btn btn-small" onclick="saveRoomSubject()" data-translate="save">Save</button>
+            <button class="btn btn-small btn-secondary" onclick="deleteSelectedSubject()" data-translate="delete">Delete</button>
           </div>
           
           <!-- Chapter and Unit Selector -->
@@ -563,7 +564,7 @@
         welcomeDesc:"Create your profile to start", yourName:"Your Name",
         chooseAvatar:"Choose Avatar Color", selectGrade:"Select Grade", joinPlatform:"Join Platform",
         appName:"Study Partner", toggleSidebar:"Toggle Sidebar", menuToggle:"Menu",
-        copyCode:"Copy Code", shareLink:"Share Link", save:"Save", enterRooms:"Enter Rooms",
+        copyCode:"Copy Code", shareLink:"Share Link", save:"Save", delete:"Delete", enterRooms:"Enter Rooms",
         browse:"Browse", createNow:"Create Now", joinNow:"Join Now", joinRoom:"Join Room",
         createRoom:"Create Room", enterRoomCode:"Enter Room Code", leaveRoom:"Leave Room",
         roomCode:"Room Code", subject:"Subject", selectSubject:"Select Subject",
@@ -596,7 +597,7 @@
         selectGrade:"اختر الصف الدراسي", joinPlatform:"انضم للمنصة",
         appName:"شريك الدراسة", toggleSidebar:"إظهار/إخفاء الشريط الجانبي",
         menuToggle:"القائمة", copyCode:"نسخ الكود", shareLink:"مشاركة الرابط",
-        save:"حفظ", enterRooms:"دخول الغرف", browse:"تصفح", createNow:"إنشاء الآن",
+        save:"حفظ", delete:"حذف", enterRooms:"دخول الغرف", browse:"تصفح", createNow:"إنشاء الآن",
         joinNow:"انضمام الآن", joinRoom:"انضم للغرفة", createRoom:"إنشاء غرفة",
         enterRoomCode:"أدخل كود الغرفة", leaveRoom:"مغادرة الغرفة",
         roomCode:"كود الغرفة", subject:"المادة", selectSubject:"اختر المادة",
@@ -1415,6 +1416,65 @@ if (error) {
   }catch(e){
     console.error('Debug - Exception in saveRoomSubject:', e);
     alert(currentLanguage==='ar'?'فشل حفظ المادة والدروس.':'Failed saving subject and units.');
+  }
+}
+
+async function deleteSelectedSubject(){
+  if(!currentRoom) return;
+  
+  if(!confirm(currentLanguage==='ar'?'هل أنت متأكد من حذف المادة المختارة والوحدات؟':'Are you sure you want to delete the selected subject and units?')) {
+    return;
+  }
+  
+  try{
+    // Clear user data
+    const userUpdateData = {
+      subject: null,
+      selected_units: null
+    };
+    
+    currentUser.subject = null;
+    currentUser.selected_units = null;
+    
+    // Update users table
+    await supabase.from('users').update(userUpdateData).eq('id', currentUser.id);
+    
+    // Delete from study_sessions table
+    await supabase
+      .from('study_sessions')
+      .delete()
+      .match({ room_id: currentRoom.id, user_id: currentUser.id });
+    
+    // Clear UI
+    roomSubjectSelect.value = '';
+    selectedUnits.clear();
+    document.getElementById('chapter-unit-selector').style.display = 'none';
+    
+    // Update localStorage and UI
+    localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
+    populateSettings();
+    updateSidebarUserInfo();
+    
+    toast(currentLanguage==='ar'?'تم حذف المادة المختارة':'Selected subject deleted successfully', 
+          'success', currentLanguage==='ar'?'تم الحذف':'Deleted');
+    
+    // Update shared study focus
+    setTimeout(() => updateSharedStudyFocus(), 500);
+    
+    // Broadcast deletion to other participants
+    if(participantsSubscription) {
+      participantsSubscription.send({
+        type: 'broadcast',
+        event: 'study_focus_update',
+        payload: { 
+          action: 'delete',
+          user_id: currentUser.id
+        }
+      });
+    }
+  }catch(e){
+    console.error('Error deleting subject:', e);
+    alert(currentLanguage==='ar'?'فشل حذف المادة والدروس.':'Failed deleting subject and units.');
   }
 }
 
