@@ -1280,72 +1280,104 @@
       }
     }
 
-    async function leaveRoom(isLoggingOut = false){
-      if(!currentRoom) return;
-      cleanupSubscriptions();
-      if (!isLoggingOut) {
-        try {
-          await supabase.from('room_participants')
-            .delete().match({room_id: currentRoom.id, user_id: currentUser.id});
-        } catch (error) { console.error('Error removing participant:', error); }
-      }
-      currentRoom = null;
-      connectionRetryCount = 0;
-      localStorage.removeItem('studyTogether_room');
-      updateConnectionStatus('disconnected');
-      resetTimerUI();
-      roomTimerState = { isRunning:false, seconds:1500, duration:1500, startedBy:null, startTime:null };
-      if(!isLoggingOut) navigateToScreen('study-rooms-screen');
-    }
-
-    async function saveRoomSubject(){
-      if(!currentRoom) return;
-      const subject = roomSubjectSelect.value || null;
-      const selectedUnitsArray = getSelectedUnitsData();
+async function leaveRoom(isLoggingOut = false){
+  if(!currentRoom) return;
+  cleanupSubscriptions();
+  
+  if (!isLoggingOut) {
+    try {
+      // Remove from room participants
+      await supabase.from('room_participants')
+        .delete().match({room_id: currentRoom.id, user_id: currentUser.id});
       
-      try{
-        // Update user data with subject and selected units
-        const updateData = {
-          subject: subject,
-          selected_units: selectedUnitsArray.length > 0 ? selectedUnitsArray : null
-        };
+      // Clean up study session
+      await supabase.from('study_sessions')
+        .delete().match({room_id: currentRoom.id, user_id: currentUser.id});
         
-        currentUser.subject = subject;
-        currentUser.selected_units = selectedUnitsArray;
-        
-        await supabase.from('users').update(updateData).eq('id', currentUser.id);
-        localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
-        populateSettings();
-        updateSidebarUserInfo();
-        
-        const unitsMessage = selectedUnitsArray.length > 0 ? 
-          ` (${selectedUnitsArray.length} ${translations[currentLanguage]['unitsSelected'] || 'units selected'})` : '';
-        
-        toast((currentLanguage==='ar'?'تم تعيين المادة إلى ':'Subject set to ') + 
-              (getSubjectDisplayName(subject, currentUser.grade, currentLanguage) || '—') + unitsMessage, 
-              'success', currentLanguage==='ar'?'تم التحديث':'Updated');
-              
-        // Update shared study focus display for all participants
-        setTimeout(() => updateSharedStudyFocus(), 500);
-        
-        // Broadcast study focus update to other participants
-        if(participantsSubscription) {
-          participantsSubscription.send({
-            type: 'broadcast',
-            event: 'study_focus_update',
-            payload: { 
-              action: 'update',
-              user_id: currentUser.id,
-              subject: subject,
-              selected_units: selectedUnitsArray
-            }
-          });
-        }
-      }catch(e){
-        console.error(e);
-        alert(currentLanguage==='ar'?'فشل حفظ المادة والدروس.':'Failed saving subject and units.');
-      }
+    } catch (error) { 
+      console.error('Error removing participant and study session:', error); 
     }
+  }
+  
+  currentRoom = null;
+  connectionRetryCount = 0;
+  localStorage.removeItem('studyTogether_room');
+  updateConnectionStatus('disconnected');
+  resetTimerUI();
+  roomTimerState = { isRunning:false, seconds:1500, duration:1500, startedBy:null, startTime:null };
+  if(!isLoggingOut) navigateToScreen('study-rooms-screen');
+}
+
+async function saveRoomSubject(){
+  if(!currentRoom) return;
+  const subject = roomSubjectSelect.value || null;
+  const selectedUnitsArray = getSelectedUnitsData();
+  
+  try{
+    // Update user data with subject and selected units (for personal profile)
+    const userUpdateData = {
+      subject: subject,
+      selected_units: selectedUnitsArray.length > 0 ? selectedUnitsArray : null
+    };
+    
+    currentUser.subject = subject;
+    currentUser.selected_units = selectedUnitsArray;
+    
+    await supabase.from('users').update(userUpdateData).eq('id', currentUser.id);
+    
+    // SAVE TO STUDY_SESSIONS TABLE FOR ROOM SHARING
+    if(subject && selectedUnitsArray.length > 0){
+      const sessionData = {
+        room_id: currentRoom.id,
+        user_id: currentUser.id,
+        subject: subject,
+        selected_units: selectedUnitsArray,
+        is_active: true,
+        updated_at: new Date().toISOString()
+      };
+      
+      await supabase.from('study_sessions').upsert(sessionData, {
+        onConflict: 'room_id,user_id'
+      });
+    } else {
+      // Clear study session if no subject/units selected
+      await supabase.from('study_sessions')
+        .delete()
+        .match({room_id: currentRoom.id, user_id: currentUser.id});
+    }
+    
+    localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
+    populateSettings();
+    updateSidebarUserInfo();
+    
+    const unitsMessage = selectedUnitsArray.length > 0 ? 
+      ` (${selectedUnitsArray.length} ${translations[currentLanguage]['unitsSelected'] || 'units selected'})` : '';
+    
+    toast((currentLanguage==='ar'?'تم تعيين المادة إلى ':'Subject set to ') + 
+          (getSubjectDisplayName(subject, currentUser.grade, currentLanguage) || '—') + unitsMessage, 
+          'success', currentLanguage==='ar'?'تم التحديث':'Updated');
+          
+    // Update shared study focus display for all participants
+    setTimeout(() => updateSharedStudyFocus(), 500);
+    
+    // Broadcast study focus update to other participants
+    if(participantsSubscription) {
+      participantsSubscription.send({
+        type: 'broadcast',
+        event: 'study_focus_update',
+        payload: { 
+          action: 'update',
+          user_id: currentUser.id,
+          subject: subject,
+          selected_units: selectedUnitsArray
+        }
+      });
+    }
+  }catch(e){
+    console.error(e);
+    alert(currentLanguage==='ar'?'فشل حفظ المادة والدروس.':'Failed saving subject and units.');
+  }
+}
 
     async function loadRoomSubjectIntoUI(){
       if(!currentRoom) return;
@@ -1390,52 +1422,75 @@
     }
 
     // -------- REAL-TIME --------
-    function setupRoomSubscriptions(){
-      cleanupSubscriptions();
-      const participantsChannelName = `room-participants-${currentRoom.id}`;
-      const timerChannelName = `room-timer-${currentRoom.id}`;
+function setupRoomSubscriptions(){
+  cleanupSubscriptions();
+  const participantsChannelName = `room-participants-${currentRoom.id}`;
+  const timerChannelName = `room-timer-${currentRoom.id}`;
 
-      participantsSubscription = supabase.channel(participantsChannelName, {
-        config: { broadcast: { self: false }, presence: { key: currentUser.id } }
-      }).on('postgres_changes', {
-        event: '*', schema: 'public', table: 'room_participants', filter: `room_id=eq.${currentRoom.id}`
-      }, async (payload) => {
-        try {
-          await loadParticipants();
-          if (payload.eventType === 'INSERT' && payload.new?.user_id !== currentUser.id) {
-            const user = await fetchUser(payload.new.user_id);
-            if (user) showPopupNotification(`${user.name} joined the room`, currentLanguage==='ar'?'انضم مشارك':'Participant joined');
-          }
-          if (payload.eventType === 'DELETE' && payload.old?.user_id !== currentUser.id) {
-            const user = await fetchUser(payload.old.user_id);
-            if (user) showPopupNotification(`${user.name} left the room`, currentLanguage==='ar'?'غادر مشارك':'Participant left');
-          }
-          updateConnectionStatus('connected');
-          connectionRetryCount = 0;
-        } catch (error) {
-          console.error('Error handling participants change:', error);
-          updateConnectionStatus('disconnected');
-        }
-      }).on('broadcast', { event: 'participant_update' }, () => {
-        loadParticipants();
-      }).on('broadcast', { event: 'study_focus_update' }, () => {
-        updateSharedStudyFocus();
-      }).subscribe();
-
-      timerSubscription = supabase.channel(timerChannelName, {
-        config: { broadcast: { self: false }, presence: { key: currentUser.id } }
-      }).on('broadcast', { event: 'timer_sync' }, (payload) => {
-        handleTimerBroadcast(payload.payload);
-      }).subscribe((status) => {
-        if (status === 'SUBSCRIBED') {
-          updateConnectionStatus('connected');
-          connectionRetryCount = 0;
-        } else if (status === 'CHANNEL_ERROR') {
-          updateConnectionStatus('disconnected');
-          retryConnection();
-        }
-      });
+  participantsSubscription = supabase.channel(participantsChannelName, {
+    config: { broadcast: { self: false }, presence: { key: currentUser.id } }
+  }).on('postgres_changes', {
+    event: '*', schema: 'public', table: 'room_participants', filter: `room_id=eq.${currentRoom.id}`
+  }, async (payload) => {
+    try {
+      await loadParticipants();
+      if (payload.eventType === 'INSERT' && payload.new?.user_id !== currentUser.id) {
+        const user = await fetchUser(payload.new.user_id);
+        if (user) showPopupNotification(`${user.name} joined the room`, currentLanguage==='ar'?'انضم مشارك':'Participant joined');
+      }
+      if (payload.eventType === 'DELETE' && payload.old?.user_id !== currentUser.id) {
+        const user = await fetchUser(payload.old.user_id);
+        if (user) showPopupNotification(`${user.name} left the room`, currentLanguage==='ar'?'غادر مشارك':'Participant left');
+      }
+      updateConnectionStatus('connected');
+      connectionRetryCount = 0;
+    } catch (error) {
+      console.error('Error handling participants change:', error);
+      updateConnectionStatus('disconnected');
     }
+  }).on('postgres_changes', {
+    // ADD STUDY SESSIONS SUBSCRIPTION
+    event: '*', schema: 'public', table: 'study_sessions', filter: `room_id=eq.${currentRoom.id}`
+  }, async (payload) => {
+    try {
+      await updateSharedStudyFocus();
+      
+      // Show notification when someone updates their study focus
+      if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+        if (payload.new?.user_id !== currentUser.id) {
+          const user = await fetchUser(payload.new.user_id);
+          if (user && payload.new.subject) {
+            const subjectName = getSubjectDisplayName(payload.new.subject, currentUser.grade, currentLanguage);
+            showPopupNotification(
+              `${user.name} ${currentLanguage==='ar'?'يدرس الآن':'is now studying'} ${subjectName}`, 
+              currentLanguage==='ar'?'تحديث الدراسة':'Study Update'
+            );
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error handling study sessions change:', error);
+    }
+  }).on('broadcast', { event: 'participant_update' }, () => {
+    loadParticipants();
+  }).on('broadcast', { event: 'study_focus_update' }, () => {
+    updateSharedStudyFocus();
+  }).subscribe();
+
+  timerSubscription = supabase.channel(timerChannelName, {
+    config: { broadcast: { self: false }, presence: { key: currentUser.id } }
+  }).on('broadcast', { event: 'timer_sync' }, (payload) => {
+    handleTimerBroadcast(payload.payload);
+  }).subscribe((status) => {
+    if (status === 'SUBSCRIBED') {
+      updateConnectionStatus('connected');
+      connectionRetryCount = 0;
+    } else if (status === 'CHANNEL_ERROR') {
+      updateConnectionStatus('disconnected');
+      retryConnection();
+    }
+  });
+}
 
     function cleanupSubscriptions() {
       if (participantsSubscription) { try { participantsSubscription.unsubscribe(); } catch (e) {} participantsSubscription = null; }
@@ -2056,95 +2111,99 @@
     }
 
     // -------- SHARED STUDY FOCUS DISPLAY --------
-    async function updateSharedStudyFocus(){
-      if(!currentRoom) return;
-      
-      try {
-        // Get all participants with their study data
-        const {data: participants, error} = await supabase
-          .from('room_participants')
-          .select(`
-            user_id,
-            users (
-              id, name, avatar_color, subject, selected_units
-            )
-          `)
-          .eq('room_id', currentRoom.id)
-          .eq('is_online', true);
+async function updateSharedStudyFocus(){
+  if(!currentRoom) return;
+  
+  try {
+    // Get study sessions from the dedicated table instead of users table
+    const {data: studySessions, error} = await supabase
+      .from('study_sessions')
+      .select(`
+        user_id,
+        subject,
+        selected_units,
+        users (
+          id, name, avatar_color
+        )
+      `)
+      .eq('room_id', currentRoom.id)
+      .eq('is_active', true);
 
-        if(error) {
-          console.error('Error fetching participants study data:', error);
-          return;
-        }
-
-        displaySharedStudyFocus(participants || []);
-      } catch(e) {
-        console.error('Error updating shared study focus:', e);
-      }
+    if(error) {
+      console.error('Error fetching study sessions:', error);
+      return;
     }
 
-    function displaySharedStudyFocus(participants){
-      // Update the new study focus tab
-      displayStudyFocusTab(participants);
+    displaySharedStudyFocus(studySessions || []);
+  } catch(e) {
+    console.error('Error updating shared study focus:', e);
+  }
+}
+
+function displaySharedStudyFocus(studySessions){
+  displayStudyFocusTab(studySessions);
+}
+
+function displayStudyFocusTab(studySessions){
+  const sessionsContainer = document.getElementById('active-study-sessions');
+  const noStudyDiv = document.getElementById('no-study-focus');
+  
+  // Filter active study sessions
+  const activeStudySessions = studySessions.filter(session => 
+    session.subject && session.selected_units && session.selected_units.length > 0
+  );
+
+  if(activeStudySessions.length === 0){
+    sessionsContainer.innerHTML = '';
+    noStudyDiv.style.display = 'block';
+    updateStudyFocusTabBadge(0);
+    return;
+  }
+
+  noStudyDiv.style.display = 'none';
+
+  // Group sessions by subject
+  const subjectGroups = {};
+  activeStudySessions.forEach(session => {
+    const subject = session.subject;
+    if(!subjectGroups[subject]) {
+      subjectGroups[subject] = [];
     }
+    subjectGroups[subject].push({
+      ...session.users,
+      selected_units: session.selected_units,
+      subject: session.subject
+    });
+  });
 
-    function displayStudyFocusTab(participants){
-      const sessionsContainer = document.getElementById('active-study-sessions');
-      const noStudyDiv = document.getElementById('no-study-focus');
-      
-      // Filter participants who have study selections
-      const studyingParticipants = participants.filter(p => 
-        p.users && p.users.subject && p.users.selected_units && p.users.selected_units.length > 0
-      );
-
-      if(studyingParticipants.length === 0){
-        sessionsContainer.innerHTML = '';
-        noStudyDiv.style.display = 'block';
-        updateStudyFocusTabBadge(0);
-        return;
-      }
-
-      noStudyDiv.style.display = 'none';
-
-      // Group participants by subject
-      const subjectGroups = {};
-      studyingParticipants.forEach(participant => {
-        const user = participant.users;
-        const subject = user.subject;
-        if(!subjectGroups[subject]) {
-          subjectGroups[subject] = [];
-        }
-        subjectGroups[subject].push(user);
-      });
-
-      // Create study session cards for each subject
-      sessionsContainer.innerHTML = '';
-      Object.keys(subjectGroups).forEach(subject => {
-        const participants = subjectGroups[subject];
-        const subjectName = getSubjectDisplayName(subject, currentUser.grade, currentLanguage);
-        
-        const sessionCard = document.createElement('div');
-        sessionCard.className = 'study-session-card';
-        
-        sessionCard.innerHTML = `
-          <div class="study-session-subject">
-            <div class="study-session-subject-icon">📚</div>
-            <div>
-              <div>${subjectName}</div>
-              <div style="font-size:.9rem;font-weight:400;color:var(--text-secondary)">${participants.length} ${participants.length === 1 ? 'participant' : 'participants'}</div>
-            </div>
-          </div>
-          <div class="study-participants">
-            ${participants.map(user => createStudyParticipantCard(user, subject)).join('')}
-          </div>
-        `;
-        
-        sessionsContainer.appendChild(sessionCard);
-      });
-      
-      // Update tab badge with number of studying participants
-      updateStudyFocusTabBadge(studyingParticipants.length);
-    }
+  // Create study session cards for each subject
+  sessionsContainer.innerHTML = '';
+  Object.keys(subjectGroups).forEach(subject => {
+    const participants = subjectGroups[subject];
+    const subjectName = getSubjectDisplayName(subject, currentUser.grade, currentLanguage);
+    
+    const sessionCard = document.createElement('div');
+    sessionCard.className = 'study-session-card';
+    
+    sessionCard.innerHTML = `
+      <div class="study-session-subject">
+        <div class="study-session-subject-icon">📚</div>
+        <div>
+          <div>${subjectName}</div>
+          <div style="font-size:.9rem;font-weight:400;color:var(--text-secondary)">${participants.length} ${participants.length === 1 ? 'participant' : 'participants'}</div>
+        </div>
+      </div>
+      <div class="study-participants">
+        ${participants.map(user => createStudyParticipantCard(user, subject)).join('')}
+      </div>
+    `;
+    
+    sessionsContainer.appendChild(sessionCard);
+  });
+  
+  // Update tab badge with number of studying participants
+  updateStudyFocusTabBadge(activeStudySessions.length);
+}
 
     function updateStudyFocusFromParticipants(participantData, usersMap){
       // Convert the loadParticipants format to updateSharedStudyFocus format
