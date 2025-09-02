@@ -1890,7 +1890,7 @@ function setupRoomSubscriptions(){
       }).join('');
       
       // Update study focus display with the fetched participant data
-      updateStudyFocusFromParticipants(data, usersMap);
+      updateSharedStudyFocus();
     }
 
     async function fetchUsersMap(ids){
