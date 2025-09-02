@@ -117,9 +117,11 @@
     .study-participants{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
     .study-participant-card{background:var(--bg-tertiary);border-radius:12px;padding:1rem;transition:all .2s ease}
     .study-participant-card:hover{background:var(--bg-primary);transform:translateY(-1px)}
-    .study-participant-header{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+    .study-participant-header{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;position:relative}
     .study-participant-avatar{width:35px;height:35px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:.9rem;flex-shrink:0}
-    .study-participant-name{font-weight:600;color:var(--text-primary)}
+    .study-participant-name{font-weight:600;color:var(--text-primary);flex:1}
+    .delete-study-focus-btn{position:absolute;right:0;top:50%;transform:translateY(-50%);background:transparent;border:none;color:var(--text-secondary);cursor:pointer;padding:.25rem;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .2s ease;opacity:.7}
+    .delete-study-focus-btn:hover{background:var(--danger-color);color:#fff;opacity:1}
     .study-chapters-grid{display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:1rem}
     .study-chapter-badge{background:var(--accent-color);color:#fff;padding:.4rem .8rem;border-radius:8px;font-size:.85rem;font-weight:500}
     .study-units-list{display:flex;flex-wrap:wrap;gap:.4rem}
@@ -2330,6 +2332,8 @@ function displayStudyFocusTab(studySessions){
         chapterGroups[chapterId].units.push(unit);
       });
 
+      const isCurrentUser = user.id === currentUser.id;
+      
       return `
         <div class="study-participant-card">
           <div class="study-participant-header">
@@ -2337,6 +2341,13 @@ function displayStudyFocusTab(studySessions){
               ${(user.name?.[0] || 'U').toUpperCase()}
             </div>
             <div class="study-participant-name">${escapeHtml(user.name)}</div>
+            ${isCurrentUser ? `
+              <button class="delete-study-focus-btn" onclick="deleteSelectedSubject()" title="${currentLanguage === 'ar' ? 'حذف' : 'Delete'}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+                </svg>
+              </button>
+            ` : ''}
           </div>
           
           ${Object.keys(chapterGroups).length > 0 ? `
