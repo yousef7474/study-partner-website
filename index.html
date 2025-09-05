@@ -398,9 +398,9 @@
         </div>
 
         <div class="tabs">
-          <button class="tab active" data-tab="participants">👥 Participants</button>
+          <button class="tab active" data-tab="participants">👥 <span data-translate="participants">Participants</span></button>
           <button class="tab" data-tab="study-focus">📚 <span data-translate="studyFocus">Study Focus</span></button>
-          <button class="tab" data-tab="timer">⏱️ Timer</button>
+          <button class="tab" data-tab="timer">⏱️ <span data-translate="timer">Timer</span></button>
         </div>
 
         <div id="participants-content" class="tab-content active">
@@ -589,7 +589,8 @@
         currentStudyFocus:"Current Study Focus", studyingUnits:"studying units", noStudyFocus:"No specific study focus selected",
         studyFocus:"Study Focus", roomStudyFocus:"Room Study Focus", studyFocusDesc:"See what everyone in the room is currently studying. Select your own subject and chapters above to join the focus session.",
         noActiveStudy:"No Active Study Sessions", noActiveStudyDesc:"Participants haven't selected their study topics yet. Choose your subject and chapters above to start a study session!",
-        studyingChapters:"studying chapters", joinStudySession:"Join Study Session", totalSelected:"Total Selected"
+        studyingChapters:"studying chapters", joinStudySession:"Join Study Session", totalSelected:"Total Selected",
+        participants:"Participants", timer:"Timer", connected:"Connected", connecting:"Connecting...", disconnected:"Disconnected"
       },
       ar:{
         home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة",
@@ -622,7 +623,8 @@
         currentStudyFocus:"التركيز الدراسي الحالي", studyingUnits:"يدرس وحدات", noStudyFocus:"لم يتم تحديد تركيز دراسي محدد",
         studyFocus:"التركيز الدراسي", roomStudyFocus:"التركيز الدراسي للغرفة", studyFocusDesc:"اطلع على ما يدرسه الجميع في الغرفة حالياً. اختر مادتك والفصول أعلاه للانضمام إلى جلسة الدراسة.",
         noActiveStudy:"لا توجد جلسات دراسة نشطة", noActiveStudyDesc:"لم يختر المشاركون مواضيع دراستهم بعد. اختر مادتك والفصول أعلاه لبدء جلسة دراسة!",
-        studyingChapters:"يدرس فصول", joinStudySession:"انضم لجلسة الدراسة", totalSelected:"المجموع المختار"
+        studyingChapters:"يدرس فصول", joinStudySession:"انضم لجلسة الدراسة", totalSelected:"المجموع المختار",
+        participants:"المشاركون", timer:"المؤقت", connected:"متصل", connecting:"جاري الاتصال...", disconnected:"غير متصل"
       }
     };
     
@@ -635,7 +637,25 @@
     // -------- SUBJECT CATALOG BY GRADE (EN/AR) --------
     const subjectsByGrade = {
       10: [
-        {name:"Mathematics", nameAr:"الرياضيات"},
+        {
+          name:"Mathematics", 
+          nameAr:"الرياضيات",
+          chapters: [
+            {
+              id: "ch4",
+              name: "Coordinate Proof",
+              nameAr: "البرهان الإحداثي",
+              units: [
+                {id: "4.1", name: "Triangle Bisectors", nameAr: "المنصفات في المثلث"},
+                {id: "4.2", name: "Medians and Altitudes in Triangles", nameAr: "القطع المتوسطة والارتفاعات في المثلث"},
+                {id: "4.3", name: "Inequalities in Triangles", nameAr: "المتباينات في المثلث"},
+                {id: "4.4", name: "Indirect Proof", nameAr: "البرهان غير المباشر"},
+                {id: "4.5", name: "Triangle Inequality", nameAr: "متباينة المثلث"},
+                {id: "4.6", name: "Inequalities in Two Triangles", nameAr: "المتباينات في مثلثين"}
+              ]
+            }
+          ]
+        },
         {name:"Physics", nameAr:"الفيزياء"},
         {
           name:"Chemistry", 
@@ -785,7 +805,25 @@
         {name:"Environmental Science", nameAr:"العلوم البيئية"}
       ],
       11: [
-        {name:"Mathematics", nameAr:"الرياضيات"},
+        {
+          name:"Mathematics", 
+          nameAr:"الرياضيات",
+          chapters: [
+            {
+              id: "ch4",
+              name: "Coordinate Proof",
+              nameAr: "البرهان الإحداثي",
+              units: [
+                {id: "4.1", name: "Triangle Bisectors", nameAr: "المنصفات في المثلث"},
+                {id: "4.2", name: "Medians and Altitudes in Triangles", nameAr: "القطع المتوسطة والارتفاعات في المثلث"},
+                {id: "4.3", name: "Inequalities in Triangles", nameAr: "المتباينات في المثلث"},
+                {id: "4.4", name: "Indirect Proof", nameAr: "البرهان غير المباشر"},
+                {id: "4.5", name: "Triangle Inequality", nameAr: "متباينة المثلث"},
+                {id: "4.6", name: "Inequalities in Two Triangles", nameAr: "المتباينات في مثلثين"}
+              ]
+            }
+          ]
+        },
         {name:"Language Proficiency (Arabic)", nameAr:"الكفايات اللغوية"},
         {name:"Chemistry", nameAr:"الكيمياء"},
         {name:"Biology", nameAr:"الأحياء"},
@@ -806,7 +844,25 @@
         {name:"Internet of Things", nameAr:"إنترنت الأشياء"}
       ],
       12: [
-        {name:"Mathematics", nameAr:"الرياضيات"},
+        {
+          name:"Mathematics", 
+          nameAr:"الرياضيات",
+          chapters: [
+            {
+              id: "ch4",
+              name: "Coordinate Proof",
+              nameAr: "البرهان الإحداثي",
+              units: [
+                {id: "4.1", name: "Triangle Bisectors", nameAr: "المنصفات في المثلث"},
+                {id: "4.2", name: "Medians and Altitudes in Triangles", nameAr: "القطع المتوسطة والارتفاعات في المثلث"},
+                {id: "4.3", name: "Inequalities in Triangles", nameAr: "المتباينات في المثلث"},
+                {id: "4.4", name: "Indirect Proof", nameAr: "البرهان غير المباشر"},
+                {id: "4.5", name: "Triangle Inequality", nameAr: "متباينة المثلث"},
+                {id: "4.6", name: "Inequalities in Two Triangles", nameAr: "المتباينات في مثلثين"}
+              ]
+            }
+          ]
+        },
         {name:"Physics", nameAr:"الفيزياء"},
         {name:"Chemistry", nameAr:"الكيمياء"},
         {name:"Biology", nameAr:"الأحياء"},
@@ -914,9 +970,9 @@
       if (!connectionStatus) return;
       connectionStatus.className = `connection-status ${status}`;
       const statusText = {
-        connected: '🟢 Connected',
-        connecting: '🟡 Connecting...',
-        disconnected: '🔴 Disconnected'
+        connected: `🟢 ${translations[currentLanguage]['connected'] || 'Connected'}`,
+        connecting: `🟡 ${translations[currentLanguage]['connecting'] || 'Connecting...'}`,
+        disconnected: `🔴 ${translations[currentLanguage]['disconnected'] || 'Disconnected'}`
       };
       document.getElementById('connection-text').textContent = statusText[status] || 'Unknown';
       connectionStatus.style.display = currentRoom ? 'block' : 'none';
