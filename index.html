@@ -696,7 +696,88 @@
             }
           ]
         },
-        {name:"Biology", nameAr:"الأحياء"},
+        {
+          name:"Biology", 
+          nameAr:"الأحياء",
+          chapters: [
+            {
+              id: "ch1",
+              name: "Chapter 1",
+              nameAr: "الفصل 1",
+              units: [
+                {id: "1.1", name: "Introduction to Biology", nameAr: "مدخل إلى علم الأحياء"},
+                {id: "1.2", name: "Nature of Science and Its Methods", nameAr: "طبيعة العلم وطرائقه"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "Chapter 2", 
+              nameAr: "الفصل 2",
+              units: [
+                {id: "2.1", name: "History of Classification", nameAr: "تاريخ التصنيف"},
+                {id: "2.2", name: "Modern Classification", nameAr: "التصنيف الحديث"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "Chapter 3",
+              nameAr: "الفصل 3", 
+              units: [
+                {id: "3.1", name: "Viruses and Prions", nameAr: "الفيروسات والبريونات"},
+                {id: "3.2", name: "Bacteria", nameAr: "البكتيريا"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "Chapter 4",
+              nameAr: "الفصل 4",
+              units: [
+                {id: "4.1", name: "Introduction to Protists", nameAr: "مدخل إلى الطلائعيات"},
+                {id: "4.2", name: "Protist Diversity", nameAr: "تنوع الطلائعيات"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "Chapter 5",
+              nameAr: "الفصل 5",
+              units: [
+                {id: "5.1", name: "Introduction to Fungi", nameAr: "مدخل إلى الفطريات"},
+                {id: "5.2", name: "Fungal Diversity and Environment", nameAr: "تنوع الفطريات وبيئتها"}
+              ]
+            },
+            {
+              id: "ch6", 
+              name: "Chapter 6",
+              nameAr: "الفصل 6",
+              units: [
+                {id: "6.1", name: "Animal Characteristics", nameAr: "خصائص الحيوانات"},
+                {id: "6.2", name: "Animal Body Structure Levels", nameAr: "مستويات بناء جسم الحيوان"},
+                {id: "6.3", name: "Sponges and Cnidarians", nameAr: "الإسفنجيات واللاسعات"}
+              ]
+            },
+            {
+              id: "ch7",
+              name: "Chapter 7", 
+              nameAr: "الفصل 7",
+              units: [
+                {id: "7.1", name: "Flatworms", nameAr: "الديدان المفلطحة"},
+                {id: "7.2", name: "Roundworms and Rotifers", nameAr: "الديدان الأسطوانية والدوارات"},
+                {id: "7.3", name: "Mollusks", nameAr: "الرخويات"},
+                {id: "7.4", name: "Segmented Worms", nameAr: "الديدان الحلقية"}
+              ]
+            },
+            {
+              id: "ch8",
+              name: "Chapter 8",
+              nameAr: "الفصل 8", 
+              units: [
+                {id: "8.1", name: "Arthropod Characteristics", nameAr: "خصائص المفصليات"},
+                {id: "8.2", name: "Arthropod Diversity", nameAr: "تنوع المفصليات"}, 
+                {id: "8.3", name: "Insects and Their Relatives", nameAr: "الحشرات وأشباهها"}
+              ]
+            }
+          ]
+        },
         {name:"Quran", nameAr:"القرآن"},
         {name:"Digital Technology", nameAr:"التقنية الرقمية"},
         {name:"English", nameAr:"الإنجليزية"},
@@ -1036,6 +1117,11 @@
 
       updateSidebarUserInfo();
       syncQuickControls();
+      
+      // Refresh study focus display to show translated content
+      if(currentRoom) {
+        setTimeout(() => updateSharedStudyFocus(), 100);
+      }
     }
     
     function toggleLanguage(){
