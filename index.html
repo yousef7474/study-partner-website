@@ -1112,15 +1112,45 @@
 
       // repopulate selects according to language
       populateGradeSelect();
+      
+      // Preserve current selections before repopulating
+      const currentSubject = roomSubjectSelect.value;
+      const currentSelectedUnits = new Set(selectedUnits);
+      
       populateRoomSubjects(currentUser?.grade || gradeSelect.value);
       if(currentUser) populateSettings();
+
+      // Restore subject selection and trigger chapter loading
+      if(currentSubject && roomSubjectSelect.value !== currentSubject) {
+        roomSubjectSelect.value = currentSubject;
+      }
+      
+      // Restore chapter/unit selections after a brief delay to allow UI to populate
+      if(currentSubject) {
+        setTimeout(() => {
+          onRoomSubjectChange(); // This will repopulate chapters
+          
+          // Restore selected units after chapters are populated
+          setTimeout(() => {
+            currentSelectedUnits.forEach(unitId => {
+              selectedUnits.add(unitId);
+              const unitElement = document.getElementById(`unit-${unitId}`);
+              if(unitElement) {
+                unitElement.classList.add('selected');
+              }
+            });
+            updateChapterTabsBadges();
+            updateTotalSummary();
+          }, 50);
+        }, 50);
+      }
 
       updateSidebarUserInfo();
       syncQuickControls();
       
       // Refresh study focus display to show translated content
       if(currentRoom) {
-        setTimeout(() => updateSharedStudyFocus(), 100);
+        setTimeout(() => updateSharedStudyFocus(), 200);
       }
     }
     
