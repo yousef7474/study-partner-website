@@ -2379,7 +2379,7 @@ function displayStudyFocusTab(studySessions){
         <div class="study-session-subject-icon">📚</div>
         <div>
           <div>${subjectName}</div>
-          <div style="font-size:.9rem;font-weight:400;color:var(--text-secondary)">${participants.length} ${participants.length === 1 ? 'participant' : 'participants'}</div>
+          <div style="font-size:.9rem;font-weight:400;color:var(--text-secondary)">${participants.length} ${participants.length === 1 ? (currentLanguage === 'ar' ? 'مشارك' : 'participant') : (currentLanguage === 'ar' ? 'مشاركين' : 'participants')}</div>
         </div>
       </div>
       <div class="study-participants">
