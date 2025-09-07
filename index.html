@@ -79,23 +79,32 @@
     .form-input{width:100%;padding:1rem 1.25rem;border:2px solid var(--border-color);border-radius:16px;font-size:1.1rem;background:var(--bg-tertiary);color:var(--text-primary);transition:all .3s ease}
     .form-input:focus{outline:none;border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(102,126,234,.2)}
 
-    .chapters-container{background:var(--bg-secondary);border-radius:12px;padding:1rem;margin-top:1rem;border:2px solid var(--border-color)}
-    .chapters-tabs{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.75rem;border-bottom:2px solid var(--border-color);padding-bottom:.75rem}
-    .chapter-tab{background:var(--bg-tertiary);border:none;padding:.5rem .8rem;border-radius:6px 6px 0 0;cursor:pointer;font-weight:500;transition:all .2s ease;font-size:.8rem;position:relative;white-space:nowrap}
+    .chapters-container{background:var(--bg-secondary);border-radius:16px;padding:1.5rem;margin-top:1rem;border:2px solid var(--border-color)}
+    .chapters-tabs{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;border-bottom:2px solid var(--border-color);padding-bottom:1rem}
+    .chapter-tab{background:var(--bg-tertiary);border:none;padding:.75rem 1.25rem;border-radius:8px 8px 0 0;cursor:pointer;font-weight:500;transition:all .2s ease;font-size:.9rem;position:relative}
     .chapter-tab:hover{background:var(--primary-color);color:#fff}
     .chapter-tab.active{background:var(--primary-color);color:#fff;box-shadow:var(--shadow-light)}
-    .chapter-tab-badge{position:absolute;top:-6px;right:-6px;background:var(--accent-color);color:#fff;border-radius:8px;padding:.1rem .3rem;font-size:.65rem;font-weight:600;min-width:14px;text-align:center}
+    .chapter-tab-badge{position:absolute;top:-8px;right:-8px;background:var(--accent-color);color:#fff;border-radius:10px;padding:.15rem .4rem;font-size:.7rem;font-weight:600;min-width:16px;text-align:center}
     
+    /* Default layout for most subjects */
     .chapter-content{display:none}
     .chapter-content.active{display:block}
-    .units-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.5rem;margin-bottom:.75rem}
-    @media(max-width:768px){.units-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.4rem}}
-    @media(max-width:480px){.units-grid{grid-template-columns:1fr}}
-    .unit-card{background:var(--bg-tertiary);border-radius:6px;padding:.5rem .6rem;cursor:pointer;transition:all .2s ease;border:2px solid transparent;min-height:50px;display:flex;flex-direction:column;justify-content:center}
+    .units-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;margin-bottom:1rem}
+    @media(max-width:768px){.units-grid{grid-template-columns:1fr}}
+    .unit-card{background:var(--bg-tertiary);border-radius:8px;padding:.75rem;cursor:pointer;transition:all .2s ease;border:2px solid transparent}
+    
+    /* Horizontal layout for specific Arabic literature subjects */
+    .chapters-container.horizontal-layout{max-height:70vh;overflow-y:auto}
+    .chapters-container.horizontal-layout .chapters-tabs{display:none}
+    .chapters-container.horizontal-layout .chapter-content{display:block !important;margin-bottom:1rem}
+    .chapters-container.horizontal-layout .chapter-content:last-child{margin-bottom:0}
+    .chapters-container.horizontal-layout .chapter-title{background:var(--primary-color);color:#fff;padding:.5rem .75rem;border-radius:6px;margin-bottom:.75rem;font-weight:600;font-size:.9rem;text-align:center}
+    .chapters-container.horizontal-layout .units-grid{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.75rem}
+    .chapters-container.horizontal-layout .unit-card{flex:0 0 auto;min-width:140px;max-width:200px;padding:.5rem .6rem;min-height:50px;display:flex;flex-direction:column;justify-content:center}
     .unit-card:hover{background:var(--primary-color);color:#fff;transform:translateY(-1px);box-shadow:var(--shadow-light)}
     .unit-card.selected{background:var(--primary-color);color:#fff;border-color:var(--accent-color);box-shadow:var(--shadow-medium)}
-    .unit-id{font-weight:600;font-size:.8rem;margin-bottom:.15rem}
-    .unit-title{font-size:.75rem;line-height:1.2;opacity:.9}
+    .unit-id{font-weight:600;font-size:.9rem;margin-bottom:.25rem}
+    .unit-title{font-size:.85rem;line-height:1.3;opacity:.9}
     
     .chapter-summary{background:var(--bg-tertiary);border-radius:8px;padding:1rem;margin-bottom:1rem;text-align:center}
     .chapter-controls{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
@@ -820,88 +829,6 @@
                 {id: "5.1", name: "Measuring Matter", nameAr: "قياس المادة"},
                 {id: "5.2", name: "Mass and Mole", nameAr: "الكتلة والمول"},
                 {id: "5.3", name: "Moles of Compounds", nameAr: "مولات المركبات"}
-              ]
-            }
-          ]
-        },
-        {
-          name:"Biology", 
-          nameAr:"الأحياء",
-          chapters: [
-            {
-              id: "ch1",
-              name: "Chapter 1",
-              nameAr: "الفصل 1",
-              units: [
-                {id: "1.1", name: "Introduction to Biology", nameAr: "مدخل إلى علم الأحياء"},
-                {id: "1.2", name: "Nature of Science and Its Methods", nameAr: "طبيعة العلم وطرائقه"}
-              ]
-            },
-            {
-              id: "ch2",
-              name: "Chapter 2", 
-              nameAr: "الفصل 2",
-              units: [
-                {id: "2.1", name: "History of Classification", nameAr: "تاريخ التصنيف"},
-                {id: "2.2", name: "Modern Classification", nameAr: "التصنيف الحديث"}
-              ]
-            },
-            {
-              id: "ch3",
-              name: "Chapter 3",
-              nameAr: "الفصل 3", 
-              units: [
-                {id: "3.1", name: "Viruses and Prions", nameAr: "الفيروسات والبريونات"},
-                {id: "3.2", name: "Bacteria", nameAr: "البكتيريا"}
-              ]
-            },
-            {
-              id: "ch4",
-              name: "Chapter 4",
-              nameAr: "الفصل 4",
-              units: [
-                {id: "4.1", name: "Introduction to Protists", nameAr: "مدخل إلى الطلائعيات"},
-                {id: "4.2", name: "Protist Diversity", nameAr: "تنوع الطلائعيات"}
-              ]
-            },
-            {
-              id: "ch5",
-              name: "Chapter 5",
-              nameAr: "الفصل 5",
-              units: [
-                {id: "5.1", name: "Introduction to Fungi", nameAr: "مدخل إلى الفطريات"},
-                {id: "5.2", name: "Fungal Diversity and Environment", nameAr: "تنوع الفطريات وبيئتها"}
-              ]
-            },
-            {
-              id: "ch6", 
-              name: "Chapter 6",
-              nameAr: "الفصل 6",
-              units: [
-                {id: "6.1", name: "Animal Characteristics", nameAr: "خصائص الحيوانات"},
-                {id: "6.2", name: "Animal Body Structure Levels", nameAr: "مستويات بناء جسم الحيوان"},
-                {id: "6.3", name: "Sponges and Cnidarians", nameAr: "الإسفنجيات واللاسعات"}
-              ]
-            },
-            {
-              id: "ch7",
-              name: "Chapter 7", 
-              nameAr: "الفصل 7",
-              units: [
-                {id: "7.1", name: "Flatworms", nameAr: "الديدان المفلطحة"},
-                {id: "7.2", name: "Roundworms and Rotifers", nameAr: "الديدان الأسطوانية والدوارات"},
-                {id: "7.3", name: "Mollusks", nameAr: "الرخويات"},
-                {id: "7.4", name: "Segmented Worms", nameAr: "الديدان الحلقية"}
-              ]
-            },
-            {
-              id: "ch8",
-              name: "Chapter 8",
-              nameAr: "الفصل 8", 
-              units: [
-                {id: "8.1", name: "Arthropod Characteristics", nameAr: "خصائص المفصليات"},
-                {id: "8.2", name: "Arthropod Diversity", nameAr: "تنوع المفصليات"}, 
-                {id: "8.3", name: "Insects and Their Relatives", nameAr: "الحشرات وأشباهها"}
               ]
             }
           ]
@@ -6298,41 +6225,64 @@ function setupRoomSubscriptions(){
       
       if(subjectData && subjectData.chapters){
         chapterSelector.style.display = 'block';
-        populateChaptersAndUnits(subjectData.chapters);
+        
+        // Check if this is one of the subjects that should use horizontal layout
+        const horizontalLayoutSubjects = [
+          'Rhetoric & Literary Criticism',
+          'الدراسات البلاغية والنقدية',
+          'Literary Studies',
+          'الدراسات الأدبية'
+        ];
+        
+        const useHorizontalLayout = horizontalLayoutSubjects.includes(selectedSubject) || 
+                                   horizontalLayoutSubjects.includes(subjectData.nameAr);
+        
+        populateChaptersAndUnits(subjectData.chapters, useHorizontalLayout);
       } else {
         chapterSelector.style.display = 'none';
       }
     }
 
-    function populateChaptersAndUnits(chapters){
+    function populateChaptersAndUnits(chapters, useHorizontalLayout = false){
       const tabsContainer = document.getElementById('chapters-tabs');
       const contentContainer = document.getElementById('chapters-content');
       const summaryDiv = document.getElementById('selection-summary');
+      const chaptersContainer = document.getElementById('chapters-container');
       
       tabsContainer.innerHTML = '';
       contentContainer.innerHTML = '';
       selectedUnits.clear();
 
+      // Apply or remove horizontal layout class
+      if(useHorizontalLayout){
+        chaptersContainer.classList.add('horizontal-layout');
+      } else {
+        chaptersContainer.classList.remove('horizontal-layout');
+      }
+
       chapters.forEach((chapter, chapterIndex) => {
         const chapterName = currentLanguage === 'ar' ? chapter.nameAr : chapter.name;
         
-        // Create tab button
-        const tabButton = document.createElement('button');
-        tabButton.className = `chapter-tab ${chapterIndex === 0 ? 'active' : ''}`;
-        tabButton.dataset.chapterId = chapter.id;
-        tabButton.onclick = () => switchChapterTab(chapter.id);
-        tabButton.innerHTML = `
-          ${chapterName}
-          <span class="chapter-tab-badge" id="badge-${chapter.id}">0</span>
-        `;
-        tabsContainer.appendChild(tabButton);
+        if(!useHorizontalLayout){
+          // Create tab button for normal layout
+          const tabButton = document.createElement('button');
+          tabButton.className = `chapter-tab ${chapterIndex === 0 ? 'active' : ''}`;
+          tabButton.dataset.chapterId = chapter.id;
+          tabButton.onclick = () => switchChapterTab(chapter.id);
+          tabButton.innerHTML = `
+            ${chapterName}
+            <span class="chapter-tab-badge" id="badge-${chapter.id}">0</span>
+          `;
+          tabsContainer.appendChild(tabButton);
+        }
         
         // Create content panel
         const contentPanel = document.createElement('div');
-        contentPanel.className = `chapter-content ${chapterIndex === 0 ? 'active' : ''}`;
+        contentPanel.className = useHorizontalLayout ? 'chapter-content' : `chapter-content ${chapterIndex === 0 ? 'active' : ''}`;
         contentPanel.id = `content-${chapter.id}`;
         
         contentPanel.innerHTML = `
+          ${useHorizontalLayout ? `<div class="chapter-title">${chapterName}</div>` : ''}
           <div class="units-grid">
             ${chapter.units.map(unit => {
               const unitName = currentLanguage === 'ar' ? unit.nameAr : unit.name;
