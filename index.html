@@ -6941,8 +6941,8 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
     function getUnitDetails(subject, units) {
       // Extract unit names for better context
-      const gradeData = grades[currentUser?.grade || 12];
-      const subjectData = gradeData?.detailedSubjects?.find(s => 
+      const gradeData = subjectsByGrade[currentUser?.grade || 12];
+      const subjectData = gradeData?.find(s => 
         s.name === subject || s.nameAr === subject
       );
       
