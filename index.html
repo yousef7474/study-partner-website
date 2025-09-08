@@ -4868,6 +4868,11 @@
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwYWJrcHdlcG5idmdrem56bGtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4ODI2MTUsImV4cCI6MjA3MTQ1ODYxNX0.d4eKNAu3KjVXFnXuQlPUnST0eC2ynL1al9w8AQE16R0'
         );
         updateConnectionStatus('connected');
+        
+        // Initialize quiz question bank
+        seedQuizQuestions().catch(err => {
+          console.log('Quiz seeding info:', err.message || err);
+        });
       }catch(e){
         console.error('Supabase initialization failed:', e);
         updateConnectionStatus('disconnected');
@@ -6089,10 +6094,11 @@ function setupRoomSubscriptions(){
       toast(currentLanguage==='ar'?'اكتمل المؤقت!':'Timer complete!', 'success', currentLanguage==='ar'?'تم':'Done');
       if (timerStartedBy === currentUser.name) broadcastTimerAction('complete');
       
-      // Start quiz after a short delay
+      // Start quiz after a short delay with selected units
       setTimeout(() => {
         const subject = currentUser?.subject || 'General Knowledge';
-        startQuiz(subject);
+        const selectedUnits = currentUser?.selectedUnits ? Array.from(currentUser.selectedUnits) : [];
+        startQuiz(subject, selectedUnits);
       }, 2000);
     }
 
@@ -6669,14 +6675,49 @@ function displayStudyFocusTab(studySessions){
     }
 
     async function sendSystemMessage(_msg){ /* no-op placeholder */ }
-    // -------- QUIZ SYSTEM --------
+    // -------- DYNAMIC QUIZ SYSTEM --------
     let currentQuiz = null;
     let currentQuestionIndex = 0;
     let quizAnswers = [];
     let quizScore = 0;
 
-    // Sample quiz questions for different subjects
-    const quizQuestions = {
+    /* 
+    Supabase Schema for Questions Table:
+    
+    CREATE TABLE quiz_questions (
+      id BIGSERIAL PRIMARY KEY,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+      subject_name TEXT NOT NULL,
+      subject_name_ar TEXT,
+      chapter_id TEXT,
+      unit_id TEXT NOT NULL,
+      question TEXT NOT NULL,
+      question_ar TEXT,
+      option_a TEXT NOT NULL,
+      option_b TEXT NOT NULL,
+      option_c TEXT NOT NULL,
+      option_d TEXT NOT NULL,
+      option_a_ar TEXT,
+      option_b_ar TEXT,
+      option_c_ar TEXT,
+      option_d_ar TEXT,
+      correct_answer INTEGER NOT NULL CHECK (correct_answer >= 0 AND correct_answer <= 3),
+      difficulty_level INTEGER DEFAULT 1 CHECK (difficulty_level >= 1 AND difficulty_level <= 3),
+      grade INTEGER NOT NULL CHECK (grade >= 10 AND grade <= 12),
+      is_active BOOLEAN DEFAULT true
+    );
+
+    -- Add RLS policies
+    ALTER TABLE quiz_questions ENABLE ROW LEVEL SECURITY;
+    CREATE POLICY "Questions are publicly readable" ON quiz_questions FOR SELECT USING (is_active = true);
+    
+    -- Create indexes for better performance
+    CREATE INDEX idx_quiz_questions_unit ON quiz_questions(subject_name, unit_id, grade, is_active);
+    CREATE INDEX idx_quiz_questions_chapter ON quiz_questions(subject_name, chapter_id, grade, is_active);
+    */
+
+    // Fallback questions for when Supabase questions aren't available
+    const fallbackQuestions = {
       'Mathematics 1': [
         {
           question: 'What is the derivative of x²?',
@@ -6692,43 +6733,6 @@ function displayStudyFocusTab(studySessions){
           question: 'Which function is continuous everywhere?',
           options: ['f(x) = 1/x', 'f(x) = |x|', 'f(x) = √x', 'f(x) = tan(x)'],
           correct: 1
-        },
-        {
-          question: 'What is the domain of f(x) = ln(x)?',
-          options: ['All real numbers', 'x > 0', 'x ≥ 0', 'x ≠ 0'],
-          correct: 1
-        },
-        {
-          question: 'What is the inverse function of f(x) = 2x + 3?',
-          options: ['f⁻¹(x) = (x-3)/2', 'f⁻¹(x) = (x+3)/2', 'f⁻¹(x) = 2x-3', 'f⁻¹(x) = x/2+3'],
-          correct: 0
-        }
-      ],
-      'الرياضيات 1': [
-        {
-          question: 'ما هو مشتق x²؟',
-          options: ['2x', 'x', '2', 'x²'],
-          correct: 0
-        },
-        {
-          question: 'ما هي نهاية (x²-1)/(x-1) عندما x يقترب من 1؟',
-          options: ['1', '2', '0', 'غير معرفة'],
-          correct: 1
-        },
-        {
-          question: 'أي دالة متصلة في كل مكان؟',
-          options: ['f(x) = 1/x', 'f(x) = |x|', 'f(x) = √x', 'f(x) = tan(x)'],
-          correct: 1
-        },
-        {
-          question: 'ما هو مجال الدالة f(x) = ln(x)؟',
-          options: ['جميع الأعداد الحقيقية', 'x > 0', 'x ≥ 0', 'x ≠ 0'],
-          correct: 1
-        },
-        {
-          question: 'ما هي الدالة العكسية لـ f(x) = 2x + 3؟',
-          options: ['f⁻¹(x) = (x-3)/2', 'f⁻¹(x) = (x+3)/2', 'f⁻¹(x) = 2x-3', 'f⁻¹(x) = x/2+3'],
-          correct: 0
         }
       ],
       'default': [
@@ -6746,28 +6750,204 @@ function displayStudyFocusTab(studySessions){
           question: 'What is the capital of Saudi Arabia?',
           options: ['Jeddah', 'Riyadh', 'Dammam', 'Makkah'],
           correct: 1
-        },
-        {
-          question: 'Which is larger: 0.7 or 0.07?',
-          options: ['0.7', '0.07', 'They are equal', 'Cannot determine'],
-          correct: 0
-        },
-        {
-          question: 'How many minutes are in one hour?',
-          options: ['50', '60', '70', '100'],
-          correct: 1
         }
       ]
     };
 
-    function getQuizQuestions(subject) {
-      if (quizQuestions[subject]) {
-        return quizQuestions[subject];
+    async function getQuizQuestions(subject, selectedUnits = [], chapterId = null) {
+      if (!supabase) {
+        console.warn('Supabase not available, using fallback questions');
+        return getFallbackQuestions(subject);
       }
-      return quizQuestions.default;
+
+      try {
+        let query = supabase
+          .from('quiz_questions')
+          .select('*')
+          .eq('grade', currentUser?.grade || 12)
+          .eq('is_active', true);
+
+        // Filter by subject
+        if (subject && subject !== 'General Knowledge') {
+          query = query.or(`subject_name.ilike.%${subject}%,subject_name_ar.ilike.%${subject}%`);
+        }
+
+        // Filter by selected units if provided
+        if (selectedUnits && selectedUnits.length > 0) {
+          const unitFilters = selectedUnits.map(unitId => `unit_id.eq.${unitId}`).join(',');
+          query = query.or(unitFilters);
+        }
+
+        // Filter by chapter if provided
+        if (chapterId) {
+          query = query.eq('chapter_id', chapterId);
+        }
+
+        const { data, error } = await query.limit(20); // Get more questions than needed
+
+        if (error) {
+          console.error('Error fetching quiz questions:', error);
+          return getFallbackQuestions(subject);
+        }
+
+        if (!data || data.length === 0) {
+          console.warn('No questions found for:', { subject, selectedUnits, chapterId });
+          return getFallbackQuestions(subject);
+        }
+
+        // Transform Supabase data to quiz format
+        const transformedQuestions = data.map(q => ({
+          id: q.id,
+          question: currentLanguage === 'ar' && q.question_ar ? q.question_ar : q.question,
+          options: [
+            currentLanguage === 'ar' && q.option_a_ar ? q.option_a_ar : q.option_a,
+            currentLanguage === 'ar' && q.option_b_ar ? q.option_b_ar : q.option_b,
+            currentLanguage === 'ar' && q.option_c_ar ? q.option_c_ar : q.option_c,
+            currentLanguage === 'ar' && q.option_d_ar ? q.option_d_ar : q.option_d
+          ],
+          correct: q.correct_answer,
+          difficulty: q.difficulty_level,
+          unit_id: q.unit_id,
+          chapter_id: q.chapter_id
+        }));
+
+        // Randomly select 5 questions
+        return shuffleArray(transformedQuestions).slice(0, 5);
+
+      } catch (error) {
+        console.error('Exception fetching quiz questions:', error);
+        return getFallbackQuestions(subject);
+      }
     }
 
-    function startQuiz(subject = null) {
+    function getFallbackQuestions(subject) {
+      const questions = fallbackQuestions[subject] || fallbackQuestions.default;
+      return shuffleArray([...questions]).slice(0, Math.min(5, questions.length));
+    }
+
+    function shuffleArray(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    async function seedQuizQuestions() {
+      if (!supabase) return;
+
+      try {
+        // Check if questions already exist
+        const { data: existing } = await supabase
+          .from('quiz_questions')
+          .select('id')
+          .limit(1);
+
+        if (existing && existing.length > 0) {
+          console.log('Quiz questions already seeded');
+          return;
+        }
+
+        // Sample questions to seed the database
+        const sampleQuestions = [
+          // Mathematics 1 - Functions
+          {
+            subject_name: 'Mathematics 1',
+            subject_name_ar: 'الرياضيات 1',
+            chapter_id: 'ch1',
+            unit_id: '1.1',
+            question: 'What is a function?',
+            question_ar: 'ما هي الدالة؟',
+            option_a: 'A relation where each input has exactly one output',
+            option_b: 'A relation where each output has exactly one input',
+            option_c: 'Any mathematical equation',
+            option_d: 'A graph that passes the horizontal line test',
+            option_a_ar: 'علاقة حيث كل مدخل له مخرج واحد بالضبط',
+            option_b_ar: 'علاقة حيث كل مخرج له مدخل واحد بالضبط',
+            option_c_ar: 'أي معادلة رياضية',
+            option_d_ar: 'رسم بياني يجتاز اختبار الخط الأفقي',
+            correct_answer: 0,
+            difficulty_level: 1,
+            grade: 12
+          },
+          {
+            subject_name: 'Mathematics 1',
+            subject_name_ar: 'الرياضيات 1',
+            chapter_id: 'ch1',
+            unit_id: '1.3',
+            question: 'What does it mean for a function to be continuous at a point?',
+            question_ar: 'ما معنى أن تكون الدالة متصلة عند نقطة؟',
+            option_a: 'The function exists at that point',
+            option_b: 'The limit exists at that point',
+            option_c: 'The function value equals the limit value at that point',
+            option_d: 'The function is differentiable at that point',
+            option_a_ar: 'الدالة موجودة عند تلك النقطة',
+            option_b_ar: 'النهاية موجودة عند تلك النقطة',
+            option_c_ar: 'قيمة الدالة تساوي قيمة النهاية عند تلك النقطة',
+            option_d_ar: 'الدالة قابلة للاشتقاق عند تلك النقطة',
+            correct_answer: 2,
+            difficulty_level: 2,
+            grade: 12
+          },
+          // Life Skills - Goal Setting
+          {
+            subject_name: 'Life Skills',
+            subject_name_ar: 'المهارات الحياتية',
+            chapter_id: 'unit1',
+            unit_id: '1.1',
+            question: 'What is the SMART criteria for goal setting?',
+            question_ar: 'ما هو معيار SMART لوضع الأهداف؟',
+            option_a: 'Simple, Meaningful, Achievable, Relevant, Timely',
+            option_b: 'Specific, Measurable, Achievable, Relevant, Time-bound',
+            option_c: 'Strong, Motivating, Ambitious, Realistic, Trackable',
+            option_d: 'Strategic, Methodical, Attainable, Reasonable, Targeted',
+            option_a_ar: 'بسيط، ذو معنى، قابل للتحقيق، ذو صلة، في الوقت المناسب',
+            option_b_ar: 'محدد، قابل للقياس، قابل للتحقيق، ذو صلة، محدد بوقت',
+            option_c_ar: 'قوي، محفز، طموح، واقعي، قابل للتتبع',
+            option_d_ar: 'استراتيجي، منهجي، قابل للتحقيق، معقول، مستهدف',
+            correct_answer: 1,
+            difficulty_level: 1,
+            grade: 12
+          },
+          // Digital Citizenship
+          {
+            subject_name: 'Digital Citizenship',
+            subject_name_ar: 'المواطنة الرقمية',
+            chapter_id: 'unit1',
+            unit_id: '1.1',
+            question: 'What is digital citizenship?',
+            question_ar: 'ما هي المواطنة الرقمية؟',
+            option_a: 'Using technology for entertainment',
+            option_b: 'Responsible and ethical use of technology',
+            option_c: 'Having a digital passport',
+            option_d: 'Working in the tech industry',
+            option_a_ar: 'استخدام التكنولوجيا للترفيه',
+            option_b_ar: 'الاستخدام المسؤول والأخلاقي للتكنولوجيا',
+            option_c_ar: 'امتلاك جواز سفر رقمي',
+            option_d_ar: 'العمل في صناعة التكنولوجيا',
+            correct_answer: 1,
+            difficulty_level: 1,
+            grade: 12
+          }
+        ];
+
+        const { error } = await supabase
+          .from('quiz_questions')
+          .insert(sampleQuestions);
+
+        if (error) {
+          console.error('Error seeding quiz questions:', error);
+        } else {
+          console.log('Quiz questions seeded successfully');
+        }
+
+      } catch (error) {
+        console.error('Exception seeding quiz questions:', error);
+      }
+    }
+
+    async function startQuiz(subject = null, selectedUnits = null) {
       if (!subject && currentUser?.subject) {
         subject = currentUser.subject;
       }
@@ -6775,22 +6955,74 @@ function displayStudyFocusTab(studySessions){
         subject = 'General Knowledge';
       }
 
-      currentQuiz = {
-        subject: subject,
-        questions: getQuizQuestions(subject),
-        startTime: Date.now()
-      };
-      
-      currentQuestionIndex = 0;
-      quizAnswers = [];
-      quizScore = 0;
-      
-      document.getElementById('quiz-subject-name').textContent = subject;
+      // Get selected units from currentUser if not provided
+      if (!selectedUnits && currentUser?.selectedUnits) {
+        selectedUnits = Array.from(currentUser.selectedUnits);
+      }
+
+      // Show loading state
       document.getElementById('quiz-modal').style.display = 'flex';
-      document.getElementById('quiz-content').style.display = 'block';
-      document.getElementById('quiz-results').style.display = 'none';
-      
-      showQuestion();
+      document.getElementById('quiz-content').innerHTML = `
+        <div style="text-align:center;padding:2rem;">
+          <div style="font-size:1.2rem;margin-bottom:1rem;">🔄 Preparing your quiz...</div>
+          <div style="color:var(--text-secondary);">Getting questions for ${subject}</div>
+        </div>
+      `;
+
+      try {
+        // Get questions based on selected units
+        const questions = await getQuizQuestions(subject, selectedUnits);
+        
+        if (!questions || questions.length === 0) {
+          throw new Error('No questions available');
+        }
+
+        currentQuiz = {
+          subject: subject,
+          questions: questions,
+          selectedUnits: selectedUnits,
+          startTime: Date.now()
+        };
+        
+        currentQuestionIndex = 0;
+        quizAnswers = [];
+        quizScore = 0;
+        
+        // Show the quiz interface
+        document.getElementById('quiz-content').innerHTML = `
+          <div class="quiz-header">
+            <div class="quiz-title">📝 Quiz Time!</div>
+            <div class="quiz-subtitle" id="quiz-subject-name">${subject}</div>
+            <div class="quiz-progress">
+              <div class="quiz-progress-bar" id="quiz-progress-bar"></div>
+            </div>
+          </div>
+          
+          <div id="quiz-question-container" class="question-container">
+            <div class="question-number" id="question-number"></div>
+            <div class="question-text" id="question-text"></div>
+            <div class="quiz-options" id="quiz-options"></div>
+          </div>
+          
+          <div class="quiz-controls">
+            <button class="btn btn-secondary" onclick="skipQuestion()">Skip</button>
+            <button class="btn" id="quiz-next-btn" onclick="nextQuestion()" disabled>Next</button>
+          </div>
+        `;
+        
+        document.getElementById('quiz-results').style.display = 'none';
+        showQuestion();
+
+      } catch (error) {
+        console.error('Error starting quiz:', error);
+        document.getElementById('quiz-content').innerHTML = `
+          <div style="text-align:center;padding:2rem;">
+            <div style="font-size:1.2rem;margin-bottom:1rem;color:var(--error-color);">❌ Quiz Error</div>
+            <div style="color:var(--text-secondary);margin-bottom:2rem;">Unable to load questions for this topic.</div>
+            <button class="btn" onclick="closeQuiz()">Close</button>
+          </div>
+        `;
+      }
     }
 
     function showQuestion() {
