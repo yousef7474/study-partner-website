@@ -5396,6 +5396,22 @@
     async function joinRoomById(roomId, roomCode, roomHostId){
       try{
         updateConnectionStatus('connecting');
+        
+        // Clean up previous room if exists
+        if (currentRoom && currentRoom.id !== roomId) {
+          console.log('Debug - Leaving previous room:', currentRoom.id);
+          
+          // Remove from old room participants
+          await supabase.from('room_participants')
+            .delete()
+            .match({ user_id: currentUser.id, room_id: currentRoom.id });
+          
+          // Deactivate old study sessions  
+          await supabase.from('study_sessions')
+            .update({ is_active: false })
+            .match({ user_id: currentUser.id, room_id: currentRoom.id });
+        }
+        
         const {error} = await supabase.from('room_participants').upsert({
           room_id: roomId,
           user_id: currentUser.id,
@@ -6170,8 +6186,14 @@ function setupRoomSubscriptions(){
 
       window.addEventListener('beforeunload', () => {
         if (currentRoom && currentUser) {
+          // Set offline status and remove from room
           supabase.from('room_participants')
-            .update({ is_online: false })
+            .delete()
+            .match({ user_id: currentUser.id, room_id: currentRoom.id });
+          
+          // Also clean up study sessions
+          supabase.from('study_sessions')
+            .update({ is_active: false })
             .match({ user_id: currentUser.id, room_id: currentRoom.id });
         }
       });
