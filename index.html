@@ -112,6 +112,9 @@
     .quiz-header{text-align:center;margin-bottom:2rem;border-bottom:2px solid var(--border-color);padding-bottom:1rem}
     .quiz-title{font-size:1.5rem;font-weight:700;color:var(--primary-color);margin-bottom:.5rem}
     .quiz-subtitle{font-size:1rem;color:var(--text-secondary)}
+    .quiz-topics{font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:var(--bg-tertiary);border-radius:8px;border-left:3px solid var(--primary-color)}
+    .quiz-topics-title{font-weight:600;margin-bottom:0.25rem}
+    .quiz-topics-list{opacity:0.8}
     .quiz-progress{background:var(--bg-tertiary);border-radius:10px;height:8px;margin:1rem 0;overflow:hidden}
     .quiz-progress-bar{background:var(--primary-gradient);height:100%;transition:width 0.3s ease;border-radius:10px}
     .question-container{margin-bottom:2rem}
@@ -6161,7 +6164,7 @@ function setupRoomSubscriptions(){
       // Start quiz after a short delay with selected units
       setTimeout(() => {
         const subject = currentUser?.subject || 'General Knowledge';
-        const selectedUnits = currentUser?.selectedUnits ? Array.from(currentUser.selectedUnits) : [];
+        const selectedUnits = currentUser?.selected_units ? Array.from(currentUser.selected_units) : [];
         startQuiz(subject, selectedUnits);
       }, 2000);
     }
@@ -7693,11 +7696,29 @@ Make sure to provide exactly 5 questions relevant to the subject matter.`
         quizAnswers = [];
         quizScore = 0;
         
+        // Build topics display
+        let topicsHTML = '';
+        if (selectedUnits && selectedUnits.length > 0) {
+          const unitDetails = getUnitDetails(subject, selectedUnits);
+          console.log('Quiz topics - unit details:', unitDetails);
+          
+          if (unitDetails.chapterContext && unitDetails.chapterContext.length > 0) {
+            topicsHTML = '<div class="quiz-topics"><div class="quiz-topics-title">📚 Selected Topics:</div><div class="quiz-topics-list">';
+            unitDetails.chapterContext.forEach(chapterInfo => {
+              topicsHTML += `<strong>${chapterInfo.chapter}:</strong> ${chapterInfo.units.join(', ')}<br>`;
+            });
+            topicsHTML += '</div></div>';
+          } else if (unitDetails.unitNames && unitDetails.unitNames.length > 0) {
+            topicsHTML = `<div class="quiz-topics"><div class="quiz-topics-title">📚 Selected Topics:</div><div class="quiz-topics-list">${unitDetails.unitNames.join(', ')}</div></div>`;
+          }
+        }
+
         // Show the quiz interface
         document.getElementById('quiz-content').innerHTML = `
           <div class="quiz-header">
             <div class="quiz-title">📝 Quiz Time!</div>
             <div class="quiz-subtitle" id="quiz-subject-name">${subject}</div>
+            ${topicsHTML}
             <div class="quiz-progress">
               <div class="quiz-progress-bar" id="quiz-progress-bar"></div>
             </div>
