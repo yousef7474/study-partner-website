@@ -6531,18 +6531,29 @@ function displayStudyFocusTab(studySessions){
   }
   
   // Filter active study sessions
+  console.log('Debug - Filtering sessions. Each session:', studySessions.map(s => ({
+    subject: s.subject,
+    selected_units: s.selected_units,
+    selected_units_length: s.selected_units?.length,
+    users: s.users
+  })));
+  
   const activeStudySessions = studySessions.filter(session => 
     session.subject && session.selected_units && session.selected_units.length > 0
   );
   
   console.log('Debug - Active study sessions after filter:', activeStudySessions);
+  console.log('Debug - activeStudySessions.length:', activeStudySessions.length);
 
   if(activeStudySessions.length === 0){
+    console.log('Debug - No active sessions, showing no-study message');
     sessionsContainer.innerHTML = '';
     noStudyDiv.style.display = 'block';
     updateStudyFocusTabBadge(0);
     return;
   }
+  
+  console.log('Debug - Found active sessions, proceeding with display');
 
   noStudyDiv.style.display = 'none';
 
