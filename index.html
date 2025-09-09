@@ -6487,6 +6487,8 @@ async function updateSharedStudyFocus(){
   if(!currentRoom) return;
   
   try {
+    console.log('Debug - Fetching study sessions for room:', currentRoom.id);
+    
     // Get study sessions from the dedicated table instead of users table
     const {data: studySessions, error} = await supabase
       .from('study_sessions')
@@ -6506,6 +6508,7 @@ async function updateSharedStudyFocus(){
       return;
     }
 
+    console.log('Debug - Found study sessions:', studySessions);
     displaySharedStudyFocus(studySessions || []);
   } catch(e) {
     console.error('Error updating shared study focus:', e);
@@ -6517,13 +6520,22 @@ function displaySharedStudyFocus(studySessions){
 }
 
 function displayStudyFocusTab(studySessions){
+  console.log('Debug - displayStudyFocusTab called with:', studySessions);
+  
   const sessionsContainer = document.getElementById('active-study-sessions');
   const noStudyDiv = document.getElementById('no-study-focus');
+  
+  if (!sessionsContainer) {
+    console.error('Debug - active-study-sessions element not found');
+    return;
+  }
   
   // Filter active study sessions
   const activeStudySessions = studySessions.filter(session => 
     session.subject && session.selected_units && session.selected_units.length > 0
   );
+  
+  console.log('Debug - Active study sessions after filter:', activeStudySessions);
 
   if(activeStudySessions.length === 0){
     sessionsContainer.innerHTML = '';
@@ -6588,7 +6600,7 @@ function displayStudyFocusTab(studySessions){
     }
 
     function createStudyParticipantCard(user, subject){
-      const unitDetails = getUnitDetails(user.selected_units, subject, currentUser.grade);
+      const unitDetails = getUnitDetails(user.selected_units || [], subject, currentUser.grade);
       
       // Group units by chapter
       const chapterGroups = {};
