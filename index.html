@@ -4945,23 +4945,23 @@
         currentUser = JSON.parse(savedUser);
         showLoggedInLayout();
         const savedRoomStr = localStorage.getItem('studyTogether_room');
-        if(savedRoomStr){
+        // PRIORITY: If there's a room code in URL, join that room (ignore saved room)
+        if(roomCodeFromUrl){
+          console.log('Debug - URL room code detected, joining:', roomCodeFromUrl);
+          joinRoom(roomCodeFromUrl.toUpperCase());
+          roomCodeFromUrl = null;
+        } else if(savedRoomStr){
+          // Only check saved room if no URL room code
           const saved = JSON.parse(savedRoomStr);
           supabase.from('rooms').select('*').eq('id', saved.id).eq('is_active', true).single()
             .then(async ({data, error}) => {
               if(!error && data){
                 await joinRoomById(data.id, data.room_code, data.host_id);
                 toast('Rejoined your room after refresh.', 'info', 'Welcome back');
-              } else if(roomCodeFromUrl){
-                joinRoom(roomCodeFromUrl.toUpperCase()); 
-                roomCodeFromUrl = null;
               } else {
                 navigateToScreen('home-screen');
               }
             });
-        } else if(roomCodeFromUrl){
-          joinRoom(roomCodeFromUrl.toUpperCase());
-          roomCodeFromUrl = null;
         } else {
           navigateToScreen('home-screen');
         }
