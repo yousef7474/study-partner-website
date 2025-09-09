@@ -6936,16 +6936,36 @@ function displayStudyFocusTab(studySessions){
     // AI Question Generation using free APIs
     async function generateAIQuestions(subject, units = [], chapterId = null) {
       try {
-        console.log('Generating AI questions for:', subject);
+        console.log('Generating AI questions for:', subject, 'with units:', units);
         
-        // Build context from selected units
+        // Build detailed context from selected units and chapters
         let context = `Subject: ${subject}`;
+        let specificTopics = '';
+        
         if (units.length > 0) {
           const unitDetails = getUnitDetails(subject, units);
-          context += `\nTopics: ${unitDetails.join(', ')}`;
+          console.log('Unit details:', unitDetails);
+          
+          // Build chapter-specific context
+          if (unitDetails.chapterContext && unitDetails.chapterContext.length > 0) {
+            specificTopics = '\n\nFocus specifically on these chapters and topics:\n';
+            unitDetails.chapterContext.forEach(chapterInfo => {
+              specificTopics += `• Chapter: ${chapterInfo.chapter}\n`;
+              specificTopics += `  - Topics: ${chapterInfo.units.join(', ')}\n`;
+            });
+            
+            context += `\nSelected Topics: ${unitDetails.unitNames.join(', ')}`;
+            context += specificTopics;
+          } else {
+            // Fallback to simple unit names if new structure not available
+            const unitNames = unitDetails.unitNames || unitDetails;
+            context += `\nTopics: ${Array.isArray(unitNames) ? unitNames.join(', ') : units.join(', ')}`;
+          }
         }
         
         const prompt = `Generate 5 multiple choice questions about ${subject}. ${context}
+
+IMPORTANT: Generate questions that are specifically focused on the selected chapters and topics mentioned above. Do not generate general subject questions - focus on the specific units and chapters provided.
         
 Format each question as JSON:
 {
@@ -6956,7 +6976,7 @@ Format each question as JSON:
   "correct": 0
 }
 
-Make questions educational, appropriate for Grade 12 level, and relevant to the subject matter.`;
+Make questions educational, appropriate for Grade 12 level, and directly relevant to the specified chapters and units.`;
 
         // Try multiple AI services in order of preference
         let questions = await tryClaude(prompt);
@@ -7352,24 +7372,38 @@ Make sure to provide exactly 5 questions relevant to the subject matter.`
     }
 
     function getUnitDetails(subject, units) {
-      // Extract unit names for better context
+      // Extract detailed unit information including chapters for better context
       const gradeData = subjectsByGrade[currentUser?.grade || 12];
       const subjectData = gradeData?.find(s => 
         s.name === subject || s.nameAr === subject
       );
       
-      if (!subjectData) return [];
+      if (!subjectData) return { unitNames: [], chapterContext: [] };
       
       const unitNames = [];
+      const chapterContext = [];
+      const processedChapters = new Set();
+      
       subjectData.chapters?.forEach(chapter => {
+        const chapterUnits = [];
         chapter.units?.forEach(unit => {
           if (units.includes(unit.id)) {
             unitNames.push(unit.name || unit.nameAr);
+            chapterUnits.push(unit.name || unit.nameAr);
           }
         });
+        
+        // Add chapter context if it has selected units
+        if (chapterUnits.length > 0 && !processedChapters.has(chapter.id)) {
+          chapterContext.push({
+            chapter: chapter.name || chapter.nameAr,
+            units: chapterUnits
+          });
+          processedChapters.add(chapter.id);
+        }
       });
       
-      return unitNames;
+      return { unitNames, chapterContext };
     }
 
     function parseAIResponse(text) {
