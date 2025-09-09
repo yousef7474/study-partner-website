@@ -6572,10 +6572,16 @@ function displayStudyFocusTab(studySessions){
   });
 
   // Create study session cards for each subject
+  console.log('Debug - Subject groups:', subjectGroups);
+  console.log('Debug - About to create cards for subjects:', Object.keys(subjectGroups));
+  
   sessionsContainer.innerHTML = '';
   Object.keys(subjectGroups).forEach(subject => {
+    console.log('Debug - Processing subject:', subject);
     const participants = subjectGroups[subject];
+    console.log('Debug - Participants for subject:', participants);
     const subjectName = getSubjectDisplayName(subject, currentUser.grade, currentLanguage);
+    console.log('Debug - Subject display name:', subjectName);
     
     const sessionCard = document.createElement('div');
     sessionCard.className = 'study-session-card';
@@ -6593,8 +6599,14 @@ function displayStudyFocusTab(studySessions){
       </div>
     `;
     
+    console.log('Debug - Created session card:', sessionCard);
+    console.log('Debug - Appending card to container:', sessionsContainer);
     sessionsContainer.appendChild(sessionCard);
+    console.log('Debug - Container innerHTML after append:', sessionsContainer.innerHTML.substring(0, 100));
   });
+  
+  console.log('Debug - Final container content length:', sessionsContainer.innerHTML.length);
+  console.log('Debug - noStudyDiv display:', noStudyDiv.style.display);
   
   // Update tab badge with number of studying participants
   updateStudyFocusTabBadge(activeStudySessions.length);
@@ -6611,7 +6623,12 @@ function displayStudyFocusTab(studySessions){
     }
 
     function createStudyParticipantCard(user, subject){
+      console.log('Debug - createStudyParticipantCard called with user:', user, 'subject:', subject);
+      console.log('Debug - user.selected_units:', user.selected_units);
+      console.log('Debug - currentUser.grade:', currentUser.grade);
+      
       const unitDetails = getUnitDetails(user.selected_units || [], subject, currentUser.grade);
+      console.log('Debug - getUnitDetails returned:', unitDetails);
       
       // Group units by chapter
       const chapterGroups = {};
