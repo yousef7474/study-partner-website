@@ -6635,8 +6635,9 @@ function displayStudyFocusTab(studySessions){
         console.log('Debug - Physics chapters:', physicsInGrade10.chapters?.length || 0);
       }
       
-      const unitDetails = getUnitDetails(user.selected_units || [], subject, currentUser.grade);
-      console.log('Debug - getUnitDetails returned:', unitDetails);
+      // TEMP: Create new function to bypass cache
+      const unitDetails = getUnitDetailsFixed(user.selected_units || [], subject, currentUser.grade);
+      console.log('Debug - getUnitDetailsFixed returned:', unitDetails);
       
       // Group units by chapter
       const chapterGroups = {};
@@ -6688,6 +6689,48 @@ function displayStudyFocusTab(studySessions){
           `}
         </div>
       `;
+    }
+
+    // NEW FIXED FUNCTION - bypasses cache
+    function getUnitDetailsFixed(selectedUnitIds, subject, grade){
+      console.log('🔥 getUnitDetailsFixed called with:', {selectedUnitIds, subject, grade});
+      
+      if(!selectedUnitIds || !subject) {
+        console.log('🔥 Early return: missing params');
+        return [];
+      }
+      
+      const subjects = subjectsByGrade[grade] || [];
+      console.log('🔥 Found subjects for grade', grade, ':', subjects.length);
+      
+      const subjectData = subjects.find(s => s.name === subject || s.nameAr === subject);
+      console.log('🔥 Found subject data:', subjectData ? 'YES' : 'NO');
+      
+      if(!subjectData || !subjectData.chapters) {
+        console.log('🔥 No chapters found');
+        return [];
+      }
+      
+      console.log('🔥 Subject has chapters:', subjectData.chapters.length);
+      
+      const unitDetails = [];
+      subjectData.chapters.forEach(chapter => {
+        console.log('🔥 Processing chapter:', chapter.name);
+        chapter.units.forEach(unit => {
+          console.log('🔥 Checking unit:', unit.id, 'against:', selectedUnitIds);
+          if(selectedUnitIds.includes(unit.id)){
+            console.log('🔥 MATCH! Adding unit:', unit.id);
+            unitDetails.push({
+              id: unit.id,
+              name: currentLanguage === 'ar' ? unit.nameAr : unit.name,
+              chapterName: currentLanguage === 'ar' ? chapter.nameAr : chapter.name
+            });
+          }
+        });
+      });
+      
+      console.log('🔥 Final unitDetails:', unitDetails);
+      return unitDetails;
     }
 
     function getUnitDetails(selectedUnitIds, subject, grade){
