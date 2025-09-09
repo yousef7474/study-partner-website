@@ -7118,8 +7118,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'x-api-key': apiKey,
-                'anthropic-version': '2023-06-01'
+                'x-api-key': apiKey
               },
               body: JSON.stringify({
                 model: 'claude-3-haiku-20240307',
@@ -7162,84 +7161,96 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       try {
         console.log('Parsing Claude response, length:', content.length);
         
-        // First try to extract JSON array from response
-        let jsonMatch = content.match(/\[[\s\S]*\]/);
-        if (!jsonMatch) {
-          // Try to find JSON within markdown code blocks
-          const codeBlockMatch = content.match(/```(?:json)?\s*(\[[\s\S]*?\])\s*```/);
-          if (codeBlockMatch) {
-            jsonMatch = [codeBlockMatch[1]];
-          }
-        }
-
+        // Debug: Show first 500 characters of response
+        console.log('Claude response preview:', content.substring(0, 500));
+        
+        // Try multiple approaches to extract JSON
+        let questions = [];
+        
+        // Approach 1: Look for JSON array
+        let jsonMatch = content.match(/\[[\s\S]*?\]/);
         if (jsonMatch) {
           try {
-            // Clean up the JSON by removing any trailing content after the last ']'
             let jsonStr = jsonMatch[0];
-            const lastBracket = jsonStr.lastIndexOf(']');
-            if (lastBracket !== -1) {
-              jsonStr = jsonStr.substring(0, lastBracket + 1);
-            }
             
-            const parsed = JSON.parse(jsonStr);
-            if (Array.isArray(parsed)) {
-              return parsed.map((q, i) => ({
-                id: `claude_${Date.now()}_${i}`,
-                question: q.question || `Question ${i + 1}`,
-                question_ar: q.question_ar || `السؤال ${i + 1}`,
-                options: q.options || ['Option A', 'Option B', 'Option C', 'Option D'],
-                options_ar: q.options_ar || ['الخيار أ', 'الخيار ب', 'الخيار ج', 'الخيار د'],
-                correct: q.correct || 0
-              }));
-            }
-          } catch (parseError) {
-            console.log('JSON parse error, trying manual cleanup:', parseError.message);
-            // Try to manually fix common JSON issues
-            let cleanJson = jsonMatch[0]
+            // Clean up common issues
+            jsonStr = jsonStr
               .replace(/,\s*}/g, '}') // Remove trailing commas before }
               .replace(/,\s*]/g, ']') // Remove trailing commas before ]
-              .replace(/([^":])\s*"([^"]*)":/g, '$1"$2":') // Fix unquoted keys
+              .replace(/\n/g, ' ') // Replace newlines with spaces
               .trim();
             
-            try {
-              const parsed = JSON.parse(cleanJson);
-              if (Array.isArray(parsed)) {
-                return parsed.map((q, i) => ({
-                  id: `claude_${Date.now()}_${i}`,
-                  question: q.question || `Question ${i + 1}`,
-                  question_ar: q.question_ar || `السؤال ${i + 1}`,
-                  options: q.options || ['Option A', 'Option B', 'Option C', 'Option D'],
-                  options_ar: q.options_ar || ['الخيار أ', 'الخيار ب', 'الخيار ج', 'الخيار د'],
-                  correct: q.correct || 0
-                }));
-              }
-            } catch (secondParseError) {
-              console.log('Second parse attempt failed:', secondParseError.message);
+            const parsed = JSON.parse(jsonStr);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              questions = parsed;
             }
+          } catch (e) {
+            console.log('Array parsing failed:', e.message);
           }
         }
-
-        // Fallback: try to parse individual question objects
-        const questions = [];
-        const questionMatches = content.match(/\{[^{}]*"question"[^{}]*\}/g);
-        if (questionMatches && questionMatches.length >= 5) {
-          questionMatches.forEach((match, i) => {
-            try {
-              const q = JSON.parse(match);
-              questions.push({
-                id: `claude_${Date.now()}_${i}`,
-                question: q.question || `Question ${i + 1}`,
-                question_ar: q.question_ar || `السؤال ${i + 1}`,
-                options: q.options || ['Option A', 'Option B', 'Option C', 'Option D'],
-                options_ar: q.options_ar || ['الخيار أ', 'الخيار ب', 'الخيار ج', 'الخيار د'],
-                correct: q.correct || 0
-              });
-            } catch (e) {
-              console.log('Failed to parse individual Claude question:', e);
+        
+        // Approach 2: Look for individual question objects
+        if (questions.length === 0) {
+          const questionMatches = content.match(/\{[^{}]*?"question"[^{}]*?\}/g);
+          if (questionMatches) {
+            questionMatches.forEach(match => {
+              try {
+                const q = JSON.parse(match);
+                if (q.question) {
+                  questions.push(q);
+                }
+              } catch (e) {
+                console.log('Individual question parse failed:', match.substring(0, 100));
+              }
+            });
+          }
+        }
+        
+        // Approach 3: More aggressive extraction
+        if (questions.length === 0) {
+          const lines = content.split('\n');
+          let currentQuestion = {};
+          
+          lines.forEach(line => {
+            if (line.includes('"question"')) {
+              const match = line.match(/"question":\s*"([^"]+)"/);
+              if (match) currentQuestion.question = match[1];
+            }
+            if (line.includes('"options"')) {
+              const match = line.match(/"options":\s*\[([^\]]+)\]/);
+              if (match) {
+                try {
+                  currentQuestion.options = JSON.parse(`[${match[1]}]`);
+                } catch (e) {
+                  currentQuestion.options = ['A', 'B', 'C', 'D'];
+                }
+              }
+            }
+            if (line.includes('"correct"')) {
+              const match = line.match(/"correct":\s*(\d+)/);
+              if (match) {
+                currentQuestion.correct = parseInt(match[1]);
+                if (currentQuestion.question) {
+                  questions.push({...currentQuestion});
+                  currentQuestion = {};
+                }
+              }
             }
           });
         }
-        return questions.length >= 5 ? questions : null;
+        
+        // Transform questions to our format
+        if (questions.length > 0) {
+          return questions.map((q, i) => ({
+            id: `claude_${Date.now()}_${i}`,
+            question: q.question || `Question ${i + 1}`,
+            question_ar: q.question_ar || q.question || `السؤال ${i + 1}`,
+            options: q.options || ['A', 'B', 'C', 'D'],
+            options_ar: q.options_ar || q.options || ['أ', 'ب', 'ج', 'د'],
+            correct: q.correct || 0
+          })).slice(0, 5);
+        }
+
       } catch (error) {
         console.log('Failed to parse Claude response:', error);
       }
@@ -7715,14 +7726,23 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       const totalQuestions = currentQuiz.questions.length;
       const percentage = Math.round((quizScore / totalQuestions) * 100);
       
-      document.getElementById('quiz-progress-bar').style.width = '100%';
-      document.getElementById('quiz-content').style.display = 'none';
-      document.getElementById('quiz-results').style.display = 'block';
+      // Safely update progress bar
+      const progressBar = document.getElementById('quiz-progress-bar');
+      if (progressBar) progressBar.style.width = '100%';
       
-      document.getElementById('quiz-final-score').textContent = `${quizScore}/${totalQuestions}`;
+      // Hide quiz content and show results
+      const quizContent = document.getElementById('quiz-content');
+      const quizResults = document.getElementById('quiz-results');
+      if (quizContent) quizContent.style.display = 'none';
+      if (quizResults) quizResults.style.display = 'block';
+      
+      // Update final score
+      const finalScoreEl = document.getElementById('quiz-final-score');
+      if (finalScoreEl) finalScoreEl.textContent = `${quizScore}/${totalQuestions}`;
       
       const summaryContainer = document.getElementById('quiz-summary');
-      summaryContainer.innerHTML = `
+      if (summaryContainer) {
+        summaryContainer.innerHTML = `
         <div class="summary-item">
           <span>Correct Answers:</span>
           <span>${quizScore}</span>
@@ -7736,16 +7756,19 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           <span>${percentage >= 90 ? 'A+' : percentage >= 80 ? 'A' : percentage >= 70 ? 'B' : percentage >= 60 ? 'C' : 'D'}</span>
         </div>
       `;
+      }
       
       const scoreText = document.querySelector('.quiz-score-text');
-      if (percentage >= 90) {
-        scoreText.textContent = '🎉 Excellent work!';
-      } else if (percentage >= 70) {
-        scoreText.textContent = '👍 Good job!';
-      } else if (percentage >= 50) {
-        scoreText.textContent = '👌 Keep studying!';
-      } else {
-        scoreText.textContent = '📚 Practice more!';
+      if (scoreText) {
+        if (percentage >= 90) {
+          scoreText.textContent = '🎉 Excellent work!';
+        } else if (percentage >= 70) {
+          scoreText.textContent = '👍 Good job!';
+        } else if (percentage >= 50) {
+          scoreText.textContent = '👌 Keep studying!';
+        } else {
+          scoreText.textContent = '📚 Practice more!';
+        }
       }
     }
 
