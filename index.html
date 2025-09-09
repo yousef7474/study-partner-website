@@ -7104,76 +7104,120 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
         console.log('Trying Claude API...');
         
-        // Try multiple CORS bypass methods
+        // First try direct API call (works in some environments)
+        try {
+          console.log('Trying direct Claude API call...');
+          const directResponse = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': apiKey,
+              'anthropic-version': '2023-06-01'
+            },
+            body: JSON.stringify({
+              model: 'claude-3-haiku-20240307',
+              max_tokens: 1500,
+              temperature: 0.7,
+              messages: [
+                {
+                  role: 'user',
+                  content: prompt
+                }
+              ]
+            })
+          });
+
+          if (directResponse.ok) {
+            const directData = await directResponse.json();
+            const directContent = directData.content?.[0]?.text;
+            
+            if (directContent) {
+              console.log('Direct Claude API response:', directContent.substring(0, 200) + '...');
+              const questions = parseClaudeResponse(directContent);
+              if (questions && questions.length >= 5) {
+                console.log(`Claude generated ${questions.length} questions successfully via direct API`);
+                return questions.slice(0, 5);
+              }
+            }
+          } else {
+            console.log('Direct Claude API failed:', directResponse.status);
+          }
+        } catch (directError) {
+          console.log('Direct Claude API error (expected due to CORS):', directError.message);
+        }
+        
+        // Try multiple CORS bypass methods with specific configurations
         const corsProxies = [
-          'https://corsproxy.io/?',
-          'https://api.allorigins.win/raw?url=',
-          'https://cors-anywhere.herokuapp.com/'
+          { 
+            url: 'https://api.allorigins.win/raw?url=', 
+            type: 'allorigins',
+            headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey }
+          },
+          { 
+            url: 'https://corsproxy.io/?', 
+            type: 'corsproxy',
+            headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey }
+          },
+          { 
+            url: 'https://cors-anywhere.herokuapp.com/', 
+            type: 'cors-anywhere',
+            headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey }
+          }
         ];
         
-        for (const proxy of corsProxies) {
+        for (const proxyConfig of corsProxies) {
           try {
-            const url = proxy + encodeURIComponent('https://api.anthropic.com/v1/messages');
-            // Try different approaches for different proxies  
-            let headers = { 'Content-Type': 'application/json' };
-            let body = JSON.stringify({
-                model: 'claude-3-haiku-20240307',
-                max_tokens: 1500,
-                temperature: 0.7,
-                messages: [
-                  {
-                    role: 'user',
-                    content: prompt
-                  }
-                ],
-                // Try including API key in body instead of headers for some proxies
-                api_key: apiKey
-              });
-
-            // For specific proxies, try different header approaches
-            if (proxy.includes('corsproxy.io')) {
-              headers['X-API-Key'] = apiKey;
-            } else if (proxy.includes('allorigins')) {
-              // Try without API key for allorigins (might be a free endpoint)
-              body = JSON.stringify({
-                model: 'claude-3-haiku-20240307',
-                max_tokens: 1500,
-                temperature: 0.7,
-                messages: [
-                  {
-                    role: 'user',
-                    content: prompt
-                  }
-                ]
-              });
-            } else {
-              headers['x-api-key'] = apiKey;
-            }
+            const url = proxyConfig.url + encodeURIComponent('https://api.anthropic.com/v1/messages');
+            
+            const body = JSON.stringify({
+              model: 'claude-3-haiku-20240307',
+              max_tokens: 1500,
+              temperature: 0.7,
+              messages: [
+                {
+                  role: 'user',
+                  content: prompt
+                }
+              ]
+            });
+            
+            console.log(`Trying ${proxyConfig.type} proxy:`, proxyConfig.url);
             
             const response = await fetch(url, {
               method: 'POST',
-              headers: headers,
+              headers: proxyConfig.headers,
               body: body
             });
 
-            console.log(`Proxy ${proxy} response status:`, response.status);
+            console.log(`Proxy ${proxyConfig.type} response status:`, response.status);
             
             if (response.ok) {
-              const data = await response.json();
-              const content = data.content?.[0]?.text;
+              let data, content;
+              try {
+                const responseText = await response.text();
+                console.log(`Proxy ${proxyConfig.type} raw response:`, responseText.substring(0, 200) + '...');
+                
+                data = JSON.parse(responseText);
+                content = data.content?.[0]?.text;
+                
+                console.log(`Proxy ${proxyConfig.type} extracted content:`, content ? content.substring(0, 200) + '...' : 'No content');
+              } catch (e) {
+                console.log(`Proxy ${proxyConfig.type} JSON parse error:`, e.message);
+                continue;
+              }
               
               if (content) {
                 const questions = parseClaudeResponse(content);
                 if (questions && questions.length >= 5) {
-                  console.log('Claude generated questions successfully');
+                  console.log(`Claude generated ${questions.length} questions successfully via ${proxyConfig.type}`);
                   return questions.slice(0, 5);
                 }
               }
             } else {
-              console.log(`Claude API failed via ${proxy}:`, response.status);
+              console.log(`Claude API failed via ${proxyConfig.type}:`, response.status);
             }
           } catch (proxyError) {
-            console.log(`Proxy ${proxy} failed:`, proxyError);
+            console.log(`Proxy ${proxyConfig.type} failed:`, proxyError.message);
           }
         }
       } catch (error) {
@@ -7445,6 +7489,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           
           // Create chapter-specific questions for Chemistry Chapter 2: Elements and Compounds
           if (chapterInfo.chapter.includes('Elements and Compounds') || chapterInfo.chapter.includes('Chapter 2')) {
+            console.log('✅ Returning Chapter 2: Elements and Compounds specific questions');
             return [
               {
                 id: `fallback_chapter2_1`,
