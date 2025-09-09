@@ -6685,10 +6685,28 @@ function displayStudyFocusTab(studySessions){
     function getUnitDetails(selectedUnitIds, subject, grade){
       if(!selectedUnitIds || !subject) return [];
       
-      const subjects = subjectsByGrade[grade] || [];
-      const subjectData = subjects.find(s => s.name === subject || s.nameAr === subject);
+      console.log('Debug - getUnitDetails searching for subject:', subject, 'in grade:', grade);
       
-      if(!subjectData || !subjectData.chapters) return [];
+      let subjects = subjectsByGrade[grade] || [];
+      let subjectData = subjects.find(s => s.name === subject || s.nameAr === subject);
+      
+      // If not found in specified grade, search in all grades
+      if (!subjectData || !subjectData.chapters) {
+        console.log('Debug - Subject not found in grade', grade, ', searching all grades');
+        for (const gradeKey of ['10', '11', '12']) {
+          subjects = subjectsByGrade[gradeKey] || [];
+          subjectData = subjects.find(s => s.name === subject || s.nameAr === subject);
+          if (subjectData && subjectData.chapters) {
+            console.log('Debug - Found subject in grade:', gradeKey);
+            break;
+          }
+        }
+      }
+      
+      if(!subjectData || !subjectData.chapters) {
+        console.log('Debug - Subject not found in any grade:', subject);
+        return [];
+      }
 
       const unitDetails = [];
       subjectData.chapters.forEach(chapter => {
