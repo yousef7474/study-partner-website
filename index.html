@@ -7086,11 +7086,11 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         // Try Claude API first, then fallback to subject-specific questions
         let questions = await tryClaude(prompt);
         
-        return questions || getFallbackQuestions(subject);
+        return questions || getFallbackQuestions(subject, units);
         
       } catch (error) {
         console.error('AI question generation failed:', error);
-        return getFallbackQuestions(subject);
+        return getFallbackQuestions(subject, units);
       }
     }
 
@@ -7114,13 +7114,28 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         for (const proxy of corsProxies) {
           try {
             const url = proxy + encodeURIComponent('https://api.anthropic.com/v1/messages');
-            const response = await fetch(url, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': apiKey
-              },
-              body: JSON.stringify({
+            // Try different approaches for different proxies  
+            let headers = { 'Content-Type': 'application/json' };
+            let body = JSON.stringify({
+                model: 'claude-3-haiku-20240307',
+                max_tokens: 1500,
+                temperature: 0.7,
+                messages: [
+                  {
+                    role: 'user',
+                    content: prompt
+                  }
+                ],
+                // Try including API key in body instead of headers for some proxies
+                api_key: apiKey
+              });
+
+            // For specific proxies, try different header approaches
+            if (proxy.includes('corsproxy.io')) {
+              headers['X-API-Key'] = apiKey;
+            } else if (proxy.includes('allorigins')) {
+              // Try without API key for allorigins (might be a free endpoint)
+              body = JSON.stringify({
                 model: 'claude-3-haiku-20240307',
                 max_tokens: 1500,
                 temperature: 0.7,
@@ -7130,9 +7145,19 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
                     content: prompt
                   }
                 ]
-              })
+              });
+            } else {
+              headers['x-api-key'] = apiKey;
+            }
+            
+            const response = await fetch(url, {
+              method: 'POST',
+              headers: headers,
+              body: body
             });
 
+            console.log(`Proxy ${proxy} response status:`, response.status);
+            
             if (response.ok) {
               const data = await response.json();
               const content = data.content?.[0]?.text;
@@ -7163,6 +7188,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         
         // Debug: Show first 500 characters of response
         console.log('Claude response preview:', content.substring(0, 500));
+        console.log('Character at position 51:', content.charAt(51), 'Code:', content.charCodeAt(51));
         
         // Try multiple approaches to extract JSON
         let questions = [];
@@ -7405,8 +7431,71 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       }
     }
 
-    function getFallbackQuestions(subject) {
-      console.log(`Using fallback questions for subject: ${subject}`);
+    function getFallbackQuestions(subject, selectedUnits = []) {
+      console.log(`Using fallback questions for subject: ${subject}, units:`, selectedUnits);
+      
+      // If we have selected units, try to create more specific questions
+      if (selectedUnits && selectedUnits.length > 0 && subject === 'Chemistry') {
+        const unitDetails = getUnitDetails(subject, selectedUnits);
+        console.log('Creating chapter-specific fallback questions for:', unitDetails);
+        
+        if (unitDetails.chapterContext && unitDetails.chapterContext.length > 0) {
+          const chapterInfo = unitDetails.chapterContext[0];
+          console.log('Focusing on chapter:', chapterInfo.chapter);
+          
+          // Create chapter-specific questions for Chemistry Chapter 2: Elements and Compounds
+          if (chapterInfo.chapter.includes('Elements and Compounds') || chapterInfo.chapter.includes('Chapter 2')) {
+            return [
+              {
+                id: `fallback_chapter2_1`,
+                question: 'What is the basic unit of an element?',
+                question_ar: 'ما هي الوحدة الأساسية للعنصر؟',
+                options: ['Molecule', 'Atom', 'Compound', 'Ion'],
+                options_ar: ['الجزيء', 'الذرة', 'المركب', 'الأيون'],
+                correct: 1
+              },
+              {
+                id: `fallback_chapter2_2`,
+                question: 'Which of the following is a compound?',
+                question_ar: 'أي من التالي مركب؟',
+                options: ['Oxygen (O₂)', 'Gold (Au)', 'Water (H₂O)', 'Nitrogen (N₂)'],
+                options_ar: ['الأكسجين (O₂)', 'الذهب (Au)', 'الماء (H₂O)', 'النيتروجين (N₂)'],
+                correct: 2
+              },
+              {
+                id: `fallback_chapter2_3`,
+                question: 'What type of bond holds atoms together in a compound?',
+                question_ar: 'ما نوع الرابطة التي تربط الذرات في المركب؟',
+                options: ['Physical bond', 'Chemical bond', 'Magnetic bond', 'Nuclear bond'],
+                options_ar: ['رابطة فيزيائية', 'رابطة كيميائية', 'رابطة مغناطيسية', 'رابطة نووية'],
+                correct: 1
+              },
+              {
+                id: `fallback_chapter2_4`,
+                question: 'The smallest particle of a compound that retains its properties is called:',
+                question_ar: 'أصغر جسيم من المركب يحتفظ بخصائصه يسمى:',
+                options: ['Atom', 'Element', 'Molecule', 'Ion'],
+                options_ar: ['الذرة', 'العنصر', 'الجزيء', 'الأيون'],
+                correct: 2
+              },
+              {
+                id: `fallback_chapter2_5`,
+                question: 'How many different elements are in the compound H₂SO₄?',
+                question_ar: 'كم عدد العناصر المختلفة في المركب H₂SO₄؟',
+                options: ['2', '3', '4', '7'],
+                options_ar: ['2', '3', '4', '7'],
+                correct: 1
+              }
+            ].map(q => ({
+              ...q,
+              question: currentLanguage === 'ar' ? q.question_ar : q.question,
+              options: currentLanguage === 'ar' ? q.options_ar : q.options
+            }));
+          }
+        }
+      }
+      
+      // Fall back to subject-specific questions
       const questions = fallbackQuestions[subject] || fallbackQuestions.default;
       
       // Transform questions to include proper language support
