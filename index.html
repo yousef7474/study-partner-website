@@ -6627,6 +6627,14 @@ function displayStudyFocusTab(studySessions){
       console.log('Debug - user.selected_units:', user.selected_units);
       console.log('Debug - currentUser.grade:', currentUser.grade);
       
+      // Force debug - check if Grade 10 Physics exists
+      const grade10Subjects = subjectsByGrade[10] || [];
+      const physicsInGrade10 = grade10Subjects.find(s => s.name === 'Physics');
+      console.log('Debug - Physics in Grade 10:', physicsInGrade10 ? 'EXISTS' : 'NOT FOUND');
+      if (physicsInGrade10) {
+        console.log('Debug - Physics chapters:', physicsInGrade10.chapters?.length || 0);
+      }
+      
       const unitDetails = getUnitDetails(user.selected_units || [], subject, currentUser.grade);
       console.log('Debug - getUnitDetails returned:', unitDetails);
       
