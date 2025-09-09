@@ -5814,9 +5814,12 @@ function setupRoomSubscriptions(){
     event: '*', schema: 'public', table: 'study_sessions', filter: `room_id=eq.${currentRoom.id}`
   }, async (payload) => {
     try {
-      await updateSharedStudyFocus();
+      // Only update shared study focus if it's not our own change to avoid double updates
+      if (payload.eventType === 'DELETE' || payload.new?.user_id !== currentUser.id) {
+        await updateSharedStudyFocus();
+      }
       
-      // Show notification when someone updates their study focus
+      // Show notification when someone else updates their study focus
       if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
         if (payload.new?.user_id !== currentUser.id) {
           const user = await fetchUser(payload.new.user_id);
@@ -6508,11 +6511,19 @@ function setupRoomSubscriptions(){
     }
 
     // -------- SHARED STUDY FOCUS DISPLAY --------
+    let updateSharedStudyFocusThrottle = null;
+    
 async function updateSharedStudyFocus(){
   if(!currentRoom) return;
   
-  try {
-    console.log('Debug - Fetching study sessions for room:', currentRoom.id);
+  // Throttle rapid calls
+  if(updateSharedStudyFocusThrottle) {
+    clearTimeout(updateSharedStudyFocusThrottle);
+  }
+  
+  updateSharedStudyFocusThrottle = setTimeout(async () => {
+    try {
+      console.log('Debug - Fetching study sessions for room:', currentRoom.id);
     
     // Get study sessions from the dedicated table instead of users table
     const {data: studySessions, error} = await supabase
@@ -6533,11 +6544,12 @@ async function updateSharedStudyFocus(){
       return;
     }
 
-    console.log('Debug - Found study sessions:', studySessions);
-    displaySharedStudyFocus(studySessions || []);
-  } catch(e) {
-    console.error('Error updating shared study focus:', e);
-  }
+      console.log('Debug - Found study sessions:', studySessions);
+      displaySharedStudyFocus(studySessions || []);
+    } catch(e) {
+      console.error('Error updating shared study focus:', e);
+    }
+  }, 200); // 200ms throttle
 }
 
 function displaySharedStudyFocus(studySessions){
@@ -6983,7 +6995,6 @@ Make questions educational, appropriate for Grade 12 level, and directly relevan
 
         // Try multiple AI services in order of preference
         let questions = await tryClaude(prompt);
-        if (!questions) questions = await tryOpenAI(prompt);
         if (!questions) questions = await tryHuggingFace(prompt);
         if (!questions) questions = await tryGroqAPI(prompt);
         if (!questions) questions = await tryLocalLLM(prompt);
@@ -7128,104 +7139,6 @@ Make sure to provide exactly 5 questions relevant to the subject matter.`
       return null;
     }
 
-    async function tryOpenAI(prompt) {
-      try {
-        const apiKey = localStorage.getItem('openai_api_key');
-        if (!apiKey) {
-          console.log('OpenAI API key not found');
-          return null;
-        }
-
-        console.log('Trying OpenAI API...');
-        
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-          },
-          body: JSON.stringify({
-            model: 'gpt-3.5-turbo',
-            messages: [
-              {
-                role: 'system',
-                content: 'You are an educational quiz generator. Generate exactly 5 multiple choice questions in JSON array format. Each question should have: question, question_ar (Arabic), options (array of 4 choices), options_ar (Arabic array), and correct (0-3 index).'
-              },
-              {
-                role: 'user',
-                content: prompt
-              }
-            ],
-            temperature: 0.7,
-            max_tokens: 1500
-          })
-        });
-
-        if (!response.ok) {
-          console.log('OpenAI API failed:', response.status);
-          return null;
-        }
-
-        const data = await response.json();
-        const content = data.choices[0]?.message?.content;
-        
-        if (content) {
-          const questions = parseOpenAIResponse(content);
-          if (questions && questions.length >= 5) {
-            console.log('OpenAI generated questions successfully');
-            return questions.slice(0, 5);
-          }
-        }
-      } catch (error) {
-        console.log('OpenAI API error:', error);
-      }
-      return null;
-    }
-
-    function parseOpenAIResponse(content) {
-      try {
-        // Try to extract JSON array from response
-        let jsonMatch = content.match(/\[[\s\S]*\]/);
-        if (!jsonMatch) {
-          // Try to find individual question objects and combine them
-          const questions = [];
-          const questionMatches = content.match(/\{[^{}]*"question"[^{}]*\}/g);
-          if (questionMatches) {
-            questionMatches.forEach((match, i) => {
-              try {
-                const q = JSON.parse(match);
-                questions.push({
-                  id: `openai_${Date.now()}_${i}`,
-                  question: q.question || `Question ${i + 1}`,
-                  question_ar: q.question_ar || `السؤال ${i + 1}`,
-                  options: q.options || ['Option A', 'Option B', 'Option C', 'Option D'],
-                  options_ar: q.options_ar || ['الخيار أ', 'الخيار ب', 'الخيار ج', 'الخيار د'],
-                  correct: q.correct || 0
-                });
-              } catch (e) {
-                console.log('Failed to parse individual question:', e);
-              }
-            });
-          }
-          return questions.length >= 5 ? questions : null;
-        }
-
-        const parsed = JSON.parse(jsonMatch[0]);
-        if (Array.isArray(parsed)) {
-          return parsed.map((q, i) => ({
-            id: `openai_${Date.now()}_${i}`,
-            question: q.question || `Question ${i + 1}`,
-            question_ar: q.question_ar || `السؤال ${i + 1}`,
-            options: q.options || ['Option A', 'Option B', 'Option C', 'Option D'],
-            options_ar: q.options_ar || ['الخيار أ', 'الخيار ب', 'الخيار ج', 'الخيار د'],
-            correct: q.correct || 0
-          }));
-        }
-      } catch (error) {
-        console.log('Failed to parse OpenAI response:', error);
-      }
-      return null;
-    }
 
     async function tryHuggingFace(prompt) {
       try {
@@ -7874,6 +7787,54 @@ Make sure to provide exactly 5 questions relevant to the subject matter.`
       showQuestion();
     }
 
+    async function newQuiz() {
+      if (!currentQuiz) return;
+      
+      // Show loading state
+      document.getElementById('quiz-results').innerHTML = `
+        <div style="text-align:center;padding:2rem;">
+          <div style="font-size:1.5rem;margin-bottom:1rem;">🔄 Generating New Quiz...</div>
+          <div style="color:var(--text-secondary);">Creating fresh questions on the same topic...</div>
+        </div>
+      `;
+      
+      try {
+        // Get new questions for the same subject and units
+        const newQuestions = await getQuizQuestions(currentQuiz.subject, currentQuiz.selectedUnits);
+        
+        if (newQuestions && newQuestions.length >= 5) {
+          // Update current quiz with new questions
+          currentQuiz.questions = newQuestions;
+          currentQuiz.startTime = Date.now();
+          
+          // Reset quiz state
+          currentQuestionIndex = 0;
+          quizAnswers = [];
+          quizScore = 0;
+          
+          // Show the new quiz
+          document.getElementById('quiz-content').style.display = 'block';
+          document.getElementById('quiz-results').style.display = 'none';
+          
+          showQuestion();
+        } else {
+          throw new Error('Unable to generate new questions');
+        }
+      } catch (error) {
+        console.error('Error generating new quiz:', error);
+        document.getElementById('quiz-results').innerHTML = `
+          <div style="text-align:center;padding:2rem;">
+            <div style="font-size:1.2rem;margin-bottom:1rem;color:var(--error-color);">❌ Generation Failed</div>
+            <div style="color:var(--text-secondary);margin-bottom:2rem;">Unable to create new questions. Please try again.</div>
+            <div class="quiz-controls">
+              <button class="btn" onclick="closeQuiz()">Close</button>
+              <button class="btn btn-secondary" onclick="retakeQuiz()">Retake Current Quiz</button>
+            </div>
+          </div>
+        `;
+      }
+    }
+
     function closeQuiz() {
       document.getElementById('quiz-modal').style.display = 'none';
       currentQuiz = null;
@@ -7912,6 +7873,7 @@ Make sure to provide exactly 5 questions relevant to the subject matter.`
         <div class="quiz-controls">
           <button class="btn" onclick="closeQuiz()">Close</button>
           <button class="btn btn-secondary" onclick="retakeQuiz()">Retake Quiz</button>
+          <button class="btn btn-primary" onclick="newQuiz()">New Quiz</button>
         </div>
       </div>
     </div>
