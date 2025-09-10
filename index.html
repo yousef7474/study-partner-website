@@ -134,6 +134,8 @@
     .quiz-summary{background:var(--bg-tertiary);border-radius:10px;padding:1.5rem;margin-bottom:2rem}
     .summary-item{display:flex;justify-content:space-between;margin-bottom:.5rem}
     .summary-item:last-child{margin-bottom:0}
+    .points-highlight{color:var(--primary-color);font-weight:bold;font-size:1.1em}
+    .bonus-highlight{color:var(--success-color);font-weight:bold}
     
     .chapter-summary{background:var(--bg-tertiary);border-radius:8px;padding:1rem;margin-bottom:1rem;text-align:center}
     .chapter-controls{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
@@ -589,6 +591,17 @@
             <select id="settings-subject-select" class="form-input"></select>
           </div>
 
+          <!-- Performance Dashboard Section -->
+          <div style="margin-top:2rem;padding-top:2rem;border-top:2px solid var(--border-color);">
+            <h3 data-translate="performanceDashboard">Academic Performance</h3>
+            <div id="performance-dashboard" style="background:var(--bg-tertiary);border-radius:15px;padding:1.5rem;margin-top:1rem;">
+              <div style="text-align:center;color:var(--text-secondary);padding:2rem;">
+                <div style="font-size:1rem;margin-bottom:0.5rem;">📊</div>
+                <div data-translate="loadingPerformance">Loading performance data...</div>
+              </div>
+            </div>
+          </div>
+
           <!-- AI API Keys Section -->
           <div style="margin-top:2rem;padding-top:2rem;border-top:2px solid var(--border-color);">
             <h3 data-translate="aiSettings">AI Settings</h3>
@@ -661,7 +674,13 @@
         quizError:"Quiz Error", noQuestionsAvailable:"No questions available for this topic",
         generatingNewQuiz:"Generating New Quiz...", creatingFreshQuestions:"Creating fresh questions on the same topic...",
         generationFailed:"Generation Failed", unableToCreateQuestions:"Unable to create new questions. Please try again.",
-        retakeCurrentQuiz:"Retake Current Quiz"
+        retakeCurrentQuiz:"Retake Current Quiz",
+        // Performance Dashboard
+        performanceDashboard:"Academic Performance", loadingPerformance:"Loading performance data...",
+        totalPoints:"Total Points", totalQuizzes:"Quizzes Taken", averageScore:"Average Score",
+        currentStreak:"Current Streak", bestStreak:"Best Streak", performanceRating:"Performance Rating",
+        recentQuizzes:"Recent Quiz History", noQuizHistory:"No quiz history available yet",
+        quizzesCompleted:"quizzes completed", pointsEarned:"points earned"
       },
       ar:{
         home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة",
@@ -707,6 +726,12 @@
         generatingNewQuiz:"جاري إنشاء اختبار جديد...", creatingFreshQuestions:"جاري إنشاء أسئلة جديدة حول نفس الموضوع...",
         generationFailed:"فشل الإنشاء", unableToCreateQuestions:"غير قادر على إنشاء أسئلة جديدة. يرجى المحاولة مرة أخرى.",
         retakeCurrentQuiz:"إعادة الاختبار الحالي",
+        // Performance Dashboard in Arabic
+        performanceDashboard:"الأداء الأكاديمي", loadingPerformance:"جاري تحميل بيانات الأداء...",
+        totalPoints:"إجمالي النقاط", totalQuizzes:"الاختبارات المكتملة", averageScore:"متوسط النتائج",
+        currentStreak:"السلسلة الحالية", bestStreak:"أفضل سلسلة", performanceRating:"تقييم الأداء",
+        recentQuizzes:"سجل الاختبارات الحديثة", noQuizHistory:"لا يوجد سجل اختبارات متاح بعد",
+        quizzesCompleted:"اختبارات مكتملة", pointsEarned:"نقاط مكتسبة",
         studyFocus:"التركيز الدراسي", roomStudyFocus:"التركيز الدراسي للغرفة", studyFocusDesc:"اطلع على ما يدرسه الجميع في الغرفة حالياً. اختر مادتك والفصول أعلاه للانضمام إلى جلسة الدراسة.",
         noActiveStudy:"لا توجد جلسات دراسة نشطة", noActiveStudyDesc:"لم يختر المشاركون مواضيع دراستهم بعد. اختر مادتك والفصول أعلاه لبدء جلسة دراسة!",
         studyingChapters:"يدرس فصول", joinStudySession:"انضم لجلسة الدراسة", totalSelected:"المجموع المختار",
@@ -5270,6 +5295,9 @@
       gradeSel.onchange = () => {
         populateSettingsSubjectsForGrade(gradeSel.value, null);
       };
+
+      // Load performance dashboard
+      loadPerformanceDashboard();
     }
 
     function populateSettingsSubjectsForGrade(gradeVal, selectedSubject){
@@ -8127,10 +8155,13 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       showQuestion();
     }
 
-    function showQuizResults() {
+    async function showQuizResults() {
       console.log('📊 showQuizResults() called');
       const totalQuestions = currentQuiz.questions.length;
       const percentage = Math.round((quizScore / totalQuestions) * 100);
+      
+      // Calculate quiz completion time
+      const timeTaken = currentQuiz.startTime ? Math.floor((Date.now() - currentQuiz.startTime) / 1000) : null;
       
       // Safely update progress bar
       const progressBar = document.getElementById('quiz-progress-bar');
@@ -8142,6 +8173,9 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       if (quizContent) quizContent.style.display = 'none';
       if (quizResults) quizResults.style.display = 'block';
       
+      // Calculate score data
+      const scoreData = calculateQuizScore(quizScore, totalQuestions, timeTaken);
+      
       // Generate complete results HTML
       const scoreMessage = percentage >= 90 ? translations[currentLanguage].excellentWork : 
                           percentage >= 70 ? translations[currentLanguage].goodJob : 
@@ -8149,6 +8183,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       
       const grade = percentage >= 90 ? 'A+' : percentage >= 80 ? 'A' : percentage >= 70 ? 'B' : percentage >= 60 ? 'C' : 'D';
       
+      // Show loading for score calculation
       quizResults.innerHTML = `
         <div class="quiz-results-content">
           <div class="quiz-score-text">${scoreMessage}</div>
@@ -8168,6 +8203,23 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
               <span>${translations[currentLanguage].grade}:</span>
               <span>${grade}</span>
             </div>
+            <div class="summary-item">
+              <span>${currentLanguage === 'ar' ? 'النقاط المكتسبة' : 'Points Earned'}:</span>
+              <span class="points-highlight">+${scoreData.totalPoints}</span>
+            </div>
+            ${scoreData.timeBonus > 0 ? `
+            <div class="summary-item">
+              <span>${currentLanguage === 'ar' ? 'مكافأة السرعة' : 'Speed Bonus'}:</span>
+              <span class="bonus-highlight">+${scoreData.timeBonus}</span>
+            </div>
+            ` : ''}
+            <div class="summary-item">
+              <span>${currentLanguage === 'ar' ? 'المضاعف' : 'Multiplier'}:</span>
+              <span>${scoreData.multiplier}x</span>
+            </div>
+          </div>
+          <div style="text-align:center;margin:1rem 0;font-size:0.9rem;color:var(--text-secondary);">
+            ${currentLanguage === 'ar' ? 'جاري حفظ النتائج...' : 'Saving results...'}
           </div>
           <div class="quiz-controls">
             <button class="btn" onclick="closeQuiz()">${translations[currentLanguage].close}</button>
@@ -8176,6 +8228,47 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           </div>
         </div>
       `;
+
+      // Save the quiz score to database
+      try {
+        const quizData = {
+          subject: currentQuiz.subject,
+          totalQuestions: totalQuestions,
+          selectedUnits: currentQuiz.selectedUnits || [],
+          timeTaken: timeTaken
+        };
+        
+        await saveQuizScore(quizScore, quizData);
+        
+        // Update the UI to show success
+        const savingMessage = document.querySelector('[style*="Saving results"]');
+        if (savingMessage) {
+          savingMessage.innerHTML = `
+            <span style="color: var(--success-color);">
+              ✅ ${currentLanguage === 'ar' ? 'تم حفظ النتائج بنجاح!' : 'Results saved successfully!'}
+            </span>
+          `;
+        }
+        
+        // Show toast notification
+        toast(
+          `${currentLanguage === 'ar' ? 'تم كسب' : 'Earned'} ${scoreData.totalPoints} ${currentLanguage === 'ar' ? 'نقطة!' : 'points!'}`,
+          'success',
+          currentLanguage === 'ar' ? 'نقاط!' : 'Points!'
+        );
+        
+      } catch (error) {
+        console.error('Failed to save quiz score:', error);
+        // Update UI to show error
+        const savingMessage = document.querySelector('[style*="Saving results"]');
+        if (savingMessage) {
+          savingMessage.innerHTML = `
+            <span style="color: var(--error-color);">
+              ❌ ${currentLanguage === 'ar' ? 'فشل في حفظ النتائج' : 'Failed to save results'}
+            </span>
+          `;
+        }
+      }
       
       console.log('✅ Quiz results HTML generated');
     }
@@ -8275,6 +8368,327 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       }
       
       console.log('✅ Quiz cleanup completed');
+    }
+
+    // -------- SCORING SYSTEM --------
+    const SCORING_CONFIG = {
+      BASE_POINTS_PER_CORRECT: 10,
+      PERCENTAGE_MULTIPLIERS: {
+        100: 2.0,  // Perfect score
+        95: 1.8,   // Excellent
+        90: 1.5,   // Very Good
+        80: 1.2,   // Good
+        70: 1.0,   // Average
+        60: 0.8,   // Below Average
+        50: 0.6,   // Poor
+        0: 0.3     // Participation points
+      },
+      STREAK_BONUS: {
+        5: 50,   // 5 quiz streak
+        10: 150, // 10 quiz streak
+        20: 500  // 20 quiz streak
+      },
+      PERFORMANCE_THRESHOLDS: {
+        EXCELLENT: 85,
+        GOOD: 70,
+        AVERAGE: 55,
+        NEEDS_IMPROVEMENT: 0
+      }
+    };
+
+    function calculateQuizScore(correctAnswers, totalQuestions, timeTakenSeconds = null) {
+      const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+      let basePoints = correctAnswers * SCORING_CONFIG.BASE_POINTS_PER_CORRECT;
+      
+      // Find appropriate multiplier
+      let multiplier = 0.3; // Default minimum
+      for (const [threshold, mult] of Object.entries(SCORING_CONFIG.PERCENTAGE_MULTIPLIERS)) {
+        if (percentage >= parseInt(threshold)) {
+          multiplier = mult;
+          break;
+        }
+      }
+      
+      // Calculate final points
+      const finalPoints = Math.round(basePoints * multiplier);
+      
+      // Time bonus (if quiz completed quickly)
+      let timeBonus = 0;
+      if (timeTakenSeconds && timeTakenSeconds < 300) { // Less than 5 minutes
+        timeBonus = Math.round(finalPoints * 0.1); // 10% bonus
+      }
+      
+      return {
+        basePoints,
+        multiplier,
+        percentage,
+        finalPoints,
+        timeBonus,
+        totalPoints: finalPoints + timeBonus
+      };
+    }
+
+    function getPerformanceRating(averagePercentage) {
+      if (averagePercentage >= SCORING_CONFIG.PERFORMANCE_THRESHOLDS.EXCELLENT) {
+        return currentLanguage === 'ar' ? 'ممتاز' : 'Excellent';
+      } else if (averagePercentage >= SCORING_CONFIG.PERFORMANCE_THRESHOLDS.GOOD) {
+        return currentLanguage === 'ar' ? 'جيد' : 'Good';
+      } else if (averagePercentage >= SCORING_CONFIG.PERFORMANCE_THRESHOLDS.AVERAGE) {
+        return currentLanguage === 'ar' ? 'متوسط' : 'Average';
+      } else {
+        return currentLanguage === 'ar' ? 'يحتاج تحسين' : 'Needs Improvement';
+      }
+    }
+
+    async function saveQuizScore(quizScore, quizData) {
+      if (!supabase || !currentUser) {
+        console.warn('Cannot save score: Supabase or user not available');
+        return;
+      }
+
+      try {
+        const scoreData = calculateQuizScore(
+          quizScore, 
+          quizData.totalQuestions, 
+          quizData.timeTaken
+        );
+
+        // Save individual quiz record
+        const { error: historyError } = await supabase
+          .from('quiz_history')
+          .insert({
+            user_id: currentUser.id,
+            subject: quizData.subject,
+            total_questions: quizData.totalQuestions,
+            correct_answers: quizScore,
+            percentage: scoreData.percentage,
+            points_earned: scoreData.totalPoints,
+            time_taken_seconds: quizData.timeTaken,
+            selected_units: quizData.selectedUnits || []
+          });
+
+        if (historyError) {
+          console.error('Error saving quiz history:', historyError);
+          return;
+        }
+
+        // Update user's overall score
+        await updateUserOverallScore(scoreData);
+        
+        console.log('✅ Quiz score saved successfully');
+        return scoreData;
+
+      } catch (error) {
+        console.error('Error in saveQuizScore:', error);
+      }
+    }
+
+    async function updateUserOverallScore(newScoreData) {
+      try {
+        // Get current user scores
+        const { data: currentScore, error: fetchError } = await supabase
+          .from('user_scores')
+          .select('*')
+          .eq('user_id', currentUser.id)
+          .single();
+
+        if (fetchError && fetchError.code !== 'PGRST116') { // Not found error is OK
+          console.error('Error fetching current score:', fetchError);
+          return;
+        }
+
+        let updatedData;
+        if (!currentScore) {
+          // First quiz for this user
+          updatedData = {
+            user_id: currentUser.id,
+            total_points: newScoreData.totalPoints,
+            total_quizzes: 1,
+            correct_answers: newScoreData.percentage * newScoreData.totalPoints / 100 / SCORING_CONFIG.BASE_POINTS_PER_CORRECT,
+            total_questions: Math.round(newScoreData.percentage * newScoreData.totalPoints / 100 / SCORING_CONFIG.BASE_POINTS_PER_CORRECT / newScoreData.percentage * 100),
+            current_streak: newScoreData.percentage >= 60 ? 1 : 0,
+            best_streak: newScoreData.percentage >= 60 ? 1 : 0,
+            average_percentage: newScoreData.percentage,
+            performance_rating: getPerformanceRating(newScoreData.percentage),
+            last_quiz_date: new Date().toISOString()
+          };
+
+          const { error: insertError } = await supabase
+            .from('user_scores')
+            .insert(updatedData);
+
+          if (insertError) {
+            console.error('Error inserting new score:', insertError);
+          }
+        } else {
+          // Update existing score
+          const newTotalQuizzes = currentScore.total_quizzes + 1;
+          const newCorrectAnswers = currentScore.correct_answers + (newScoreData.percentage >= 60 ? 1 : 0);
+          const newTotalQuestions = currentScore.total_questions + 1;
+          const newAveragePercentage = ((currentScore.average_percentage * currentScore.total_quizzes) + newScoreData.percentage) / newTotalQuizzes;
+          
+          // Handle streak
+          const newStreak = newScoreData.percentage >= 60 ? currentScore.current_streak + 1 : 0;
+          const newBestStreak = Math.max(currentScore.best_streak, newStreak);
+
+          updatedData = {
+            total_points: currentScore.total_points + newScoreData.totalPoints,
+            total_quizzes: newTotalQuizzes,
+            correct_answers: newCorrectAnswers,
+            total_questions: newTotalQuestions,
+            current_streak: newStreak,
+            best_streak: newBestStreak,
+            average_percentage: Math.round(newAveragePercentage * 100) / 100,
+            performance_rating: getPerformanceRating(newAveragePercentage),
+            last_quiz_date: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          };
+
+          const { error: updateError } = await supabase
+            .from('user_scores')
+            .update(updatedData)
+            .eq('user_id', currentUser.id);
+
+          if (updateError) {
+            console.error('Error updating score:', updateError);
+          }
+        }
+
+        // Check for streak bonuses
+        if (updatedData.current_streak in SCORING_CONFIG.STREAK_BONUS) {
+          const bonusPoints = SCORING_CONFIG.STREAK_BONUS[updatedData.current_streak];
+          await supabase
+            .from('user_scores')
+            .update({ 
+              total_points: updatedData.total_points + bonusPoints 
+            })
+            .eq('user_id', currentUser.id);
+            
+          toast(
+            `${currentLanguage === 'ar' ? 'مكافأة التسلسل!' : 'Streak Bonus!'} +${bonusPoints} ${currentLanguage === 'ar' ? 'نقطة' : 'points'}`,
+            'success',
+            currentLanguage === 'ar' ? 'مكافأة!' : 'Bonus!'
+          );
+        }
+
+      } catch (error) {
+        console.error('Error updating user overall score:', error);
+      }
+    }
+
+    async function loadPerformanceDashboard() {
+      const dashboardElement = document.getElementById('performance-dashboard');
+      if (!dashboardElement || !supabase || !currentUser) {
+        return;
+      }
+
+      try {
+        // Get user's overall scores
+        const { data: userScore, error: scoreError } = await supabase
+          .from('user_scores')
+          .select('*')
+          .eq('user_id', currentUser.id)
+          .single();
+
+        // Get recent quiz history
+        const { data: recentQuizzes, error: historyError } = await supabase
+          .from('quiz_history')
+          .select('*')
+          .eq('user_id', currentUser.id)
+          .order('quiz_date', { ascending: false })
+          .limit(5);
+
+        if (scoreError && scoreError.code !== 'PGRST116') {
+          console.error('Error loading performance data:', scoreError);
+          dashboardElement.innerHTML = `
+            <div style="text-align:center;color:var(--text-secondary);padding:2rem;">
+              <div>❌</div>
+              <div>${currentLanguage === 'ar' ? 'فشل في تحميل بيانات الأداء' : 'Failed to load performance data'}</div>
+            </div>
+          `;
+          return;
+        }
+
+        if (!userScore) {
+          // No performance data yet
+          dashboardElement.innerHTML = `
+            <div style="text-align:center;color:var(--text-secondary);padding:2rem;">
+              <div style="font-size:2rem;margin-bottom:1rem;">📈</div>
+              <div style="font-size:1.1rem;margin-bottom:0.5rem;">${translations[currentLanguage].noQuizHistory}</div>
+              <div style="font-size:0.9rem;">${currentLanguage === 'ar' ? 'ابدأ بحل الاختبارات لرؤية إحصائياتك!' : 'Start taking quizzes to see your statistics!'}</div>
+            </div>
+          `;
+          return;
+        }
+
+        // Build performance dashboard HTML
+        let recentQuizzesHTML = '';
+        if (recentQuizzes && recentQuizzes.length > 0) {
+          recentQuizzesHTML = `
+            <div style="margin-top:1.5rem;">
+              <h4 style="margin-bottom:1rem;color:var(--text-primary);">${translations[currentLanguage].recentQuizzes}</h4>
+              <div style="background:var(--bg-secondary);border-radius:10px;padding:1rem;">
+                ${recentQuizzes.map(quiz => `
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0;border-bottom:1px solid var(--border-color);">
+                    <div>
+                      <div style="font-weight:500;color:var(--text-primary);">${quiz.subject}</div>
+                      <div style="font-size:0.85rem;color:var(--text-secondary);">${new Date(quiz.quiz_date).toLocaleDateString()}</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div style="font-weight:bold;color:var(--primary-color);">${quiz.percentage}%</div>
+                      <div style="font-size:0.85rem;color:var(--text-secondary);">+${quiz.points_earned} ${currentLanguage === 'ar' ? 'نقطة' : 'pts'}</div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        dashboardElement.innerHTML = `
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:1.5rem;">
+            <div style="text-align:center;background:var(--bg-secondary);padding:1rem;border-radius:10px;">
+              <div style="font-size:1.8rem;font-weight:bold;color:var(--primary-color);">${userScore.total_points.toLocaleString()}</div>
+              <div style="font-size:0.85rem;color:var(--text-secondary);">${translations[currentLanguage].totalPoints}</div>
+            </div>
+            <div style="text-align:center;background:var(--bg-secondary);padding:1rem;border-radius:10px;">
+              <div style="font-size:1.8rem;font-weight:bold;color:var(--success-color);">${userScore.total_quizzes}</div>
+              <div style="font-size:0.85rem;color:var(--text-secondary);">${translations[currentLanguage].totalQuizzes}</div>
+            </div>
+            <div style="text-align:center;background:var(--bg-secondary);padding:1rem;border-radius:10px;">
+              <div style="font-size:1.8rem;font-weight:bold;color:var(--warning-color);">${userScore.average_percentage}%</div>
+              <div style="font-size:0.85rem;color:var(--text-secondary);">${translations[currentLanguage].averageScore}</div>
+            </div>
+          </div>
+          
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1rem;margin-bottom:1.5rem;">
+            <div style="text-align:center;background:var(--bg-secondary);padding:1rem;border-radius:10px;">
+              <div style="font-size:1.5rem;font-weight:bold;color:var(--info-color);">🔥 ${userScore.current_streak}</div>
+              <div style="font-size:0.85rem;color:var(--text-secondary);">${translations[currentLanguage].currentStreak}</div>
+            </div>
+            <div style="text-align:center;background:var(--bg-secondary);padding:1rem;border-radius:10px;">
+              <div style="font-size:1.5rem;font-weight:bold;color:var(--info-color);">🏆 ${userScore.best_streak}</div>
+              <div style="font-size:0.85rem;color:var(--text-secondary);">${translations[currentLanguage].bestStreak}</div>
+            </div>
+          </div>
+
+          <div style="text-align:center;background:var(--bg-secondary);padding:1.5rem;border-radius:10px;margin-bottom:1rem;">
+            <div style="font-size:1.1rem;font-weight:500;margin-bottom:0.5rem;">${translations[currentLanguage].performanceRating}</div>
+            <div style="font-size:1.3rem;font-weight:bold;color:var(--primary-color);">${userScore.performance_rating}</div>
+          </div>
+
+          ${recentQuizzesHTML}
+        `;
+
+      } catch (error) {
+        console.error('Error in loadPerformanceDashboard:', error);
+        dashboardElement.innerHTML = `
+          <div style="text-align:center;color:var(--text-secondary);padding:2rem;">
+            <div>❌</div>
+            <div>${currentLanguage === 'ar' ? 'حدث خطأ في تحميل البيانات' : 'Error loading data'}</div>
+          </div>
+        `;
+      }
     }
 
   </script>
