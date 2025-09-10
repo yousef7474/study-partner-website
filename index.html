@@ -7962,40 +7962,42 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       if (quizContent) quizContent.style.display = 'none';
       if (quizResults) quizResults.style.display = 'block';
       
-      // Update final score
-      const finalScoreEl = document.getElementById('quiz-final-score');
-      if (finalScoreEl) finalScoreEl.textContent = `${quizScore}/${totalQuestions}`;
+      // Generate complete results HTML
+      const scoreMessage = percentage >= 90 ? '🎉 Excellent work!' : 
+                          percentage >= 70 ? '👍 Good job!' : 
+                          percentage >= 50 ? '👌 Keep studying!' : '📚 Practice more!';
       
-      const summaryContainer = document.getElementById('quiz-summary');
-      if (summaryContainer) {
-        summaryContainer.innerHTML = `
-        <div class="summary-item">
-          <span>Correct Answers:</span>
-          <span>${quizScore}</span>
-        </div>
-        <div class="summary-item">
-          <span>Percentage:</span>
-          <span>${percentage}%</span>
-        </div>
-        <div class="summary-item">
-          <span>Grade:</span>
-          <span>${percentage >= 90 ? 'A+' : percentage >= 80 ? 'A' : percentage >= 70 ? 'B' : percentage >= 60 ? 'C' : 'D'}</span>
+      const grade = percentage >= 90 ? 'A+' : percentage >= 80 ? 'A' : percentage >= 70 ? 'B' : percentage >= 60 ? 'C' : 'D';
+      
+      quizResults.innerHTML = `
+        <div class="quiz-results-content">
+          <div class="quiz-score-text">${scoreMessage}</div>
+          <div class="quiz-final-score-display">
+            <span id="quiz-final-score">${quizScore}/${totalQuestions}</span>
+          </div>
+          <div class="quiz-summary" id="quiz-summary">
+            <div class="summary-item">
+              <span>Correct Answers:</span>
+              <span>${quizScore}</span>
+            </div>
+            <div class="summary-item">
+              <span>Percentage:</span>
+              <span>${percentage}%</span>
+            </div>
+            <div class="summary-item">
+              <span>Grade:</span>
+              <span>${grade}</span>
+            </div>
+          </div>
+          <div class="quiz-controls">
+            <button class="btn" onclick="closeQuiz()">Close</button>
+            <button class="btn btn-secondary" onclick="retakeQuiz()">Retake Quiz</button>
+            <button class="btn btn-primary" onclick="newQuiz()">New Quiz</button>
+          </div>
         </div>
       `;
-      }
       
-      const scoreText = document.querySelector('.quiz-score-text');
-      if (scoreText) {
-        if (percentage >= 90) {
-          scoreText.textContent = '🎉 Excellent work!';
-        } else if (percentage >= 70) {
-          scoreText.textContent = '👍 Good job!';
-        } else if (percentage >= 50) {
-          scoreText.textContent = '👌 Keep studying!';
-        } else {
-          scoreText.textContent = '📚 Practice more!';
-        }
-      }
+      console.log('✅ Quiz results HTML generated');
     }
 
     function retakeQuiz() {
