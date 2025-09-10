@@ -7138,48 +7138,68 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
     function parseClaudeResponse(content) {
       try {
         console.log('Parsing Claude response, length:', content.length);
-        
-        // Debug: Show first 500 characters of response
         console.log('Claude response preview:', content.substring(0, 500));
-        console.log('Character at position 51:', content.charAt(51), 'Code:', content.charCodeAt(51));
         
-        // Try multiple approaches to extract JSON
         let questions = [];
         
-        // Approach 1: Look for JSON array
-        let jsonMatch = content.match(/\[[\s\S]*?\]/);
-        if (jsonMatch) {
-          try {
-            let jsonStr = jsonMatch[0];
-            
-            // Clean up common issues
-            jsonStr = jsonStr
-              .replace(/,\s*}/g, '}') // Remove trailing commas before }
-              .replace(/,\s*]/g, ']') // Remove trailing commas before ]
-              .replace(/\n/g, ' ') // Replace newlines with spaces
-              .trim();
-            
-            const parsed = JSON.parse(jsonStr);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              questions = parsed;
+        // Approach 1: Look for JSON array or individual objects
+        const jsonMatches = content.match(/\{[\s\S]*?"question"[\s\S]*?\}/g);
+        if (jsonMatches && jsonMatches.length > 0) {
+          console.log(`Found ${jsonMatches.length} potential JSON question objects`);
+          
+          jsonMatches.forEach((match, index) => {
+            try {
+              // Clean up the JSON string
+              let cleanMatch = match
+                .replace(/\n/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+              
+              const parsed = JSON.parse(cleanMatch);
+              if (parsed.question && parsed.options && Array.isArray(parsed.options)) {
+                questions.push({
+                  id: `claude_${index}`,
+                  question: parsed.question,
+                  question_ar: parsed.question_ar || parsed.question,
+                  options: parsed.options,
+                  options_ar: parsed.options_ar || parsed.options,
+                  correct: parsed.correct || 0
+                });
+                console.log(`✅ Parsed question ${index + 1}: ${parsed.question.substring(0, 50)}...`);
+              }
+            } catch (parseError) {
+              console.log(`❌ Failed to parse question ${index}:`, parseError.message);
+              console.log('Raw match:', match.substring(0, 200));
             }
-          } catch (e) {
-            console.log('Array parsing failed:', e.message);
-          }
+          });
         }
         
-        // Approach 2: Look for individual question objects
+        // Approach 2: If no JSON found, try to parse structured text format
         if (questions.length === 0) {
-          const questionMatches = content.match(/\{[^{}]*?"question"[^{}]*?\}/g);
-          if (questionMatches) {
-            questionMatches.forEach(match => {
+          console.log('No JSON found, trying structured text parsing...');
+          
+          // Look for numbered questions in text format
+          const textQuestions = content.match(/\d+\.\s*\{[\s\S]*?\}/g);
+          if (textQuestions) {
+            textQuestions.forEach((match, index) => {
               try {
-                const q = JSON.parse(match);
-                if (q.question) {
-                  questions.push(q);
+                // Extract just the JSON part
+                const jsonPart = match.match(/\{[\s\S]*\}/)[0];
+                const parsed = JSON.parse(jsonPart);
+                
+                if (parsed.question && parsed.options) {
+                  questions.push({
+                    id: `claude_text_${index}`,
+                    question: parsed.question,
+                    question_ar: parsed.question_ar || parsed.question,
+                    options: parsed.options,
+                    options_ar: parsed.options_ar || parsed.options,
+                    correct: parsed.correct || 0
+                  });
+                  console.log(`✅ Parsed text question ${index + 1}`);
                 }
-              } catch (e) {
-                console.log('Individual question parse failed:', match.substring(0, 100));
+              } catch (error) {
+                console.log(`❌ Failed to parse text question ${index}:`, error.message);
               }
             });
           }
@@ -7218,21 +7238,30 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           });
         }
         
+        console.log(`📊 Successfully parsed ${questions.length} questions from Claude`);
+        
         // Transform questions to our format
         if (questions.length > 0) {
-          return questions.map((q, i) => ({
+          const transformedQuestions = questions.map((q, i) => ({
             id: `claude_${Date.now()}_${i}`,
             question: q.question || `Question ${i + 1}`,
             question_ar: q.question_ar || q.question || `السؤال ${i + 1}`,
             options: q.options || ['A', 'B', 'C', 'D'],
             options_ar: q.options_ar || q.options || ['أ', 'ب', 'ج', 'د'],
             correct: q.correct || 0
-          })).slice(0, 5);
+          }));
+          
+          console.log(`🎯 Returning ${Math.min(transformedQuestions.length, 5)} Claude questions`);
+          return transformedQuestions.slice(0, 5);
         }
+        
+        console.log('❌ No questions could be parsed from Claude response');
 
       } catch (error) {
-        console.log('Failed to parse Claude response:', error);
+        console.log('💥 Failed to parse Claude response:', error);
       }
+      
+      console.log('🔄 Claude parsing failed, returning null for fallback');
       return null;
     }
 
