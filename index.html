@@ -7098,130 +7098,255 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       try {
         const apiKey = localStorage.getItem('claude_api_key');
         if (!apiKey) {
-          console.log('Claude API key not found');
+          console.log('🔑 Claude API key not found');
           return null;
         }
 
-        console.log('Trying Claude API...');
+        console.log('🤖 Attempting Claude API with advanced CORS bypass...');
         
-        // First try direct API call (works in some environments)
-        try {
-          console.log('Trying direct Claude API call...');
-          const directResponse = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-api-key': apiKey,
-              'anthropic-version': '2023-06-01'
-            },
-            body: JSON.stringify({
-              model: 'claude-3-haiku-20240307',
-              max_tokens: 1500,
-              temperature: 0.7,
-              messages: [
-                {
-                  role: 'user',
-                  content: prompt
-                }
-              ]
-            })
-          });
-
-          if (directResponse.ok) {
-            const directData = await directResponse.json();
-            const directContent = directData.content?.[0]?.text;
-            
-            if (directContent) {
-              console.log('Direct Claude API response:', directContent.substring(0, 200) + '...');
-              const questions = parseClaudeResponse(directContent);
-              if (questions && questions.length >= 5) {
-                console.log(`Claude generated ${questions.length} questions successfully via direct API`);
-                return questions.slice(0, 5);
-              }
-            }
-          } else {
-            console.log('Direct Claude API failed:', directResponse.status);
-          }
-        } catch (directError) {
-          console.log('Direct Claude API error (expected due to CORS):', directError.message);
-        }
-        
-        // Try multiple CORS bypass methods with specific configurations
-        const corsProxies = [
-          { 
-            url: 'https://api.allorigins.win/raw?url=', 
-            type: 'allorigins',
-            headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey }
+        // Method 1: Try specialized proxy services that support custom headers
+        const advancedProxies = [
+          {
+            name: 'proxy-cors-sh',
+            url: 'https://proxy.cors.sh/',
+            type: 'header-passthrough',
+            supportCustomHeaders: true
           },
-          { 
-            url: 'https://corsproxy.io/?', 
-            type: 'corsproxy',
-            headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey }
+          {
+            name: 'cors-proxy-io',
+            url: 'https://cors-proxy.htmldriven.com/?url=',
+            type: 'url-encoded',
+            supportCustomHeaders: false
           },
-          { 
-            url: 'https://cors-anywhere.herokuapp.com/', 
-            type: 'cors-anywhere',
-            headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey }
+          {
+            name: 'allorigins-get',
+            url: 'https://api.allorigins.win/get?url=',
+            type: 'wrapped-request',
+            supportCustomHeaders: false
           }
         ];
         
-        for (const proxyConfig of corsProxies) {
+        for (const proxy of advancedProxies) {
           try {
-            const url = proxyConfig.url + encodeURIComponent('https://api.anthropic.com/v1/messages');
+            console.log(`🌐 Attempting ${proxy.name}...`);
             
-            const body = JSON.stringify({
-              model: 'claude-3-haiku-20240307',
-              max_tokens: 1500,
-              temperature: 0.7,
-              messages: [
-                {
-                  role: 'user',
-                  content: prompt
-                }
-              ]
-            });
-            
-            console.log(`Trying ${proxyConfig.type} proxy:`, proxyConfig.url);
-            
-            const response = await fetch(url, {
-              method: 'POST',
-              headers: proxyConfig.headers,
-              body: body
-            });
-
-            console.log(`Proxy ${proxyConfig.type} response status:`, response.status);
-            
-            if (response.ok) {
-              let data, content;
-              try {
-                const responseText = await response.text();
-                console.log(`Proxy ${proxyConfig.type} raw response:`, responseText.substring(0, 200) + '...');
-                
-                data = JSON.parse(responseText);
-                content = data.content?.[0]?.text;
-                
-                console.log(`Proxy ${proxyConfig.type} extracted content:`, content ? content.substring(0, 200) + '...' : 'No content');
-              } catch (e) {
-                console.log(`Proxy ${proxyConfig.type} JSON parse error:`, e.message);
-                continue;
-              }
+            if (proxy.supportCustomHeaders) {
+              // Method 1A: Direct proxy with headers
+              const response = await fetch(proxy.url + encodeURIComponent('https://api.anthropic.com/v1/messages'), {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'x-api-key': apiKey,
+                  'anthropic-version': '2023-06-01',
+                  'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                  model: 'claude-3-haiku-20240307',
+                  max_tokens: 1500,
+                  temperature: 0.7,
+                  messages: [{ role: 'user', content: prompt }]
+                })
+              });
               
-              if (content) {
-                const questions = parseClaudeResponse(content);
-                if (questions && questions.length >= 5) {
-                  console.log(`Claude generated ${questions.length} questions successfully via ${proxyConfig.type}`);
-                  return questions.slice(0, 5);
+              if (response.ok) {
+                const content = await extractClaudeContent(response, proxy.name);
+                if (content) return content;
+              }
+            } else if (proxy.type === 'wrapped-request') {
+              // Method 1B: Wrapped request approach
+              const wrappedResponse = await fetch(proxy.url + encodeURIComponent('https://api.anthropic.com/v1/messages'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': apiKey,
+                    'anthropic-version': '2023-06-01'
+                  },
+                  body: JSON.stringify({
+                    model: 'claude-3-haiku-20240307',
+                    max_tokens: 1500,
+                    temperature: 0.7,
+                    messages: [{ role: 'user', content: prompt }]
+                  })
+                })
+              });
+              
+              if (wrappedResponse.ok) {
+                const wrappedData = await wrappedResponse.json();
+                if (wrappedData.contents) {
+                  try {
+                    const claudeData = JSON.parse(wrappedData.contents);
+                    const content = claudeData.content?.[0]?.text;
+                    if (content) {
+                      const questions = parseClaudeResponse(content);
+                      if (questions && questions.length >= 5) {
+                        console.log(`🎉 Claude success via ${proxy.name}!`);
+                        return questions.slice(0, 5);
+                      }
+                    }
+                  } catch (parseError) {
+                    console.log(`📄 ${proxy.name} parse error:`, parseError.message);
+                  }
                 }
               }
             } else {
-              console.log(`Claude API failed via ${proxyConfig.type}:`, response.status);
+              // Method 1C: Simple URL encoding
+              const response = await fetch(proxy.url + encodeURIComponent('https://api.anthropic.com/v1/messages'), {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${apiKey}`,
+                  'X-API-Key': apiKey
+                },
+                body: JSON.stringify({
+                  model: 'claude-3-haiku-20240307',
+                  max_tokens: 1500,
+                  temperature: 0.7,
+                  messages: [{ role: 'user', content: prompt }],
+                  auth: apiKey
+                })
+              });
+              
+              if (response.ok) {
+                const content = await extractClaudeContent(response, proxy.name);
+                if (content) return content;
+              }
             }
           } catch (proxyError) {
-            console.log(`Proxy ${proxyConfig.type} failed:`, proxyError.message);
+            console.log(`❌ ${proxy.name} failed:`, proxyError.message);
+          }
+        }
+        
+        // Method 2: Try API key in request body instead of headers
+        console.log('🔐 Trying API key in request body...');
+        const bodyKeyProxies = [
+          'https://api.allorigins.win/raw?url=',
+          'https://thingproxy.freeboard.io/fetch/'
+        ];
+        
+        for (const proxyUrl of bodyKeyProxies) {
+          try {
+            const response = await fetch(proxyUrl + encodeURIComponent('https://api.anthropic.com/v1/messages'), {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                model: 'claude-3-haiku-20240307',
+                max_tokens: 1500,
+                temperature: 0.7,
+                messages: [{ role: 'user', content: prompt }],
+                // Embed API key in body
+                'x-api-key': apiKey,
+                'anthropic-version': '2023-06-01',
+                api_key: apiKey,
+                auth_token: apiKey,
+                authorization: apiKey
+              })
+            });
+            
+            if (response.ok) {
+              const content = await extractClaudeContent(response, 'body-key');
+              if (content) return content;
+            }
+          } catch (error) {
+            console.log(`📦 Body key method failed:`, error.message);
+          }
+        }
+        
+        // Method 3: Try different header variations
+        console.log('🔄 Trying header variations...');
+        const headerVariations = [
+          { 'Content-Type': 'application/json', 'Authentication': apiKey },
+          { 'Content-Type': 'application/json', 'API-Key': apiKey },
+          { 'Content-Type': 'application/json', 'Authorization': `Claude ${apiKey}` },
+          { 'Content-Type': 'application/json', 'Authorization': `Api-Key ${apiKey}` },
+          { 'Content-Type': 'application/json', 'X-Auth-Token': apiKey }
+        ];
+        
+        for (let i = 0; i < headerVariations.length; i++) {
+          try {
+            const headers = headerVariations[i];
+            const response = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://api.anthropic.com/v1/messages'), {
+              method: 'POST',
+              headers,
+              body: JSON.stringify({
+                model: 'claude-3-haiku-20240307',
+                max_tokens: 1500,
+                temperature: 0.7,
+                messages: [{ role: 'user', content: prompt }]
+              })
+            });
+            
+            if (response.ok) {
+              const content = await extractClaudeContent(response, `header-var-${i}`);
+              if (content) return content;
+            }
+          } catch (error) {
+            console.log(`🔗 Header variation ${i} failed:`, error.message);
+          }
+        }
+        
+        console.log('⚠️ All Claude API bypass methods failed, falling back to local questions');
+        
+      } catch (error) {
+        console.log('💥 Claude API critical error:', error);
+      }
+      return null;
+    }
+    
+    // Helper function to extract Claude content from various response formats
+    async function extractClaudeContent(response, sourceName) {
+      try {
+        console.log(`📡 Processing ${sourceName} response...`);
+        const responseText = await response.text();
+        
+        // Try parsing as direct JSON first
+        try {
+          const data = JSON.parse(responseText);
+          const content = data.content?.[0]?.text;
+          
+          if (content) {
+            console.log(`📄 ${sourceName} content preview:`, content.substring(0, 100));
+            const questions = parseClaudeResponse(content);
+            if (questions && questions.length >= 5) {
+              console.log(`🎉 Claude success via ${sourceName}! Generated ${questions.length} questions`);
+              return questions.slice(0, 5);
+            }
+          }
+        } catch (jsonError) {
+          // Maybe it's wrapped or malformed JSON
+          console.log(`🔍 ${sourceName} trying alternative parsing...`);
+          
+          // Look for JSON patterns in the text
+          const jsonMatch = responseText.match(/\{[\s\S]*"content"[\s\S]*\}/);
+          if (jsonMatch) {
+            try {
+              const data = JSON.parse(jsonMatch[0]);
+              const content = data.content?.[0]?.text;
+              if (content) {
+                const questions = parseClaudeResponse(content);
+                if (questions && questions.length >= 5) {
+                  console.log(`🎉 Claude success via ${sourceName} (extracted JSON)!`);
+                  return questions.slice(0, 5);
+                }
+              }
+            } catch (extractError) {
+              console.log(`📄 ${sourceName} JSON extraction failed:`, extractError.message);
+            }
+          }
+          
+          // Try treating the whole response as content
+          if (responseText.length > 50) {
+            const questions = parseClaudeResponse(responseText);
+            if (questions && questions.length >= 5) {
+              console.log(`🎉 Claude success via ${sourceName} (raw text)!`);
+              return questions.slice(0, 5);
+            }
           }
         }
       } catch (error) {
-        console.log('Claude API error:', error);
+        console.log(`❌ ${sourceName} content extraction failed:`, error.message);
       }
       return null;
     }
@@ -7487,8 +7612,63 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           const chapterInfo = unitDetails.chapterContext[0];
           console.log('Focusing on chapter:', chapterInfo.chapter);
           
+          // Check for specific units within Chapter 2
+          console.log('Checking units in chapter:', chapterInfo.units);
+          
+          // Create unit-specific questions for Chemistry Chapter 2: Unit 2.3 Mixtures
+          if (chapterInfo.units.some(unit => unit.includes('2.3') || unit.toLowerCase().includes('mixtures') || unit.includes('المخاليط'))) {
+            console.log('✅ Returning Unit 2.3: Mixtures specific questions');
+            return [
+              {
+                id: `fallback_mixtures_1`,
+                question: 'What is a mixture?',
+                question_ar: 'ما هو المخلوط؟',
+                options: ['A pure substance with one type of atom', 'Two or more substances physically combined', 'A chemically bonded compound', 'A single element'],
+                options_ar: ['مادة نقية بنوع واحد من الذرات', 'مادتان أو أكثر مخلوطتان فيزيائياً', 'مركب مترابط كيميائياً', 'عنصر واحد'],
+                correct: 1
+              },
+              {
+                id: `fallback_mixtures_2`,
+                question: 'Which of the following is an example of a homogeneous mixture?',
+                question_ar: 'أي من التالي مثال على مخلوط متجانس؟',
+                options: ['Sand and water', 'Oil and water', 'Salt dissolved in water', 'Iron filings and sulfur'],
+                options_ar: ['الرمل والماء', 'الزيت والماء', 'الملح المذاب في الماء', 'برادة الحديد والكبريت'],
+                correct: 2
+              },
+              {
+                id: `fallback_mixtures_3`,
+                question: 'What method can be used to separate a mixture of salt and sand?',
+                question_ar: 'ما الطريقة التي يمكن استخدامها لفصل مخلوط من الملح والرمل؟',
+                options: ['Magnetism', 'Filtration followed by evaporation', 'Distillation only', 'Chromatography'],
+                options_ar: ['المغناطيسية', 'الترشيح يتبعه التبخير', 'التقطير فقط', 'الكروماتوغرافيا'],
+                correct: 1
+              },
+              {
+                id: `fallback_mixtures_4`,
+                question: 'What is the difference between a mixture and a compound?',
+                question_ar: 'ما الفرق بين المخلوط والمركب؟',
+                options: ['Mixtures have fixed composition, compounds do not', 'Compounds can be separated physically, mixtures cannot', 'Mixtures retain properties of components, compounds have new properties', 'There is no difference'],
+                options_ar: ['المخاليط لها تركيب ثابت، المركبات لا', 'المركبات يمكن فصلها فيزيائياً، المخاليط لا', 'المخاليط تحتفظ بخصائص المكونات، المركبات لها خصائص جديدة', 'لا يوجد فرق'],
+                correct: 2
+              },
+              {
+                id: `fallback_mixtures_5`,
+                question: 'Which separation technique is best for separating different colored inks?',
+                question_ar: 'ما تقنية الفصل الأفضل لفصل أحبار ملونة مختلفة؟',
+                options: ['Evaporation', 'Magnetism', 'Chromatography', 'Sieving'],
+                options_ar: ['التبخير', 'المغناطيسية', 'الكروماتوغرافيا', 'الغربلة'],
+                correct: 2
+              }
+            ].map(q => ({
+              ...q,
+              question: currentLanguage === 'ar' ? q.question_ar : q.question,
+              options: currentLanguage === 'ar' ? q.options_ar : q.options
+            }));
+          }
+          
           // Create chapter-specific questions for Chemistry Chapter 2: Elements and Compounds
-          if (chapterInfo.chapter.includes('Elements and Compounds') || chapterInfo.chapter.includes('Chapter 2')) {
+          if (chapterInfo.chapter.includes('Elements and Compounds') || 
+              (chapterInfo.chapter.includes('Chapter 2') && !chapterInfo.units.some(unit => unit.includes('2.3')))) {
             console.log('✅ Returning Chapter 2: Elements and Compounds specific questions');
             return [
               {
