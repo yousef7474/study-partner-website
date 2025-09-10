@@ -7142,20 +7142,29 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         
         let questions = [];
         
-        // Approach 1: Look for JSON array or individual objects
-        const jsonMatches = content.match(/\{[\s\S]*?"question"[\s\S]*?\}/g);
-        if (jsonMatches && jsonMatches.length > 0) {
-          console.log(`Found ${jsonMatches.length} potential JSON question objects`);
+        // Approach 1: Extract complete JSON objects (including multi-line)
+        const questionRegex = /\d+\.\s*\{[\s\S]*?(?=\n\d+\.\s*\{|\n\n|\n$|$)/g;
+        const questionBlocks = content.match(questionRegex);
+        
+        if (questionBlocks && questionBlocks.length > 0) {
+          console.log(`Found ${questionBlocks.length} question blocks`);
           
-          jsonMatches.forEach((match, index) => {
+          questionBlocks.forEach((block, index) => {
             try {
-              // Clean up the JSON string
-              let cleanMatch = match
-                .replace(/\n/g, ' ')
-                .replace(/\s+/g, ' ')
+              // Extract the JSON part (everything after the number)
+              const jsonPart = block.replace(/^\d+\.\s*/, '').trim();
+              console.log(`Question ${index + 1} JSON:`, jsonPart.substring(0, 100) + '...');
+              
+              // Clean up the JSON
+              let cleanJson = jsonPart
+                .replace(/\n/g, ' ')           // Replace newlines with spaces
+                .replace(/\s+/g, ' ')          // Normalize whitespace
+                .replace(/,\s*}/g, '}')        // Remove trailing commas
+                .replace(/,\s*]/g, ']')        // Remove trailing commas in arrays
                 .trim();
               
-              const parsed = JSON.parse(cleanMatch);
+              const parsed = JSON.parse(cleanJson);
+              
               if (parsed.question && parsed.options && Array.isArray(parsed.options)) {
                 questions.push({
                   id: `claude_${index}`,
@@ -7165,13 +7174,39 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
                   options_ar: parsed.options_ar || parsed.options,
                   correct: parsed.correct || 0
                 });
-                console.log(`✅ Parsed question ${index + 1}: ${parsed.question.substring(0, 50)}...`);
+                console.log(`✅ Successfully parsed question ${index + 1}`);
               }
             } catch (parseError) {
-              console.log(`❌ Failed to parse question ${index}:`, parseError.message);
-              console.log('Raw match:', match.substring(0, 200));
+              console.log(`❌ Failed to parse question ${index + 1}:`, parseError.message);
+              console.log('Block preview:', block.substring(0, 300));
             }
           });
+        }
+        
+        // Fallback: Look for individual JSON objects if numbered format fails
+        if (questions.length === 0) {
+          console.log('Trying fallback JSON extraction...');
+          const jsonMatches = content.match(/\{[\s\S]*?"question"[\s\S]*?\}/g);
+          if (jsonMatches) {
+            jsonMatches.forEach((match, index) => {
+              try {
+                let cleanMatch = match.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+                const parsed = JSON.parse(cleanMatch);
+                if (parsed.question && parsed.options) {
+                  questions.push({
+                    id: `claude_fallback_${index}`,
+                    question: parsed.question,
+                    question_ar: parsed.question_ar || parsed.question,
+                    options: parsed.options,
+                    options_ar: parsed.options_ar || parsed.options,
+                    correct: parsed.correct || 0
+                  });
+                }
+              } catch (e) {
+                console.log(`Fallback parse failed for match ${index}`);
+              }
+            });
+          }
         }
         
         // Approach 2: If no JSON found, try to parse structured text format
