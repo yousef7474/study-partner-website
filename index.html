@@ -6152,6 +6152,8 @@ function setupRoomSubscriptions(){
     }
 
     function timerComplete(){
+      console.log('⏰ timerComplete() called');
+      console.trace('📍 timerComplete() call stack:');
       timerRunning = false;
       if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
       const startBtn = document.getElementById('start-timer-btn');
@@ -7986,6 +7988,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
     async function newQuiz() {
       console.log('🔄 newQuiz() called');
+      console.trace('📍 newQuiz() call stack:');
       if (!currentQuiz) {
         console.log('❌ No current quiz, returning');
         return;
