@@ -651,7 +651,17 @@
         studyFocus:"Study Focus", roomStudyFocus:"Room Study Focus", studyFocusDesc:"See what everyone in the room is currently studying. Select your own subject and chapters above to join the focus session.",
         noActiveStudy:"No Active Study Sessions", noActiveStudyDesc:"Participants haven't selected their study topics yet. Choose your subject and chapters above to start a study session!",
         studyingChapters:"studying chapters", joinStudySession:"Join Study Session", totalSelected:"Total Selected",
-        participants:"Participants", timer:"Timer", connected:"Connected", connecting:"Connecting...", disconnected:"Disconnected"
+        participants:"Participants", timer:"Timer", connected:"Connected", connecting:"Connecting...", disconnected:"Disconnected",
+        // Quiz translations
+        quizTime:"Quiz Time!", preparingQuiz:"Preparing your quiz...", gettingQuestions:"Getting questions for",
+        question:"Question", of:"of", next:"Next", skip:"Skip", close:"Close", retakeQuiz:"Retake Quiz", newQuiz:"New Quiz",
+        quizComplete:"Quiz Complete!", excellentWork:"🎉 Excellent work!", goodJob:"👍 Good job!", 
+        keepStudying:"👌 Keep studying!", practiceMore:"📚 Practice more!",
+        correctAnswers:"Correct Answers", percentage:"Percentage", grade:"Grade", selectedTopics:"Selected Topics",
+        quizError:"Quiz Error", noQuestionsAvailable:"No questions available for this topic",
+        generatingNewQuiz:"Generating New Quiz...", creatingFreshQuestions:"Creating fresh questions on the same topic...",
+        generationFailed:"Generation Failed", unableToCreateQuestions:"Unable to create new questions. Please try again.",
+        retakeCurrentQuiz:"Retake Current Quiz"
       },
       ar:{
         home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة",
@@ -687,6 +697,16 @@
         selectChaptersUnits:"اختر الفصول والدروس", chapter:"الفصل", unit:"الدرس",
         unitsSelected:"دروس مختارة", selectAll:"تحديد الكل", deselectAll:"إلغاء تحديد الكل",
         currentStudyFocus:"التركيز الدراسي الحالي", studyingUnits:"يدرس وحدات", noStudyFocus:"لم يتم تحديد تركيز دراسي محدد",
+        // Quiz translations in Arabic
+        quizTime:"وقت الاختبار!", preparingQuiz:"جاري تحضير اختبارك...", gettingQuestions:"جاري الحصول على أسئلة لـ",
+        question:"السؤال", of:"من", next:"التالي", skip:"تخطي", close:"إغلاق", retakeQuiz:"إعادة الاختبار", newQuiz:"اختبار جديد",
+        quizComplete:"اكتمل الاختبار!", excellentWork:"🎉 عمل ممتاز!", goodJob:"👍 أحسنت!", 
+        keepStudying:"👌 استمر في الدراسة!", practiceMore:"📚 تدرب أكثر!",
+        correctAnswers:"الإجابات الصحيحة", percentage:"النسبة المئوية", grade:"الدرجة", selectedTopics:"المواضيع المختارة",
+        quizError:"خطأ في الاختبار", noQuestionsAvailable:"لا توجد أسئلة متاحة لهذا الموضوع",
+        generatingNewQuiz:"جاري إنشاء اختبار جديد...", creatingFreshQuestions:"جاري إنشاء أسئلة جديدة حول نفس الموضوع...",
+        generationFailed:"فشل الإنشاء", unableToCreateQuestions:"غير قادر على إنشاء أسئلة جديدة. يرجى المحاولة مرة أخرى.",
+        retakeCurrentQuiz:"إعادة الاختبار الحالي"
         studyFocus:"التركيز الدراسي", roomStudyFocus:"التركيز الدراسي للغرفة", studyFocusDesc:"اطلع على ما يدرسه الجميع في الغرفة حالياً. اختر مادتك والفصول أعلاه للانضمام إلى جلسة الدراسة.",
         noActiveStudy:"لا توجد جلسات دراسة نشطة", noActiveStudyDesc:"لم يختر المشاركون مواضيع دراستهم بعد. اختر مادتك والفصول أعلاه لبدء جلسة دراسة!",
         studyingChapters:"يدرس فصول", joinStudySession:"انضم لجلسة الدراسة", totalSelected:"المجموع المختار",
@@ -7785,8 +7805,8 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       document.getElementById('quiz-modal').style.display = 'flex';
       document.getElementById('quiz-content').innerHTML = `
         <div style="text-align:center;padding:2rem;">
-          <div style="font-size:1.2rem;margin-bottom:1rem;">🔄 Preparing your quiz...</div>
-          <div style="color:var(--text-secondary);">Getting questions for ${subject}</div>
+          <div style="font-size:1.2rem;margin-bottom:1rem;">🔄 ${translations[currentLanguage].preparingQuiz}</div>
+          <div style="color:var(--text-secondary);">${translations[currentLanguage].gettingQuestions} ${subject}</div>
         </div>
       `;
       document.getElementById('quiz-results').innerHTML = '';
@@ -7817,20 +7837,20 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           console.log('Quiz topics - unit details:', unitDetails);
           
           if (unitDetails.chapterContext && unitDetails.chapterContext.length > 0) {
-            topicsHTML = '<div class="quiz-topics"><div class="quiz-topics-title">📚 Selected Topics:</div><div class="quiz-topics-list">';
+            topicsHTML = `<div class="quiz-topics"><div class="quiz-topics-title">📚 ${translations[currentLanguage].selectedTopics}:</div><div class="quiz-topics-list">`;
             unitDetails.chapterContext.forEach(chapterInfo => {
               topicsHTML += `<strong>${chapterInfo.chapter}:</strong> ${chapterInfo.units.join(', ')}<br>`;
             });
             topicsHTML += '</div></div>';
           } else if (unitDetails.unitNames && unitDetails.unitNames.length > 0) {
-            topicsHTML = `<div class="quiz-topics"><div class="quiz-topics-title">📚 Selected Topics:</div><div class="quiz-topics-list">${unitDetails.unitNames.join(', ')}</div></div>`;
+            topicsHTML = `<div class="quiz-topics"><div class="quiz-topics-title">📚 ${translations[currentLanguage].selectedTopics}:</div><div class="quiz-topics-list">${unitDetails.unitNames.join(', ')}</div></div>`;
           }
         }
 
         // Show the quiz interface
         document.getElementById('quiz-content').innerHTML = `
           <div class="quiz-header">
-            <div class="quiz-title">📝 Quiz Time!</div>
+            <div class="quiz-title">📝 ${translations[currentLanguage].quizTime}</div>
             <div class="quiz-subtitle" id="quiz-subject-name">${subject}</div>
             ${topicsHTML}
             <div class="quiz-progress">
@@ -7845,8 +7865,8 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           </div>
           
           <div class="quiz-controls">
-            <button class="btn btn-secondary" onclick="skipQuestion()">Skip</button>
-            <button class="btn" id="quiz-next-btn" onclick="nextQuestion()" disabled>Next</button>
+            <button class="btn btn-secondary" onclick="skipQuestion()">${translations[currentLanguage].skip}</button>
+            <button class="btn" id="quiz-next-btn" onclick="nextQuestion()" disabled>${translations[currentLanguage].next}</button>
           </div>
         `;
         
@@ -7857,9 +7877,9 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         console.error('Error starting quiz:', error);
         document.getElementById('quiz-content').innerHTML = `
           <div style="text-align:center;padding:2rem;">
-            <div style="font-size:1.2rem;margin-bottom:1rem;color:var(--error-color);">❌ Quiz Error</div>
-            <div style="color:var(--text-secondary);margin-bottom:2rem;">Unable to load questions for this topic.</div>
-            <button class="btn" onclick="closeQuiz()">Close</button>
+            <div style="font-size:1.2rem;margin-bottom:1rem;color:var(--error-color);">❌ ${translations[currentLanguage].quizError}</div>
+            <div style="color:var(--text-secondary);margin-bottom:2rem;">${translations[currentLanguage].noQuestionsAvailable}</div>
+            <button class="btn" onclick="closeQuiz()">${translations[currentLanguage].close}</button>
           </div>
         `;
       }
@@ -7878,7 +7898,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       
       document.getElementById('quiz-progress-bar').style.width = progress + '%';
       document.getElementById('question-number').textContent = 
-        `Question ${currentQuestionIndex + 1} of ${currentQuiz.questions.length}`;
+        `${translations[currentLanguage].question} ${currentQuestionIndex + 1} ${translations[currentLanguage].of} ${currentQuiz.questions.length}`;
       document.getElementById('question-text').textContent = question.question;
       
       const optionsContainer = document.getElementById('quiz-options');
@@ -7963,9 +7983,9 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       if (quizResults) quizResults.style.display = 'block';
       
       // Generate complete results HTML
-      const scoreMessage = percentage >= 90 ? '🎉 Excellent work!' : 
-                          percentage >= 70 ? '👍 Good job!' : 
-                          percentage >= 50 ? '👌 Keep studying!' : '📚 Practice more!';
+      const scoreMessage = percentage >= 90 ? translations[currentLanguage].excellentWork : 
+                          percentage >= 70 ? translations[currentLanguage].goodJob : 
+                          percentage >= 50 ? translations[currentLanguage].keepStudying : translations[currentLanguage].practiceMore;
       
       const grade = percentage >= 90 ? 'A+' : percentage >= 80 ? 'A' : percentage >= 70 ? 'B' : percentage >= 60 ? 'C' : 'D';
       
@@ -7977,22 +7997,22 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           </div>
           <div class="quiz-summary" id="quiz-summary">
             <div class="summary-item">
-              <span>Correct Answers:</span>
+              <span>${translations[currentLanguage].correctAnswers}:</span>
               <span>${quizScore}</span>
             </div>
             <div class="summary-item">
-              <span>Percentage:</span>
+              <span>${translations[currentLanguage].percentage}:</span>
               <span>${percentage}%</span>
             </div>
             <div class="summary-item">
-              <span>Grade:</span>
+              <span>${translations[currentLanguage].grade}:</span>
               <span>${grade}</span>
             </div>
           </div>
           <div class="quiz-controls">
-            <button class="btn" onclick="closeQuiz()">Close</button>
-            <button class="btn btn-secondary" onclick="retakeQuiz()">Retake Quiz</button>
-            <button class="btn btn-primary" onclick="newQuiz()">New Quiz</button>
+            <button class="btn" onclick="closeQuiz()">${translations[currentLanguage].close}</button>
+            <button class="btn btn-secondary" onclick="retakeQuiz()">${translations[currentLanguage].retakeQuiz}</button>
+            <button class="btn btn-primary" onclick="newQuiz()">${translations[currentLanguage].newQuiz}</button>
           </div>
         </div>
       `;
@@ -8022,8 +8042,8 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       // Show loading state
       document.getElementById('quiz-results').innerHTML = `
         <div style="text-align:center;padding:2rem;">
-          <div style="font-size:1.5rem;margin-bottom:1rem;">🔄 Generating New Quiz...</div>
-          <div style="color:var(--text-secondary);">Creating fresh questions on the same topic...</div>
+          <div style="font-size:1.5rem;margin-bottom:1rem;">🔄 ${translations[currentLanguage].generatingNewQuiz}</div>
+          <div style="color:var(--text-secondary);">${translations[currentLanguage].creatingFreshQuestions}</div>
         </div>
       `;
       
@@ -8054,11 +8074,11 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         console.error('Error generating new quiz:', error);
         document.getElementById('quiz-results').innerHTML = `
           <div style="text-align:center;padding:2rem;">
-            <div style="font-size:1.2rem;margin-bottom:1rem;color:var(--error-color);">❌ Generation Failed</div>
-            <div style="color:var(--text-secondary);margin-bottom:2rem;">Unable to create new questions. Please try again.</div>
+            <div style="font-size:1.2rem;margin-bottom:1rem;color:var(--error-color);">❌ ${translations[currentLanguage].generationFailed}</div>
+            <div style="color:var(--text-secondary);margin-bottom:2rem;">${translations[currentLanguage].unableToCreateQuestions}</div>
             <div class="quiz-controls">
-              <button class="btn" onclick="closeQuiz()">Close</button>
-              <button class="btn btn-secondary" onclick="retakeQuiz()">Retake Current Quiz</button>
+              <button class="btn" onclick="closeQuiz()">${translations[currentLanguage].close}</button>
+              <button class="btn btn-secondary" onclick="retakeQuiz()">${translations[currentLanguage].retakeCurrentQuiz}</button>
             </div>
           </div>
         `;
