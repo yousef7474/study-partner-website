@@ -6166,12 +6166,17 @@ function setupRoomSubscriptions(){
       toast(currentLanguage==='ar'?'اكتمل المؤقت!':'Timer complete!', 'success', currentLanguage==='ar'?'تم':'Done');
       if (timerStartedBy === currentUser.name) broadcastTimerAction('complete');
       
-      // Start quiz after a short delay with selected units
-      setTimeout(() => {
-        const subject = currentUser?.subject || 'General Knowledge';
-        const selectedUnits = currentUser?.selected_units ? Array.from(currentUser.selected_units) : [];
-        startQuiz(subject, selectedUnits);
-      }, 2000);
+      // Only auto-start quiz if timer was actually running (not a phantom timer)
+      if (timerStartedBy === currentUser.name) {
+        console.log('⏰ Timer completed by current user, starting quiz');
+        setTimeout(() => {
+          const subject = currentUser?.subject || 'General Knowledge';
+          const selectedUnits = currentUser?.selected_units ? Array.from(currentUser.selected_units) : [];
+          startQuiz(subject, selectedUnits);
+        }, 2000);
+      } else {
+        console.log('⏰ Timer completed but not started by current user, skipping auto-quiz');
+      }
     }
 
     function setTimerMinutes(minutes){
@@ -7750,6 +7755,20 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
     }
 
     async function startQuiz(subject = null, selectedUnits = null) {
+      console.log('🎮 startQuiz() called - cleaning up first');
+      
+      // Clear any existing quiz state and timers FIRST
+      currentQuiz = null;
+      currentQuestionIndex = 0;
+      quizAnswers = [];
+      quizScore = 0;
+      
+      // Clear any timers that might interfere
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      
       if (!subject && currentUser?.subject) {
         subject = currentUser.subject;
       }
@@ -7762,7 +7781,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         selectedUnits = Array.from(currentUser.selectedUnits);
       }
 
-      // Show loading state
+      // Show loading state with clean slate
       document.getElementById('quiz-modal').style.display = 'flex';
       document.getElementById('quiz-content').innerHTML = `
         <div style="text-align:center;padding:2rem;">
@@ -7770,6 +7789,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           <div style="color:var(--text-secondary);">Getting questions for ${subject}</div>
         </div>
       `;
+      document.getElementById('quiz-results').innerHTML = '';
 
       try {
         // Get questions based on selected units
@@ -7867,6 +7887,9 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       question.options.forEach((option, index) => {
         const optionElement = document.createElement('div');
         optionElement.className = 'quiz-option';
+        // Remove any existing onclick to prevent duplicates
+        optionElement.onclick = null;
+        // Add fresh event handler
         optionElement.onclick = () => selectOption(index);
         
         const optionLetter = String.fromCharCode(65 + index);
@@ -8041,8 +8064,28 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
     }
 
     function closeQuiz() {
+      console.log('🚪 closeQuiz() called - cleaning up');
       document.getElementById('quiz-modal').style.display = 'none';
+      
+      // Clear quiz state completely
       currentQuiz = null;
+      currentQuestionIndex = 0;
+      quizAnswers = [];
+      quizScore = 0;
+      
+      // Clear any timers
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      
+      // Clear quiz content to prevent duplicates
+      const quizContent = document.getElementById('quiz-content');
+      const quizResults = document.getElementById('quiz-results');
+      if (quizContent) quizContent.innerHTML = '';
+      if (quizResults) quizResults.innerHTML = '';
+      
+      console.log('✅ Quiz cleanup completed');
     }
 
   </script>
