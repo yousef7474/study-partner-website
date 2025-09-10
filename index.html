@@ -7844,7 +7844,9 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
     }
 
     function showQuestion() {
+      console.log(`📝 showQuestion() called - question ${currentQuestionIndex + 1}`);
       if (!currentQuiz || currentQuestionIndex >= currentQuiz.questions.length) {
+        console.log('🏁 Quiz finished, showing results');
         showQuizResults();
         return;
       }
@@ -7918,6 +7920,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
     }
 
     function showQuizResults() {
+      console.log('📊 showQuizResults() called');
       const totalQuestions = currentQuiz.questions.length;
       const percentage = Math.round((quizScore / totalQuestions) * 100);
       
@@ -7979,7 +7982,11 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
     }
 
     async function newQuiz() {
-      if (!currentQuiz) return;
+      console.log('🔄 newQuiz() called');
+      if (!currentQuiz) {
+        console.log('❌ No current quiz, returning');
+        return;
+      }
       
       // Show loading state
       document.getElementById('quiz-results').innerHTML = `
