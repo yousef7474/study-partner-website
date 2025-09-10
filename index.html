@@ -7117,8 +7117,17 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           if (content) {
             console.log('✅ Claude API success via backend!');
             const questions = parseClaudeResponse(content);
-            if (questions && questions.length >= 5) {
+            if (questions && questions.length >= 3) {
               console.log(`🎉 Generated ${questions.length} questions from Claude!`);
+              // If we got less than 5, pad with fallback questions
+              if (questions.length < 5) {
+                console.log(`⚡ Got ${questions.length} AI questions, padding with fallback...`);
+                const fallbackQuestions = getFallbackQuestions(subject, units);
+                const needed = 5 - questions.length;
+                const additionalQuestions = fallbackQuestions.slice(0, needed);
+                questions = questions.concat(additionalQuestions);
+                console.log(`🔄 Combined ${questions.length} total questions (AI + fallback)`);
+              }
               return questions.slice(0, 5);
             }
           }
@@ -7142,9 +7151,19 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         
         let questions = [];
         
-        // Approach 1: Extract complete JSON objects (including multi-line)
-        const questionRegex = /\d+\.\s*\{[\s\S]*?(?=\n\d+\.\s*\{|\n\n|\n$|$)/g;
-        const questionBlocks = content.match(questionRegex);
+        // Approach 1: Extract complete JSON objects (including multi-line)  
+        // More robust regex that handles different spacing and formatting
+        const questionRegex = /\d+\.\s*\{[\s\S]*?(?=\n\s*\d+\.\s*\{|\n\n|$)/g;
+        let questionBlocks = content.match(questionRegex);
+        
+        // Fallback: Try splitting by numbered patterns if main regex fails
+        if (!questionBlocks || questionBlocks.length === 0) {
+          console.log('🔄 Main regex failed, trying split approach...');
+          const parts = content.split(/\n\s*\d+\.\s*\{/);
+          if (parts.length > 1) {
+            questionBlocks = parts.slice(1).map((part, index) => `${index + 1}. {${part}`);
+          }
+        }
         
         if (questionBlocks && questionBlocks.length > 0) {
           console.log(`Found ${questionBlocks.length} question blocks`);
@@ -7162,6 +7181,20 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
                 .replace(/,\s*}/g, '}')        // Remove trailing commas
                 .replace(/,\s*]/g, ']')        // Remove trailing commas in arrays
                 .trim();
+              
+              // Try to fix incomplete/truncated JSON
+              if (!cleanJson.endsWith('}')) {
+                // Find the last complete part
+                const lastCompleteIndex = cleanJson.lastIndexOf('"}');
+                if (lastCompleteIndex > 0) {
+                  cleanJson = cleanJson.substring(0, lastCompleteIndex + 2) + '}';
+                  console.log(`🔧 Fixed truncated JSON for question ${index + 1}`);
+                }
+              }
+              
+              // Handle incomplete arrays
+              cleanJson = cleanJson.replace(/,\s*"[^"]*$/, '"]'); // Close incomplete array items
+              cleanJson = cleanJson.replace(/\[\s*"[^"]*$/, '["Incomplete option"]'); // Handle incomplete arrays
               
               const parsed = JSON.parse(cleanJson);
               
