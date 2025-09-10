@@ -7097,7 +7097,23 @@ function displayStudyFocusTab(studySessions){
           console.log('No units provided, generating general questions for:', subject);
         }
         
-        const prompt = `Generate 5 multiple choice questions about ${subject}. ${context}
+        // Language-specific prompt based on current language
+        const isArabic = currentLanguage === 'ar';
+        const prompt = isArabic ? 
+          `اكتب 5 أسئلة اختيار من متعدد عن ${subject}. ${context}
+
+اكتب كل سؤال بصيغة JSON:
+{
+  "question": "نص السؤال بالإنجليزية",
+  "question_ar": "نص السؤال بالعربية", 
+  "options": ["A) Option 1", "B) Option 2", "C) Option 3", "D) Option 4"],
+  "options_ar": ["أ) الخيار 1", "ب) الخيار 2", "ج) الخيار 3", "د) الخيار 4"],
+  "correct": 0
+}
+
+اجعل الأسئلة تعليمية ومناسبة لمستوى الصف الثاني عشر ومتعلقة بالموضوع. ركز على الترجمة العربية الصحيحة والمصطلحات العلمية المناسبة.`
+          :
+          `Generate 5 multiple choice questions about ${subject}. ${context}
         
 Format each question as JSON:
 {
@@ -7108,7 +7124,7 @@ Format each question as JSON:
   "correct": 0
 }
 
-Make questions educational, appropriate for Grade 12 level, and relevant to the subject matter.`;
+Make questions educational, appropriate for Grade 12 level, and relevant to the subject matter. Ensure accurate Arabic translations with proper scientific terminology.`;
 
         // Try Claude API first, then fallback to subject-specific questions
         let questions = await tryClaude(prompt);
@@ -7899,12 +7915,16 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       document.getElementById('quiz-progress-bar').style.width = progress + '%';
       document.getElementById('question-number').textContent = 
         `${translations[currentLanguage].question} ${currentQuestionIndex + 1} ${translations[currentLanguage].of} ${currentQuiz.questions.length}`;
-      document.getElementById('question-text').textContent = question.question;
+      // Use Arabic question and options if Arabic language is selected and available
+      const questionText = currentLanguage === 'ar' && question.question_ar ? question.question_ar : question.question;
+      const questionOptions = currentLanguage === 'ar' && question.options_ar ? question.options_ar : question.options;
+      
+      document.getElementById('question-text').textContent = questionText;
       
       const optionsContainer = document.getElementById('quiz-options');
       optionsContainer.innerHTML = '';
       
-      question.options.forEach((option, index) => {
+      questionOptions.forEach((option, index) => {
         const optionElement = document.createElement('div');
         optionElement.className = 'quiz-option';
         // Remove any existing onclick to prevent duplicates
@@ -7912,7 +7932,9 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         // Add fresh event handler
         optionElement.onclick = () => selectOption(index);
         
-        const optionLetter = String.fromCharCode(65 + index);
+        // Use Arabic letters for Arabic language, English letters for English
+        const arabicLetters = ['أ', 'ب', 'ج', 'د'];
+        const optionLetter = currentLanguage === 'ar' ? arabicLetters[index] : String.fromCharCode(65 + index);
         
         optionElement.innerHTML = `
           <div class="option-letter">${optionLetter}</div>
