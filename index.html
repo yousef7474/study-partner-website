@@ -5859,6 +5859,8 @@ function setupRoomSubscriptions(){
     loadParticipants();
   }).on('broadcast', { event: 'study_focus_update' }, () => {
     updateSharedStudyFocus();
+  }).on('broadcast', { event: 'quiz_sync' }, (payload) => {
+    handleQuizBroadcast(payload.payload);
   }).subscribe();
 
   timerSubscription = supabase.channel(timerChannelName, {
@@ -5953,6 +5955,122 @@ function setupRoomSubscriptions(){
         console.error('Error broadcasting timer action:', error);
         toast(currentLanguage==='ar'?'فشل مزامنة المؤقت':'Failed to sync timer', 'error', currentLanguage==='ar'?'خطأ مزامنة':'Sync Error');
       }
+    }
+
+    // Quiz synchronization functions
+    let roomQuizState = null;
+
+    function handleQuizBroadcast(data) {
+      console.log('📺 Received quiz broadcast:', data);
+      
+      if (data.action === 'start' && data.userId !== currentUser.id) {
+        // Another participant started a quiz - join it
+        roomQuizState = {
+          questions: data.questions,
+          subject: data.subject,
+          selectedUnits: data.selectedUnits,
+          startedBy: data.startedBy,
+          startTime: data.startTime
+        };
+        
+        // Show the same quiz to this participant
+        currentQuiz = {
+          subject: data.subject,
+          questions: data.questions,
+          selectedUnits: data.selectedUnits,
+          startTime: data.startTime
+        };
+        
+        currentQuestionIndex = 0;
+        quizAnswers = [];
+        quizScore = 0;
+        
+        // Show join notification
+        toast(`${translations[currentLanguage].quizTime} - ${currentLanguage==='ar' ? 'بدأ بواسطة' : 'Started by'} ${data.startedBy}`, 'info', currentLanguage==='ar' ? 'اختبار جماعي' : 'Group Quiz');
+        
+        // Show the quiz interface
+        showSynchronizedQuiz();
+        
+      } else if (data.action === 'close' && data.userId !== currentUser.id) {
+        // Quiz creator closed the quiz
+        roomQuizState = null;
+        if (document.getElementById('quiz-modal').style.display === 'flex') {
+          toast(`${currentLanguage==='ar' ? 'تم إنهاء الاختبار من قِبل' : 'Quiz ended by'} ${data.startedBy}`, 'info', currentLanguage==='ar' ? 'انتهى الاختبار' : 'Quiz Ended');
+          closeQuiz();
+        }
+      }
+    }
+
+    function broadcastQuizAction(action, extraData = {}) {
+      if (!participantsSubscription || !currentRoom) { 
+        console.error('Cannot broadcast quiz: no participants subscription or room'); 
+        return; 
+      }
+      
+      const payload = { 
+        action, 
+        startedBy: currentUser.name, 
+        userId: currentUser.id, 
+        roomId: currentRoom.id, 
+        timestamp: Date.now(), 
+        ...extraData 
+      };
+      
+      try {
+        participantsSubscription.send({ type:'broadcast', event:'quiz_sync', payload });
+        console.log('📡 Broadcasting quiz action:', action);
+      } catch (error) {
+        console.error('Error broadcasting quiz action:', error);
+        toast(currentLanguage==='ar'?'فشل مزامنة الاختبار':'Failed to sync quiz', 'error', currentLanguage==='ar'?'خطأ مزامنة':'Sync Error');
+      }
+    }
+
+    function showSynchronizedQuiz() {
+      console.log('📱 Showing synchronized quiz');
+      
+      // Build topics display
+      let topicsHTML = '';
+      if (currentQuiz.selectedUnits && currentQuiz.selectedUnits.length > 0) {
+        const unitDetails = getUnitDetails(currentQuiz.subject, currentQuiz.selectedUnits);
+        console.log('Quiz topics - unit details:', unitDetails);
+        
+        if (unitDetails.chapterContext && unitDetails.chapterContext.length > 0) {
+          topicsHTML = `<div class="quiz-topics"><div class="quiz-topics-title">📚 ${translations[currentLanguage].selectedTopics}:</div><div class="quiz-topics-list">`;
+          unitDetails.chapterContext.forEach(chapterInfo => {
+            topicsHTML += `<strong>${chapterInfo.chapter}:</strong> ${chapterInfo.units.join(', ')}<br>`;
+          });
+          topicsHTML += '</div></div>';
+        } else if (unitDetails.unitNames && unitDetails.unitNames.length > 0) {
+          topicsHTML = `<div class="quiz-topics"><div class="quiz-topics-title">📚 ${translations[currentLanguage].selectedTopics}:</div><div class="quiz-topics-list">${unitDetails.unitNames.join(', ')}</div></div>`;
+        }
+      }
+
+      // Show the quiz interface
+      document.getElementById('quiz-modal').style.display = 'flex';
+      document.getElementById('quiz-content').innerHTML = `
+        <div class="quiz-header">
+          <div class="quiz-title">📝 ${translations[currentLanguage].quizTime}</div>
+          <div class="quiz-subtitle" id="quiz-subject-name">${currentQuiz.subject}</div>
+          ${topicsHTML}
+          <div class="quiz-progress">
+            <div class="quiz-progress-bar" id="quiz-progress-bar"></div>
+          </div>
+        </div>
+        
+        <div id="quiz-question-container" class="question-container">
+          <div class="question-number" id="question-number"></div>
+          <div class="question-text" id="question-text"></div>
+          <div class="quiz-options" id="quiz-options"></div>
+        </div>
+        
+        <div class="quiz-controls">
+          <button class="btn btn-secondary" onclick="skipQuestion()">${translations[currentLanguage].skip}</button>
+          <button class="btn" id="quiz-next-btn" onclick="nextQuestion()" disabled>${translations[currentLanguage].next}</button>
+        </div>
+      `;
+      
+      document.getElementById('quiz-results').style.display = 'none';
+      showQuestion();
     }
 
     // -------- TIMER CORE --------
@@ -7889,6 +8007,26 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         document.getElementById('quiz-results').style.display = 'none';
         showQuestion();
 
+        // Broadcast quiz start to all room participants if in a room
+        if (currentRoom && participantsSubscription) {
+          console.log('📡 Broadcasting quiz start to room participants');
+          broadcastQuizAction('start', {
+            questions: currentQuiz.questions,
+            subject: currentQuiz.subject,
+            selectedUnits: currentQuiz.selectedUnits,
+            startTime: currentQuiz.startTime
+          });
+          
+          // Store in room quiz state
+          roomQuizState = {
+            questions: currentQuiz.questions,
+            subject: currentQuiz.subject,
+            selectedUnits: currentQuiz.selectedUnits,
+            startedBy: currentUser.name,
+            startTime: currentQuiz.startTime
+          };
+        }
+
       } catch (error) {
         console.error('Error starting quiz:', error);
         document.getElementById('quiz-content').innerHTML = `
@@ -8128,6 +8266,13 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       const quizResults = document.getElementById('quiz-results');
       if (quizContent) quizContent.innerHTML = '';
       if (quizResults) quizResults.innerHTML = '';
+      
+      // Broadcast quiz close to all room participants if this user started the quiz
+      if (currentRoom && participantsSubscription && roomQuizState && roomQuizState.startedBy === currentUser.name) {
+        console.log('📡 Broadcasting quiz close to room participants');
+        broadcastQuizAction('close');
+        roomQuizState = null;
+      }
       
       console.log('✅ Quiz cleanup completed');
     }
