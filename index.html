@@ -299,6 +299,19 @@
       <button class="nav-item" data-screen="about-screen" onclick="navigateToScreen('about-screen')"><span class="nav-icon">ℹ️</span><span data-translate="about">About</span></button>
       <button class="nav-item" data-screen="settings-screen" onclick="navigateToScreen('settings-screen')"><span class="nav-icon">⚙️</span><span data-translate="settings">Settings</span></button>
     </nav>
+    
+    <!-- Performance Scoreboard in Sidebar -->
+    <div id="sidebar-scoreboard" style="padding:1rem;margin:1rem 0;background:var(--bg-tertiary);border-radius:10px;display:none;">
+      <div style="text-align:center;margin-bottom:1rem;">
+        <h4 style="margin:0;color:var(--text-primary);font-size:0.9rem;">📊 <span data-translate="performanceRating">Performance</span></h4>
+      </div>
+      <div id="sidebar-score-content">
+        <div style="text-align:center;color:var(--text-secondary);font-size:0.8rem;">
+          <span data-translate="loadingPerformance">Loading...</span>
+        </div>
+      </div>
+    </div>
+
     <div class="sidebar-footer">
       <button class="btn btn-secondary btn-block" onclick="logout()" data-translate="logout">Logout</button>
     </div>
@@ -5056,6 +5069,10 @@
 
     // -------- LAYOUT --------
     function showLoggedInLayout(){
+      // Load sidebar scoreboard when user logs in
+      setTimeout(() => {
+        loadSidebarScoreboard();
+      }, 1000);
       sidebar.style.display = 'flex';
       header.style.display = 'flex';
       mainContainer.style.display = 'block';
@@ -8241,7 +8258,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         await saveQuizScore(quizScore, quizData);
         
         // Update the UI to show success
-        const savingMessage = document.querySelector('[style*="Saving results"]');
+        const savingMessage = document.querySelector('div[style*="Saving results"], div[style*="جاري حفظ النتائج"]');
         if (savingMessage) {
           savingMessage.innerHTML = `
             <span style="color: var(--success-color);">
@@ -8256,6 +8273,11 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           'success',
           currentLanguage === 'ar' ? 'نقاط!' : 'Points!'
         );
+        
+        // Update sidebar scoreboard with new scores
+        setTimeout(() => {
+          loadSidebarScoreboard();
+        }, 500);
         
       } catch (error) {
         console.error('Failed to save quiz score:', error);
@@ -8688,6 +8710,83 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
             <div>${currentLanguage === 'ar' ? 'حدث خطأ في تحميل البيانات' : 'Error loading data'}</div>
           </div>
         `;
+      }
+    }
+
+    async function loadSidebarScoreboard() {
+      const scoreboardElement = document.getElementById('sidebar-scoreboard');
+      const scoreContentElement = document.getElementById('sidebar-score-content');
+      
+      if (!scoreboardElement || !scoreContentElement || !supabase || !currentUser) {
+        if (scoreboardElement) scoreboardElement.style.display = 'none';
+        return;
+      }
+
+      try {
+        // Get user's overall scores
+        const { data: userScore, error: scoreError } = await supabase
+          .from('user_scores')
+          .select('*')
+          .eq('user_id', currentUser.id)
+          .maybeSingle();
+
+        if (scoreError) {
+          console.error('Error loading sidebar score:', scoreError);
+          scoreboardElement.style.display = 'none';
+          return;
+        }
+
+        if (!userScore) {
+          // No performance data yet - show motivational message
+          scoreContentElement.innerHTML = `
+            <div style="text-align:center;font-size:0.8rem;color:var(--text-secondary);">
+              <div style="margin-bottom:0.5rem;">🎯</div>
+              <div>${currentLanguage === 'ar' ? 'ابدأ اختبارك الأول!' : 'Take your first quiz!'}</div>
+            </div>
+          `;
+          scoreboardElement.style.display = 'block';
+          return;
+        }
+
+        // Display compact performance data
+        const performanceColor = userScore.average_percentage >= 85 ? 'var(--success-color)' :
+                                userScore.average_percentage >= 70 ? 'var(--primary-color)' :
+                                userScore.average_percentage >= 55 ? 'var(--warning-color)' : 'var(--error-color)';
+
+        scoreContentElement.innerHTML = `
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.8rem;font-size:0.75rem;">
+            <div style="text-align:center;padding:0.4rem;background:var(--bg-secondary);border-radius:5px;">
+              <div style="font-weight:bold;color:var(--primary-color);">${userScore.total_points.toLocaleString()}</div>
+              <div style="color:var(--text-secondary);font-size:0.7rem;">${translations[currentLanguage].totalPoints}</div>
+            </div>
+            <div style="text-align:center;padding:0.4rem;background:var(--bg-secondary);border-radius:5px;">
+              <div style="font-weight:bold;color:var(--success-color);">${userScore.total_quizzes}</div>
+              <div style="color:var(--text-secondary);font-size:0.7rem;">${translations[currentLanguage].totalQuizzes}</div>
+            </div>
+          </div>
+          
+          <div style="text-align:center;padding:0.5rem;background:var(--bg-secondary);border-radius:5px;margin-bottom:0.5rem;">
+            <div style="font-weight:bold;font-size:0.9rem;color:${performanceColor};">${userScore.average_percentage}%</div>
+            <div style="color:var(--text-secondary);font-size:0.7rem;">${translations[currentLanguage].averageScore}</div>
+          </div>
+
+          <div style="display:flex;justify-content:center;gap:0.5rem;font-size:0.7rem;">
+            <div style="text-align:center;">
+              <div style="font-weight:bold;color:var(--info-color);">🔥${userScore.current_streak}</div>
+              <div style="color:var(--text-secondary);font-size:0.65rem;">${currentLanguage === 'ar' ? 'سلسلة' : 'streak'}</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-weight:bold;color:var(--info-color);">🏆${userScore.best_streak}</div>
+              <div style="color:var(--text-secondary);font-size:0.65rem;">${currentLanguage === 'ar' ? 'أفضل' : 'best'}</div>
+            </div>
+          </div>
+        `;
+        
+        scoreboardElement.style.display = 'block';
+
+      } catch (error) {
+        console.error('Error in loadSidebarScoreboard:', error);
+        scoreboardElement.style.display = 'none';
       }
     }
 
