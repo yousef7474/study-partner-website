@@ -8490,7 +8490,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           .from('user_scores')
           .select('*')
           .eq('user_id', currentUser.id)
-          .single();
+          .maybeSingle();
 
         if (fetchError && fetchError.code !== 'PGRST116') { // Not found error is OK
           console.error('Error fetching current score:', fetchError);
@@ -8588,7 +8588,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           .from('user_scores')
           .select('*')
           .eq('user_id', currentUser.id)
-          .single();
+          .maybeSingle();
 
         // Get recent quiz history
         const { data: recentQuizzes, error: historyError } = await supabase
