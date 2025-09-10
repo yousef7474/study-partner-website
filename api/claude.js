@@ -1,10 +1,8 @@
-module.exports = async function handler(req, res) {
+ module.exports = async function handler(req, res) {
     // Enable CORS
-    res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version,
-  Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.method === 'OPTIONS') {
       res.status(200).end();
@@ -27,9 +25,8 @@ module.exports = async function handler(req, res) {
         return res.status(500).json({ error: 'Claude API key not configured' });
       }
 
-      console.log('🤖 Calling Claude API...');
+      console.log('Calling Claude API...');
 
-      // Use dynamic import for fetch if needed, or use built-in fetch in Node 18+
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -55,7 +52,7 @@ module.exports = async function handler(req, res) {
       }
 
       const data = await response.json();
-      console.log('✅ Claude API success');
+      console.log('Claude API success');
 
       return res.status(200).json(data);
 
