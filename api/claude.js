@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -29,6 +29,7 @@ export default async function handler(req, res) {
 
       console.log('🤖 Calling Claude API...');
 
+      // Use dynamic import for fetch if needed, or use built-in fetch in Node 18+
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -65,4 +66,4 @@ export default async function handler(req, res) {
         details: error.message
       });
     }
-  }
+  };
