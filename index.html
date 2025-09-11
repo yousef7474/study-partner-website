@@ -604,6 +604,7 @@
             <select id="settings-subject-select" class="form-input"></select>
           </div>
 
+
           <!-- Performance Dashboard Section -->
           <div style="margin-top:2rem;padding-top:2rem;border-top:2px solid var(--border-color);">
             <h3 data-translate="performanceDashboard">Academic Performance</h3>
@@ -693,7 +694,10 @@
         totalPoints:"Total Points", totalQuizzes:"Quizzes Taken", averageScore:"Average Score",
         currentStreak:"Current Streak", bestStreak:"Best Streak", performanceRating:"Performance Rating",
         recentQuizzes:"Recent Quiz History", noQuizHistory:"No quiz history available yet",
-        quizzesCompleted:"quizzes completed", pointsEarned:"points earned"
+        quizzesCompleted:"quizzes completed", pointsEarned:"points earned",
+        streak:"streak", best:"best", points:"points", pts:"pts", takeFirstQuiz:"Take your first quiz!",
+        sharedQuizCompleted:"Shared quiz completed! Earned", earned:"Earned", sharedQuiz:"Shared Quiz", pointsTitle:"Points!",
+        streakBonus:"Streak Bonus!", bonus:"Bonus!"
       },
       ar:{
         home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة",
@@ -745,6 +749,9 @@
         currentStreak:"السلسلة الحالية", bestStreak:"أفضل سلسلة", performanceRating:"تقييم الأداء",
         recentQuizzes:"سجل الاختبارات الحديثة", noQuizHistory:"لا يوجد سجل اختبارات متاح بعد",
         quizzesCompleted:"اختبارات مكتملة", pointsEarned:"نقاط مكتسبة",
+        streak:"سلسلة", best:"أفضل", points:"نقطة", pts:"نقطة", takeFirstQuiz:"ابدأ اختبارك الأول!",
+        sharedQuizCompleted:"اختبار مشترك مكتمل! تم كسب", earned:"تم كسب", sharedQuiz:"اختبار مشترك", pointsTitle:"نقاط!",
+        streakBonus:"مكافأة التسلسل!", bonus:"مكافأة!",
         studyFocus:"التركيز الدراسي", roomStudyFocus:"التركيز الدراسي للغرفة", studyFocusDesc:"اطلع على ما يدرسه الجميع في الغرفة حالياً. اختر مادتك والفصول أعلاه للانضمام إلى جلسة الدراسة.",
         noActiveStudy:"لا توجد جلسات دراسة نشطة", noActiveStudyDesc:"لم يختر المشاركون مواضيع دراستهم بعد. اختر مادتك والفصول أعلاه لبدء جلسة دراسة!",
         studyingChapters:"يدرس فصول", joinStudySession:"انضم لجلسة الدراسة", totalSelected:"المجموع المختار",
@@ -8293,12 +8300,12 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         
         // Show appropriate notification
         const notificationMessage = currentQuiz.isSynchronized ?
-          `${currentLanguage === 'ar' ? 'اختبار مشترك مكتمل! تم كسب' : 'Shared quiz completed! Earned'} ${scoreData.totalPoints} ${currentLanguage === 'ar' ? 'نقطة!' : 'points!'}` :
-          `${currentLanguage === 'ar' ? 'تم كسب' : 'Earned'} ${scoreData.totalPoints} ${currentLanguage === 'ar' ? 'نقطة!' : 'points!'}`;
+          `${translations[currentLanguage].sharedQuizCompleted} ${scoreData.totalPoints} ${translations[currentLanguage].points}!` :
+          `${translations[currentLanguage].earned} ${scoreData.totalPoints} ${translations[currentLanguage].points}!`;
         
         const notificationTitle = currentQuiz.isSynchronized ?
-          (currentLanguage === 'ar' ? 'اختبار مشترك' : 'Shared Quiz') :
-          (currentLanguage === 'ar' ? 'نقاط!' : 'Points!');
+          translations[currentLanguage].sharedQuiz :
+          translations[currentLanguage].pointsTitle;
         
         toast(notificationMessage, 'success', notificationTitle);
         
@@ -8324,9 +8331,59 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
     }
 
     function retakeQuiz() {
+      console.log('🔄 retakeQuiz() called - rebuilding interface');
       currentQuestionIndex = 0;
       quizAnswers = [];
       quizScore = 0;
+      
+      // Rebuild the quiz interface completely to ensure all elements are present
+      if (currentQuiz) {
+        // Build topics display
+        let topicsHTML = '';
+        if (currentQuiz.selectedUnits && currentQuiz.selectedUnits.length > 0) {
+          const unitDetails = getUnitDetails(currentQuiz.subject, currentQuiz.selectedUnits);
+          
+          if (unitDetails.chapterContext && unitDetails.chapterContext.length > 0) {
+            topicsHTML = `<div class="quiz-topics"><div class="quiz-topics-title">📚 ${translations[currentLanguage].selectedTopics}:</div><div class="quiz-topics-list">`;
+            unitDetails.chapterContext.forEach(chapterInfo => {
+              topicsHTML += `<strong>${chapterInfo.chapter}:</strong> ${chapterInfo.units.join(', ')}<br>`;
+            });
+            topicsHTML += '</div></div>';
+          } else if (unitDetails.unitNames && unitDetails.unitNames.length > 0) {
+            topicsHTML = `<div class="quiz-topics"><div class="quiz-topics-title">📚 ${translations[currentLanguage].selectedTopics}:</div><div class="quiz-topics-list">${unitDetails.unitNames.join(', ')}</div></div>`;
+          }
+        }
+
+        // Add shared quiz indicator if needed
+        const sharedQuizIndicator = currentQuiz.isSynchronized ? 
+          `<div style="text-align:center;margin-bottom:1rem;padding:0.5rem;background:var(--info-color);color:white;border-radius:5px;font-size:0.85rem;">
+            👥 ${currentLanguage === 'ar' ? 'اختبار مشترك - يشارك معك الآخرون!' : 'Shared Quiz - Others are taking it with you!'}
+          </div>` : '';
+
+        // Rebuild the complete quiz interface
+        document.getElementById('quiz-content').innerHTML = `
+          <div class="quiz-header">
+            <div class="quiz-title">📝 ${translations[currentLanguage].quizTime}</div>
+            <div class="quiz-subtitle" id="quiz-subject-name">${currentQuiz.subject}</div>
+            ${sharedQuizIndicator}
+            ${topicsHTML}
+            <div class="quiz-progress">
+              <div class="quiz-progress-bar" id="quiz-progress-bar"></div>
+            </div>
+          </div>
+          
+          <div id="quiz-question-container" class="question-container">
+            <div class="question-number" id="question-number"></div>
+            <div class="question-text" id="question-text"></div>
+            <div class="quiz-options" id="quiz-options"></div>
+          </div>
+          
+          <div class="quiz-controls">
+            <button class="btn btn-secondary" onclick="skipQuestion()">${translations[currentLanguage].skip}</button>
+            <button class="btn" id="quiz-next-btn" onclick="nextQuestion()" disabled>${translations[currentLanguage].next}</button>
+          </div>
+        `;
+      }
       
       document.getElementById('quiz-content').style.display = 'block';
       document.getElementById('quiz-results').style.display = 'none';
@@ -8365,7 +8422,50 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           quizAnswers = [];
           quizScore = 0;
           
-          // Show the new quiz
+          // Completely rebuild the quiz interface (don't just switch visibility)
+          currentQuiz.isSynchronized = false; // Mark as personal quiz, not synchronized
+          
+          // Build topics display
+          let topicsHTML = '';
+          if (currentQuiz.selectedUnits && currentQuiz.selectedUnits.length > 0) {
+            const unitDetails = getUnitDetails(currentQuiz.subject, currentQuiz.selectedUnits);
+            console.log('New Quiz topics - unit details:', unitDetails);
+            
+            if (unitDetails.chapterContext && unitDetails.chapterContext.length > 0) {
+              topicsHTML = `<div class="quiz-topics"><div class="quiz-topics-title">📚 ${translations[currentLanguage].selectedTopics}:</div><div class="quiz-topics-list">`;
+              unitDetails.chapterContext.forEach(chapterInfo => {
+                topicsHTML += `<strong>${chapterInfo.chapter}:</strong> ${chapterInfo.units.join(', ')}<br>`;
+              });
+              topicsHTML += '</div></div>';
+            } else if (unitDetails.unitNames && unitDetails.unitNames.length > 0) {
+              topicsHTML = `<div class="quiz-topics"><div class="quiz-topics-title">📚 ${translations[currentLanguage].selectedTopics}:</div><div class="quiz-topics-list">${unitDetails.unitNames.join(', ')}</div></div>`;
+            }
+          }
+
+          // Rebuild the complete quiz interface
+          document.getElementById('quiz-content').innerHTML = `
+            <div class="quiz-header">
+              <div class="quiz-title">📝 ${translations[currentLanguage].quizTime}</div>
+              <div class="quiz-subtitle" id="quiz-subject-name">${currentQuiz.subject}</div>
+              ${topicsHTML}
+              <div class="quiz-progress">
+                <div class="quiz-progress-bar" id="quiz-progress-bar"></div>
+              </div>
+            </div>
+            
+            <div id="quiz-question-container" class="question-container">
+              <div class="question-number" id="question-number"></div>
+              <div class="question-text" id="question-text"></div>
+              <div class="quiz-options" id="quiz-options"></div>
+            </div>
+            
+            <div class="quiz-controls">
+              <button class="btn btn-secondary" onclick="skipQuestion()">${translations[currentLanguage].skip}</button>
+              <button class="btn" id="quiz-next-btn" onclick="nextQuestion()" disabled>${translations[currentLanguage].next}</button>
+            </div>
+          `;
+          
+          // Show quiz content and hide results
           document.getElementById('quiz-content').style.display = 'block';
           document.getElementById('quiz-results').style.display = 'none';
           
@@ -8619,9 +8719,9 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
             .eq('user_id', currentUser.id);
             
           toast(
-            `${currentLanguage === 'ar' ? 'مكافأة التسلسل!' : 'Streak Bonus!'} +${bonusPoints} ${currentLanguage === 'ar' ? 'نقطة' : 'points'}`,
+            `${translations[currentLanguage].streakBonus} +${bonusPoints} ${translations[currentLanguage].points}`,
             'success',
-            currentLanguage === 'ar' ? 'مكافأة!' : 'Bonus!'
+            translations[currentLanguage].bonus
           );
         }
 
@@ -8690,7 +8790,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
                     </div>
                     <div style="text-align:right;">
                       <div style="font-weight:bold;color:var(--primary-color);">${quiz.percentage}%</div>
-                      <div style="font-size:0.85rem;color:var(--text-secondary);">+${quiz.points_earned} ${currentLanguage === 'ar' ? 'نقطة' : 'pts'}</div>
+                      <div style="font-size:0.85rem;color:var(--text-secondary);">+${quiz.points_earned} ${translations[currentLanguage].pts}</div>
                     </div>
                   </div>
                 `).join('')}
@@ -8773,7 +8873,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           scoreContentElement.innerHTML = `
             <div style="text-align:center;font-size:0.8rem;color:var(--text-secondary);">
               <div style="margin-bottom:0.5rem;">🎯</div>
-              <div>${currentLanguage === 'ar' ? 'ابدأ اختبارك الأول!' : 'Take your first quiz!'}</div>
+              <div>${translations[currentLanguage].takeFirstQuiz}</div>
             </div>
           `;
           scoreboardElement.style.display = 'block';
@@ -8805,11 +8905,11 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           <div style="display:flex;justify-content:center;gap:0.5rem;font-size:0.7rem;">
             <div style="text-align:center;">
               <div style="font-weight:bold;color:var(--info-color);">🔥${userScore.current_streak}</div>
-              <div style="color:var(--text-secondary);font-size:0.65rem;">${currentLanguage === 'ar' ? 'سلسلة' : 'streak'}</div>
+              <div style="color:var(--text-secondary);font-size:0.65rem;">${translations[currentLanguage].streak}</div>
             </div>
             <div style="text-align:center;">
               <div style="font-weight:bold;color:var(--info-color);">🏆${userScore.best_streak}</div>
-              <div style="color:var(--text-secondary);font-size:0.65rem;">${currentLanguage === 'ar' ? 'أفضل' : 'best'}</div>
+              <div style="color:var(--text-secondary);font-size:0.65rem;">${translations[currentLanguage].best}</div>
             </div>
           </div>
         `;
@@ -8821,6 +8921,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         scoreboardElement.style.display = 'none';
       }
     }
+
 
   </script>
 
