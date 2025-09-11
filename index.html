@@ -6036,6 +6036,11 @@ function setupRoomSubscriptions(){
         // Show the quiz interface
         showSynchronizedQuiz();
         
+        // Refresh sidebar scoreboard for all participants to show their own scores
+        setTimeout(() => {
+          loadSidebarScoreboard();
+        }, 1000);
+        
       } else if (data.action === 'close' && data.userId !== currentUser.id) {
         // Quiz creator closed the quiz
         roomQuizState = null;
@@ -6043,6 +6048,11 @@ function setupRoomSubscriptions(){
           toast(`${currentLanguage==='ar' ? 'تم إنهاء الاختبار من قِبل' : 'Quiz ended by'} ${data.startedBy}`, 'info', currentLanguage==='ar' ? 'انتهى الاختبار' : 'Quiz Ended');
           closeQuiz();
         }
+        
+        // Refresh sidebar scoreboard when quiz activity ends
+        setTimeout(() => {
+          loadSidebarScoreboard();
+        }, 1000);
       }
     }
 
@@ -6071,7 +6081,10 @@ function setupRoomSubscriptions(){
     }
 
     function showSynchronizedQuiz() {
-      console.log('📱 Showing synchronized quiz');
+      console.log('📱 Showing synchronized quiz (joined from room)');
+      
+      // Mark this as a synchronized/shared quiz (not individually scored)
+      currentQuiz.isSynchronized = true;
       
       // Build topics display
       let topicsHTML = '';
@@ -6092,10 +6105,17 @@ function setupRoomSubscriptions(){
 
       // Show the quiz interface
       document.getElementById('quiz-modal').style.display = 'flex';
+      
+      // Add shared quiz indicator
+      const sharedQuizIndicator = `<div style="text-align:center;margin-bottom:1rem;padding:0.5rem;background:var(--info-color);color:white;border-radius:5px;font-size:0.85rem;">
+        👥 ${currentLanguage === 'ar' ? 'اختبار مشترك - يشارك معك الآخرون!' : 'Shared Quiz - Others are taking it with you!'}
+      </div>`;
+      
       document.getElementById('quiz-content').innerHTML = `
         <div class="quiz-header">
           <div class="quiz-title">📝 ${translations[currentLanguage].quizTime}</div>
           <div class="quiz-subtitle" id="quiz-subject-name">${currentQuiz.subject}</div>
+          ${sharedQuizIndicator}
           ${topicsHTML}
           <div class="quiz-progress">
             <div class="quiz-progress-bar" id="quiz-progress-bar"></div>
@@ -8246,7 +8266,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         </div>
       `;
 
-      // Save the quiz score to database
+      // Save the quiz score to database for all participants (including synchronized)
       try {
         const quizData = {
           subject: currentQuiz.subject,
@@ -8260,19 +8280,27 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         // Update the UI to show success
         const savingMessage = document.querySelector('div[style*="Saving results"], div[style*="جاري حفظ النتائج"]');
         if (savingMessage) {
+          const messageType = currentQuiz.isSynchronized ? 
+            (currentLanguage === 'ar' ? 'تم حفظ نتائج الاختبار المشترك!' : 'Shared quiz results saved!') :
+            (currentLanguage === 'ar' ? 'تم حفظ النتائج بنجاح!' : 'Results saved successfully!');
+          
           savingMessage.innerHTML = `
             <span style="color: var(--success-color);">
-              ✅ ${currentLanguage === 'ar' ? 'تم حفظ النتائج بنجاح!' : 'Results saved successfully!'}
+              ✅ ${messageType}
             </span>
           `;
         }
         
-        // Show toast notification
-        toast(
-          `${currentLanguage === 'ar' ? 'تم كسب' : 'Earned'} ${scoreData.totalPoints} ${currentLanguage === 'ar' ? 'نقطة!' : 'points!'}`,
-          'success',
-          currentLanguage === 'ar' ? 'نقاط!' : 'Points!'
-        );
+        // Show appropriate notification
+        const notificationMessage = currentQuiz.isSynchronized ?
+          `${currentLanguage === 'ar' ? 'اختبار مشترك مكتمل! تم كسب' : 'Shared quiz completed! Earned'} ${scoreData.totalPoints} ${currentLanguage === 'ar' ? 'نقطة!' : 'points!'}` :
+          `${currentLanguage === 'ar' ? 'تم كسب' : 'Earned'} ${scoreData.totalPoints} ${currentLanguage === 'ar' ? 'نقطة!' : 'points!'}`;
+        
+        const notificationTitle = currentQuiz.isSynchronized ?
+          (currentLanguage === 'ar' ? 'اختبار مشترك' : 'Shared Quiz') :
+          (currentLanguage === 'ar' ? 'نقاط!' : 'Points!');
+        
+        toast(notificationMessage, 'success', notificationTitle);
         
         // Update sidebar scoreboard with new scores
         setTimeout(() => {
@@ -8282,7 +8310,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       } catch (error) {
         console.error('Failed to save quiz score:', error);
         // Update UI to show error
-        const savingMessage = document.querySelector('[style*="Saving results"]');
+        const savingMessage = document.querySelector('div[style*="Saving results"], div[style*="جاري حفظ النتائج"]');
         if (savingMessage) {
           savingMessage.innerHTML = `
             <span style="color: var(--error-color);">
@@ -8391,6 +8419,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       
       console.log('✅ Quiz cleanup completed');
     }
+
 
     // -------- SCORING SYSTEM --------
     const SCORING_CONFIG = {
