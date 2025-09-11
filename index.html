@@ -8524,7 +8524,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         }
 
         // Update user's overall score
-        await updateUserOverallScore(scoreData);
+        await updateUserOverallScore(scoreData, quizScore, quizData.totalQuestions);
         
         console.log('✅ Quiz score saved successfully');
         return scoreData;
@@ -8534,7 +8534,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       }
     }
 
-    async function updateUserOverallScore(newScoreData) {
+    async function updateUserOverallScore(newScoreData, correctAnswers, totalQuestions) {
       try {
         // Get current user scores
         const { data: currentScore, error: fetchError } = await supabase
@@ -8550,13 +8550,13 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
         let updatedData;
         if (!currentScore) {
-          // First quiz for this user
+          // First quiz for this user - use actual quiz data
           updatedData = {
             user_id: currentUser.id,
             total_points: newScoreData.totalPoints,
             total_quizzes: 1,
-            correct_answers: newScoreData.percentage * newScoreData.totalPoints / 100 / SCORING_CONFIG.BASE_POINTS_PER_CORRECT,
-            total_questions: Math.round(newScoreData.percentage * newScoreData.totalPoints / 100 / SCORING_CONFIG.BASE_POINTS_PER_CORRECT / newScoreData.percentage * 100),
+            correct_answers: correctAnswers,
+            total_questions: totalQuestions,
             current_streak: newScoreData.percentage >= 60 ? 1 : 0,
             best_streak: newScoreData.percentage >= 60 ? 1 : 0,
             average_percentage: newScoreData.percentage,
@@ -8564,18 +8564,21 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
             last_quiz_date: new Date().toISOString()
           };
 
+          console.log('🔍 Inserting new user score:', updatedData);
+          
           const { error: insertError } = await supabase
             .from('user_scores')
             .insert(updatedData);
 
           if (insertError) {
             console.error('Error inserting new score:', insertError);
+            console.error('Failed data:', updatedData);
           }
         } else {
           // Update existing score
           const newTotalQuizzes = currentScore.total_quizzes + 1;
-          const newCorrectAnswers = currentScore.correct_answers + (newScoreData.percentage >= 60 ? 1 : 0);
-          const newTotalQuestions = currentScore.total_questions + 1;
+          const newCorrectAnswers = currentScore.correct_answers + correctAnswers;
+          const newTotalQuestions = currentScore.total_questions + totalQuestions;
           const newAveragePercentage = ((currentScore.average_percentage * currentScore.total_quizzes) + newScoreData.percentage) / newTotalQuizzes;
           
           // Handle streak
