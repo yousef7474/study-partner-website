@@ -270,6 +270,60 @@
       from { background-position: 0 0, 0 0; }
       to   { background-position: 32px 0, 0 0; }
     }
+
+    /* Calendar specific styles */
+    .calendar-month {
+      background: var(--bg-tertiary);
+      border-radius: 15px;
+      padding: 1.5rem;
+      border: 2px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+    .calendar-month:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-medium);
+    }
+    .calendar-day {
+      padding: 0.5rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .calendar-day:hover {
+      transform: scale(1.05);
+      box-shadow: var(--shadow-light);
+    }
+    .exam-day {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+    .exam-day.second {
+      background: linear-gradient(135deg, #10b981, #059669);
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+    .countdown-card {
+      background: var(--bg-secondary);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: var(--shadow-medium);
+      transition: all 0.3s ease;
+    }
+    .countdown-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-heavy);
+    }
+    .countdown-number {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0.5rem 0;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
   </style>
 </head>
 <body data-theme="light">
@@ -296,6 +350,7 @@
       <button class="nav-item" data-screen="home-screen" onclick="navigateToScreen('home-screen')"><span class="nav-icon">🏠</span><span data-translate="home">Home</span></button>
       <button class="nav-item" data-screen="study-rooms-screen" onclick="navigateToScreen('study-rooms-screen')"><span class="nav-icon">👥</span><span data-translate="studyRooms">Study Rooms</span></button>
       <button class="nav-item" data-screen="library-screen" onclick="navigateToScreen('library-screen')"><span class="nav-icon">📚</span><span data-translate="digitalLibrary">Digital Library</span></button>
+      <button class="nav-item" data-screen="calendar-screen" onclick="navigateToScreen('calendar-screen')"><span class="nav-icon">📅</span><span data-translate="calendar">Academic Calendar</span></button>
       <button class="nav-item" data-screen="about-screen" onclick="navigateToScreen('about-screen')"><span class="nav-icon">ℹ️</span><span data-translate="about">About</span></button>
       <button class="nav-item" data-screen="settings-screen" onclick="navigateToScreen('settings-screen')"><span class="nav-icon">⚙️</span><span data-translate="settings">Settings</span></button>
     </nav>
@@ -636,6 +691,36 @@
           <button class="btn btn-block" onclick="savePersonalInfo()" data-translate="saveChanges">Save Changes</button>
         </div>
       </div>
+
+      <!-- Calendar Screen -->
+      <div id="calendar-screen" class="screen">
+        <h1 class="page-title" data-translate="calendar">Academic Calendar 2025-2026</h1>
+
+        <!-- Exam Countdowns -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+          <div class="countdown-card" style="border-left: 6px solid #ef4444;">
+            <h3 style="color: #ef4444; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+              📝 First Semester Final Exam
+            </h3>
+            <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">January 1, 2026</div>
+            <div id="first-exam-countdown" class="countdown-number"></div>
+          </div>
+
+          <div class="countdown-card" style="border-left: 6px solid #10b981;">
+            <h3 style="color: #10b981; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+              📝 Second Semester Final Exam
+            </h3>
+            <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">June 8, 2026</div>
+            <div id="second-exam-countdown" class="countdown-number"></div>
+          </div>
+        </div>
+
+        <!-- Academic Year Calendar -->
+        <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 20px; box-shadow: var(--shadow-medium);">
+          <h3 style="margin-bottom: 2rem; text-align: center;">Academic Year 2025-2026 Calendar</h3>
+          <div id="academic-calendar"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -645,7 +730,7 @@
     const translations={
       en:{
         home:"Home", dashboard:"Dashboard", studyRooms:"Study Rooms", digitalLibrary:"Digital Library",
-        about:"About", settings:"Settings", logout:"Logout", welcome:"Welcome",
+        calendar:"Academic Calendar", about:"About", settings:"Settings", logout:"Logout", welcome:"Welcome",
         welcomeDesc:"Create your profile to start", yourName:"Your Name",
         chooseAvatar:"Choose Avatar Color", selectGrade:"Select Grade", joinPlatform:"Join Platform",
         appName:"Study Partner", toggleSidebar:"Toggle Sidebar", menuToggle:"Menu",
@@ -701,7 +786,7 @@
       },
       ar:{
         home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة",
-        digitalLibrary:"المكتبة الرقمية", about:"حول", settings:"الإعدادات",
+        digitalLibrary:"المكتبة الرقمية", calendar:"التقويم الأكاديمي", about:"حول", settings:"الإعدادات",
         logout:"خروج", welcome:"مرحباً بك", welcomeDesc:"أنشئ ملفك الشخصي للبدء",
         yourName:"اسمك", chooseAvatar:"اختر لون الصورة الرمزية",
         selectGrade:"اختر الصف الدراسي", joinPlatform:"انضم للمنصة",
@@ -4980,6 +5065,8 @@
       updateLanguage();
       applyTheme();
       syncQuickControls();
+      // Initialize calendar countdown timers
+      initializeCalendar();
     }
 
     function loadPreferences(){
@@ -5111,6 +5198,7 @@
         item.classList.toggle('active', item.dataset.screen === screenId)
       );
       if(screenId === 'settings-screen') populateSettings();
+      if(screenId === 'calendar-screen') initializeCalendar();
       toggleSidebar(false);
       if(screenId !== 'room-screen') updateConnectionStatus('disconnected');
     }
@@ -6393,6 +6481,140 @@ function setupRoomSubscriptions(){
       timerSeconds = minutes * 60;
       timerDuration = timerSeconds;
       resetTimer();
+    }
+
+    // -------- EXAM COUNTDOWN FUNCTIONS --------
+    function updateExamCountdowns() {
+      const now = new Date();
+
+      // First semester final exam: January 1, 2026
+      const firstExamDate = new Date('2026-01-01T09:00:00');
+      const firstTimeDiff = firstExamDate - now;
+
+      // Second semester final exam: June 8, 2026
+      const secondExamDate = new Date('2026-06-08T09:00:00');
+      const secondTimeDiff = secondExamDate - now;
+
+      // Update first exam countdown
+      const firstCountdownElement = document.getElementById('first-exam-countdown');
+      if (firstCountdownElement) {
+        if (firstTimeDiff > 0) {
+          const days = Math.floor(firstTimeDiff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((firstTimeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((firstTimeDiff % (1000 * 60 * 60)) / (1000 * 60));
+          firstCountdownElement.innerHTML = `⏳ ${days} days, ${hours} hours, ${minutes} minutes remaining`;
+        } else {
+          firstCountdownElement.innerHTML = '✅ Exam has passed';
+        }
+      }
+
+      // Update second exam countdown
+      const secondCountdownElement = document.getElementById('second-exam-countdown');
+      if (secondCountdownElement) {
+        if (secondTimeDiff > 0) {
+          const days = Math.floor(secondTimeDiff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((secondTimeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((secondTimeDiff % (1000 * 60 * 60)) / (1000 * 60));
+          secondCountdownElement.innerHTML = `⏳ ${days} days, ${hours} hours, ${minutes} minutes remaining`;
+        } else {
+          secondCountdownElement.innerHTML = '✅ Exam has passed';
+        }
+      }
+    }
+
+    function generateAcademicCalendar() {
+      const calendarContainer = document.getElementById('academic-calendar');
+      if (!calendarContainer) return;
+
+      const startDate = new Date('2025-08-24');
+      const endDate = new Date('2026-06-25');
+      const firstExamDate = new Date('2026-01-01');
+      const secondExamDate = new Date('2026-06-08');
+
+      let calendarHTML = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">';
+
+      let currentDate = new Date(startDate);
+      let monthIndex = 0;
+
+      while (currentDate <= endDate) {
+        const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        const monthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+        const monthName = monthStart.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+        calendarHTML += `
+        <div class="calendar-month">
+          <h4 style="text-align: center; margin-bottom: 1rem; color: var(--primary-color);">${monthName}</h4>
+          <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.25rem; text-align: center;">
+            <div style="font-weight: 600; color: var(--text-secondary); padding: 0.5rem; font-size: 0.8rem;">S</div>
+            <div style="font-weight: 600; color: var(--text-secondary); padding: 0.5rem; font-size: 0.8rem;">M</div>
+            <div style="font-weight: 600; color: var(--text-secondary); padding: 0.5rem; font-size: 0.8rem;">T</div>
+            <div style="font-weight: 600; color: var(--text-secondary); padding: 0.5rem; font-size: 0.8rem;">W</div>
+            <div style="font-weight: 600; color: var(--text-secondary); padding: 0.5rem; font-size: 0.8rem;">T</div>
+            <div style="font-weight: 600; color: var(--text-secondary); padding: 0.5rem; font-size: 0.8rem;">F</div>
+            <div style="font-weight: 600; color: var(--text-secondary); padding: 0.5rem; font-size: 0.8rem;">S</div>`;
+
+        // Add empty cells for days before month starts
+        const firstDay = monthStart.getDay();
+        for (let i = 0; i < firstDay; i++) {
+          calendarHTML += '<div style="padding: 0.5rem;"></div>';
+        }
+
+        // Add days of the month
+        for (let day = 1; day <= monthEnd.getDate(); day++) {
+          const dayDate = new Date(monthStart.getFullYear(), monthStart.getMonth(), day);
+          let dayClasses = 'calendar-day';
+          let dayStyle = '';
+          let dayContent = day;
+
+          // Highlight exam days
+          if (dayDate.toDateString() === firstExamDate.toDateString()) {
+            dayClasses += ' exam-day';
+            dayContent = `${day}📝`;
+          } else if (dayDate.toDateString() === secondExamDate.toDateString()) {
+            dayClasses += ' exam-day second';
+            dayContent = `${day}📝`;
+          } else if (dayDate >= startDate && dayDate <= endDate) {
+            dayStyle += ' background: var(--bg-secondary); color: var(--text-primary);';
+          } else {
+            dayStyle += ' color: var(--text-muted);';
+          }
+
+          calendarHTML += `<div class="${dayClasses}" style="${dayStyle}">${dayContent}</div>`;
+        }
+
+        calendarHTML += '</div></div>';
+
+        // Move to next month
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        monthIndex++;
+      }
+
+      calendarHTML += '</div>';
+
+      // Add legend
+      calendarHTML += `
+      <div style="margin-top: 2rem; text-align: center;">
+        <div style="display: inline-flex; gap: 2rem; flex-wrap: wrap; justify-content: center;">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <div style="width: 20px; height: 20px; background: #ef4444; border-radius: 4px;"></div>
+            <span>First Semester Final</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <div style="width: 20px; height: 20px; background: #10b981; border-radius: 4px;"></div>
+            <span>Second Semester Final</span>
+          </div>
+        </div>
+      </div>`;
+
+      calendarContainer.innerHTML = calendarHTML;
+    }
+
+    // Start countdown updates when page loads
+    function initializeCalendar() {
+      updateExamCountdowns();
+      generateAcademicCalendar();
+      // Update countdowns every minute
+      setInterval(updateExamCountdowns, 60000);
     }
 
     // -------- EVENT LISTENERS --------
