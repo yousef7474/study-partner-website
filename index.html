@@ -700,7 +700,7 @@
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
           <div class="countdown-card" style="border-left: 6px solid #ef4444;">
             <h3 style="color: #ef4444; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-              📝 First Semester Final Exam
+              📝 <span data-translate="firstSemesterFinal">First Semester Final Exam</span>
             </h3>
             <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">January 1, 2026</div>
             <div id="first-exam-countdown" class="countdown-number"></div>
@@ -708,7 +708,7 @@
 
           <div class="countdown-card" style="border-left: 6px solid #10b981;">
             <h3 style="color: #10b981; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-              📝 Second Semester Final Exam
+              📝 <span data-translate="secondSemesterFinal">Second Semester Final Exam</span>
             </h3>
             <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">June 8, 2026</div>
             <div id="second-exam-countdown" class="countdown-number"></div>
@@ -717,7 +717,7 @@
 
         <!-- Academic Year Calendar -->
         <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 20px; box-shadow: var(--shadow-medium);">
-          <h3 style="margin-bottom: 2rem; text-align: center;">Academic Year 2025-2026 Calendar</h3>
+          <h3 style="margin-bottom: 2rem; text-align: center;" data-translate="academicCalendar">Academic Year 2025-2026 Calendar</h3>
           <div id="academic-calendar"></div>
         </div>
       </div>
@@ -750,6 +750,9 @@
         hours:"Hours", minutes:"Minutes", seconds:"Seconds", customDuration:"Custom Duration",
         start:"Start", pause:"Pause", reset:"Reset", startEndHeading:"Start–End",
         preferences:"Preferences", theme:"Theme", language:"Language",
+        days:"days", remaining:"remaining", totalHours:"total hours", examPassed:"Exam has passed",
+        firstSemesterFinal:"First Semester Final Exam", secondSemesterFinal:"Second Semester Final Exam",
+        academicCalendar:"Academic Year 2025-2026 Calendar", firstSemesterFinalLegend:"First Semester Final", secondSemesterFinalLegend:"Second Semester Final",
         personalInfo:"Personal Information", nameLabel:"Name", subjectLabel:"Subject", saveChanges:"Save Changes",
         aiSettings:"AI Settings", 
         claudeApiKey:"Claude API Key", enterClaudeKey:"Enter your Claude API key",
@@ -808,6 +811,9 @@
         hours:"ساعات", minutes:"دقائق", seconds:"ثواني", customDuration:"مدة مخصصة",
         start:"بدء", pause:"إيقاف مؤقت", reset:"إعادة ضبط", startEndHeading:"من–إلى",
         preferences:"التفضيلات", theme:"الثيم", language:"اللغة",
+        days:"أيام", remaining:"متبقية", totalHours:"إجمالي الساعات", examPassed:"انتهى الامتحان",
+        firstSemesterFinal:"امتحان نهاية الفصل الأول", secondSemesterFinal:"امتحان نهاية الفصل الثاني",
+        academicCalendar:"التقويم الأكاديمي 2025-2026", firstSemesterFinalLegend:"نهاية الفصل الأول", secondSemesterFinalLegend:"نهاية الفصل الثاني",
         personalInfo:"المعلومات الشخصية", nameLabel:"الاسم", subjectLabel:"المادة", saveChanges:"حفظ التغييرات",
         aiSettings:"إعدادات الذكاء الاصطناعي",
         claudeApiKey:"مفتاح Claude API", enterClaudeKey:"أدخل مفتاح Claude API",
@@ -5114,11 +5120,11 @@
                 await joinRoomById(data.id, data.room_code, data.host_id);
                 toast('Rejoined your room after refresh.', 'info', 'Welcome back');
               } else {
-                navigateToScreen('home-screen');
+                restoreSavedScreen();
               }
             });
         } else {
-          navigateToScreen('home-screen');
+          restoreSavedScreen();
         }
       } else {
         showLoggedOutLayout();
@@ -5146,7 +5152,7 @@
           await joinRoom(roomCodeFromUrl.toUpperCase());
           roomCodeFromUrl = null;
         } else {
-          navigateToScreen('home-screen');
+          restoreSavedScreen();
         }
       }catch(e){
         console.error('Registration error:', e);
@@ -5194,13 +5200,24 @@
       }
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(screenId).classList.add('active');
-      document.querySelectorAll('.nav-item').forEach(item => 
+      document.querySelectorAll('.nav-item').forEach(item =>
         item.classList.toggle('active', item.dataset.screen === screenId)
       );
       if(screenId === 'settings-screen') populateSettings();
       if(screenId === 'calendar-screen') initializeCalendar();
+
+      // Save current screen to localStorage for persistence
+      localStorage.setItem('studyTogether_currentScreen', screenId);
+
       toggleSidebar(false);
       if(screenId !== 'room-screen') updateConnectionStatus('disconnected');
+    }
+
+    function restoreSavedScreen(){
+      const savedScreen = localStorage.getItem('studyTogether_currentScreen');
+      const defaultScreen = 'home-screen';
+      const targetScreen = savedScreen && document.getElementById(savedScreen) ? savedScreen : defaultScreen;
+      navigateToScreen(targetScreen);
     }
 
     function toggleSidebar(force){
@@ -6499,12 +6516,19 @@ function setupRoomSubscriptions(){
       const firstCountdownElement = document.getElementById('first-exam-countdown');
       if (firstCountdownElement) {
         if (firstTimeDiff > 0) {
-          const days = Math.floor(firstTimeDiff / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((firstTimeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const totalHours = Math.floor(firstTimeDiff / (1000 * 60 * 60));
+          const days = Math.floor(totalHours / 24);
+          const hours = totalHours % 24;
           const minutes = Math.floor((firstTimeDiff % (1000 * 60 * 60)) / (1000 * 60));
-          firstCountdownElement.innerHTML = `⏳ ${days} days, ${hours} hours, ${minutes} minutes remaining`;
+          const daysText = translations[currentLanguage].days || 'days';
+          const hoursText = translations[currentLanguage].hours || 'hours';
+          const minutesText = translations[currentLanguage].minutes || 'minutes';
+          const remainingText = translations[currentLanguage].remaining || 'remaining';
+          const totalHoursText = translations[currentLanguage].totalHours || 'total hours';
+          firstCountdownElement.innerHTML = `⏳ ${days} ${daysText}, ${hours} ${hoursText}, ${minutes} ${minutesText} ${remainingText}<br><small style="opacity: 0.7;">(${totalHours.toLocaleString()} ${totalHoursText})</small>`;
         } else {
-          firstCountdownElement.innerHTML = '✅ Exam has passed';
+          const examPassedText = translations[currentLanguage].examPassed || 'Exam has passed';
+          firstCountdownElement.innerHTML = `✅ ${examPassedText}`;
         }
       }
 
@@ -6512,12 +6536,19 @@ function setupRoomSubscriptions(){
       const secondCountdownElement = document.getElementById('second-exam-countdown');
       if (secondCountdownElement) {
         if (secondTimeDiff > 0) {
-          const days = Math.floor(secondTimeDiff / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((secondTimeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const totalHours = Math.floor(secondTimeDiff / (1000 * 60 * 60));
+          const days = Math.floor(totalHours / 24);
+          const hours = totalHours % 24;
           const minutes = Math.floor((secondTimeDiff % (1000 * 60 * 60)) / (1000 * 60));
-          secondCountdownElement.innerHTML = `⏳ ${days} days, ${hours} hours, ${minutes} minutes remaining`;
+          const daysText = translations[currentLanguage].days || 'days';
+          const hoursText = translations[currentLanguage].hours || 'hours';
+          const minutesText = translations[currentLanguage].minutes || 'minutes';
+          const remainingText = translations[currentLanguage].remaining || 'remaining';
+          const totalHoursText = translations[currentLanguage].totalHours || 'total hours';
+          secondCountdownElement.innerHTML = `⏳ ${days} ${daysText}, ${hours} ${hoursText}, ${minutes} ${minutesText} ${remainingText}<br><small style="opacity: 0.7;">(${totalHours.toLocaleString()} ${totalHoursText})</small>`;
         } else {
-          secondCountdownElement.innerHTML = '✅ Exam has passed';
+          const examPassedText = translations[currentLanguage].examPassed || 'Exam has passed';
+          secondCountdownElement.innerHTML = `✅ ${examPassedText}`;
         }
       }
     }
@@ -6597,11 +6628,11 @@ function setupRoomSubscriptions(){
         <div style="display: inline-flex; gap: 2rem; flex-wrap: wrap; justify-content: center;">
           <div style="display: flex; align-items: center; gap: 0.5rem;">
             <div style="width: 20px; height: 20px; background: #ef4444; border-radius: 4px;"></div>
-            <span>First Semester Final</span>
+            <span>${translations[currentLanguage].firstSemesterFinalLegend || 'First Semester Final'}</span>
           </div>
           <div style="display: flex; align-items: center; gap: 0.5rem;">
             <div style="width: 20px; height: 20px; background: #10b981; border-radius: 4px;"></div>
-            <span>Second Semester Final</span>
+            <span>${translations[currentLanguage].secondSemesterFinalLegend || 'Second Semester Final'}</span>
           </div>
         </div>
       </div>`;
