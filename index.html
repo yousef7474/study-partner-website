@@ -508,11 +508,11 @@
           <p class="subtitle" data-translate="loginDesc">Sign in to your account</p>
           <div class="form-group">
             <label class="form-label" data-translate="username">Username</label>
-            <input type="text" id="login-username" class="form-input" placeholder="Enter your username">
+            <input type="text" id="login-username" class="form-input" data-translate-placeholder="enterUsername">
           </div>
           <div class="form-group">
             <label class="form-label" data-translate="password">Password</label>
-            <input type="password" id="login-password" class="form-input" placeholder="Enter your password">
+            <input type="password" id="login-password" class="form-input" data-translate-placeholder="enterPassword">
           </div>
           <button class="btn btn-block" onclick="loginUser()" data-translate="loginButton">Login</button>
         </div>
@@ -525,19 +525,19 @@
           <div id="signup-step-1">
             <div class="form-group">
               <label class="form-label" data-translate="fullName">Full Name</label>
-              <input type="text" id="signup-name" class="form-input" placeholder="Enter your full name">
+              <input type="text" id="signup-name" class="form-input" data-translate-placeholder="enterFullName">
             </div>
             <div class="form-group">
               <label class="form-label" data-translate="username">Username</label>
-              <input type="text" id="signup-username" class="form-input" placeholder="Choose a username">
+              <input type="text" id="signup-username" class="form-input" data-translate-placeholder="chooseUsername">
             </div>
             <div class="form-group">
               <label class="form-label" data-translate="password">Password</label>
-              <input type="password" id="signup-password" class="form-input" placeholder="Choose a password">
+              <input type="password" id="signup-password" class="form-input" data-translate-placeholder="choosePassword">
             </div>
             <div class="form-group">
               <label class="form-label" data-translate="confirmPassword">Confirm Password</label>
-              <input type="password" id="signup-confirm-password" class="form-input" placeholder="Confirm your password">
+              <input type="password" id="signup-confirm-password" class="form-input" data-translate-placeholder="confirmYourPassword">
             </div>
             <div class="form-group">
               <label class="form-label" data-translate="chooseAvatar">Choose Avatar Color</label>
@@ -816,7 +816,7 @@
 
           <div class="form-group">
             <label class="form-label" data-translate="nameLabel">Name</label>
-            <input type="text" id="settings-name-input" class="form-input" placeholder="Enter your name">
+            <input type="text" id="settings-name-input" class="form-input" data-translate-placeholder="enterYourName">
           </div>
 
           <!-- Grade shown in settings -->
@@ -956,6 +956,10 @@
         subjectManagement:"Subject Management", subjectManagementDesc:"Manage your selected subjects. Only selected subjects will appear in the app.",
         selectedSubjects:"Selected Subjects", editSubjects:"Edit Subjects", editSubjectsTitle:"Edit Your Subjects",
         cancel:"Cancel", saveSubjects:"Save Subjects",
+        enterUsername:"Enter your username", enterPassword:"Enter your password",
+        enterFullName:"Enter your full name", chooseUsername:"Choose a username",
+        choosePassword:"Choose a password", confirmYourPassword:"Confirm your password",
+        enterYourName:"Enter your name",
         personalInfo:"Personal Information", nameLabel:"Name", subjectLabel:"Subject", saveChanges:"Save Changes",
         aiSettings:"AI Settings", 
         claudeApiKey:"Claude API Key", enterClaudeKey:"Enter your Claude API key",
@@ -1026,6 +1030,10 @@
         subjectManagement:"إدارة المواد", subjectManagementDesc:"إدارة المواد المختارة. فقط المواد المختارة ستظهر في التطبيق.",
         selectedSubjects:"المواد المختارة", editSubjects:"تعديل المواد", editSubjectsTitle:"تعديل موادك",
         cancel:"إلغاء", saveSubjects:"حفظ المواد",
+        enterUsername:"أدخل اسم المستخدم", enterPassword:"أدخل كلمة المرور",
+        enterFullName:"أدخل اسمك الكامل", chooseUsername:"اختر اسم المستخدم",
+        choosePassword:"اختر كلمة المرور", confirmYourPassword:"أكد كلمة المرور",
+        enterYourName:"أدخل اسمك",
         personalInfo:"المعلومات الشخصية", nameLabel:"الاسم", subjectLabel:"المادة", saveChanges:"حفظ التغييرات",
         aiSettings:"إعدادات الذكاء الاصطناعي",
         claudeApiKey:"مفتاح Claude API", enterClaudeKey:"أدخل مفتاح Claude API",
@@ -5617,6 +5625,12 @@
         return;
       }
 
+      // Show loading state
+      const createBtn = document.querySelector('#signup-step-4 .btn:not(.btn-secondary)');
+      const originalText = createBtn.textContent;
+      createBtn.disabled = true;
+      createBtn.textContent = currentLanguage === 'ar' ? 'جاري الإنشاء...' : 'Creating...';
+
       try {
         // Check if username already exists (only if the column exists)
         try {
@@ -5627,6 +5641,9 @@
 
           if (!checkError && existingUsers && existingUsers.length > 0) {
             alert(currentLanguage === 'ar' ? 'اسم المستخدم موجود مسبقاً.' : 'Username already exists.');
+            // Reset button state
+            createBtn.disabled = false;
+            createBtn.textContent = originalText;
             return;
           }
         } catch (columnError) {
@@ -5663,22 +5680,48 @@
           throw error;
         }
 
-        currentUser = data;
-        localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
-        showLoggedInLayout();
+        // Success feedback
+        alert(currentLanguage === 'ar' ? 'تم إنشاء الحساب بنجاح! سيتم توجيهك لتسجيل الدخول.' : 'Account created successfully! You will be redirected to login.');
 
-        // Hide registration screen and show main app
-        document.getElementById('registration-screen').classList.remove('active');
+        // Clear signup data
+        signupData = {
+          name: '',
+          username: '',
+          password: '',
+          avatarColor: '#4F46E5',
+          educationPath: '',
+          grade: '',
+          selectedSubjects: []
+        };
 
-        if (roomCodeFromUrl) {
-          await joinRoom(roomCodeFromUrl.toUpperCase());
-          roomCodeFromUrl = null;
-        } else {
-          restoreSavedScreen();
-        }
+        // Reset all signup steps
+        document.getElementById('signup-step-1').style.display = 'block';
+        document.getElementById('signup-step-2').style.display = 'none';
+        document.getElementById('signup-step-3').style.display = 'none';
+        document.getElementById('signup-step-4').style.display = 'none';
+
+        // Clear all form inputs
+        document.getElementById('signup-name').value = '';
+        document.getElementById('signup-username').value = '';
+        document.getElementById('signup-password').value = '';
+        document.getElementById('signup-confirm-password').value = '';
+
+        // Reset button state
+        createBtn.disabled = false;
+        createBtn.textContent = originalText;
+
+        // Redirect to login after short delay
+        setTimeout(() => {
+          showLogin();
+        }, 1000);
+
       } catch (e) {
         console.error('Signup error:', e);
         alert(currentLanguage === 'ar' ? 'فشل إنشاء الحساب.' : 'Signup failed.');
+
+        // Reset button state
+        createBtn.disabled = false;
+        createBtn.textContent = originalText;
       }
     }
 
@@ -5845,6 +5888,10 @@
       document.querySelectorAll('[data-translate-title]').forEach(el => {
         const key = el.getAttribute('data-translate-title');
         if(translations[currentLanguage][key]) el.title = translations[currentLanguage][key];
+      });
+      document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-translate-placeholder');
+        if(translations[currentLanguage][key]) el.placeholder = translations[currentLanguage][key];
       });
 
       // repopulate selects according to language
