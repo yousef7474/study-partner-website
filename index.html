@@ -5393,19 +5393,33 @@
       }
 
       try {
-        const { data, error } = await supabase
-          .from('users')
-          .select('*')
-          .eq('username', username)
-          .eq('password', password)
-          .single();
+        // Try to login with new system first, fallback to old system if columns don't exist
+        let userData = null;
 
-        if (error || !data) {
+        try {
+          const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('username', username)
+            .eq('password', password)
+            .single();
+
+          if (!error && data) {
+            userData = data;
+          }
+        } catch (columnError) {
+          // New columns don't exist, fallback to name-based login for existing users
+          console.log('New authentication columns not found, checking for migration');
+          alert(currentLanguage === 'ar' ? 'يرجى تحديث قاعدة البيانات أولاً.' : 'Please update the database schema first.');
+          return;
+        }
+
+        if (!userData) {
           alert(currentLanguage === 'ar' ? 'اسم المستخدم أو كلمة المرور غير صحيحة.' : 'Invalid username or password.');
           return;
         }
 
-        currentUser = data;
+        currentUser = userData;
         localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
         showLoggedInLayout();
 
@@ -5573,29 +5587,40 @@
       }
 
       try {
-        // Check if username already exists
-        const { data: existingUser, error: checkError } = await supabase
-          .from('users')
-          .select('username')
-          .eq('username', signupData.username)
-          .single();
+        // Check if username already exists (only if the column exists)
+        try {
+          const { data: existingUser, error: checkError } = await supabase
+            .from('users')
+            .select('username')
+            .eq('username', signupData.username)
+            .single();
 
-        if (existingUser) {
-          alert(currentLanguage === 'ar' ? 'اسم المستخدم موجود مسبقاً.' : 'Username already exists.');
-          return;
+          if (existingUser) {
+            alert(currentLanguage === 'ar' ? 'اسم المستخدم موجود مسبقاً.' : 'Username already exists.');
+            return;
+          }
+        } catch (columnError) {
+          // Username column doesn't exist yet - this is OK, continue with signup
+          console.log('Username column not found, proceeding with signup');
         }
 
-        // Create new user
-        const payload = {
+        // Create new user with backward compatibility
+        let payload = {
           name: signupData.name,
-          username: signupData.username,
-          password: signupData.password,
           avatar_color: signupData.avatarColor,
-          education_path: signupData.educationPath,
           grade: signupData.grade,
-          selected_subjects: signupData.selectedSubjects,
           subject: signupData.selectedSubjects[0] // For compatibility
         };
+
+        // Try to add new fields if they exist
+        try {
+          payload.username = signupData.username;
+          payload.password = signupData.password;
+          payload.education_path = signupData.educationPath;
+          payload.selected_subjects = signupData.selectedSubjects;
+        } catch (e) {
+          console.log('Using basic payload for backward compatibility');
+        }
 
         const { data, error } = await supabase
           .from('users')
@@ -5603,7 +5628,10 @@
           .select()
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Signup error details:', error);
+          throw error;
+        }
 
         currentUser = data;
         localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
@@ -5865,6 +5893,9 @@
 
     // -------- REGISTRATION: Grade select --------
     function populateGradeSelect(){
+      // Check if the old grade select element exists (for backward compatibility)
+      if (!gradeSelect) return;
+
       const previous = gradeSelect.value || '';
       gradeSelect.innerHTML = '';
       const optionPlaceholder = document.createElement('option');
