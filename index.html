@@ -5239,7 +5239,7 @@
     const header=document.getElementById('header');
     const mainContainer=document.getElementById('main-container');
     const sidebarOverlay=document.getElementById('sidebar-overlay');
-    const gradeSelect=document.getElementById('grade-select');
+    const gradeSelect=document.getElementById('settings-grade-select');
     const roomSubjectSelect=document.getElementById('room-subject-select');
     const connectionStatus=document.getElementById('connection-status');
 
@@ -5457,6 +5457,14 @@
         currentUser = userData;
         localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
         showLoggedInLayout();
+
+        // Ensure registration screen is properly hidden
+        setTimeout(() => {
+          const regScreen = document.getElementById('registration-screen');
+          if (regScreen && regScreen.classList.contains('active')) {
+            regScreen.classList.remove('active');
+          }
+        }, 100);
 
         if (roomCodeFromUrl) {
           await joinRoom(roomCodeFromUrl.toUpperCase());
@@ -5712,7 +5720,7 @@
 
         // Redirect to login after short delay
         setTimeout(() => {
-          showLogin();
+          showAuthForm('login');
         }, 1000);
 
       } catch (e) {
@@ -5898,14 +5906,14 @@
       populateGradeSelect();
       
       // Preserve current selections before repopulating
-      const currentSubject = roomSubjectSelect.value;
+      const currentSubject = roomSubjectSelect?.value || '';
       const currentSelectedUnits = new Set(selectedUnits);
-      
-      populateRoomSubjects(currentUser?.grade || gradeSelect.value);
+
+      populateRoomSubjects(currentUser?.grade || gradeSelect?.value || '');
       if(currentUser) populateSettings();
 
       // Restore subject selection and trigger chapter loading
-      if(currentSubject && roomSubjectSelect.value !== currentSubject) {
+      if(currentSubject && roomSubjectSelect && roomSubjectSelect.value !== currentSubject) {
         roomSubjectSelect.value = currentSubject;
       }
       
