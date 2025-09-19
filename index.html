@@ -5401,15 +5401,14 @@
             .from('users')
             .select('*')
             .eq('username', username)
-            .eq('password', password)
-            .single();
+            .eq('password', password);
 
-          if (!error && data) {
-            userData = data;
+          if (!error && data && data.length > 0) {
+            userData = data[0]; // Take the first match
           }
         } catch (columnError) {
           // New columns don't exist, fallback to name-based login for existing users
-          console.log('New authentication columns not found, checking for migration');
+          console.log('New authentication columns not found:', columnError.message);
           alert(currentLanguage === 'ar' ? 'يرجى تحديث قاعدة البيانات أولاً.' : 'Please update the database schema first.');
           return;
         }
@@ -5589,19 +5588,18 @@
       try {
         // Check if username already exists (only if the column exists)
         try {
-          const { data: existingUser, error: checkError } = await supabase
+          const { data: existingUsers, error: checkError } = await supabase
             .from('users')
             .select('username')
-            .eq('username', signupData.username)
-            .single();
+            .eq('username', signupData.username);
 
-          if (!checkError && existingUser) {
+          if (!checkError && existingUsers && existingUsers.length > 0) {
             alert(currentLanguage === 'ar' ? 'اسم المستخدم موجود مسبقاً.' : 'Username already exists.');
             return;
           }
         } catch (columnError) {
-          // Username column doesn't exist yet - this is OK, continue with signup
-          console.log('Username column not found, proceeding with signup');
+          // Username column doesn't exist yet or other error - this is OK, continue with signup
+          console.log('Username check failed, proceeding with signup:', columnError.message);
         }
 
         // Create new user with backward compatibility
