@@ -5595,7 +5595,7 @@
             .eq('username', signupData.username)
             .single();
 
-          if (existingUser) {
+          if (!checkError && existingUser) {
             alert(currentLanguage === 'ar' ? 'اسم المستخدم موجود مسبقاً.' : 'Username already exists.');
             return;
           }
@@ -7213,10 +7213,23 @@ function setupRoomSubscriptions(){
         }
       );
 
-      document.getElementById('student-name').addEventListener('input', e => {
-        const first = e.target.value.trim().charAt(0).toUpperCase() || 'A';
-        document.querySelectorAll('.avatar-choice').forEach(div => { div.textContent = first; });
-      });
+      // Handle avatar updates for signup form (new UI)
+      const signupNameInput = document.getElementById('signup-name');
+      if (signupNameInput) {
+        signupNameInput.addEventListener('input', e => {
+          const first = e.target.value.trim().charAt(0).toUpperCase() || 'A';
+          document.querySelectorAll('.avatar-choice').forEach(div => { div.textContent = first; });
+        });
+      }
+
+      // Legacy support for old UI (if it exists)
+      const studentNameInput = document.getElementById('student-name');
+      if (studentNameInput) {
+        studentNameInput.addEventListener('input', e => {
+          const first = e.target.value.trim().charAt(0).toUpperCase() || 'A';
+          document.querySelectorAll('.avatar-choice').forEach(div => { div.textContent = first; });
+        });
+      }
 
       if ('Notification' in window && Notification.permission === 'default') {
         Notification.requestPermission();
