@@ -843,6 +843,28 @@
             </div>
           </div>
 
+          <!-- Subject Management Section -->
+          <div style="margin-top:2rem;padding-top:2rem;border-top:2px solid var(--border-color);">
+            <h3 data-translate="subjectManagement">Subject Management</h3>
+            <p style="color:var(--text-secondary);margin-bottom:1.5rem;" data-translate="subjectManagementDesc">Manage your selected subjects. Only selected subjects will appear in the app.</p>
+
+            <div class="form-group">
+              <label class="form-label" data-translate="selectedSubjects">Selected Subjects</label>
+              <div id="selected-subjects-list" style="margin-bottom:1rem;"></div>
+              <button type="button" class="btn btn-secondary" onclick="editSelectedSubjects()" data-translate="editSubjects">Edit Subjects</button>
+            </div>
+
+            <!-- Edit Subject Modal -->
+            <div id="edit-subjects-modal" style="display:none;background:var(--bg-tertiary);border-radius:15px;padding:1.5rem;margin-top:1rem;">
+              <h4 data-translate="editSubjectsTitle">Edit Your Subjects</h4>
+              <div id="edit-subjects-checklist" style="margin:1rem 0;"></div>
+              <div style="display:flex;gap:1rem;">
+                <button type="button" class="btn btn-secondary" onclick="cancelEditSubjects()" data-translate="cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveSelectedSubjects()" data-translate="saveSubjects">Save Subjects</button>
+              </div>
+            </div>
+          </div>
+
           <!-- AI API Keys Section -->
           <div style="margin-top:2rem;padding-top:2rem;border-top:2px solid var(--border-color);">
             <h3 data-translate="aiSettings">AI Settings</h3>
@@ -931,6 +953,9 @@
         selectEducationPath:"Select Education Path", generalEducation:"تعليم عام", international:"International",
         generalEducationDesc:"Saudi General Education (Grades 10-12)", internationalDesc:"International Education System",
         selectSubjects:"Select Your Subjects",
+        subjectManagement:"Subject Management", subjectManagementDesc:"Manage your selected subjects. Only selected subjects will appear in the app.",
+        selectedSubjects:"Selected Subjects", editSubjects:"Edit Subjects", editSubjectsTitle:"Edit Your Subjects",
+        cancel:"Cancel", saveSubjects:"Save Subjects",
         personalInfo:"Personal Information", nameLabel:"Name", subjectLabel:"Subject", saveChanges:"Save Changes",
         aiSettings:"AI Settings", 
         claudeApiKey:"Claude API Key", enterClaudeKey:"Enter your Claude API key",
@@ -998,6 +1023,9 @@
         selectEducationPath:"اختر المسار التعليمي", generalEducation:"تعليم عام", international:"دولي",
         generalEducationDesc:"التعليم العام السعودي (الصفوف 10-12)", internationalDesc:"نظام التعليم الدولي",
         selectSubjects:"اختر موادك الدراسية",
+        subjectManagement:"إدارة المواد", subjectManagementDesc:"إدارة المواد المختارة. فقط المواد المختارة ستظهر في التطبيق.",
+        selectedSubjects:"المواد المختارة", editSubjects:"تعديل المواد", editSubjectsTitle:"تعديل موادك",
+        cancel:"إلغاء", saveSubjects:"حفظ المواد",
         personalInfo:"المعلومات الشخصية", nameLabel:"الاسم", subjectLabel:"المادة", saveChanges:"حفظ التغييرات",
         aiSettings:"إعدادات الذكاء الاصطناعي",
         claudeApiKey:"مفتاح Claude API", enterClaudeKey:"أدخل مفتاح Claude API",
@@ -5503,9 +5531,9 @@
     function populateGradeSelection() {
       const gradeSelection = document.getElementById('grade-selection');
       const grades = [
-        { value: '10', label: currentLanguage === 'ar' ? 'الصف العاشر' : 'Grade 10' },
-        { value: '11', label: currentLanguage === 'ar' ? 'الصف الحادي عشر' : 'Grade 11' },
-        { value: '12', label: currentLanguage === 'ar' ? 'الصف الثاني عشر' : 'Grade 12' }
+        { value: '10', label: currentLanguage === 'ar' ? 'الصف الأول الثانوي' : 'Grade 10 (First Secondary)' },
+        { value: '11', label: currentLanguage === 'ar' ? 'الصف الثاني الثانوي' : 'Grade 11 (Second Secondary)' },
+        { value: '12', label: currentLanguage === 'ar' ? 'الصف الثالث الثانوي' : 'Grade 12 (Third Secondary)' }
       ];
 
       gradeSelection.innerHTML = grades.map(grade => `
@@ -5554,8 +5582,12 @@
         };
         subjects = gradeSubjects[signupData.grade] || [];
       } else {
-        // International subjects
-        subjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English Language', 'Computer Science', 'Economics', 'Business Studies', 'Psychology'];
+        // International subjects - will be added later
+        subjects = [];
+        alert(currentLanguage === 'ar' ?
+          'المواد الدولية ستضاف لاحقاً. يرجى اختيار التعليم العام حالياً.' :
+          'International subjects will be added later. Please choose General Education for now.');
+        return;
       }
 
       subjectChecklist.innerHTML = subjects.map(subject => `
@@ -5634,6 +5666,9 @@
         currentUser = data;
         localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
         showLoggedInLayout();
+
+        // Hide registration screen and show main app
+        document.getElementById('registration-screen').classList.remove('active');
 
         if (roomCodeFromUrl) {
           await joinRoom(roomCodeFromUrl.toUpperCase());
@@ -5939,6 +5974,9 @@
 
       // Load performance dashboard
       loadPerformanceDashboard();
+
+      // Populate selected subjects list
+      populateSelectedSubjectsList();
     }
 
     function populateSettingsSubjectsForGrade(gradeVal, selectedSubject){
@@ -5950,7 +5988,14 @@
       subjSel.appendChild(placeholder);
 
       const list = subjectsByGrade[gradeVal] || [];
-      list.forEach(s=>{
+
+      // Filter subjects based on user's selected subjects
+      const userSelectedSubjects = currentUser?.selected_subjects || [];
+      const filteredList = userSelectedSubjects.length > 0
+        ? list.filter(s => userSelectedSubjects.includes(s.nameAr) || userSelectedSubjects.includes(s.name))
+        : list; // Show all if no selection filter
+
+      filteredList.forEach(s=>{
         const opt = document.createElement('option');
         opt.value = s.name; // store canonical English
         opt.textContent = currentLanguage==='ar' ? s.nameAr : s.name;
@@ -6021,6 +6066,105 @@
       }catch(e){
         console.error(e);
         alert(currentLanguage==='ar'?'فشل حفظ المعلومات.':'Failed to save personal information.');
+      }
+    }
+
+    // -------- SUBJECT MANAGEMENT --------
+    function populateSelectedSubjectsList() {
+      const selectedSubjectsList = document.getElementById('selected-subjects-list');
+      if (!selectedSubjectsList) return;
+
+      const userSelectedSubjects = currentUser?.selected_subjects || [];
+
+      if (userSelectedSubjects.length === 0) {
+        selectedSubjectsList.innerHTML = `<p style="color:var(--text-secondary);font-style:italic;">${currentLanguage === 'ar' ? 'لم يتم اختيار أي مواد' : 'No subjects selected'}</p>`;
+        return;
+      }
+
+      selectedSubjectsList.innerHTML = userSelectedSubjects.map(subject => `
+        <span style="display:inline-block;background:var(--primary-color);color:white;padding:0.25rem 0.75rem;border-radius:15px;margin:0.25rem;font-size:0.9rem;">
+          ${subject}
+        </span>
+      `).join('');
+    }
+
+    function editSelectedSubjects() {
+      const modal = document.getElementById('edit-subjects-modal');
+      const checklist = document.getElementById('edit-subjects-checklist');
+
+      if (!modal || !checklist) return;
+
+      // Get available subjects for current user's grade
+      const gradeSubjects = {
+        '10': ['الرياضيات', 'الفيزياء', 'الكيمياء', 'الأحياء', 'اللغة العربية', 'اللغة الإنجليزية', 'التاريخ', 'الجغرافيا', 'الحاسوب'],
+        '11': ['الرياضيات', 'الفيزياء', 'الكيمياء', 'الأحياء', 'اللغة العربية', 'اللغة الإنجليزية', 'علم النفس', 'الإحصاء', 'الاقتصاد'],
+        '12': ['الرياضيات', 'الفيزياء', 'الكيمياء', 'الأحياء', 'اللغة العربية', 'اللغة الإنجليزية', 'الفلسفة', 'علم الاجتماع', 'إدارة الأعمال']
+      };
+
+      const availableSubjects = gradeSubjects[currentUser?.grade] || [];
+      const userSelectedSubjects = currentUser?.selected_subjects || [];
+
+      checklist.innerHTML = availableSubjects.map(subject => `
+        <div class="subject-item" onclick="toggleEditSubject('${subject}')">
+          <input type="checkbox" id="edit-subject-${subject}" data-subject="${subject}" ${userSelectedSubjects.includes(subject) ? 'checked' : ''}>
+          <label for="edit-subject-${subject}">${subject}</label>
+        </div>
+      `).join('');
+
+      modal.style.display = 'block';
+    }
+
+    function toggleEditSubject(subject) {
+      const checkbox = document.querySelector(`input[data-subject="${subject}"]`);
+      checkbox.checked = !checkbox.checked;
+    }
+
+    function cancelEditSubjects() {
+      document.getElementById('edit-subjects-modal').style.display = 'none';
+    }
+
+    async function saveSelectedSubjects() {
+      if (!currentUser) return;
+
+      const checkboxes = document.querySelectorAll('#edit-subjects-checklist input[type="checkbox"]');
+      const selectedSubjects = Array.from(checkboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.dataset.subject);
+
+      if (selectedSubjects.length === 0) {
+        alert(currentLanguage === 'ar' ? 'يرجى اختيار مادة واحدة على الأقل.' : 'Please select at least one subject.');
+        return;
+      }
+
+      try {
+        // Update user's selected subjects
+        currentUser.selected_subjects = selectedSubjects;
+
+        // Update in database
+        await supabase
+          .from('users')
+          .update({ selected_subjects: selectedSubjects })
+          .eq('id', currentUser.id);
+
+        // Update localStorage
+        localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
+
+        // Refresh UI
+        populateSelectedSubjectsList();
+        populateSettingsSubjectsForGrade(currentUser.grade, currentUser.subject);
+        populateRoomSubjects(currentUser.grade);
+
+        // Hide modal
+        document.getElementById('edit-subjects-modal').style.display = 'none';
+
+        toast(
+          currentLanguage === 'ar' ? 'تم تحديث المواد بنجاح!' : 'Subjects updated successfully!',
+          'success',
+          currentLanguage === 'ar' ? 'تم التحديث' : 'Updated'
+        );
+      } catch (e) {
+        console.error('Error updating subjects:', e);
+        alert(currentLanguage === 'ar' ? 'فشل في تحديث المواد.' : 'Failed to update subjects.');
       }
     }
 
@@ -7302,7 +7446,14 @@ function setupRoomSubscriptions(){
       const selectText = translations[currentLanguage]['selectSubject'] || 'Select Subject';
       roomSubjectSelect.innerHTML = `<option value="">-- ${selectText} --</option>`;
       const subjects = subjectsByGrade[grade] || [];
-      subjects.forEach(s => {
+
+      // Filter subjects based on user's selected subjects
+      const userSelectedSubjects = currentUser?.selected_subjects || [];
+      const filteredSubjects = userSelectedSubjects.length > 0
+        ? subjects.filter(s => userSelectedSubjects.includes(s.nameAr) || userSelectedSubjects.includes(s.name))
+        : subjects; // Show all if no selection filter
+
+      filteredSubjects.forEach(s => {
         const opt = document.createElement('option');
         opt.value = s.name; // canonical English
         opt.textContent = currentLanguage === 'ar' ? s.nameAr : s.name;
@@ -7310,8 +7461,8 @@ function setupRoomSubscriptions(){
       });
       if(currentUser && currentUser.subject){
         // set current subject if still valid
-        const exists = subjects.some(s => s.name === currentUser.subject || s.nameAr === currentUser.subject);
-        roomSubjectSelect.value = exists ? subjects.find(s => s.name === currentUser.subject || s.nameAr === currentUser.subject).name : '';
+        const exists = filteredSubjects.some(s => s.name === currentUser.subject || s.nameAr === currentUser.subject);
+        roomSubjectSelect.value = exists ? filteredSubjects.find(s => s.name === currentUser.subject || s.nameAr === currentUser.subject).name : '';
       }
     }
 
