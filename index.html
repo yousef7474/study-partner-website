@@ -324,6 +324,104 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
+
+    /* Authentication styles */
+    .auth-tab {
+      padding: 0.75rem 2rem;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    .auth-tab.active {
+      background: var(--primary-color);
+      color: white;
+      box-shadow: var(--shadow-light);
+    }
+    .auth-tab:hover:not(.active) {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    .education-path-option {
+      background: var(--bg-tertiary);
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .education-path-option:hover {
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-medium);
+    }
+    .education-path-option.selected {
+      border-color: var(--primary-color);
+      background: var(--primary-color);
+      color: white;
+    }
+    .education-path-option .path-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    .education-path-option h4 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .education-path-option p {
+      opacity: 0.8;
+      margin: 0;
+    }
+
+    .grade-option {
+      background: var(--bg-tertiary);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .grade-option:hover {
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+    }
+    .grade-option.selected {
+      border-color: var(--primary-color);
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .subject-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .subject-item:hover {
+      background: var(--bg-secondary);
+      transform: translateX(4px);
+    }
+    .subject-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    .subject-item label {
+      cursor: pointer;
+      flex-grow: 1;
+      margin: 0;
+    }
   </style>
 </head>
 <body data-theme="light">
@@ -396,31 +494,105 @@
         </div>
 
         <h1 class="title" data-translate="welcome">Welcome to Study Partner</h1>
-        <p class="subtitle" data-translate="welcomeDesc">Create your profile to start</p>
-        <div class="form-section">
+
+        <!-- Login/Signup Toggle -->
+        <div style="text-align: center; margin-bottom: 2rem;">
+          <div style="display: inline-flex; background: var(--bg-tertiary); border-radius: 12px; padding: 0.25rem;">
+            <button id="login-tab" class="auth-tab active" onclick="showAuthForm('login')" data-translate="login">Login</button>
+            <button id="signup-tab" class="auth-tab" onclick="showAuthForm('signup')" data-translate="signup">Sign Up</button>
+          </div>
+        </div>
+
+        <!-- Login Form -->
+        <div id="login-form" class="form-section">
+          <p class="subtitle" data-translate="loginDesc">Sign in to your account</p>
           <div class="form-group">
-            <label class="form-label" data-translate="yourName">Your Name</label>
-            <input type="text" id="student-name" class="form-input" placeholder="Enter your full name">
+            <label class="form-label" data-translate="username">Username</label>
+            <input type="text" id="login-username" class="form-input" placeholder="Enter your username">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-translate="password">Password</label>
+            <input type="password" id="login-password" class="form-input" placeholder="Enter your password">
+          </div>
+          <button class="btn btn-block" onclick="loginUser()" data-translate="loginButton">Login</button>
+        </div>
+
+        <!-- Signup Form -->
+        <div id="signup-form" class="form-section" style="display: none;">
+          <p class="subtitle" data-translate="signupDesc">Create your account</p>
+
+          <!-- Step 1: Basic Info -->
+          <div id="signup-step-1">
+            <div class="form-group">
+              <label class="form-label" data-translate="fullName">Full Name</label>
+              <input type="text" id="signup-name" class="form-input" placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-translate="username">Username</label>
+              <input type="text" id="signup-username" class="form-input" placeholder="Choose a username">
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-translate="password">Password</label>
+              <input type="password" id="signup-password" class="form-input" placeholder="Choose a password">
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-translate="confirmPassword">Confirm Password</label>
+              <input type="password" id="signup-confirm-password" class="form-input" placeholder="Confirm your password">
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-translate="chooseAvatar">Choose Avatar Color</label>
+              <div class="avatar-grid" id="avatar-grid">
+                <div class="avatar-choice selected" data-color="#667eea" style="background:#667eea">A</div>
+                <div class="avatar-choice" data-color="#dc2626" style="background:#dc2626">A</div>
+                <div class="avatar-choice" data-color="#16a34a" style="background:#16a34a">A</div>
+                <div class="avatar-choice" data-color="#ea580c" style="background:#ea580c">A</div>
+                <div class="avatar-choice" data-color="#7c3aed" style="background:#7c3aed">A</div>
+                <div class="avatar-choice" data-color="#1f2937" style="background:#1f2937">A</div>
+              </div>
+            </div>
+            <button class="btn btn-block" onclick="proceedToEducationPath()" data-translate="continue">Continue</button>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" data-translate="chooseAvatar">Choose Avatar Color</label>
-            <div class="avatar-grid" id="avatar-grid">
-              <div class="avatar-choice selected" data-color="#667eea" style="background:#667eea">A</div>
-              <div class="avatar-choice" data-color="#dc2626" style="background:#dc2626">A</div>
-              <div class="avatar-choice" data-color="#16a34a" style="background:#16a34a">A</div>
-              <div class="avatar-choice" data-color="#ea580c" style="background:#ea580c">A</div>
-              <div class="avatar-choice" data-color="#7c3aed" style="background:#7c3aed">A</div>
-              <div class="avatar-choice" data-color="#1f2937" style="background:#1f2937">A</div>
+          <!-- Step 2: Education Path -->
+          <div id="signup-step-2" style="display: none;">
+            <h3 style="text-align: center; margin-bottom: 2rem;" data-translate="selectEducationPath">Select Education Path</h3>
+            <div style="display: grid; gap: 1rem; margin-bottom: 2rem;">
+              <div class="education-path-option" onclick="selectEducationPath('general')" data-path="general">
+                <div class="path-icon">🎓</div>
+                <h4 data-translate="generalEducation">تعليم عام</h4>
+                <p data-translate="generalEducationDesc">Saudi General Education (Grades 10-12)</p>
+              </div>
+              <div class="education-path-option" onclick="selectEducationPath('international')" data-path="international">
+                <div class="path-icon">🌍</div>
+                <h4 data-translate="international">International</h4>
+                <p data-translate="internationalDesc">International Education System</p>
+              </div>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+              <button class="btn btn-secondary" onclick="backToStep1()" data-translate="back">Back</button>
+              <button class="btn btn-block" onclick="proceedToGradeSelection()" data-translate="continue" disabled id="continue-grade-btn">Continue</button>
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" data-translate="selectGrade">Select Grade</label>
-            <select id="grade-select" class="form-input"></select>
+          <!-- Step 3: Grade Selection (for General Education) -->
+          <div id="signup-step-3" style="display: none;">
+            <h3 style="text-align: center; margin-bottom: 2rem;" data-translate="selectGrade">Select Your Grade</h3>
+            <div id="grade-selection" style="display: grid; gap: 1rem; margin-bottom: 2rem;"></div>
+            <div style="display: flex; gap: 1rem;">
+              <button class="btn btn-secondary" onclick="backToStep2()" data-translate="back">Back</button>
+              <button class="btn btn-block" onclick="proceedToSubjectSelection()" data-translate="continue" disabled id="continue-subject-btn">Continue</button>
+            </div>
           </div>
 
-          <button class="btn btn-block" onclick="completeRegistration()" data-translate="joinPlatform">Join Platform</button>
+          <!-- Step 4: Subject Selection -->
+          <div id="signup-step-4" style="display: none;">
+            <h3 style="text-align: center; margin-bottom: 2rem;" data-translate="selectSubjects">Select Your Subjects</h3>
+            <div id="subject-checklist" style="margin-bottom: 2rem;"></div>
+            <div style="display: flex; gap: 1rem;">
+              <button class="btn btn-secondary" onclick="backToStep3()" data-translate="back">Back</button>
+              <button class="btn btn-block" onclick="completeSignup()" data-translate="createAccount">Create Account</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -753,6 +925,12 @@
         days:"days", remaining:"remaining", totalHours:"total hours", examPassed:"Exam has passed",
         firstSemesterFinal:"First Semester Final Exam", secondSemesterFinal:"Second Semester Final Exam",
         academicCalendar:"Academic Year 2025-2026 Calendar", firstSemesterFinalLegend:"First Semester Final", secondSemesterFinalLegend:"Second Semester Final",
+        login:"Login", signup:"Sign Up", loginDesc:"Sign in to your account", signupDesc:"Create your account",
+        username:"Username", password:"Password", confirmPassword:"Confirm Password", loginButton:"Login",
+        fullName:"Full Name", continue:"Continue", back:"Back", createAccount:"Create Account",
+        selectEducationPath:"Select Education Path", generalEducation:"تعليم عام", international:"International",
+        generalEducationDesc:"Saudi General Education (Grades 10-12)", internationalDesc:"International Education System",
+        selectSubjects:"Select Your Subjects",
         personalInfo:"Personal Information", nameLabel:"Name", subjectLabel:"Subject", saveChanges:"Save Changes",
         aiSettings:"AI Settings", 
         claudeApiKey:"Claude API Key", enterClaudeKey:"Enter your Claude API key",
@@ -814,6 +992,12 @@
         days:"أيام", remaining:"متبقية", totalHours:"إجمالي الساعات", examPassed:"انتهى الامتحان",
         firstSemesterFinal:"امتحان نهاية الفصل الأول", secondSemesterFinal:"امتحان نهاية الفصل الثاني",
         academicCalendar:"التقويم الأكاديمي 2025-2026", firstSemesterFinalLegend:"نهاية الفصل الأول", secondSemesterFinalLegend:"نهاية الفصل الثاني",
+        login:"تسجيل الدخول", signup:"إنشاء حساب", loginDesc:"سجل دخولك إلى حسابك", signupDesc:"أنشئ حسابك الجديد",
+        username:"اسم المستخدم", password:"كلمة المرور", confirmPassword:"تأكيد كلمة المرور", loginButton:"تسجيل الدخول",
+        fullName:"الاسم الكامل", continue:"متابعة", back:"رجوع", createAccount:"إنشاء الحساب",
+        selectEducationPath:"اختر المسار التعليمي", generalEducation:"تعليم عام", international:"دولي",
+        generalEducationDesc:"التعليم العام السعودي (الصفوف 10-12)", internationalDesc:"نظام التعليم الدولي",
+        selectSubjects:"اختر موادك الدراسية",
         personalInfo:"المعلومات الشخصية", nameLabel:"الاسم", subjectLabel:"المادة", saveChanges:"حفظ التغييرات",
         aiSettings:"إعدادات الذكاء الاصطناعي",
         claudeApiKey:"مفتاح Claude API", enterClaudeKey:"أدخل مفتاح Claude API",
@@ -5134,30 +5318,329 @@
       }
     }
 
-    async function completeRegistration(){
-      const name = document.getElementById('student-name').value.trim();
-      const grade = gradeSelect.value;
-      if(!name || !grade){
-        alert(currentLanguage==='ar' ? 'يرجى إدخال الاسم واختيار الصف.' : 'Please enter your name and select a grade.');
+    // -------- NEW AUTHENTICATION SYSTEM --------
+    let signupData = {
+      step: 1,
+      name: '',
+      username: '',
+      password: '',
+      avatarColor: '#667eea',
+      educationPath: '',
+      grade: '',
+      selectedSubjects: []
+    };
+
+    function showAuthForm(type) {
+      const loginForm = document.getElementById('login-form');
+      const signupForm = document.getElementById('signup-form');
+      const loginTab = document.getElementById('login-tab');
+      const signupTab = document.getElementById('signup-tab');
+
+      if (type === 'login') {
+        loginForm.style.display = 'block';
+        signupForm.style.display = 'none';
+        loginTab.classList.add('active');
+        signupTab.classList.remove('active');
+      } else {
+        loginForm.style.display = 'none';
+        signupForm.style.display = 'block';
+        loginTab.classList.remove('active');
+        signupTab.classList.add('active');
+        resetSignupForm();
+      }
+    }
+
+    function resetSignupForm() {
+      signupData = {
+        step: 1,
+        name: '',
+        username: '',
+        password: '',
+        avatarColor: '#667eea',
+        educationPath: '',
+        grade: '',
+        selectedSubjects: []
+      };
+
+      // Show step 1, hide others
+      document.getElementById('signup-step-1').style.display = 'block';
+      document.getElementById('signup-step-2').style.display = 'none';
+      document.getElementById('signup-step-3').style.display = 'none';
+      document.getElementById('signup-step-4').style.display = 'none';
+
+      // Clear all form inputs
+      document.getElementById('signup-name').value = '';
+      document.getElementById('signup-username').value = '';
+      document.getElementById('signup-password').value = '';
+      document.getElementById('signup-confirm-password').value = '';
+
+      // Reset avatar selection
+      document.querySelectorAll('.avatar-choice').forEach(choice => {
+        choice.classList.remove('selected');
+        if (choice.dataset.color === '#667eea') {
+          choice.classList.add('selected');
+        }
+      });
+    }
+
+    async function loginUser() {
+      const username = document.getElementById('login-username').value.trim();
+      const password = document.getElementById('login-password').value.trim();
+
+      if (!username || !password) {
+        alert(currentLanguage === 'ar' ? 'يرجى إدخال اسم المستخدم وكلمة المرور.' : 'Please enter username and password.');
         return;
       }
-      try{
-        const payload = { name, avatar_color: selectedColor, grade, subject: null };
-        const {data, error} = await supabase.from('users').insert([payload]).select().single();
-        if(error) throw error;
+
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('username', username)
+          .eq('password', password)
+          .single();
+
+        if (error || !data) {
+          alert(currentLanguage === 'ar' ? 'اسم المستخدم أو كلمة المرور غير صحيحة.' : 'Invalid username or password.');
+          return;
+        }
+
         currentUser = data;
         localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
         showLoggedInLayout();
-        if(roomCodeFromUrl){
+
+        if (roomCodeFromUrl) {
           await joinRoom(roomCodeFromUrl.toUpperCase());
           roomCodeFromUrl = null;
         } else {
           restoreSavedScreen();
         }
-      }catch(e){
-        console.error('Registration error:', e);
-        alert(currentLanguage==='ar' ? 'فشل التسجيل.' : 'Registration failed.');
+      } catch (e) {
+        console.error('Login error:', e);
+        alert(currentLanguage === 'ar' ? 'فشل تسجيل الدخول.' : 'Login failed.');
       }
+    }
+
+    function proceedToEducationPath() {
+      const name = document.getElementById('signup-name').value.trim();
+      const username = document.getElementById('signup-username').value.trim();
+      const password = document.getElementById('signup-password').value.trim();
+      const confirmPassword = document.getElementById('signup-confirm-password').value.trim();
+
+      if (!name || !username || !password || !confirmPassword) {
+        alert(currentLanguage === 'ar' ? 'يرجى ملء جميع الحقول.' : 'Please fill all fields.');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert(currentLanguage === 'ar' ? 'كلمات المرور غير متطابقة.' : 'Passwords do not match.');
+        return;
+      }
+
+      if (password.length < 6) {
+        alert(currentLanguage === 'ar' ? 'كلمة المرور يجب أن تكون 6 أحرف على الأقل.' : 'Password must be at least 6 characters.');
+        return;
+      }
+
+      // Store data and move to next step
+      signupData.name = name;
+      signupData.username = username;
+      signupData.password = password;
+      signupData.avatarColor = selectedColor;
+
+      document.getElementById('signup-step-1').style.display = 'none';
+      document.getElementById('signup-step-2').style.display = 'block';
+    }
+
+    function selectEducationPath(path) {
+      signupData.educationPath = path;
+
+      // Update UI
+      document.querySelectorAll('.education-path-option').forEach(option => {
+        option.classList.remove('selected');
+        if (option.dataset.path === path) {
+          option.classList.add('selected');
+        }
+      });
+
+      // Enable continue button
+      document.getElementById('continue-grade-btn').disabled = false;
+    }
+
+    function proceedToGradeSelection() {
+      if (!signupData.educationPath) {
+        alert(currentLanguage === 'ar' ? 'يرجى اختيار المسار التعليمي.' : 'Please select an education path.');
+        return;
+      }
+
+      document.getElementById('signup-step-2').style.display = 'none';
+
+      if (signupData.educationPath === 'general') {
+        // Show grade selection for general education
+        document.getElementById('signup-step-3').style.display = 'block';
+        populateGradeSelection();
+      } else {
+        // For international, skip grade selection and go to subject selection
+        signupData.grade = 'international';
+        document.getElementById('signup-step-4').style.display = 'block';
+        populateSubjectSelection();
+      }
+    }
+
+    function populateGradeSelection() {
+      const gradeSelection = document.getElementById('grade-selection');
+      const grades = [
+        { value: '10', label: currentLanguage === 'ar' ? 'الصف العاشر' : 'Grade 10' },
+        { value: '11', label: currentLanguage === 'ar' ? 'الصف الحادي عشر' : 'Grade 11' },
+        { value: '12', label: currentLanguage === 'ar' ? 'الصف الثاني عشر' : 'Grade 12' }
+      ];
+
+      gradeSelection.innerHTML = grades.map(grade => `
+        <div class="grade-option" onclick="selectGrade('${grade.value}')" data-grade="${grade.value}">
+          <h4>${grade.label}</h4>
+        </div>
+      `).join('');
+    }
+
+    function selectGrade(grade) {
+      signupData.grade = grade;
+
+      // Update UI
+      document.querySelectorAll('.grade-option').forEach(option => {
+        option.classList.remove('selected');
+        if (option.dataset.grade === grade) {
+          option.classList.add('selected');
+        }
+      });
+
+      // Enable continue button
+      document.getElementById('continue-subject-btn').disabled = false;
+    }
+
+    function proceedToSubjectSelection() {
+      if (!signupData.grade) {
+        alert(currentLanguage === 'ar' ? 'يرجى اختيار الصف.' : 'Please select a grade.');
+        return;
+      }
+
+      document.getElementById('signup-step-3').style.display = 'none';
+      document.getElementById('signup-step-4').style.display = 'block';
+      populateSubjectSelection();
+    }
+
+    function populateSubjectSelection() {
+      const subjectChecklist = document.getElementById('subject-checklist');
+      let subjects = [];
+
+      if (signupData.educationPath === 'general') {
+        // Grade-specific subjects for Saudi General Education
+        const gradeSubjects = {
+          '10': ['الرياضيات', 'الفيزياء', 'الكيمياء', 'الأحياء', 'اللغة العربية', 'اللغة الإنجليزية', 'التاريخ', 'الجغرافيا', 'الحاسوب'],
+          '11': ['الرياضيات', 'الفيزياء', 'الكيمياء', 'الأحياء', 'اللغة العربية', 'اللغة الإنجليزية', 'علم النفس', 'الإحصاء', 'الاقتصاد'],
+          '12': ['الرياضيات', 'الفيزياء', 'الكيمياء', 'الأحياء', 'اللغة العربية', 'اللغة الإنجليزية', 'الفلسفة', 'علم الاجتماع', 'إدارة الأعمال']
+        };
+        subjects = gradeSubjects[signupData.grade] || [];
+      } else {
+        // International subjects
+        subjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English Language', 'Computer Science', 'Economics', 'Business Studies', 'Psychology'];
+      }
+
+      subjectChecklist.innerHTML = subjects.map(subject => `
+        <div class="subject-item" onclick="toggleSubject('${subject}')">
+          <input type="checkbox" id="subject-${subject}" data-subject="${subject}">
+          <label for="subject-${subject}">${subject}</label>
+        </div>
+      `).join('');
+    }
+
+    function toggleSubject(subject) {
+      const checkbox = document.querySelector(`input[data-subject="${subject}"]`);
+      checkbox.checked = !checkbox.checked;
+
+      if (checkbox.checked) {
+        if (!signupData.selectedSubjects.includes(subject)) {
+          signupData.selectedSubjects.push(subject);
+        }
+      } else {
+        signupData.selectedSubjects = signupData.selectedSubjects.filter(s => s !== subject);
+      }
+    }
+
+    async function completeSignup() {
+      if (signupData.selectedSubjects.length === 0) {
+        alert(currentLanguage === 'ar' ? 'يرجى اختيار مادة واحدة على الأقل.' : 'Please select at least one subject.');
+        return;
+      }
+
+      try {
+        // Check if username already exists
+        const { data: existingUser, error: checkError } = await supabase
+          .from('users')
+          .select('username')
+          .eq('username', signupData.username)
+          .single();
+
+        if (existingUser) {
+          alert(currentLanguage === 'ar' ? 'اسم المستخدم موجود مسبقاً.' : 'Username already exists.');
+          return;
+        }
+
+        // Create new user
+        const payload = {
+          name: signupData.name,
+          username: signupData.username,
+          password: signupData.password,
+          avatar_color: signupData.avatarColor,
+          education_path: signupData.educationPath,
+          grade: signupData.grade,
+          selected_subjects: signupData.selectedSubjects,
+          subject: signupData.selectedSubjects[0] // For compatibility
+        };
+
+        const { data, error } = await supabase
+          .from('users')
+          .insert([payload])
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        currentUser = data;
+        localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
+        showLoggedInLayout();
+
+        if (roomCodeFromUrl) {
+          await joinRoom(roomCodeFromUrl.toUpperCase());
+          roomCodeFromUrl = null;
+        } else {
+          restoreSavedScreen();
+        }
+      } catch (e) {
+        console.error('Signup error:', e);
+        alert(currentLanguage === 'ar' ? 'فشل إنشاء الحساب.' : 'Signup failed.');
+      }
+    }
+
+    // Navigation functions for signup steps
+    function backToStep1() {
+      document.getElementById('signup-step-2').style.display = 'none';
+      document.getElementById('signup-step-1').style.display = 'block';
+    }
+
+    function backToStep2() {
+      document.getElementById('signup-step-3').style.display = 'none';
+      document.getElementById('signup-step-2').style.display = 'block';
+    }
+
+    function backToStep3() {
+      document.getElementById('signup-step-4').style.display = 'none';
+      document.getElementById('signup-step-3').style.display = 'block';
+    }
+
+    // -------- OLD REGISTRATION FUNCTION (DEPRECATED) --------
+    async function completeRegistration(){
+      // This function is deprecated - using new signup system
+      console.warn('completeRegistration is deprecated, use new signup system');
     }
 
     function logout(){
