@@ -5470,7 +5470,8 @@
           await joinRoom(roomCodeFromUrl.toUpperCase());
           roomCodeFromUrl = null;
         } else {
-          restoreSavedScreen();
+          // Navigate directly to dashboard/home screen
+          navigateToScreen('home-screen');
         }
       } catch (e) {
         console.error('Login error:', e);
@@ -5546,14 +5547,19 @@
 
     function populateGradeSelection() {
       const gradeSelection = document.getElementById('grade-selection');
+      if (!gradeSelection) return;
+
       const grades = [
-        { value: '10', label: currentLanguage === 'ar' ? 'الصف الأول الثانوي' : 'Grade 10 (First Secondary)' },
-        { value: '11', label: currentLanguage === 'ar' ? 'الصف الثاني الثانوي' : 'Grade 11 (Second Secondary)' },
-        { value: '12', label: currentLanguage === 'ar' ? 'الصف الثالث الثانوي' : 'Grade 12 (Third Secondary)' }
+        { value: '10', label: gradeTranslations[currentLanguage]['10'] || 'Grade 10' },
+        { value: '11', label: gradeTranslations[currentLanguage]['11'] || 'Grade 11' },
+        { value: '12', label: gradeTranslations[currentLanguage]['12'] || 'Grade 12' }
       ];
 
+      // Preserve current selection
+      const currentSelection = signupData.grade;
+
       gradeSelection.innerHTML = grades.map(grade => `
-        <div class="grade-option" onclick="selectGrade('${grade.value}')" data-grade="${grade.value}">
+        <div class="grade-option ${currentSelection === grade.value ? 'selected' : ''}" onclick="selectGrade('${grade.value}')" data-grade="${grade.value}">
           <h4>${grade.label}</h4>
         </div>
       `).join('');
@@ -5904,6 +5910,7 @@
 
       // repopulate selects according to language
       populateGradeSelect();
+      populateGradeSelection(); // Update signup grade selection if visible
       
       // Preserve current selections before repopulating
       const currentSubject = roomSubjectSelect?.value || '';
