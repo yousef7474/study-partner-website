@@ -7693,16 +7693,34 @@ function setupRoomSubscriptions(){
     function updateChapterBadge(chapterId){
       const contentPanel = document.getElementById(`content-${chapterId}`);
       const badgeElement = document.getElementById(`badge-${chapterId}`);
-      
+
       if(!contentPanel || !badgeElement) return;
-      
+
       let selectedCount = 0;
       contentPanel.querySelectorAll('.unit-card.selected').forEach(() => {
         selectedCount++;
       });
-      
+
       badgeElement.textContent = selectedCount;
       badgeElement.style.display = selectedCount > 0 ? 'block' : 'none';
+    }
+
+    function updateChapterTabsBadges(){
+      // Update badges for all chapters of the currently selected subject
+      if(!roomSubjectSelect) return;
+
+      const selectedSubject = roomSubjectSelect.value;
+      if(!selectedSubject) return;
+
+      // Find the subject with chapters
+      const subjects = subjectsByGrade[currentUser?.grade] || [];
+      const subjectData = subjects.find(s => s.name === selectedSubject);
+
+      if(subjectData && subjectData.chapters){
+        subjectData.chapters.forEach(chapter => {
+          updateChapterBadge(chapter.id);
+        });
+      }
     }
 
     function updateTotalSummary(){
