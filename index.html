@@ -5320,10 +5320,49 @@
     }
 
     // -------- USER AUTH --------
+    function migrateUserSubjects() {
+      if (!currentUser || !currentUser.selected_subjects) return;
+
+      const gradeSubjects = subjectsByGrade[currentUser.grade] || [];
+      if (gradeSubjects.length === 0) return;
+
+      let needsMigration = false;
+      const migratedSubjects = [];
+
+      currentUser.selected_subjects.forEach(selectedSubject => {
+        // Check if this is already in English format
+        const isEnglish = gradeSubjects.some(s => s.name === selectedSubject);
+
+        if (isEnglish) {
+          migratedSubjects.push(selectedSubject);
+        } else {
+          // Try to find the English equivalent for Arabic name
+          const foundSubject = gradeSubjects.find(s => s.nameAr === selectedSubject);
+          if (foundSubject) {
+            migratedSubjects.push(foundSubject.name);
+            needsMigration = true;
+          } else {
+            // Keep the original if we can't find a match
+            migratedSubjects.push(selectedSubject);
+          }
+        }
+      });
+
+      if (needsMigration) {
+        currentUser.selected_subjects = migratedSubjects;
+        localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
+        console.log('Migrated user subjects from Arabic to English format');
+      }
+    }
+
     function checkSavedUser(){
       const savedUser = localStorage.getItem('studyTogether_user');
       if(savedUser){
         currentUser = JSON.parse(savedUser);
+
+        // Migrate old Arabic subject format to new English format
+        migrateUserSubjects();
+
         showLoggedInLayout();
         const savedRoomStr = localStorage.getItem('studyTogether_room');
         // PRIORITY: If there's a room code in URL, join that room (ignore saved room)
@@ -5455,6 +5494,10 @@
         }
 
         currentUser = userData;
+
+        // Migrate old Arabic subject format to new English format
+        migrateUserSubjects();
+
         localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
         showLoggedInLayout();
 
@@ -5596,13 +5639,9 @@
       let subjects = [];
 
       if (signupData.educationPath === 'general') {
-        // Grade-specific subjects for Saudi General Education
-        const gradeSubjects = {
-          '10': ['الرياضيات', 'الفيزياء', 'الكيمياء', 'الأحياء', 'اللغة العربية', 'اللغة الإنجليزية', 'التاريخ', 'الجغرافيا', 'الحاسوب'],
-          '11': ['الرياضيات', 'الفيزياء', 'الكيمياء', 'الأحياء', 'اللغة العربية', 'اللغة الإنجليزية', 'علم النفس', 'الإحصاء', 'الاقتصاد'],
-          '12': ['الرياضيات', 'الفيزياء', 'الكيمياء', 'الأحياء', 'اللغة العربية', 'اللغة الإنجليزية', 'الفلسفة', 'علم الاجتماع', 'إدارة الأعمال']
-        };
-        subjects = gradeSubjects[signupData.grade] || [];
+        // Get subjects from the actual subjectsByGrade data structure
+        const gradeSubjects = subjectsByGrade[signupData.grade] || [];
+        subjects = gradeSubjects;
       } else {
         // International subjects - will be added later
         subjects = [];
@@ -5612,12 +5651,16 @@
         return;
       }
 
-      subjectChecklist.innerHTML = subjects.map(subject => `
-        <div class="subject-item" onclick="toggleSubject('${subject}')">
-          <input type="checkbox" id="subject-${subject}" data-subject="${subject}">
-          <label for="subject-${subject}">${subject}</label>
-        </div>
-      `).join('');
+      subjectChecklist.innerHTML = subjects.map(subject => {
+        const subjectName = currentLanguage === 'ar' ? subject.nameAr : subject.name;
+        const subjectValue = subject.name; // Store English name consistently
+        return `
+          <div class="subject-item" onclick="toggleSubject('${subjectValue}')">
+            <input type="checkbox" id="subject-${subjectValue}" data-subject="${subjectValue}">
+            <label for="subject-${subjectValue}">${subjectName}</label>
+          </div>
+        `;
+      }).join('');
     }
 
     function toggleSubject(subject) {
@@ -5917,7 +5960,10 @@
       const currentSelectedUnits = new Set(selectedUnits);
 
       populateRoomSubjects(currentUser?.grade || gradeSelect?.value || '');
-      if(currentUser) populateSettings();
+      if(currentUser) {
+        populateSettings();
+        populateSelectedSubjectsList(); // Update subject display in current language
+      }
 
       // Restore subject selection and trigger chapter loading
       if(currentSubject && roomSubjectSelect && roomSubjectSelect.value !== currentSubject) {
@@ -6143,11 +6189,22 @@
         return;
       }
 
-      selectedSubjectsList.innerHTML = userSelectedSubjects.map(subject => `
-        <span style="display:inline-block;background:var(--primary-color);color:white;padding:0.25rem 0.75rem;border-radius:15px;margin:0.25rem;font-size:0.9rem;">
-          ${subject}
-        </span>
-      `).join('');
+      // Get the subject data to display names in current language
+      const gradeSubjects = subjectsByGrade[currentUser?.grade] || [];
+
+      selectedSubjectsList.innerHTML = userSelectedSubjects.map(subjectName => {
+        // Find the subject object to get the display name
+        const subjectObj = gradeSubjects.find(s => s.name === subjectName);
+        const displayName = subjectObj
+          ? (currentLanguage === 'ar' ? subjectObj.nameAr : subjectObj.name)
+          : subjectName; // Fallback to stored name if not found
+
+        return `
+          <span style="display:inline-block;background:var(--primary-color);color:white;padding:0.25rem 0.75rem;border-radius:15px;margin:0.25rem;font-size:0.9rem;">
+            ${displayName}
+          </span>
+        `;
+      }).join('');
     }
 
     function editSelectedSubjects() {
@@ -6156,22 +6213,20 @@
 
       if (!modal || !checklist) return;
 
-      // Get available subjects for current user's grade
-      const gradeSubjects = {
-        '10': ['الرياضيات', 'الفيزياء', 'الكيمياء', 'الأحياء', 'اللغة العربية', 'اللغة الإنجليزية', 'التاريخ', 'الجغرافيا', 'الحاسوب'],
-        '11': ['الرياضيات', 'الفيزياء', 'الكيمياء', 'الأحياء', 'اللغة العربية', 'اللغة الإنجليزية', 'علم النفس', 'الإحصاء', 'الاقتصاد'],
-        '12': ['الرياضيات', 'الفيزياء', 'الكيمياء', 'الأحياء', 'اللغة العربية', 'اللغة الإنجليزية', 'الفلسفة', 'علم الاجتماع', 'إدارة الأعمال']
-      };
-
-      const availableSubjects = gradeSubjects[currentUser?.grade] || [];
+      // Get available subjects from the actual subjectsByGrade data structure
+      const availableSubjects = subjectsByGrade[currentUser?.grade] || [];
       const userSelectedSubjects = currentUser?.selected_subjects || [];
 
-      checklist.innerHTML = availableSubjects.map(subject => `
-        <div class="subject-item" onclick="toggleEditSubject('${subject}')">
-          <input type="checkbox" id="edit-subject-${subject}" data-subject="${subject}" ${userSelectedSubjects.includes(subject) ? 'checked' : ''}>
-          <label for="edit-subject-${subject}">${subject}</label>
-        </div>
-      `).join('');
+      checklist.innerHTML = availableSubjects.map(subject => {
+        const subjectName = currentLanguage === 'ar' ? subject.nameAr : subject.name;
+        const subjectValue = subject.name; // Store English name consistently
+        return `
+          <div class="subject-item" onclick="toggleEditSubject('${subjectValue}')">
+            <input type="checkbox" id="edit-subject-${subjectValue}" data-subject="${subjectValue}" ${userSelectedSubjects.includes(subjectValue) ? 'checked' : ''}>
+            <label for="edit-subject-${subjectValue}">${subjectName}</label>
+          </div>
+        `;
+      }).join('');
 
       modal.style.display = 'block';
     }
@@ -7512,7 +7567,7 @@ function setupRoomSubscriptions(){
       // Filter subjects based on user's selected subjects
       const userSelectedSubjects = currentUser?.selected_subjects || [];
       const filteredSubjects = userSelectedSubjects.length > 0
-        ? subjects.filter(s => userSelectedSubjects.includes(s.nameAr) || userSelectedSubjects.includes(s.name))
+        ? subjects.filter(s => userSelectedSubjects.includes(s.name))
         : subjects; // Show all if no selection filter
 
       filteredSubjects.forEach(s => {
