@@ -5984,6 +5984,13 @@
       const defaultScreen = 'home-screen';
       const targetScreen = savedScreen && document.getElementById(savedScreen) ? savedScreen : defaultScreen;
       navigateToScreen(targetScreen);
+
+      // If restoring to room screen, make sure host features are initialized
+      if (targetScreen === 'room-screen' && currentRoom && currentUser) {
+        setTimeout(() => {
+          initializeRoomHost();
+        }, 500);
+      }
     }
 
     function toggleSidebar(force){
@@ -10691,10 +10698,18 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
     // Call this when room is joined or participants change
     function initializeRoomHost() {
       if (currentRoom && currentUser && currentRoom.host_id === currentUser.id) {
+        console.log('🔧 Initializing host features for room:', currentRoom.id);
+
+        // Initialize the count first
         updateJoinRequestsButton();
 
-        // Set up real-time subscription for join requests
+        // Set up real-time subscription for join requests (will fallback to polling)
         subscribeToJoinRequests();
+
+        // Force start polling as backup
+        setTimeout(() => {
+          startJoinRequestsPolling();
+        }, 1000);
       }
     }
 
@@ -10754,10 +10769,27 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       startJoinRequestsPolling();
     }
 
-    function startJoinRequestsPolling() {
+    async function startJoinRequestsPolling() {
       if (joinRequestsPollingInterval) return; // Already polling
 
-      console.log('Starting join requests polling...');
+      console.log('🔄 Starting join requests polling...');
+
+      // Initialize the current count first
+      try {
+        const { count, error } = await supabase
+          .from('join_requests')
+          .select('*', { count: 'exact', head: true })
+          .eq('room_id', currentRoom.id)
+          .eq('status', 'pending');
+
+        if (!error) {
+          lastJoinRequestCount = count || 0;
+          console.log('📊 Initial join request count:', lastJoinRequestCount);
+        }
+      } catch (error) {
+        console.error('Error getting initial count:', error);
+        lastJoinRequestCount = 0;
+      }
 
       joinRequestsPollingInterval = setInterval(async () => {
         if (!currentRoom || !currentUser || currentRoom.host_id !== currentUser.id) {
@@ -10773,9 +10805,11 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
           if (error) throw error;
 
+          console.log('🔍 Polling check - Current count:', count, 'Previous:', lastJoinRequestCount);
+
           // Check if count increased (new request)
-          if (count > lastJoinRequestCount && lastJoinRequestCount >= 0) {
-            console.log('New join request detected via polling! Count:', count, 'Previous:', lastJoinRequestCount);
+          if (count > lastJoinRequestCount) {
+            console.log('🆕 New join request detected via polling! Count:', count, 'Previous:', lastJoinRequestCount);
 
             // Get the latest request to show notification
             const { data: latestRequest } = await supabase
@@ -10791,11 +10825,13 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
             }
           }
 
+          // Update the button whether count changed or not
+          updateJoinRequestsButton();
           lastJoinRequestCount = count;
         } catch (error) {
           console.error('Error in join requests polling:', error);
         }
-      }, 5000); // Check every 5 seconds
+      }, 3000); // Check every 3 seconds (faster for better UX)
     }
 
     function stopJoinRequestsMonitoring() {
