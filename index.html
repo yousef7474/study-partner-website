@@ -6524,6 +6524,15 @@
           alert((currentLanguage==='ar'?'فشل الانضمام إلى الغرفة: ':'Failed to join room: ') + (error.message || 'Unknown error'));
           return;
         }
+
+        // Clean up any join requests for this room since user has successfully joined
+        try {
+          await supabase.from('join_requests')
+            .update({ status: 'completed', updated_at: new Date().toISOString() })
+            .match({ room_id: roomId, requester_id: currentUser.id });
+        } catch (requestError) {
+          console.log('Note: Could not update join request status (this is okay):', requestError);
+        }
         
         currentRoom = {id: roomId, code: roomCode, host_id: roomHostId};
         localStorage.setItem('studyTogether_room', JSON.stringify(currentRoom));
@@ -6567,7 +6576,12 @@ async function leaveRoom(isLoggingOut = false){
       // Clean up study session
       await supabase.from('study_sessions')
         .delete().match({room_id: currentRoom.id, user_id: currentUser.id});
-        
+
+      // Update any approved join requests to 'completed' status
+      await supabase.from('join_requests')
+        .update({ status: 'completed', updated_at: new Date().toISOString() })
+        .match({ room_id: currentRoom.id, requester_id: currentUser.id, status: 'approved' });
+
     } catch (error) { 
       console.error('Error removing participant and study session:', error); 
     }
@@ -10679,11 +10693,21 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       }
     }
 
+    // Global variable to store subscription
+    let joinRequestsSubscription = null;
+
     function subscribeToJoinRequests() {
       if (!currentRoom) return;
 
+      // Unsubscribe from any existing subscription
+      if (joinRequestsSubscription) {
+        joinRequestsSubscription.unsubscribe();
+      }
+
+      console.log('Setting up join requests subscription for room:', currentRoom.id);
+
       // Subscribe to join requests for this room
-      const joinRequestsSubscription = supabase
+      joinRequestsSubscription = supabase
         .channel(`join_requests_${currentRoom.id}`)
         .on('postgres_changes',
           {
@@ -10693,17 +10717,20 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
             filter: `room_id=eq.${currentRoom.id}`
           },
           (payload) => {
-            console.log('Join request change:', payload);
+            console.log('Join request change received:', payload);
 
             // Show popup notification for new join requests
             if (payload.eventType === 'INSERT' && payload.new.status === 'pending') {
+              console.log('New pending join request, showing notification for:', payload.new.requester_name);
               showJoinRequestNotification(payload.new);
             }
 
             updateJoinRequestsButton();
           }
         )
-        .subscribe();
+        .subscribe((status) => {
+          console.log('Join requests subscription status:', status);
+        });
     }
 
     function showJoinRequestNotification(joinRequest) {
