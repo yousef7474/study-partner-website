@@ -1034,6 +1034,7 @@
         noActiveStudy:"No Active Study Sessions", noActiveStudyDesc:"Participants haven't selected their study topics yet. Choose your subject and chapters above to start a study session!",
         studyingChapters:"studying chapters", joinStudySession:"Join Study Session", totalSelected:"Total Selected",
         participants:"Participants", timer:"Timer", connected:"Connected", connecting:"Connecting...", disconnected:"Disconnected",
+        roomDetails:"Room Details", host:"Host", status:"Status", approvalRequired:"Approval Required", created:"Created",
         // Quiz translations
         quizTime:"Quiz Time!", preparingQuiz:"Preparing your quiz...", gettingQuestions:"Getting questions for",
         question:"Question", of:"of", next:"Next", skip:"Skip", close:"Close", retakeQuiz:"Retake Quiz", newQuiz:"New Quiz",
@@ -1137,7 +1138,8 @@
         studyFocus:"التركيز الدراسي", roomStudyFocus:"التركيز الدراسي للغرفة", studyFocusDesc:"اطلع على ما يدرسه الجميع في الغرفة حالياً. اختر مادتك والفصول أعلاه للانضمام إلى جلسة الدراسة.",
         noActiveStudy:"لا توجد جلسات دراسة نشطة", noActiveStudyDesc:"لم يختر المشاركون مواضيع دراستهم بعد. اختر مادتك والفصول أعلاه لبدء جلسة دراسة!",
         studyingChapters:"يدرس فصول", joinStudySession:"انضم لجلسة الدراسة", totalSelected:"المجموع المختار",
-        participants:"المشاركون", timer:"المؤقت", connected:"متصل", connecting:"جاري الاتصال...", disconnected:"غير متصل"
+        participants:"المشاركون", timer:"المؤقت", connected:"متصل", connecting:"جاري الاتصال...", disconnected:"غير متصل",
+        roomDetails:"تفاصيل الغرفة", host:"المضيف", status:"الحالة", approvalRequired:"الموافقة مطلوبة", created:"تاريخ الإنشاء"
       }
     };
     
@@ -10254,9 +10256,56 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       alert(currentLanguage === 'ar' ? 'سيتم تنفيذ طلب الانضمام قريباً' : 'Join request functionality coming soon');
     }
 
-    function viewRoomDetails(roomId) {
-      // This will show detailed room information
-      alert(currentLanguage === 'ar' ? 'سيتم تنفيذ تفاصيل الغرفة قريباً' : 'Room details functionality coming soon');
+    async function viewRoomDetails(roomId) {
+      try {
+        // Fetch detailed room information
+        const { data: room, error } = await supabase
+          .from('rooms')
+          .select(`
+            *,
+            users!rooms_host_id_fkey(name, avatar_color),
+            room_participants!inner(
+              user_id,
+              users!room_participants_user_id_fkey(name, avatar_color, grade)
+            )
+          `)
+          .eq('id', roomId)
+          .single();
+
+        if (error) throw error;
+
+        // Get participant count
+        const { count: participantCount } = await supabase
+          .from('room_participants')
+          .select('*', { count: 'exact', head: true })
+          .eq('room_id', roomId);
+
+        // Populate modal with room details
+        document.getElementById('room-details-title').textContent = room.room_code;
+        document.getElementById('room-details-subject').textContent = room.subject || (currentLanguage === 'ar' ? 'غير محدد' : 'Not specified');
+        document.getElementById('room-details-host').textContent = room.users?.name || 'Unknown';
+        document.getElementById('room-details-participants').textContent = participantCount || 0;
+        document.getElementById('room-details-status').textContent = room.is_active ?
+          (currentLanguage === 'ar' ? 'نشطة' : 'Active') :
+          (currentLanguage === 'ar' ? 'غير نشطة' : 'Inactive');
+        document.getElementById('room-details-created').textContent = new Date(room.created_at).toLocaleDateString();
+
+        // Show approval requirement
+        document.getElementById('room-details-approval').textContent = room.require_approval ?
+          (currentLanguage === 'ar' ? 'مطلوبة' : 'Required') :
+          (currentLanguage === 'ar' ? 'غير مطلوبة' : 'Not required');
+
+        // Show the modal
+        document.getElementById('room-details-modal').style.display = 'flex';
+
+      } catch (error) {
+        console.error('Error fetching room details:', error);
+        toast(currentLanguage === 'ar' ? 'فشل تحميل تفاصيل الغرفة' : 'Failed to load room details', 'error');
+      }
+    }
+
+    function closeRoomDetailsModal() {
+      document.getElementById('room-details-modal').style.display = 'none';
     }
 
     function showCreateRoomOption() {
@@ -10270,15 +10319,14 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
     async function requestToJoinRoom(roomId, roomCode) {
       try {
         // Check if user already has a pending request for this room
-        const { data: existingRequest, error: checkError } = await supabase
+        const { data: existingRequests, error: checkError } = await supabase
           .from('join_requests')
           .select('*')
           .eq('room_id', roomId)
           .eq('requester_id', currentUser.id)
-          .eq('status', 'pending')
-          .single();
+          .eq('status', 'pending');
 
-        if (!checkError && existingRequest) {
+        if (!checkError && existingRequests && existingRequests.length > 0) {
           toast(currentLanguage === 'ar' ? 'لديك طلب انضمام معلق لهذه الغرفة' : 'You already have a pending request for this room', 'info');
           return;
         }
@@ -10646,10 +10694,92 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           },
           (payload) => {
             console.log('Join request change:', payload);
+
+            // Show popup notification for new join requests
+            if (payload.eventType === 'INSERT' && payload.new.status === 'pending') {
+              showJoinRequestNotification(payload.new);
+            }
+
             updateJoinRequestsButton();
           }
         )
         .subscribe();
+    }
+
+    function showJoinRequestNotification(joinRequest) {
+      // Create notification element
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--bg-secondary);
+        border: 2px solid var(--primary-color);
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        z-index: 10000;
+        max-width: 350px;
+        animation: slideInRight 0.3s ease-out;
+        cursor: pointer;
+      `;
+
+      notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <div style="font-size: 1.5rem;">🔔</div>
+          <div style="flex: 1;">
+            <h4 style="margin: 0 0 0.5rem 0; color: var(--primary-color);">
+              ${currentLanguage === 'ar' ? 'طلب انضمام جديد' : 'New Join Request'}
+            </h4>
+            <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
+              ${joinRequest.requester_name} ${currentLanguage === 'ar' ? 'يريد الانضمام إلى غرفتك' : 'wants to join your room'}
+            </p>
+          </div>
+          <button style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-secondary);" onclick="this.parentElement.parentElement.remove()">×</button>
+        </div>
+      `;
+
+      // Add CSS animation
+      if (!document.getElementById('notification-styles')) {
+        const style = document.createElement('style');
+        style.id = 'notification-styles';
+        style.textContent = `
+          @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+          }
+          @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+
+      // Click to open join requests modal
+      notification.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON') {
+          notification.remove();
+          showJoinRequestsModal();
+        }
+      });
+
+      // Auto-remove after 8 seconds
+      setTimeout(() => {
+        if (notification.parentElement) {
+          notification.style.animation = 'slideOutRight 0.3s ease-out';
+          setTimeout(() => notification.remove(), 300);
+        }
+      }, 8000);
+
+      document.body.appendChild(notification);
+
+      // Play notification sound (optional)
+      try {
+        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmccBDqT2+/NewkDNYLJ8N2LMwkYXLXp7aJOFA5Mo+Pztm+QQAkVYrfh7qNOFAxRst8+');
+        audio.volume = 0.3;
+        audio.play().catch(() => {}); // Ignore errors if audio fails
+      } catch (e) {}
     }
 
 
@@ -10724,6 +10854,54 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       <div id="no-join-requests" style="display: none; text-align: center; padding: 2rem; color: var(--text-secondary);">
         <div style="font-size: 2rem; margin-bottom: 1rem;">📝</div>
         <p>No pending join requests</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Room Details Modal -->
+  <div id="room-details-modal" class="quiz-modal" style="display: none;">
+    <div class="quiz-container" style="max-width: 500px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="margin: 0;" data-translate="roomDetails">Room Details</h3>
+        <button onclick="closeRoomDetailsModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+      </div>
+
+      <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 12px;">
+        <div style="margin-bottom: 1rem;">
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--primary-color);" id="room-details-title">Room Code</h4>
+        </div>
+
+        <div style="display: grid; gap: 1rem;">
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-secondary);" data-translate="subject">Subject:</span>
+            <span id="room-details-subject">-</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-secondary);" data-translate="host">Host:</span>
+            <span id="room-details-host">-</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-secondary);" data-translate="participants">Participants:</span>
+            <span id="room-details-participants">-</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-secondary);" data-translate="status">Status:</span>
+            <span id="room-details-status">-</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-secondary);" data-translate="approvalRequired">Approval Required:</span>
+            <span id="room-details-approval">-</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-secondary);" data-translate="created">Created:</span>
+            <span id="room-details-created">-</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
