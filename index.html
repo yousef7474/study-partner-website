@@ -446,8 +446,7 @@
     </div>
     <nav class="sidebar-nav">
       <button class="nav-item" data-screen="home-screen" onclick="navigateToScreen('home-screen')"><span class="nav-icon">🏠</span><span data-translate="home">Home</span></button>
-      <button class="nav-item" data-screen="study-rooms-screen" onclick="navigateToScreen('study-rooms-screen')"><span class="nav-icon">👥</span><span data-translate="studyRooms">Study Rooms</span></button>
-      <button class="nav-item" data-screen="look-for-partner-screen" onclick="navigateToScreen('look-for-partner-screen')"><span class="nav-icon">🤝</span><span data-translate="lookForPartner">Look for a Partner</span></button>
+      <button class="nav-item" data-screen="look-for-partner-screen" onclick="navigateToScreen('look-for-partner-screen')"><span class="nav-icon">🤝</span><span data-translate="lookForPartner">Look for Partners</span></button>
       <button class="nav-item" data-screen="library-screen" onclick="navigateToScreen('library-screen')"><span class="nav-icon">📚</span><span data-translate="digitalLibrary">Digital Library</span></button>
       <button class="nav-item" data-screen="calendar-screen" onclick="navigateToScreen('calendar-screen')"><span class="nav-icon">📅</span><span data-translate="calendar">Academic Calendar</span></button>
       <button class="nav-item" data-screen="about-screen" onclick="navigateToScreen('about-screen')"><span class="nav-icon">ℹ️</span><span data-translate="about">About</span></button>
@@ -973,7 +972,7 @@
     // -------- TRANSLATIONS & STATIC DATA --------
     const translations={
       en:{
-        home:"Home", dashboard:"Dashboard", studyRooms:"Study Rooms", lookForPartner:"Look for a Partner", digitalLibrary:"Digital Library",
+        home:"Home", dashboard:"Dashboard", studyRooms:"Study Rooms", lookForPartner:"Look for Partners", digitalLibrary:"Digital Library",
         calendar:"Academic Calendar", about:"About", settings:"Settings", logout:"Logout", welcome:"Welcome",
         welcomeDesc:"Create your profile to start", yourName:"Your Name",
         chooseAvatar:"Choose Avatar Color", selectGrade:"Select Grade", joinPlatform:"Join Platform",
@@ -1057,7 +1056,7 @@
         streakBonus:"Streak Bonus!", bonus:"Bonus!"
       },
       ar:{
-        home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة", lookForPartner:"البحث عن شريك",
+        home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة", lookForPartner:"البحث عن شركاء",
         digitalLibrary:"المكتبة الرقمية", calendar:"التقويم الأكاديمي", about:"حول", settings:"الإعدادات",
         logout:"خروج", welcome:"مرحباً بك", welcomeDesc:"أنشئ ملفك الشخصي للبدء",
         yourName:"اسمك", chooseAvatar:"اختر لون الصورة الرمزية",
@@ -10197,14 +10196,33 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         noRoomsMessage.style.display = 'none';
         roomsList.style.display = 'grid';
 
-        // Get participant counts for each room
+        // Get participant counts and active subjects for each room
         const roomsWithCounts = await Promise.all(rooms.map(async (room) => {
           const { count } = await supabase
             .from('room_participants')
             .select('*', { count: 'exact', head: true })
             .eq('room_id', room.id);
 
-          return { ...room, participant_count: count || 0 };
+          // Get active study subjects in this room
+          const { data: studySessions } = await supabase
+            .from('study_sessions')
+            .select('subject')
+            .eq('room_id', room.id)
+            .eq('is_active', true);
+
+          // Get unique subjects from study sessions
+          const activeSubjects = studySessions ?
+            [...new Set(studySessions.map(session => session.subject).filter(s => s))] : [];
+
+          const subjectDisplay = activeSubjects.length > 0 ?
+            activeSubjects.join(', ') :
+            (room.subject || (currentLanguage === 'ar' ? 'غير محدد' : 'Not specified'));
+
+          return {
+            ...room,
+            participant_count: count || 0,
+            active_subjects: subjectDisplay
+          };
         }));
 
         roomsList.innerHTML = roomsWithCounts.map(room => createRoomCard(room)).join('');
@@ -10236,7 +10254,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
     function createRoomCard(room) {
       const hostName = room.users?.name || 'Unknown Host';
       const hostColor = room.users?.avatar_color || '#667eea';
-      const subject = room.subject || (currentLanguage === 'ar' ? 'غير محدد' : 'Not specified');
+      const subject = room.active_subjects || (currentLanguage === 'ar' ? 'غير محدد' : 'Not specified');
 
       return `
         <div class="room-card" style="background: var(--bg-secondary); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-light); border: 1px solid var(--border-color);">
