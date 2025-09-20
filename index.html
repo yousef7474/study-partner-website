@@ -6537,7 +6537,8 @@
         try {
           await supabase.from('join_requests')
             .update({ status: 'completed', updated_at: new Date().toISOString() })
-            .match({ room_id: roomId, requester_id: currentUser.id });
+            .eq('room_id', roomId)
+            .eq('requester_id', currentUser.id);
         } catch (requestError) {
           console.log('Note: Could not update join request status (this is okay):', requestError);
         }
@@ -6589,7 +6590,9 @@ async function leaveRoom(isLoggingOut = false){
       // Update any approved join requests to 'completed' status
       await supabase.from('join_requests')
         .update({ status: 'completed', updated_at: new Date().toISOString() })
-        .match({ room_id: currentRoom.id, requester_id: currentUser.id, status: 'approved' });
+        .eq('room_id', currentRoom.id)
+        .eq('requester_id', currentUser.id)
+        .eq('status', 'approved');
 
     } catch (error) { 
       console.error('Error removing participant and study session:', error); 
@@ -10303,9 +10306,24 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           .select('*', { count: 'exact', head: true })
           .eq('room_id', roomId);
 
+        // Get active study subjects in this room
+        const { data: studySessions } = await supabase
+          .from('study_sessions')
+          .select('subject')
+          .eq('room_id', roomId)
+          .eq('is_active', true);
+
+        // Get unique subjects from study sessions
+        const activeSubjects = studySessions ?
+          [...new Set(studySessions.map(session => session.subject).filter(s => s))] : [];
+
+        const subjectDisplay = activeSubjects.length > 0 ?
+          activeSubjects.join(', ') :
+          (room.subject || (currentLanguage === 'ar' ? 'غير محدد' : 'Not specified'));
+
         // Populate modal with room details
         document.getElementById('room-details-title').textContent = room.room_code;
-        document.getElementById('room-details-subject').textContent = room.subject || (currentLanguage === 'ar' ? 'غير محدد' : 'Not specified');
+        document.getElementById('room-details-subject').textContent = subjectDisplay;
         document.getElementById('room-details-host').textContent = room.users?.name || 'Unknown';
         document.getElementById('room-details-participants').textContent = participantCount || 0;
         document.getElementById('room-details-status').textContent = room.is_active ?
