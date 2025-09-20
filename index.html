@@ -5966,6 +5966,9 @@
       if(savedUser){
         currentUser = JSON.parse(savedUser);
 
+        // Update last_seen timestamp for warriors list
+        updateLastSeen();
+
         // Migrate old Arabic subject format to new English format
         migrateUserSubjects();
 
@@ -6100,6 +6103,9 @@
         }
 
         currentUser = userData;
+
+        // Update last_seen timestamp for warriors list
+        updateLastSeen();
 
         // Migrate old Arabic subject format to new English format
         migrateUserSubjects();
@@ -11819,6 +11825,34 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       questionCount: null,
       opponent: null
     };
+
+    // Update user's last_seen timestamp to appear in warriors list
+    async function updateLastSeen() {
+      if (!currentUser || !supabase) return;
+
+      try {
+        await supabase
+          .from('users')
+          .update({ last_seen: new Date().toISOString() })
+          .eq('id', currentUser.id);
+      } catch (error) {
+        console.log('Failed to update last_seen:', error);
+      }
+    }
+
+    // Update last_seen every 30 seconds when user is active
+    setInterval(() => {
+      if (currentUser) {
+        updateLastSeen();
+      }
+    }, 30000);
+
+    // Update last_seen on various user interactions
+    document.addEventListener('click', () => {
+      if (currentUser && Math.random() < 0.1) { // Only 10% of clicks to avoid spam
+        updateLastSeen();
+      }
+    });
 
     function selectChallengeCategory(category) {
       challengeSetup.category = category;
