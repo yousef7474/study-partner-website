@@ -10316,6 +10316,9 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       }
     }
 
+    // Global variable to track current join request monitoring
+    let joinRequestMonitorInterval = null;
+
     async function submitJoinRequest() {
       if (!currentJoinRequestRoom) return;
 
@@ -10347,6 +10350,8 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           closeJoinRequestModal();
           toast(currentLanguage === 'ar' ? 'تم الانضمام إلى الغرفة' : 'Joined room successfully', 'success');
         } else {
+          // Start monitoring the join request status for approval
+          startJoinRequestMonitoring(data.id, currentJoinRequestRoom);
           toast(currentLanguage === 'ar' ? 'تم إرسال طلب الانضمام' : 'Join request sent successfully', 'success');
         }
 
@@ -10361,7 +10366,61 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       }
     }
 
+    function startJoinRequestMonitoring(requestId, roomInfo) {
+      // Clear any existing monitoring
+      stopJoinRequestMonitoring();
+
+      joinRequestMonitorInterval = setInterval(async () => {
+        try {
+          const { data: request, error } = await supabase
+            .from('join_requests')
+            .select('status')
+            .eq('id', requestId)
+            .single();
+
+          if (error) {
+            console.error('Error checking join request status:', error);
+            return;
+          }
+
+          if (request.status === 'approved') {
+            // Stop monitoring
+            stopJoinRequestMonitoring();
+
+            // Close the modal and join the room
+            closeJoinRequestModal();
+
+            // Join the room
+            await joinRoomById(roomInfo.id, roomInfo.room_code, roomInfo.host_id);
+
+            toast(currentLanguage === 'ar' ? 'تم قبول طلبك والانضمام إلى الغرفة!' : 'Your request was approved! Joining room...', 'success');
+
+          } else if (request.status === 'rejected') {
+            // Stop monitoring
+            stopJoinRequestMonitoring();
+
+            // Close the modal
+            closeJoinRequestModal();
+
+            toast(currentLanguage === 'ar' ? 'تم رفض طلب الانضمام' : 'Your join request was rejected', 'error');
+          }
+        } catch (error) {
+          console.error('Error monitoring join request:', error);
+        }
+      }, 2000); // Check every 2 seconds
+    }
+
+    function stopJoinRequestMonitoring() {
+      if (joinRequestMonitorInterval) {
+        clearInterval(joinRequestMonitorInterval);
+        joinRequestMonitorInterval = null;
+      }
+    }
+
     function closeJoinRequestModal() {
+      // Stop any ongoing monitoring
+      stopJoinRequestMonitoring();
+
       document.getElementById('join-request-modal').style.display = 'none';
       currentJoinRequestRoom = null;
     }
