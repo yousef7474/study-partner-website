@@ -778,9 +778,79 @@
       </div>
 
       <div id="library-screen" class="screen">
-        <h1 class="page-title">Digital Library</h1>
-        <div style="text-align:center;padding:4rem 0">
-          🚧<h3>Coming Soon!</h3><p>This feature is under development.</p>
+        <h1 class="page-title" data-translate="digitalLibrary">Digital Library</h1>
+
+        <!-- Library Categories -->
+        <div class="main-actions" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+          <div class="action-card" onclick="showLibrarySection('general')" style="cursor: pointer;">
+            <div class="action-icon">🏫</div>
+            <h3 data-translate="generalEducation">تعليم عام</h3>
+            <p data-translate="generalEducationLibrary">Materials for Saudi General Education system</p>
+            <button class="btn" data-translate="browse">Browse</button>
+          </div>
+
+          <div class="action-card" onclick="showLibrarySection('international')" style="cursor: pointer;">
+            <div class="action-icon">🌍</div>
+            <h3 data-translate="international">International</h3>
+            <p data-translate="internationalLibrary">Materials for International Education system</p>
+            <button class="btn" data-translate="browse">Browse</button>
+          </div>
+
+          <div class="action-card" onclick="showLibrarySection('qudrat')" style="cursor: pointer;">
+            <div class="action-icon">🧠</div>
+            <h3 data-translate="qudrat">قدرات</h3>
+            <p data-translate="qudratLibrary">General Aptitude Test materials</p>
+            <button class="btn" data-translate="browse">Browse</button>
+          </div>
+
+          <div class="action-card" onclick="showLibrarySection('tahsili')" style="cursor: pointer;">
+            <div class="action-icon">📖</div>
+            <h3 data-translate="tahsili">تحصيلي</h3>
+            <p data-translate="tahsiliLibrary">Achievement Test materials</p>
+            <button class="btn" data-translate="browse">Browse</button>
+          </div>
+        </div>
+
+        <!-- File Upload Section -->
+        <div id="library-content" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2 id="library-section-title">Section</h2>
+            <button class="btn btn-secondary" onclick="hideLibrarySection()" data-translate="back">Back</button>
+          </div>
+
+          <!-- Upload Area -->
+          <div style="background: var(--bg-secondary); border-radius: 16px; padding: 2rem; margin-bottom: 2rem; border: 2px dashed var(--border-color);">
+            <div style="text-align: center;">
+              <div style="font-size: 3rem; margin-bottom: 1rem;">📁</div>
+              <h3 data-translate="uploadMaterials">Upload Study Materials</h3>
+              <p style="color: var(--text-secondary); margin-bottom: 1.5rem;" data-translate="uploadDescription">
+                Share your notes, documents, and study materials with the community
+              </p>
+
+              <input type="file" id="file-upload" multiple accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.jpg,.jpeg,.png,.gif" style="display: none;">
+              <button class="btn" onclick="document.getElementById('file-upload').click()" data-translate="chooseFiles">
+                Choose Files
+              </button>
+
+              <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);" data-translate="supportedFormats">
+                Supported formats: PDF, Word, PowerPoint, Text, Images
+              </div>
+            </div>
+          </div>
+
+          <!-- Uploaded Files List -->
+          <div id="uploaded-files-list" style="display: none;">
+            <!-- Files will be listed here -->
+          </div>
+
+          <!-- Materials List (for future - showing uploaded content) -->
+          <div id="materials-list">
+            <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+              <div style="font-size: 2rem; margin-bottom: 1rem;">📚</div>
+              <h3 data-translate="noMaterials">No materials uploaded yet</h3>
+              <p data-translate="beFirstUpload">Be the first to share study materials!</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1035,6 +1105,13 @@
         studyingChapters:"studying chapters", joinStudySession:"Join Study Session", totalSelected:"Total Selected",
         participants:"Participants", timer:"Timer", connected:"Connected", connecting:"Connecting...", disconnected:"Disconnected",
         roomDetails:"Room Details", host:"Host", status:"Status", approvalRequired:"Approval Required", created:"Created",
+        generalEducationLibrary:"Materials for Saudi General Education system", internationalLibrary:"Materials for International Education system",
+        qudrat:"Qudrat", qudratLibrary:"General Aptitude Test materials", tahsili:"Tahsili", tahsiliLibrary:"Achievement Test materials",
+        uploadMaterials:"Upload Study Materials", uploadDescription:"Share your notes, documents, and study materials with the community",
+        chooseFiles:"Choose Files", supportedFormats:"Supported formats: PDF, Word, PowerPoint, Text, Images",
+        noMaterials:"No materials uploaded yet", beFirstUpload:"Be the first to share study materials!",
+        uploading:"Uploading...", uploadSuccess:"Upload successful!", uploadError:"Upload failed",
+        reviewMessage:"Content will be reviewed and checked before publishing",
         // Quiz translations
         quizTime:"Quiz Time!", preparingQuiz:"Preparing your quiz...", gettingQuestions:"Getting questions for",
         question:"Question", of:"of", next:"Next", skip:"Skip", close:"Close", retakeQuiz:"Retake Quiz", newQuiz:"New Quiz",
@@ -1139,7 +1216,14 @@
         noActiveStudy:"لا توجد جلسات دراسة نشطة", noActiveStudyDesc:"لم يختر المشاركون مواضيع دراستهم بعد. اختر مادتك والفصول أعلاه لبدء جلسة دراسة!",
         studyingChapters:"يدرس فصول", joinStudySession:"انضم لجلسة الدراسة", totalSelected:"المجموع المختار",
         participants:"المشاركون", timer:"المؤقت", connected:"متصل", connecting:"جاري الاتصال...", disconnected:"غير متصل",
-        roomDetails:"تفاصيل الغرفة", host:"المضيف", status:"الحالة", approvalRequired:"الموافقة مطلوبة", created:"تاريخ الإنشاء"
+        roomDetails:"تفاصيل الغرفة", host:"المضيف", status:"الحالة", approvalRequired:"الموافقة مطلوبة", created:"تاريخ الإنشاء",
+        generalEducationLibrary:"مواد نظام التعليم العام السعودي", internationalLibrary:"مواد نظام التعليم الدولي",
+        qudrat:"قدرات", qudratLibrary:"مواد اختبار القدرات العامة", tahsili:"تحصيلي", tahsiliLibrary:"مواد الاختبار التحصيلي",
+        uploadMaterials:"رفع المواد الدراسية", uploadDescription:"شارك ملاحظاتك ووثائقك والمواد الدراسية مع المجتمع",
+        chooseFiles:"اختر الملفات", supportedFormats:"الصيغ المدعومة: PDF، Word، PowerPoint، النصوص، الصور",
+        noMaterials:"لم يتم رفع أي مواد بعد", beFirstUpload:"كن أول من يشارك المواد الدراسية!",
+        uploading:"جاري الرفع...", uploadSuccess:"تم الرفع بنجاح!", uploadError:"فشل في الرفع",
+        reviewMessage:"سيتم مراجعة المحتوى والتحقق منه قبل النشر"
       }
     };
     
@@ -10968,6 +11052,199 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         requester_name: 'Test User',
         room_id: 'test-room-id'
       });
+    }
+
+    // -------- DIGITAL LIBRARY FUNCTIONS --------
+    let currentLibrarySection = null;
+
+    function showLibrarySection(section) {
+      currentLibrarySection = section;
+
+      // Define section titles
+      const sectionTitles = {
+        general: currentLanguage === 'ar' ? 'تعليم عام' : 'General Education',
+        international: currentLanguage === 'ar' ? 'دولي' : 'International',
+        qudrat: currentLanguage === 'ar' ? 'قدرات' : 'Qudrat',
+        tahsili: currentLanguage === 'ar' ? 'تحصيلي' : 'Tahsili'
+      };
+
+      // Update section title
+      document.getElementById('library-section-title').textContent = sectionTitles[section];
+
+      // Show the content section
+      document.querySelector('.main-actions').style.display = 'none';
+      document.getElementById('library-content').style.display = 'block';
+
+      // Load existing materials for this section
+      loadSectionMaterials(section);
+    }
+
+    function hideLibrarySection() {
+      document.querySelector('.main-actions').style.display = 'grid';
+      document.getElementById('library-content').style.display = 'none';
+      currentLibrarySection = null;
+
+      // Reset file upload
+      document.getElementById('file-upload').value = '';
+      document.getElementById('uploaded-files-list').style.display = 'none';
+    }
+
+    async function loadSectionMaterials(section) {
+      try {
+        // Future: Load materials from database for this section
+        // For now, show empty state
+        const materialsList = document.getElementById('materials-list');
+        materialsList.innerHTML = `
+          <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">📚</div>
+            <h3 data-translate="noMaterials">${currentLanguage === 'ar' ? 'لم يتم رفع أي مواد بعد' : 'No materials uploaded yet'}</h3>
+            <p data-translate="beFirstUpload">${currentLanguage === 'ar' ? 'كن أول من يشارك المواد الدراسية!' : 'Be the first to share study materials!'}</p>
+          </div>
+        `;
+      } catch (error) {
+        console.error('Error loading section materials:', error);
+      }
+    }
+
+    // Handle file upload
+    document.addEventListener('DOMContentLoaded', function() {
+      const fileUpload = document.getElementById('file-upload');
+      if (fileUpload) {
+        fileUpload.addEventListener('change', handleFileUpload);
+      }
+    });
+
+    async function handleFileUpload(event) {
+      const files = event.target.files;
+      if (files.length === 0) return;
+
+      const uploadedFilesList = document.getElementById('uploaded-files-list');
+      uploadedFilesList.style.display = 'block';
+      uploadedFilesList.innerHTML = '<h3 style="margin-bottom: 1rem;">' +
+        (currentLanguage === 'ar' ? 'الملفات المحددة:' : 'Selected Files:') + '</h3>';
+
+      for (let file of files) {
+        // Validate file type
+        if (!isValidFileType(file)) {
+          toast(
+            currentLanguage === 'ar' ?
+            `نوع الملف غير مدعوم: ${file.name}` :
+            `Unsupported file type: ${file.name}`,
+            'error'
+          );
+          continue;
+        }
+
+        // Create file card
+        const fileCard = createFileCard(file);
+        uploadedFilesList.appendChild(fileCard);
+
+        // Start upload simulation (replace with actual upload later)
+        setTimeout(() => simulateFileUpload(file, fileCard), 500);
+      }
+    }
+
+    function isValidFileType(file) {
+      const validTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'text/plain',
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/gif'
+      ];
+
+      return validTypes.includes(file.type);
+    }
+
+    function createFileCard(file) {
+      const fileCard = document.createElement('div');
+      fileCard.style.cssText = `
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      `;
+
+      const fileIcon = getFileIcon(file.type);
+      const fileSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+
+      fileCard.innerHTML = `
+        <div style="font-size: 2rem;">${fileIcon}</div>
+        <div style="flex: 1;">
+          <h4 style="margin: 0; color: var(--text-primary);">${file.name}</h4>
+          <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
+            ${file.type || 'Unknown'} • ${fileSize}
+          </p>
+        </div>
+        <div class="upload-status" style="text-align: right;">
+          <div class="upload-progress" style="color: var(--primary-color);">
+            ${currentLanguage === 'ar' ? 'جاري الرفع...' : 'Uploading...'}
+          </div>
+        </div>
+      `;
+
+      return fileCard;
+    }
+
+    function getFileIcon(fileType) {
+      if (fileType.includes('pdf')) return '📄';
+      if (fileType.includes('word')) return '📝';
+      if (fileType.includes('powerpoint') || fileType.includes('presentation')) return '📊';
+      if (fileType.includes('text')) return '📄';
+      if (fileType.includes('image')) return '🖼️';
+      return '📎';
+    }
+
+    async function simulateFileUpload(file, fileCard) {
+      try {
+        // Simulate upload progress
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Show success status
+        const statusDiv = fileCard.querySelector('.upload-status');
+        statusDiv.innerHTML = `
+          <div style="color: var(--success-color);">
+            ✅ ${currentLanguage === 'ar' ? 'تم الرفع بنجاح!' : 'Upload successful!'}
+          </div>
+        `;
+
+        // Show review message
+        setTimeout(() => {
+          toast(
+            currentLanguage === 'ar' ?
+            'سيتم مراجعة المحتوى والتحقق منه قبل النشر' :
+            'Content will be reviewed and checked before publishing',
+            'info'
+          );
+        }, 500);
+
+        // Future: Actually upload to Supabase Storage here
+        console.log('File uploaded:', file.name, 'Section:', currentLibrarySection);
+
+      } catch (error) {
+        console.error('Upload error:', error);
+
+        const statusDiv = fileCard.querySelector('.upload-status');
+        statusDiv.innerHTML = `
+          <div style="color: var(--error-color);">
+            ❌ ${currentLanguage === 'ar' ? 'فشل في الرفع' : 'Upload failed'}
+          </div>
+        `;
+
+        toast(
+          currentLanguage === 'ar' ? 'فشل في رفع الملف' : 'Failed to upload file',
+          'error'
+        );
+      }
     }
 
 
