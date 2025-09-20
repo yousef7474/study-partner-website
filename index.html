@@ -642,9 +642,10 @@
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
           <h1 class="page-title" style="margin:0" data-translate="studyRoom">Study Room</h1>
           <div style="display: flex; gap: 0.5rem; align-items: center;">
-            <button id="join-requests-btn" class="btn btn-secondary btn-small" onclick="showJoinRequestsModal()" style="display: none;">
+            <button id="join-requests-btn" class="btn btn-secondary btn-small" onclick="showJoinRequestsModal()" style="display: none; position: relative;">
               📝 <span data-translate="joinRequests">Join Requests</span>
               <span id="join-requests-count" style="background: var(--error-color); color: white; border-radius: 50%; padding: 0.2rem 0.4rem; margin-left: 0.5rem; font-size: 0.7rem; display: none;"></span>
+              <div id="join-requests-indicator" style="position: absolute; top: -5px; right: -5px; width: 12px; height: 12px; background: #ff4444; border-radius: 50%; display: none; animation: pulse 2s infinite;"></div>
             </button>
             <button class="btn btn-secondary btn-small" onclick="leaveRoom()">
               <span class="ltr-arrow">←</span> <span data-translate="leaveRoom">Leave Room</span>
@@ -6566,6 +6567,7 @@
 async function leaveRoom(isLoggingOut = false){
   if(!currentRoom) return;
   cleanupSubscriptions();
+  stopJoinRequestsMonitoring();
   
   if (!isLoggingOut) {
     try {
@@ -10646,6 +10648,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
     async function updateJoinRequestsButton() {
       const joinRequestsBtn = document.getElementById('join-requests-btn');
       const joinRequestsCount = document.getElementById('join-requests-count');
+      const joinRequestsIndicator = document.getElementById('join-requests-indicator');
 
       if (!currentRoom || !currentUser) {
         joinRequestsBtn.style.display = 'none';
@@ -10673,8 +10676,10 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         if (count > 0) {
           joinRequestsCount.textContent = count;
           joinRequestsCount.style.display = 'inline-block';
+          joinRequestsIndicator.style.display = 'block'; // Show red pulsing indicator
         } else {
           joinRequestsCount.style.display = 'none';
+          joinRequestsIndicator.style.display = 'none'; // Hide red indicator
         }
 
       } catch (error) {
@@ -10693,8 +10698,10 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       }
     }
 
-    // Global variable to store subscription
+    // Global variables for join request monitoring
     let joinRequestsSubscription = null;
+    let joinRequestsPollingInterval = null;
+    let lastJoinRequestCount = 0;
 
     function subscribeToJoinRequests() {
       if (!currentRoom) return;
@@ -10702,6 +10709,11 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       // Unsubscribe from any existing subscription
       if (joinRequestsSubscription) {
         joinRequestsSubscription.unsubscribe();
+      }
+
+      // Clear any existing polling
+      if (joinRequestsPollingInterval) {
+        clearInterval(joinRequestsPollingInterval);
       }
 
       console.log('Setting up join requests subscription for room:', currentRoom.id);
@@ -10730,10 +10742,79 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         )
         .subscribe((status) => {
           console.log('Join requests subscription status:', status);
+
+          // If subscription fails, fall back to polling
+          if (status === 'SUBSCRIPTION_ERROR' || status === 'CLOSED') {
+            console.log('Subscription failed, falling back to polling');
+            startJoinRequestsPolling();
+          }
         });
+
+      // Also start polling as a backup (check every 5 seconds)
+      startJoinRequestsPolling();
+    }
+
+    function startJoinRequestsPolling() {
+      if (joinRequestsPollingInterval) return; // Already polling
+
+      console.log('Starting join requests polling...');
+
+      joinRequestsPollingInterval = setInterval(async () => {
+        if (!currentRoom || !currentUser || currentRoom.host_id !== currentUser.id) {
+          return;
+        }
+
+        try {
+          const { count, error } = await supabase
+            .from('join_requests')
+            .select('*', { count: 'exact', head: true })
+            .eq('room_id', currentRoom.id)
+            .eq('status', 'pending');
+
+          if (error) throw error;
+
+          // Check if count increased (new request)
+          if (count > lastJoinRequestCount && lastJoinRequestCount >= 0) {
+            console.log('New join request detected via polling! Count:', count, 'Previous:', lastJoinRequestCount);
+
+            // Get the latest request to show notification
+            const { data: latestRequest } = await supabase
+              .from('join_requests')
+              .select('*')
+              .eq('room_id', currentRoom.id)
+              .eq('status', 'pending')
+              .order('created_at', { ascending: false })
+              .limit(1);
+
+            if (latestRequest && latestRequest.length > 0) {
+              showJoinRequestNotification(latestRequest[0]);
+            }
+          }
+
+          lastJoinRequestCount = count;
+        } catch (error) {
+          console.error('Error in join requests polling:', error);
+        }
+      }, 5000); // Check every 5 seconds
+    }
+
+    function stopJoinRequestsMonitoring() {
+      if (joinRequestsSubscription) {
+        joinRequestsSubscription.unsubscribe();
+        joinRequestsSubscription = null;
+      }
+
+      if (joinRequestsPollingInterval) {
+        clearInterval(joinRequestsPollingInterval);
+        joinRequestsPollingInterval = null;
+      }
+
+      lastJoinRequestCount = 0;
     }
 
     function showJoinRequestNotification(joinRequest) {
+      console.log('🔔 Showing notification for join request:', joinRequest);
+
       // Create notification element
       const notification = document.createElement('div');
       notification.style.cssText = `
@@ -10807,6 +10888,14 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         audio.volume = 0.3;
         audio.play().catch(() => {}); // Ignore errors if audio fails
       } catch (e) {}
+    }
+
+    // Test function to manually trigger notification (for debugging)
+    function testJoinRequestNotification() {
+      showJoinRequestNotification({
+        requester_name: 'Test User',
+        room_id: 'test-room-id'
+      });
     }
 
 
