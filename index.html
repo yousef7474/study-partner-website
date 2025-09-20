@@ -447,6 +447,7 @@
     <nav class="sidebar-nav">
       <button class="nav-item" data-screen="home-screen" onclick="navigateToScreen('home-screen')"><span class="nav-icon">🏠</span><span data-translate="home">Home</span></button>
       <button class="nav-item" data-screen="study-rooms-screen" onclick="navigateToScreen('study-rooms-screen')"><span class="nav-icon">👥</span><span data-translate="studyRooms">Study Rooms</span></button>
+      <button class="nav-item" data-screen="look-for-partner-screen" onclick="navigateToScreen('look-for-partner-screen')"><span class="nav-icon">🤝</span><span data-translate="lookForPartner">Look for a Partner</span></button>
       <button class="nav-item" data-screen="library-screen" onclick="navigateToScreen('library-screen')"><span class="nav-icon">📚</span><span data-translate="digitalLibrary">Digital Library</span></button>
       <button class="nav-item" data-screen="calendar-screen" onclick="navigateToScreen('calendar-screen')"><span class="nav-icon">📅</span><span data-translate="calendar">Academic Calendar</span></button>
       <button class="nav-item" data-screen="about-screen" onclick="navigateToScreen('about-screen')"><span class="nav-icon">ℹ️</span><span data-translate="about">About</span></button>
@@ -640,9 +641,15 @@
       <div id="room-screen" class="screen">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
           <h1 class="page-title" style="margin:0" data-translate="studyRoom">Study Room</h1>
-          <button class="btn btn-secondary btn-small" onclick="leaveRoom()">
-            <span class="ltr-arrow">←</span> <span data-translate="leaveRoom">Leave Room</span>
-          </button>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button id="join-requests-btn" class="btn btn-secondary btn-small" onclick="showJoinRequestsModal()" style="display: none;">
+              📝 <span data-translate="joinRequests">Join Requests</span>
+              <span id="join-requests-count" style="background: var(--error-color); color: white; border-radius: 50%; padding: 0.2rem 0.4rem; margin-left: 0.5rem; font-size: 0.7rem; display: none;"></span>
+            </button>
+            <button class="btn btn-secondary btn-small" onclick="leaveRoom()">
+              <span class="ltr-arrow">←</span> <span data-translate="leaveRoom">Leave Room</span>
+            </button>
+          </div>
         </div>
 
         <div style="background:var(--bg-secondary);padding:1rem 1.25rem;border-radius:16px;margin-bottom:1.25rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
@@ -916,6 +923,48 @@
         </div>
       </div>
     </div>
+
+    <!-- Look for a Partner Screen -->
+    <div id="look-for-partner-screen" class="screen">
+      <h1 class="page-title" data-translate="lookForPartner">Look for a Partner</h1>
+
+      <div class="main-actions">
+        <div class="action-card" onclick="showActiveRooms()">
+          <div class="action-icon">🔍</div>
+          <h3 data-translate="browseActiveRooms">Browse Active Rooms</h3>
+          <p data-translate="browseActiveRoomsDesc">Find and join existing study rooms</p>
+          <button class="btn" data-translate="browse">Browse</button>
+        </div>
+        <div class="action-card" onclick="showCreateRoomOption()">
+          <div class="action-icon">➕</div>
+          <h3 data-translate="createOwnRoom">Create Own Room</h3>
+          <p data-translate="createOwnRoomDesc">Start your own study session</p>
+          <button class="btn btn-secondary" data-translate="create">Create</button>
+        </div>
+      </div>
+
+      <!-- Active Rooms List -->
+      <div id="active-rooms-container" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+          <h2 data-translate="activeStudyRooms">Active Study Rooms</h2>
+          <button class="btn btn-secondary" onclick="hideActiveRooms()" data-translate="back">Back</button>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <input type="text" id="room-search" class="form-input" data-translate-placeholder="searchRooms" style="max-width: 400px;">
+        </div>
+
+        <div id="active-rooms-list" style="display: grid; gap: 1.5rem;">
+          <!-- Active rooms will be populated here -->
+        </div>
+
+        <div id="no-rooms-message" style="display: none; text-align: center; padding: 3rem; color: var(--text-secondary);">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🏠</div>
+          <h3 data-translate="noActiveRooms">No Active Rooms</h3>
+          <p data-translate="noActiveRoomsDesc">Be the first to create a study room!</p>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -923,7 +972,7 @@
     // -------- TRANSLATIONS & STATIC DATA --------
     const translations={
       en:{
-        home:"Home", dashboard:"Dashboard", studyRooms:"Study Rooms", digitalLibrary:"Digital Library",
+        home:"Home", dashboard:"Dashboard", studyRooms:"Study Rooms", lookForPartner:"Look for a Partner", digitalLibrary:"Digital Library",
         calendar:"Academic Calendar", about:"About", settings:"Settings", logout:"Logout", welcome:"Welcome",
         welcomeDesc:"Create your profile to start", yourName:"Your Name",
         chooseAvatar:"Choose Avatar Color", selectGrade:"Select Grade", joinPlatform:"Join Platform",
@@ -931,6 +980,17 @@
         copyCode:"Copy Code", shareLink:"Share Link", save:"Save", delete:"Delete", enterRooms:"Enter Rooms",
         browse:"Browse", createNow:"Create Now", joinNow:"Join Now", joinRoom:"Join Room",
         createRoom:"Create Room", enterRoomCode:"Enter Room Code", leaveRoom:"Leave Room",
+        browseActiveRooms:"Browse Active Rooms", browseActiveRoomsDesc:"Find and join existing study rooms",
+        createOwnRoom:"Create Own Room", createOwnRoomDesc:"Start your own study session", create:"Create",
+        activeStudyRooms:"Active Study Rooms", searchRooms:"Search rooms...",
+        noActiveRooms:"No Active Rooms", noActiveRoomsDesc:"Be the first to create a study room!",
+        requestToJoin:"Request to Join", joinRequestSent:"Join Request Sent", pending:"Pending",
+        joinRequests:"Join Requests", approveRequest:"Approve", rejectRequest:"Reject",
+        joinRequestMessage:"Optional message", sendRequest:"Send Request", cancelRequest:"Cancel",
+        requestApproved:"Request Approved", requestRejected:"Request Rejected",
+        joinRequestPending:"Your join request is pending approval",
+        requireApproval:"Require approval for joining", allowInstantJoin:"Allow instant join",
+        requireApprovalDesc:"When enabled, you must approve each student who wants to join your room. When disabled, students can join instantly.",
         roomCode:"Room Code", subject:"Subject", selectSubject:"Select Subject",
         studyRoom:"Study Room", startNewSession:"Start a new study session",
         enterRoomCodeToJoin:"Enter a room code to join",
@@ -995,7 +1055,7 @@
         streakBonus:"Streak Bonus!", bonus:"Bonus!"
       },
       ar:{
-        home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة",
+        home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة", lookForPartner:"البحث عن شريك",
         digitalLibrary:"المكتبة الرقمية", calendar:"التقويم الأكاديمي", about:"حول", settings:"الإعدادات",
         logout:"خروج", welcome:"مرحباً بك", welcomeDesc:"أنشئ ملفك الشخصي للبدء",
         yourName:"اسمك", chooseAvatar:"اختر لون الصورة الرمزية",
@@ -1004,6 +1064,17 @@
         menuToggle:"القائمة", copyCode:"نسخ الكود", shareLink:"مشاركة الرابط",
         save:"حفظ", delete:"حذف", enterRooms:"دخول الغرف", browse:"تصفح", createNow:"إنشاء الآن",
         joinNow:"انضمام الآن", joinRoom:"انضم للغرفة", createRoom:"إنشاء غرفة",
+        browseActiveRooms:"تصفح الغرف النشطة", browseActiveRoomsDesc:"اعثر على غرف الدراسة الموجودة وانضم إليها",
+        createOwnRoom:"إنشاء غرفة خاصة", createOwnRoomDesc:"ابدأ جلسة دراسة خاصة بك", create:"إنشاء",
+        activeStudyRooms:"غرف الدراسة النشطة", searchRooms:"البحث في الغرف...",
+        noActiveRooms:"لا توجد غرف نشطة", noActiveRoomsDesc:"كن أول من ينشئ غرفة دراسة!",
+        requestToJoin:"طلب الانضمام", joinRequestSent:"تم إرسال طلب الانضمام", pending:"قيد الانتظار",
+        joinRequests:"طلبات الانضمام", approveRequest:"موافقة", rejectRequest:"رفض",
+        joinRequestMessage:"رسالة اختيارية", sendRequest:"إرسال الطلب", cancelRequest:"إلغاء",
+        requestApproved:"تمت الموافقة على الطلب", requestRejected:"تم رفض الطلب",
+        joinRequestPending:"طلب الانضمام قيد انتظار الموافقة",
+        requireApproval:"يتطلب موافقة للانضمام", allowInstantJoin:"السماح بالانضمام الفوري",
+        requireApprovalDesc:"عند التفعيل، يجب عليك الموافقة على كل طالب يريد الانضمام لغرفتك. عند عدم التفعيل، يمكن للطلاب الانضمام فوراً.",
         enterRoomCode:"أدخل كود الغرفة", leaveRoom:"مغادرة الغرفة",
         roomCode:"كود الغرفة", subject:"المادة", selectSubject:"اختر المادة",
         studyRoom:"غرفة الدراسة", startNewSession:"ابدأ جلسة دراسة جديدة",
@@ -6347,17 +6418,35 @@
     }
 
     // -------- ROOM MANAGEMENT --------
-    async function createRoom(){
+    function createRoom(){
       if(!currentUser){
         alert(currentLanguage==='ar'?'يرجى تسجيل الدخول أولاً.':'Please log in first.');
         return;
       }
+      // Show room creation modal
+      document.getElementById('room-creation-modal').style.display = 'flex';
+    }
+
+    function closeRoomCreationModal() {
+      document.getElementById('room-creation-modal').style.display = 'none';
+    }
+
+    async function createRoomWithSettings(){
       try{
         updateConnectionStatus('connecting');
-        const roomCode = Array(6).fill(0).map(() => 
+        const requireApproval = document.getElementById('require-approval-checkbox').checked;
+
+        const roomCode = Array(6).fill(0).map(() =>
           'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]
         ).join('');
-        const roomData = { room_code: roomCode, host_id: currentUser.id, is_active: true };
+
+        const roomData = {
+          room_code: roomCode,
+          host_id: currentUser.id,
+          is_active: true,
+          require_approval: requireApproval
+        };
+
         const {data, error} = await supabase.from('rooms').insert([roomData]).select().single();
         if(error){
           console.error('Room creation error:', error);
@@ -6365,8 +6454,15 @@
           alert((currentLanguage==='ar'?'فشل إنشاء الغرفة: ':'Failed to create room: ') + (error.message || 'Unknown error'));
           return;
         }
+
+        closeRoomCreationModal();
         await joinRoomById(data.id, data.room_code, data.host_id);
-        toast(currentLanguage==='ar'?'تم إنشاء الغرفة بنجاح!':'Room created successfully!', 'success', currentLanguage==='ar'?'تم الإنشاء':'Created');
+
+        const approvalText = requireApproval
+          ? (currentLanguage==='ar' ? ' (يتطلب موافقة)' : ' (requires approval)')
+          : (currentLanguage==='ar' ? ' (انضمام فوري)' : ' (instant join)');
+
+        toast(currentLanguage==='ar'?`تم إنشاء الغرفة بنجاح!${approvalText}`:`Room created successfully!${approvalText}`, 'success', currentLanguage==='ar'?'تم الإنشاء':'Created');
       }catch(e){
         console.error('Room creation exception:', e);
         updateConnectionStatus('disconnected');
@@ -6431,6 +6527,9 @@
         localStorage.setItem('studyTogether_room', JSON.stringify(currentRoom));
         document.getElementById('current-room-code').textContent = roomCode;
         populateRoomSubjects(currentUser.grade);
+
+        // Initialize host features if user is the host
+        initializeRoomHost();
         await loadRoomSubjectIntoUI();
         setupRoomSubscriptions();
         await loadRoomData();
@@ -10034,8 +10133,541 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       }
     }
 
+    // -------- LOOK FOR A PARTNER FUNCTIONALITY --------
+    async function showActiveRooms() {
+      document.getElementById('active-rooms-container').style.display = 'block';
+      await loadActiveRooms();
+    }
+
+    function hideActiveRooms() {
+      document.getElementById('active-rooms-container').style.display = 'none';
+    }
+
+    async function loadActiveRooms() {
+      try {
+        const { data: rooms, error } = await supabase
+          .from('rooms')
+          .select(`
+            *,
+            room_participants!inner(count),
+            users!rooms_host_id_fkey(name, avatar_color)
+          `)
+          .eq('is_active', true)
+          .neq('host_id', currentUser?.id); // Don't show user's own rooms
+
+        if (error) throw error;
+
+        const roomsList = document.getElementById('active-rooms-list');
+        const noRoomsMessage = document.getElementById('no-rooms-message');
+
+        if (!rooms || rooms.length === 0) {
+          roomsList.style.display = 'none';
+          noRoomsMessage.style.display = 'block';
+          return;
+        }
+
+        noRoomsMessage.style.display = 'none';
+        roomsList.style.display = 'grid';
+
+        // Get participant counts for each room
+        const roomsWithCounts = await Promise.all(rooms.map(async (room) => {
+          const { count } = await supabase
+            .from('room_participants')
+            .select('*', { count: 'exact', head: true })
+            .eq('room_id', room.id);
+
+          return { ...room, participant_count: count || 0 };
+        }));
+
+        roomsList.innerHTML = roomsWithCounts.map(room => createRoomCard(room)).join('');
+
+        // Add search functionality
+        const searchInput = document.getElementById('room-search');
+        searchInput.addEventListener('input', (e) => {
+          const searchTerm = e.target.value.toLowerCase();
+          const roomCards = roomsList.children;
+
+          for (let card of roomCards) {
+            const roomTitle = card.querySelector('.room-title').textContent.toLowerCase();
+            const hostName = card.querySelector('.room-host').textContent.toLowerCase();
+
+            if (roomTitle.includes(searchTerm) || hostName.includes(searchTerm)) {
+              card.style.display = 'block';
+            } else {
+              card.style.display = 'none';
+            }
+          }
+        });
+
+      } catch (error) {
+        console.error('Error loading active rooms:', error);
+        toast(currentLanguage === 'ar' ? 'فشل في تحميل الغرف النشطة' : 'Failed to load active rooms', 'error');
+      }
+    }
+
+    function createRoomCard(room) {
+      const hostName = room.users?.name || 'Unknown Host';
+      const hostColor = room.users?.avatar_color || '#667eea';
+      const subject = room.subject || (currentLanguage === 'ar' ? 'غير محدد' : 'Not specified');
+
+      return `
+        <div class="room-card" style="background: var(--bg-secondary); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-light); border: 1px solid var(--border-color);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+            <div>
+              <h3 class="room-title" style="margin: 0 0 0.5rem 0; color: var(--text-primary);">
+                ${room.room_code}
+              </h3>
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <div style="width: 24px; height: 24px; border-radius: 50%; background: ${hostColor}; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: 600;">
+                  ${hostName.charAt(0).toUpperCase()}
+                </div>
+                <span class="room-host" style="color: var(--text-secondary); font-size: 0.9rem;">
+                  ${currentLanguage === 'ar' ? 'المضيف:' : 'Host:'} ${hostName}
+                </span>
+              </div>
+              <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                <div>${currentLanguage === 'ar' ? 'المادة:' : 'Subject:'} ${subject}</div>
+                <div>${currentLanguage === 'ar' ? 'المشاركون:' : 'Participants:'} ${room.participant_count}</div>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <div style="background: var(--success-color); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; margin-bottom: 0.5rem;">
+                ${currentLanguage === 'ar' ? 'نشط' : 'Active'}
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem;">
+            <button class="btn btn-small" onclick="requestToJoinRoom('${room.id}', '${room.room_code}')" style="flex: 1;">
+              ${currentLanguage === 'ar' ? 'طلب الانضمام' : 'Request to Join'}
+            </button>
+            <button class="btn btn-secondary btn-small" onclick="viewRoomDetails('${room.id}')">
+              ${currentLanguage === 'ar' ? 'التفاصيل' : 'Details'}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    async function requestToJoinRoom(roomId, roomCode) {
+      // This will be implemented in the next phase with approval system
+      alert(currentLanguage === 'ar' ? 'سيتم تنفيذ طلب الانضمام قريباً' : 'Join request functionality coming soon');
+    }
+
+    function viewRoomDetails(roomId) {
+      // This will show detailed room information
+      alert(currentLanguage === 'ar' ? 'سيتم تنفيذ تفاصيل الغرفة قريباً' : 'Room details functionality coming soon');
+    }
+
+    function showCreateRoomOption() {
+      // Navigate to existing room creation screen
+      navigateToScreen('study-rooms-screen');
+    }
+
+    // -------- JOIN REQUEST SYSTEM --------
+    let currentJoinRequestRoom = null;
+
+    async function requestToJoinRoom(roomId, roomCode) {
+      try {
+        // Check if user already has a pending request for this room
+        const { data: existingRequest, error: checkError } = await supabase
+          .from('join_requests')
+          .select('*')
+          .eq('room_id', roomId)
+          .eq('requester_id', currentUser.id)
+          .eq('status', 'pending')
+          .single();
+
+        if (!checkError && existingRequest) {
+          toast(currentLanguage === 'ar' ? 'لديك طلب انضمام معلق لهذه الغرفة' : 'You already have a pending request for this room', 'info');
+          return;
+        }
+
+        // Get room details
+        const { data: room, error: roomError } = await supabase
+          .from('rooms')
+          .select(`
+            *,
+            users!rooms_host_id_fkey(name, avatar_color)
+          `)
+          .eq('id', roomId)
+          .single();
+
+        if (roomError) throw roomError;
+
+        currentJoinRequestRoom = room;
+
+        // Populate modal with room info
+        document.getElementById('join-room-title').textContent = `${currentLanguage === 'ar' ? 'الغرفة:' : 'Room:'} ${room.room_code}`;
+        document.getElementById('join-room-host').textContent = `${currentLanguage === 'ar' ? 'المضيف:' : 'Host:'} ${room.users?.name || 'Unknown'}`;
+        document.getElementById('join-room-info').innerHTML = `
+          ${currentLanguage === 'ar' ? 'المادة:' : 'Subject:'} ${room.subject || (currentLanguage === 'ar' ? 'غير محدد' : 'Not specified')}
+        `;
+
+        // Clear message field and show modal
+        document.getElementById('join-request-message').value = '';
+        document.getElementById('join-request-content').style.display = 'block';
+        document.getElementById('join-request-success').style.display = 'none';
+        document.getElementById('join-request-modal').style.display = 'flex';
+
+      } catch (error) {
+        console.error('Error preparing join request:', error);
+        toast(currentLanguage === 'ar' ? 'خطأ في تحضير طلب الانضمام' : 'Error preparing join request', 'error');
+      }
+    }
+
+    async function submitJoinRequest() {
+      if (!currentJoinRequestRoom) return;
+
+      try {
+        const message = document.getElementById('join-request-message').value.trim();
+
+        const { data, error } = await supabase
+          .from('join_requests')
+          .insert([{
+            room_id: currentJoinRequestRoom.id,
+            requester_id: currentUser.id,
+            requester_name: currentUser.name,
+            host_id: currentJoinRequestRoom.host_id,
+            message: message || null
+          }])
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        // Show success state
+        document.getElementById('join-request-content').style.display = 'none';
+        document.getElementById('join-request-success').style.display = 'block';
+
+        // If the request was auto-approved (require_approval = false)
+        if (data.status === 'approved') {
+          // Join the room directly
+          await joinRoomById(currentJoinRequestRoom.id, currentJoinRequestRoom.room_code, currentJoinRequestRoom.host_id);
+          closeJoinRequestModal();
+          toast(currentLanguage === 'ar' ? 'تم الانضمام إلى الغرفة' : 'Joined room successfully', 'success');
+        } else {
+          toast(currentLanguage === 'ar' ? 'تم إرسال طلب الانضمام' : 'Join request sent successfully', 'success');
+        }
+
+      } catch (error) {
+        console.error('Error submitting join request:', error);
+
+        if (error.code === '23505') { // Unique constraint violation
+          toast(currentLanguage === 'ar' ? 'لديك طلب انضمام معلق لهذه الغرفة' : 'You already have a pending request for this room', 'error');
+        } else {
+          toast(currentLanguage === 'ar' ? 'فشل إرسال طلب الانضمام' : 'Failed to send join request', 'error');
+        }
+      }
+    }
+
+    function closeJoinRequestModal() {
+      document.getElementById('join-request-modal').style.display = 'none';
+      currentJoinRequestRoom = null;
+    }
+
+    // -------- HOST JOIN REQUEST MANAGEMENT --------
+    async function showJoinRequestsModal() {
+      if (!currentRoom) return;
+
+      document.getElementById('join-requests-modal').style.display = 'flex';
+      await loadJoinRequests();
+    }
+
+    async function loadJoinRequests() {
+      try {
+        const { data: requests, error } = await supabase
+          .from('join_requests')
+          .select(`
+            *,
+            users!join_requests_requester_id_fkey(name, avatar_color, grade)
+          `)
+          .eq('room_id', currentRoom.id)
+          .eq('status', 'pending')
+          .order('created_at', { ascending: true });
+
+        if (error) throw error;
+
+        const requestsList = document.getElementById('join-requests-list');
+        const noRequestsMessage = document.getElementById('no-join-requests');
+
+        if (!requests || requests.length === 0) {
+          requestsList.style.display = 'none';
+          noRequestsMessage.style.display = 'block';
+          return;
+        }
+
+        noRequestsMessage.style.display = 'none';
+        requestsList.style.display = 'block';
+
+        requestsList.innerHTML = requests.map(request => createJoinRequestCard(request)).join('');
+
+      } catch (error) {
+        console.error('Error loading join requests:', error);
+        toast(currentLanguage === 'ar' ? 'فشل تحميل طلبات الانضمام' : 'Failed to load join requests', 'error');
+      }
+    }
+
+    function createJoinRequestCard(request) {
+      const user = request.users;
+      const userName = user?.name || 'Unknown User';
+      const userColor = user?.avatar_color || '#667eea';
+      const userGrade = user?.grade || '';
+      const timeAgo = new Date(request.created_at).toLocaleString();
+
+      return `
+        <div class="join-request-card" style="background: var(--bg-secondary); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; border: 1px solid var(--border-color);">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <div style="width: 40px; height: 40px; border-radius: 50%; background: ${userColor}; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                ${userName.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <h4 style="margin: 0; color: var(--text-primary);">${userName}</h4>
+                <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                  ${userGrade ? `${currentLanguage === 'ar' ? 'الصف' : 'Grade'} ${userGrade}` : ''}
+                </div>
+                <div style="color: var(--text-secondary); font-size: 0.8rem;">${timeAgo}</div>
+              </div>
+            </div>
+          </div>
+
+          ${request.message ? `
+            <div style="background: var(--bg-primary); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid var(--primary-color);">
+              <div style="font-size: 0.9rem; color: var(--text-secondary);">${request.message}</div>
+            </div>
+          ` : ''}
+
+          <div style="display: flex; gap: 1rem;">
+            <button class="btn btn-success" onclick="approveJoinRequest('${request.id}')" style="flex: 1;">
+              ${currentLanguage === 'ar' ? 'موافقة' : 'Approve'}
+            </button>
+            <button class="btn btn-secondary" onclick="rejectJoinRequest('${request.id}')" style="flex: 1;">
+              ${currentLanguage === 'ar' ? 'رفض' : 'Reject'}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    async function approveJoinRequest(requestId) {
+      try {
+        // Get the request details
+        const { data: request, error: getError } = await supabase
+          .from('join_requests')
+          .select('*')
+          .eq('id', requestId)
+          .single();
+
+        if (getError) throw getError;
+
+        // Update request status to approved
+        const { error: updateError } = await supabase
+          .from('join_requests')
+          .update({ status: 'approved', updated_at: new Date().toISOString() })
+          .eq('id', requestId);
+
+        if (updateError) throw updateError;
+
+        // Add user to room participants
+        const { error: participantError } = await supabase
+          .from('room_participants')
+          .insert([{
+            room_id: request.room_id,
+            user_id: request.requester_id,
+            joined_at: new Date().toISOString(),
+            is_online: true
+          }]);
+
+        if (participantError && participantError.code !== '23505') { // Ignore duplicate constraint
+          throw participantError;
+        }
+
+        toast(currentLanguage === 'ar' ? 'تمت الموافقة على الطلب' : 'Request approved successfully', 'success');
+
+        // Reload join requests and participants
+        await loadJoinRequests();
+        if (currentRoom) {
+          await loadParticipants();
+        }
+
+      } catch (error) {
+        console.error('Error approving join request:', error);
+        toast(currentLanguage === 'ar' ? 'فشل الموافقة على الطلب' : 'Failed to approve request', 'error');
+      }
+    }
+
+    async function rejectJoinRequest(requestId) {
+      try {
+        const { error } = await supabase
+          .from('join_requests')
+          .update({ status: 'rejected', updated_at: new Date().toISOString() })
+          .eq('id', requestId);
+
+        if (error) throw error;
+
+        toast(currentLanguage === 'ar' ? 'تم رفض الطلب' : 'Request rejected', 'info');
+
+        // Reload join requests
+        await loadJoinRequests();
+
+      } catch (error) {
+        console.error('Error rejecting join request:', error);
+        toast(currentLanguage === 'ar' ? 'فشل رفض الطلب' : 'Failed to reject request', 'error');
+      }
+    }
+
+    function closeJoinRequestsModal() {
+      document.getElementById('join-requests-modal').style.display = 'none';
+    }
+
+    // -------- JOIN REQUESTS UI UPDATES --------
+    async function updateJoinRequestsButton() {
+      const joinRequestsBtn = document.getElementById('join-requests-btn');
+      const joinRequestsCount = document.getElementById('join-requests-count');
+
+      if (!currentRoom || !currentUser) {
+        joinRequestsBtn.style.display = 'none';
+        return;
+      }
+
+      // Only show for room hosts
+      if (currentRoom.host_id !== currentUser.id) {
+        joinRequestsBtn.style.display = 'none';
+        return;
+      }
+
+      try {
+        // Get pending join requests count
+        const { count, error } = await supabase
+          .from('join_requests')
+          .select('*', { count: 'exact', head: true })
+          .eq('room_id', currentRoom.id)
+          .eq('status', 'pending');
+
+        if (error) throw error;
+
+        joinRequestsBtn.style.display = 'block';
+
+        if (count > 0) {
+          joinRequestsCount.textContent = count;
+          joinRequestsCount.style.display = 'inline-block';
+        } else {
+          joinRequestsCount.style.display = 'none';
+        }
+
+      } catch (error) {
+        console.error('Error updating join requests count:', error);
+        joinRequestsBtn.style.display = 'none';
+      }
+    }
+
+    // Call this when room is joined or participants change
+    function initializeRoomHost() {
+      if (currentRoom && currentUser && currentRoom.host_id === currentUser.id) {
+        updateJoinRequestsButton();
+
+        // Set up real-time subscription for join requests
+        subscribeToJoinRequests();
+      }
+    }
+
+    function subscribeToJoinRequests() {
+      if (!currentRoom) return;
+
+      // Subscribe to join requests for this room
+      const joinRequestsSubscription = supabase
+        .channel(`join_requests_${currentRoom.id}`)
+        .on('postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'join_requests',
+            filter: `room_id=eq.${currentRoom.id}`
+          },
+          (payload) => {
+            console.log('Join request change:', payload);
+            updateJoinRequestsButton();
+          }
+        )
+        .subscribe();
+    }
+
 
   </script>
+
+  <!-- Room Creation Modal -->
+  <div id="room-creation-modal" class="quiz-modal" style="display: none;">
+    <div class="quiz-container" style="max-width: 500px;">
+      <h3 style="margin-bottom: 1.5rem; text-align: center;" data-translate="createRoom">Create Room</h3>
+
+      <div class="form-group">
+        <label class="form-label">
+          <input type="checkbox" id="require-approval-checkbox" style="margin-right: 0.5rem;">
+          <span data-translate="requireApproval">Require approval for joining</span>
+        </label>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">
+          <span data-translate="requireApprovalDesc">When enabled, you must approve each student who wants to join your room. When disabled, students can join instantly.</span>
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+        <button class="btn btn-secondary" onclick="closeRoomCreationModal()" data-translate="cancelRequest">Cancel</button>
+        <button class="btn" onclick="createRoomWithSettings()" data-translate="createRoom">Create Room</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Join Request Modal -->
+  <div id="join-request-modal" class="quiz-modal" style="display: none;">
+    <div class="quiz-container" style="max-width: 500px;">
+      <h3 style="margin-bottom: 1.5rem; text-align: center;" data-translate="requestToJoin">Request to Join</h3>
+
+      <div id="join-request-content">
+        <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
+          <h4 id="join-room-title" style="margin: 0 0 0.5rem 0;">Room: </h4>
+          <div id="join-room-host" style="color: var(--text-secondary); margin-bottom: 0.5rem;"></div>
+          <div id="join-room-info" style="color: var(--text-secondary); font-size: 0.9rem;"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-translate="joinRequestMessage">Optional message</label>
+          <textarea id="join-request-message" class="form-input" rows="3" placeholder="Tell the host why you'd like to join..."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 1rem;">
+          <button class="btn btn-secondary" onclick="closeJoinRequestModal()" data-translate="cancelRequest">Cancel</button>
+          <button class="btn" onclick="submitJoinRequest()" data-translate="sendRequest">Send Request</button>
+        </div>
+      </div>
+
+      <div id="join-request-success" style="display: none; text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+        <h3 data-translate="joinRequestSent">Join Request Sent</h3>
+        <p data-translate="joinRequestPending">Your join request is pending approval</p>
+        <button class="btn" onclick="closeJoinRequestModal()" data-translate="close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Join Requests Management Modal (for hosts) -->
+  <div id="join-requests-modal" class="quiz-modal" style="display: none;">
+    <div class="quiz-container" style="max-width: 600px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="margin: 0;" data-translate="joinRequests">Join Requests</h3>
+        <button onclick="closeJoinRequestsModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+      </div>
+
+      <div id="join-requests-list">
+        <!-- Join requests will be populated here -->
+      </div>
+
+      <div id="no-join-requests" style="display: none; text-align: center; padding: 2rem; color: var(--text-secondary);">
+        <div style="font-size: 2rem; margin-bottom: 1rem;">📝</div>
+        <p>No pending join requests</p>
+      </div>
+    </div>
+  </div>
 
   <!-- Quiz Modal -->
   <div id="quiz-modal" class="quiz-modal">
