@@ -136,6 +136,22 @@
     .summary-item:last-child{margin-bottom:0}
     .points-highlight{color:var(--primary-color);font-weight:bold;font-size:1.1em}
     .bonus-highlight{color:var(--success-color);font-weight:bold}
+
+    /* Challenge Styles */
+    .challenge-category-btn{background:var(--bg-tertiary);border:2px solid var(--border-color);border-radius:12px;padding:1rem;cursor:pointer;transition:all 0.3s ease;text-align:center;min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem}
+    .challenge-category-btn:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(102,126,234,0.3);border-color:var(--primary-color)}
+    .challenge-category-btn.selected{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;border-color:var(--primary-color);transform:translateY(-3px);box-shadow:0 8px 25px rgba(102,126,234,0.4)}
+    .question-count-btn{background:var(--bg-tertiary);border:2px solid var(--border-color);border-radius:12px;padding:1rem;cursor:pointer;transition:all 0.3s ease;text-align:center;min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.3rem}
+    .question-count-btn:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(34,197,94,0.3);border-color:var(--success-color)}
+    .question-count-btn.selected{background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;border-color:var(--success-color);transform:translateY(-3px);box-shadow:0 8px 25px rgba(34,197,94,0.4)}
+    .opponent-card{background:var(--bg-tertiary);border:2px solid var(--border-color);border-radius:12px;padding:1rem;cursor:pointer;transition:all 0.3s ease;display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem}
+    .opponent-card:hover{border-color:var(--warning-color);transform:translateX(5px)}
+    .opponent-card.selected{background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);color:white;border-color:var(--warning-color)}
+    .opponent-avatar{width:50px;height:50px;border-radius:50%;background:var(--primary-color);display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:1.2rem}
+    .battle-interface{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:16px;padding:2rem;color:white;text-align:center}
+    .battle-timer{font-size:3rem;font-weight:bold;margin:1rem 0;color:#ffd700}
+    .battle-progress{background:rgba(255,255,255,0.3);border-radius:10px;height:8px;margin:1rem 0;overflow:hidden}
+    .battle-progress-bar{background:#ffd700;height:100%;transition:width 0.3s ease}
     
     .chapter-summary{background:var(--bg-tertiary);border-radius:8px;padding:1rem;margin-bottom:1rem;text-align:center}
     .chapter-controls{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
@@ -447,6 +463,7 @@
     <nav class="sidebar-nav">
       <button class="nav-item" data-screen="home-screen" onclick="navigateToScreen('home-screen')"><span class="nav-icon">🏠</span><span data-translate="home">Home</span></button>
       <button class="nav-item" data-screen="look-for-partner-screen" onclick="navigateToScreen('look-for-partner-screen')"><span class="nav-icon">🤝</span><span data-translate="lookForPartner">Look for Partners</span></button>
+      <button class="nav-item" data-screen="challenge-screen" onclick="navigateToScreen('challenge-screen')"><span class="nav-icon">⚔️</span><span data-translate="challengeOne">Challenge One</span></button>
       <button class="nav-item" data-screen="library-screen" onclick="navigateToScreen('library-screen')"><span class="nav-icon">📚</span><span data-translate="digitalLibrary">Digital Library</span></button>
       <button class="nav-item" data-screen="calendar-screen" onclick="navigateToScreen('calendar-screen')"><span class="nav-icon">📅</span><span data-translate="calendar">Academic Calendar</span></button>
       <button class="nav-item" data-screen="about-screen" onclick="navigateToScreen('about-screen')"><span class="nav-icon">ℹ️</span><span data-translate="about">About</span></button>
@@ -604,6 +621,12 @@
             <h3 data-translate="studyRooms">Study Rooms</h3>
             <p data-translate="joinOrCreateRooms">Join or create virtual study rooms</p>
             <button class="btn" data-translate="enterRooms">Enter Rooms</button>
+          </div>
+          <div class="action-card" onclick="navigateToScreen('challenge-screen')" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <div class="action-icon">⚔️</div>
+            <h3 data-translate="challengeOne">Challenge One</h3>
+            <p data-translate="challengeDesc">Battle other students in epic knowledge duels</p>
+            <button class="btn" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);" data-translate="startBattle">Start Battle</button>
           </div>
           <div class="action-card" onclick="navigateToScreen('library-screen')">
             <div class="action-icon">📚</div>
@@ -867,6 +890,106 @@
         </div>
       </div>
 
+      <div id="challenge-screen" class="screen">
+        <h1 class="page-title" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center;">⚔️ Challenge One ⚔️</h1>
+
+        <!-- Challenge Stats Banner -->
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 2rem; margin-bottom: 2rem; color: white;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem; text-align: center;">
+            <div>
+              <div style="font-size: 2rem; font-weight: bold;" id="user-battle-points">0</div>
+              <div style="opacity: 0.9;" data-translate="battlePoints">Battle Points</div>
+            </div>
+            <div>
+              <div style="font-size: 2rem; font-weight: bold;" id="user-wins">0</div>
+              <div style="opacity: 0.9;" data-translate="victories">Victories</div>
+            </div>
+            <div>
+              <div style="font-size: 2rem; font-weight: bold;" id="user-rank">Novice</div>
+              <div style="opacity: 0.9;" data-translate="rank">Rank</div>
+            </div>
+            <div>
+              <div style="font-size: 2rem; font-weight: bold;" id="user-streak">0</div>
+              <div style="opacity: 0.9;" data-translate="winStreak">Win Streak</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Challenge Setup -->
+        <div id="challenge-setup" class="main-actions" style="gap: 2rem;">
+          <!-- Step 1: Choose Category -->
+          <div class="action-card" style="border: 2px solid var(--primary-color);">
+            <h3 style="color: var(--primary-color); margin-bottom: 1rem;">⚡ Step 1: Choose Battle Arena</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+              <button class="challenge-category-btn" onclick="selectChallengeCategory('general')" data-category="general">
+                <div style="font-size: 2rem;">🏫</div>
+                <div data-translate="generalEducation">تعليم عام</div>
+              </button>
+              <button class="challenge-category-btn" onclick="selectChallengeCategory('international')" data-category="international">
+                <div style="font-size: 2rem;">🌍</div>
+                <div data-translate="international">International</div>
+              </button>
+              <button class="challenge-category-btn" onclick="selectChallengeCategory('qudrat')" data-category="qudrat">
+                <div style="font-size: 2rem;">🧠</div>
+                <div data-translate="qudrat">قدرات</div>
+              </button>
+              <button class="challenge-category-btn" onclick="selectChallengeCategory('tahsili')" data-category="tahsili">
+                <div style="font-size: 2rem;">📖</div>
+                <div data-translate="tahsili">تحصيلي</div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 2: Choose Question Count -->
+          <div class="action-card" id="question-count-section" style="display: none; border: 2px solid var(--success-color);">
+            <h3 style="color: var(--success-color); margin-bottom: 1rem;">⚡ Step 2: Choose Battle Length</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem;">
+              <button class="question-count-btn" onclick="selectQuestionCount(5)" data-count="5">
+                <div style="font-size: 1.5rem;">⚡</div>
+                <div>5 Questions</div>
+                <div style="font-size: 0.8rem; opacity: 0.7;">Quick Battle</div>
+              </button>
+              <button class="question-count-btn" onclick="selectQuestionCount(10)" data-count="10">
+                <div style="font-size: 1.5rem;">🔥</div>
+                <div>10 Questions</div>
+                <div style="font-size: 0.8rem; opacity: 0.7;">Standard Duel</div>
+              </button>
+              <button class="question-count-btn" onclick="selectQuestionCount(15)" data-count="15">
+                <div style="font-size: 1.5rem;">💪</div>
+                <div>15 Questions</div>
+                <div style="font-size: 0.8rem; opacity: 0.7;">Epic Battle</div>
+              </button>
+              <button class="question-count-btn" onclick="selectQuestionCount(20)" data-count="20">
+                <div style="font-size: 1.5rem;">👑</div>
+                <div>20 Questions</div>
+                <div style="font-size: 0.8rem; opacity: 0.7;">Legendary War</div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 3: Choose Opponent -->
+          <div class="action-card" id="opponent-selection-section" style="display: none; border: 2px solid var(--warning-color);">
+            <h3 style="color: var(--warning-color); margin-bottom: 1rem;">⚡ Step 3: Choose Your Opponent</h3>
+            <div id="online-users-list" style="max-height: 300px; overflow-y: auto;">
+              <!-- Online users will be populated here -->
+            </div>
+            <button class="btn" onclick="refreshOnlineUsers()" style="margin-top: 1rem; width: 100%;">
+              🔄 Refresh Warriors List
+            </button>
+          </div>
+        </div>
+
+        <!-- Challenge Sent/Received -->
+        <div id="challenge-status" style="display: none; text-align: center; padding: 2rem;">
+          <div id="challenge-sent" style="display: none;">
+            <div style="font-size: 4rem;">⚔️</div>
+            <h2 data-translate="challengeSent">Challenge Sent!</h2>
+            <p data-translate="waitingResponse">Waiting for opponent response...</p>
+            <button class="btn btn-secondary" onclick="cancelChallenge()" data-translate="cancel">Cancel</button>
+          </div>
+        </div>
+      </div>
+
       <div id="about-screen" class="screen">
         <h1 class="page-title">About Study Partner</h1>
         <div style="max-width:800px;margin:0 auto;background:var(--bg-secondary);padding:3rem;border-radius:24px;box-shadow:var(--shadow-medium);text-align:center;">
@@ -1055,12 +1178,13 @@
     // -------- TRANSLATIONS & STATIC DATA --------
     const translations={
       en:{
-        home:"Home", dashboard:"Dashboard", studyRooms:"Study Rooms", lookForPartner:"Look for Partners", digitalLibrary:"Digital Library",
+        home:"Home", dashboard:"Dashboard", studyRooms:"Study Rooms", lookForPartner:"Look for Partners", challengeOne:"Challenge One", digitalLibrary:"Digital Library",
         calendar:"Academic Calendar", about:"About", settings:"Settings", logout:"Logout", welcome:"Welcome",
         welcomeDesc:"Create your profile to start", yourName:"Your Name",
         chooseAvatar:"Choose Avatar Color", selectGrade:"Select Grade", joinPlatform:"Join Platform",
         appName:"Study Partner", toggleSidebar:"Toggle Sidebar", menuToggle:"Menu",
         copyCode:"Copy Code", shareLink:"Share Link", save:"Save", delete:"Delete", enterRooms:"Enter Rooms",
+        challengeDesc:"Battle other students in epic knowledge duels", startBattle:"Start Battle",
         browse:"Browse", createNow:"Create Now", joinNow:"Join Now", joinRoom:"Join Room",
         createRoom:"Create Room", enterRoomCode:"Enter Room Code", leaveRoom:"Leave Room",
         browseActiveRooms:"Browse Active Rooms", browseActiveRoomsDesc:"Find and join existing study rooms",
@@ -1146,17 +1270,20 @@
         quizzesCompleted:"quizzes completed", pointsEarned:"points earned",
         streak:"streak", best:"best", points:"points", pts:"pts", takeFirstQuiz:"Take your first quiz!",
         sharedQuizCompleted:"Shared quiz completed! Earned", earned:"Earned", sharedQuiz:"Shared Quiz", pointsTitle:"Points!",
-        streakBonus:"Streak Bonus!", bonus:"Bonus!"
+        streakBonus:"Streak Bonus!", bonus:"Bonus!",
+        battlePoints:"Battle Points", victories:"Victories", rank:"Rank", winStreak:"Win Streak",
+        challengeSent:"Challenge Sent!", waitingResponse:"Waiting for opponent response...", cancel:"Cancel",
+        generalEducation:"General Education", international:"International", qudrat:"Qudrat", tahsili:"Tahsili"
       },
       ar:{
         home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة", lookForPartner:"البحث عن شركاء",
-        digitalLibrary:"المكتبة الرقمية", calendar:"التقويم الأكاديمي", about:"حول", settings:"الإعدادات",
+        challengeOne:"تحدي واحد", digitalLibrary:"المكتبة الرقمية", calendar:"التقويم الأكاديمي", about:"حول", settings:"الإعدادات",
         logout:"خروج", welcome:"مرحباً بك", welcomeDesc:"أنشئ ملفك الشخصي للبدء",
         yourName:"اسمك", chooseAvatar:"اختر لون الصورة الرمزية",
         selectGrade:"اختر الصف الدراسي", joinPlatform:"انضم للمنصة",
         appName:"شريك الدراسة", toggleSidebar:"إظهار/إخفاء الشريط الجانبي",
         menuToggle:"القائمة", copyCode:"نسخ الكود", shareLink:"مشاركة الرابط",
-        save:"حفظ", delete:"حذف", enterRooms:"دخول الغرف", browse:"تصفح", createNow:"إنشاء الآن",
+        save:"حفظ", delete:"حذف", enterRooms:"دخول الغرف", challengeDesc:"قاتل الطلاب الآخرين في مبارزات المعرفة الملحمية", startBattle:"ابدأ المعركة", browse:"تصفح", createNow:"إنشاء الآن",
         joinNow:"انضمام الآن", joinRoom:"انضم للغرفة", createRoom:"إنشاء غرفة",
         browseActiveRooms:"تصفح الغرف النشطة", browseActiveRoomsDesc:"اعثر على غرف الدراسة الموجودة وانضم إليها",
         createOwnRoom:"إنشاء غرفة خاصة", createOwnRoomDesc:"ابدأ جلسة دراسة خاصة بك", create:"إنشاء",
@@ -1242,7 +1369,10 @@
         reviewMessage:"سيتم مراجعة المحتوى والتحقق منه قبل النشر",
         myUploads:"ملفاتي المرفوعة", show:"عرض", hide:"إخفاء", pending:"قيد الانتظار", approved:"تمت الموافقة", rejected:"مرفوض",
         delete:"حذف", confirmDelete:"هل أنت متأكد من حذف هذا الملف؟", deleteSuccess:"تم حذف الملف بنجاح",
-        uploadedOn:"تم الرفع في", status:"الحالة", actions:"الإجراءات"
+        uploadedOn:"تم الرفع في", status:"الحالة", actions:"الإجراءات",
+        battlePoints:"نقاط المعركة", victories:"الانتصارات", rank:"الرتبة", winStreak:"سلسلة الانتصارات",
+        challengeSent:"تم إرسال التحدي!", waitingResponse:"في انتظار رد الخصم...", cancel:"إلغاء",
+        generalEducation:"تعليم عام", international:"دولي", qudrat:"قدرات", tahsili:"تحصيلي"
       }
     };
     
@@ -11680,6 +11810,189 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           'error'
         );
       }
+    }
+
+    // -------- CHALLENGE SYSTEM FUNCTIONS --------
+
+    let challengeSetup = {
+      category: null,
+      questionCount: null,
+      opponent: null
+    };
+
+    function selectChallengeCategory(category) {
+      challengeSetup.category = category;
+
+      // Update UI
+      document.querySelectorAll('.challenge-category-btn').forEach(btn => {
+        btn.classList.remove('selected');
+      });
+      document.querySelector(`[data-category="${category}"]`).classList.add('selected');
+
+      // Show next step
+      document.getElementById('question-count-section').style.display = 'block';
+
+      console.log('Selected challenge category:', category);
+    }
+
+    function selectQuestionCount(count) {
+      challengeSetup.questionCount = count;
+
+      // Update UI
+      document.querySelectorAll('.question-count-btn').forEach(btn => {
+        btn.classList.remove('selected');
+      });
+      document.querySelector(`[data-count="${count}"]`).classList.add('selected');
+
+      // Show next step
+      document.getElementById('opponent-selection-section').style.display = 'block';
+      loadOnlineUsers();
+
+      console.log('Selected question count:', count);
+    }
+
+    async function loadOnlineUsers() {
+      try {
+        if (!supabase) {
+          console.log('Supabase not available');
+          return;
+        }
+
+        const { data: onlineUsers, error } = await supabase
+          .from('users')
+          .select('id, name, avatar_color, last_seen')
+          .neq('id', currentUser?.id)
+          .gte('last_seen', new Date(Date.now() - 5 * 60 * 1000).toISOString()); // Online in last 5 minutes
+
+        if (error) throw error;
+
+        const usersList = document.getElementById('online-users-list');
+
+        if (!onlineUsers || onlineUsers.length === 0) {
+          usersList.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+              <div style="font-size: 2rem; margin-bottom: 1rem;">😴</div>
+              <h3>No Warriors Online</h3>
+              <p>No other students are currently online for battle.</p>
+            </div>
+          `;
+          return;
+        }
+
+        usersList.innerHTML = onlineUsers.map(user => `
+          <div class="opponent-card" onclick="selectOpponent('${user.id}', '${escapeHtml(user.name)}')" data-user-id="${user.id}">
+            <div class="opponent-avatar" style="background: ${user.avatar_color || '#667eea'}">
+              ${(user.name?.[0] || 'U').toUpperCase()}
+            </div>
+            <div style="flex: 1;">
+              <div style="font-weight: 500;">${escapeHtml(user.name)}</div>
+              <div style="font-size: 0.8rem; color: var(--text-secondary);">🟢 Online</div>
+            </div>
+            <div style="font-size: 1.5rem;">⚔️</div>
+          </div>
+        `).join('');
+
+      } catch (error) {
+        console.error('Error loading online users:', error);
+        document.getElementById('online-users-list').innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: var(--error-color);">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">❌</div>
+            <h3>Error Loading Warriors</h3>
+            <p>Failed to load online users. Please try again.</p>
+          </div>
+        `;
+      }
+    }
+
+    function selectOpponent(userId, userName) {
+      challengeSetup.opponent = { id: userId, name: userName };
+
+      // Update UI
+      document.querySelectorAll('.opponent-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      document.querySelector(`[data-user-id="${userId}"]`).classList.add('selected');
+
+      // Show challenge button
+      if (!document.getElementById('send-challenge-btn')) {
+        const challengeBtn = document.createElement('button');
+        challengeBtn.id = 'send-challenge-btn';
+        challengeBtn.className = 'btn';
+        challengeBtn.style.cssText = 'margin-top: 1rem; width: 100%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; font-size: 1.1rem; padding: 1rem;';
+        challengeBtn.innerHTML = '⚔️ Send Challenge Request';
+        challengeBtn.onclick = sendChallengeRequest;
+        document.getElementById('opponent-selection-section').appendChild(challengeBtn);
+      }
+
+      console.log('Selected opponent:', userName, userId);
+    }
+
+    async function sendChallengeRequest() {
+      if (!challengeSetup.category || !challengeSetup.questionCount || !challengeSetup.opponent) {
+        toast('Please complete all steps before sending challenge', 'error');
+        return;
+      }
+
+      try {
+        if (!supabase) {
+          toast('Database not available', 'error');
+          return;
+        }
+
+        // Create challenge request
+        const { data, error } = await supabase
+          .from('challenge_requests')
+          .insert({
+            challenger_id: currentUser.id,
+            challenger_name: currentUser.name,
+            opponent_id: challengeSetup.opponent.id,
+            opponent_name: challengeSetup.opponent.name,
+            category: challengeSetup.category,
+            question_count: challengeSetup.questionCount,
+            status: 'pending'
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        // Show challenge sent status
+        document.getElementById('challenge-setup').style.display = 'none';
+        document.getElementById('challenge-status').style.display = 'block';
+        document.getElementById('challenge-sent').style.display = 'block';
+
+        toast(`Challenge sent to ${challengeSetup.opponent.name}!`, 'success');
+        console.log('Challenge request sent:', data);
+
+      } catch (error) {
+        console.error('Error sending challenge:', error);
+        toast('Failed to send challenge. Please try again.', 'error');
+      }
+    }
+
+    function refreshOnlineUsers() {
+      loadOnlineUsers();
+      toast('Warriors list refreshed!', 'info');
+    }
+
+    function cancelChallenge() {
+      // Reset challenge setup
+      challengeSetup = { category: null, questionCount: null, opponent: null };
+
+      // Reset UI
+      document.getElementById('challenge-setup').style.display = 'block';
+      document.getElementById('challenge-status').style.display = 'none';
+      document.getElementById('question-count-section').style.display = 'none';
+      document.getElementById('opponent-selection-section').style.display = 'none';
+
+      // Remove selections
+      document.querySelectorAll('.challenge-category-btn, .question-count-btn, .opponent-card').forEach(el => {
+        el.classList.remove('selected');
+      });
+
+      // Remove challenge button
+      const challengeBtn = document.getElementById('send-challenge-btn');
+      if (challengeBtn) challengeBtn.remove();
     }
 
 
