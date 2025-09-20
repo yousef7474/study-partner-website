@@ -843,12 +843,25 @@
             <!-- Files will be listed here -->
           </div>
 
-          <!-- Materials List (for future - showing uploaded content) -->
+          <!-- Materials List -->
           <div id="materials-list">
             <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
               <div style="font-size: 2rem; margin-bottom: 1rem;">📚</div>
               <h3 data-translate="noMaterials">No materials uploaded yet</h3>
               <p data-translate="beFirstUpload">Be the first to share study materials!</p>
+            </div>
+          </div>
+
+          <!-- My Uploads Section -->
+          <div id="my-uploads-section" style="margin-top: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <h3 data-translate="myUploads">My Uploads</h3>
+              <button class="btn btn-small btn-secondary" onclick="toggleMyUploads()" id="toggle-uploads-btn" data-translate="show">
+                Show
+              </button>
+            </div>
+            <div id="my-uploads-list" style="display: none;">
+              <!-- User's uploads will be listed here -->
             </div>
           </div>
         </div>
@@ -1112,6 +1125,9 @@
         noMaterials:"No materials uploaded yet", beFirstUpload:"Be the first to share study materials!",
         uploading:"Uploading...", uploadSuccess:"Upload successful!", uploadError:"Upload failed",
         reviewMessage:"Content will be reviewed and checked before publishing",
+        myUploads:"My Uploads", show:"Show", hide:"Hide", pending:"Pending", approved:"Approved", rejected:"Rejected",
+        delete:"Delete", confirmDelete:"Are you sure you want to delete this file?", deleteSuccess:"File deleted successfully",
+        uploadedOn:"Uploaded on", status:"Status", actions:"Actions",
         // Quiz translations
         quizTime:"Quiz Time!", preparingQuiz:"Preparing your quiz...", gettingQuestions:"Getting questions for",
         question:"Question", of:"of", next:"Next", skip:"Skip", close:"Close", retakeQuiz:"Retake Quiz", newQuiz:"New Quiz",
@@ -1223,7 +1239,10 @@
         chooseFiles:"اختر الملفات", supportedFormats:"الصيغ المدعومة: PDF، Word، PowerPoint، النصوص، الصور",
         noMaterials:"لم يتم رفع أي مواد بعد", beFirstUpload:"كن أول من يشارك المواد الدراسية!",
         uploading:"جاري الرفع...", uploadSuccess:"تم الرفع بنجاح!", uploadError:"فشل في الرفع",
-        reviewMessage:"سيتم مراجعة المحتوى والتحقق منه قبل النشر"
+        reviewMessage:"سيتم مراجعة المحتوى والتحقق منه قبل النشر",
+        myUploads:"ملفاتي المرفوعة", show:"عرض", hide:"إخفاء", pending:"قيد الانتظار", approved:"تمت الموافقة", rejected:"مرفوض",
+        delete:"حذف", confirmDelete:"هل أنت متأكد من حذف هذا الملف؟", deleteSuccess:"تم حذف الملف بنجاح",
+        uploadedOn:"تم الرفع في", status:"الحالة", actions:"الإجراءات"
       }
     };
     
@@ -11101,8 +11120,144 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
             <p data-translate="beFirstUpload">${currentLanguage === 'ar' ? 'كن أول من يشارك المواد الدراسية!' : 'Be the first to share study materials!'}</p>
           </div>
         `;
+
+        // Load user's uploads for this section
+        await loadMyUploads(section);
       } catch (error) {
         console.error('Error loading section materials:', error);
+      }
+    }
+
+    // Global variable to store user uploads
+    let userUploads = {};
+
+    async function loadMyUploads(section) {
+      try {
+        // Simulate loading from localStorage (in production, would fetch from Supabase)
+        const storageKey = `library_uploads_${currentUser?.id || 'anonymous'}_${section}`;
+        const uploads = JSON.parse(localStorage.getItem(storageKey) || '[]');
+
+        userUploads[section] = uploads;
+
+        // Update the My Uploads section
+        updateMyUploadsDisplay(section);
+      } catch (error) {
+        console.error('Error loading user uploads:', error);
+      }
+    }
+
+    function updateMyUploadsDisplay(section) {
+      const myUploadsList = document.getElementById('my-uploads-list');
+      const uploads = userUploads[section] || [];
+
+      if (uploads.length === 0) {
+        myUploadsList.innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+            <p>${currentLanguage === 'ar' ? 'لم تقم برفع أي ملفات في هذا القسم بعد' : 'You haven\'t uploaded any files in this section yet'}</p>
+          </div>
+        `;
+        return;
+      }
+
+      myUploadsList.innerHTML = uploads.map(upload => createMyUploadCard(upload)).join('');
+    }
+
+    function createMyUploadCard(upload) {
+      const statusColors = {
+        pending: '#f59e0b',
+        approved: '#10b981',
+        rejected: '#ef4444'
+      };
+
+      const statusTexts = {
+        pending: currentLanguage === 'ar' ? 'قيد الانتظار' : 'Pending',
+        approved: currentLanguage === 'ar' ? 'تمت الموافقة' : 'Approved',
+        rejected: currentLanguage === 'ar' ? 'مرفوض' : 'Rejected'
+      };
+
+      const uploadDate = new Date(upload.uploadedAt).toLocaleDateString();
+
+      return `
+        <div class="upload-card" style="background: var(--bg-secondary); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; border: 1px solid var(--border-color);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                <div style="font-size: 1.5rem;">${getFileIcon(upload.fileType)}</div>
+                <div>
+                  <h4 style="margin: 0; color: var(--text-primary);">${upload.fileName}</h4>
+                  <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
+                    ${upload.fileSize} • ${currentLanguage === 'ar' ? 'تم الرفع في' : 'Uploaded on'} ${uploadDate}
+                  </p>
+                </div>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 1rem; margin-top: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <span style="color: var(--text-secondary);">${currentLanguage === 'ar' ? 'الحالة:' : 'Status:'}</span>
+                  <span style="color: ${statusColors[upload.status]}; font-weight: 600;">
+                    ${statusTexts[upload.status]}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem;">
+              ${upload.status === 'pending' ? `
+                <button class="btn btn-small btn-secondary" onclick="deleteUpload('${upload.id}')" style="background: var(--error-color); color: white;">
+                  ${currentLanguage === 'ar' ? 'حذف' : 'Delete'}
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleMyUploads() {
+      const myUploadsList = document.getElementById('my-uploads-list');
+      const toggleBtn = document.getElementById('toggle-uploads-btn');
+
+      if (myUploadsList.style.display === 'none') {
+        myUploadsList.style.display = 'block';
+        toggleBtn.textContent = currentLanguage === 'ar' ? 'إخفاء' : 'Hide';
+      } else {
+        myUploadsList.style.display = 'none';
+        toggleBtn.textContent = currentLanguage === 'ar' ? 'عرض' : 'Show';
+      }
+    }
+
+    async function deleteUpload(uploadId) {
+      const confirmMessage = currentLanguage === 'ar' ?
+        'هل أنت متأكد من حذف هذا الملف؟' :
+        'Are you sure you want to delete this file?';
+
+      if (!confirm(confirmMessage)) return;
+
+      try {
+        // Find and remove the upload
+        const uploads = userUploads[currentLibrarySection] || [];
+        const updatedUploads = uploads.filter(upload => upload.id !== uploadId);
+
+        // Update storage
+        const storageKey = `library_uploads_${currentUser?.id || 'anonymous'}_${currentLibrarySection}`;
+        localStorage.setItem(storageKey, JSON.stringify(updatedUploads));
+
+        // Update local state
+        userUploads[currentLibrarySection] = updatedUploads;
+
+        // Refresh display
+        updateMyUploadsDisplay(currentLibrarySection);
+
+        toast(
+          currentLanguage === 'ar' ? 'تم حذف الملف بنجاح' : 'File deleted successfully',
+          'success'
+        );
+      } catch (error) {
+        console.error('Error deleting upload:', error);
+        toast(
+          currentLanguage === 'ar' ? 'فشل في حذف الملف' : 'Failed to delete file',
+          'error'
+        );
       }
     }
 
@@ -11209,6 +11364,32 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         // Simulate upload progress
         await new Promise(resolve => setTimeout(resolve, 2000));
 
+        // Create upload record
+        const uploadRecord = {
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+          fileName: file.name,
+          fileType: file.type,
+          fileSize: (file.size / 1024 / 1024).toFixed(2) + ' MB',
+          section: currentLibrarySection,
+          uploadedBy: currentUser?.id || 'anonymous',
+          uploadedByName: currentUser?.name || 'Anonymous',
+          status: 'pending',
+          uploadedAt: new Date().toISOString(),
+          reviewNotes: null
+        };
+
+        // Save to localStorage (in production, would save to Supabase)
+        const storageKey = `library_uploads_${currentUser?.id || 'anonymous'}_${currentLibrarySection}`;
+        const existingUploads = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        existingUploads.push(uploadRecord);
+        localStorage.setItem(storageKey, JSON.stringify(existingUploads));
+
+        // Update local state
+        if (!userUploads[currentLibrarySection]) {
+          userUploads[currentLibrarySection] = [];
+        }
+        userUploads[currentLibrarySection].push(uploadRecord);
+
         // Show success status
         const statusDiv = fileCard.querySelector('.upload-status');
         statusDiv.innerHTML = `
@@ -11216,6 +11397,9 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
             ✅ ${currentLanguage === 'ar' ? 'تم الرفع بنجاح!' : 'Upload successful!'}
           </div>
         `;
+
+        // Update the My Uploads display
+        updateMyUploadsDisplay(currentLibrarySection);
 
         // Show review message
         setTimeout(() => {
@@ -11227,7 +11411,6 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           );
         }, 500);
 
-        // Future: Actually upload to Supabase Storage here
         console.log('File uploaded:', file.name, 'Section:', currentLibrarySection);
 
       } catch (error) {
