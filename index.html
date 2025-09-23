@@ -12386,9 +12386,15 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
     // -------- BATTLE RESULTS MODAL FUNCTIONS --------
 
-    async function showBattleResults(battleData) {
+    async function showBattleResultsModal(battleData) {
+      console.log('🎮 Showing battle results modal for:', battleData);
       const modal = document.getElementById('battle-results-modal');
       const currentUser = getCurrentUser();
+
+      if (!modal) {
+        console.error('Battle results modal element not found!');
+        return;
+      }
 
       // Determine if current user won
       const isWinner = battleData.winner_id === currentUser.id;
@@ -12457,7 +12463,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       const pointsEarned = calculateBattlePoints(battleData.category, playerScore, battleData.question_count, isWinner);
       document.getElementById('points-amount').textContent = `+${pointsEarned}`;
 
-      // Show the modal
+      // Show the modal with flex display for centering
       modal.style.display = 'flex';
     }
 
@@ -13338,7 +13344,7 @@ Format as JSON array:
         }
 
         // Show results
-        showBattleResults(scorePercentage, updatedBattle);
+        showBattleResultsText(scorePercentage, updatedBattle);
 
         // If we just finished but opponent hasn't, start polling for completion
         if (!updatedBattle.challenger_finished || !updatedBattle.opponent_finished) {
@@ -13641,7 +13647,7 @@ Format as JSON array:
 
             // Update the results display
             const scorePercentage = Math.round((battlePlayerScore / battleQuestions.length) * 100);
-            await showBattleResults(finalBattle || battle);
+            await showBattleResultsModal(finalBattle || battle);
 
             stopBattleCompletionPolling();
 
@@ -13673,7 +13679,7 @@ Format as JSON array:
       }
     }
 
-    async function showBattleResults(scorePercentage, battleData = null) {
+    async function showBattleResultsText(scorePercentage, battleData = null) {
       const isArabic = currentBattle.category === 'qudrat' || currentBattle.category === 'tahsili';
 
       document.getElementById('battle-score').textContent = `${battlePlayerScore}/${battleQuestions.length}`;
@@ -13727,8 +13733,8 @@ Format as JSON array:
 
         // Show battle results modal when both players finished
         setTimeout(async () => {
-          await showBattleResults(battleData);
-        }, 2000); // Show modal after 2 seconds
+          await showBattleResultsModal(battleData);
+        }, 1000); // Show modal after 1 second
 
       } else {
         // Only current player finished
