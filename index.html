@@ -13605,15 +13605,34 @@ Format as JSON array:
 
       // Move to next question after 2 seconds
       setTimeout(() => {
-        battleCurrentQuestionIndex++;
-        startBattleQuestion();
+        try {
+          console.log(`🎯 Moving from question ${battleCurrentQuestionIndex + 1} to next. Total questions: ${battleQuestions.length}`);
+          battleCurrentQuestionIndex++;
+
+          // Check if we've completed all questions
+          if (battleCurrentQuestionIndex >= battleQuestions.length) {
+            console.log('🏁 All questions completed, finishing battle...');
+            finishBattle();
+          } else {
+            console.log(`➡️ Starting question ${battleCurrentQuestionIndex + 1}`);
+            startBattleQuestion();
+          }
+        } catch (error) {
+          console.error('❌ Error in question navigation:', error);
+          // Fallback - try to finish battle
+          finishBattle();
+        }
       }, 2000);
     }
 
     async function finishBattle() {
       try {
+        console.log('🏁 Starting finishBattle function...');
+        console.log(`📊 Final score: ${battlePlayerScore}/${battleQuestions.length}`);
+
         // Calculate final score percentage
         const scorePercentage = Math.round((battlePlayerScore / battleQuestions.length) * 100);
+        console.log(`📈 Score percentage: ${scorePercentage}%`);
 
         // Update battle record with player's results
         const isChallenger = currentUser.id === currentBattle.challenger_id;
@@ -13670,11 +13689,14 @@ Format as JSON array:
           }, 2000);
         } else {
           // If we just finished but opponent hasn't, start polling for completion
+          console.log('🔄 Starting polling for battle completion...');
           startBattleCompletionPolling();
         }
 
+        console.log('✅ finishBattle function completed successfully');
+
       } catch (error) {
-        console.error('Error finishing battle:', error);
+        console.error('❌ Error finishing battle:', error);
         toast('Error saving battle results', 'error');
       }
     }
