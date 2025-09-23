@@ -12389,7 +12389,11 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
     async function showBattleResultsModal(battleData) {
       console.log('🎮 Showing battle results modal for:', battleData);
       const modal = document.getElementById('battle-results-modal');
-      const currentUser = getCurrentUser();
+
+      if (!currentUser) {
+        console.error('Current user not available for battle results');
+        return;
+      }
 
       if (!modal) {
         console.error('Battle results modal element not found!');
@@ -12465,10 +12469,20 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
       // Show the modal with flex display for centering
       modal.style.display = 'flex';
+
+      // Auto-close after 10 seconds if user doesn't interact (fallback)
+      setTimeout(() => {
+        if (modal.style.display === 'flex') {
+          console.log('Auto-closing battle results modal after timeout');
+          closeBattleResults();
+        }
+      }, 10000);
     }
 
     function closeBattleResults() {
       document.getElementById('battle-results-modal').style.display = 'none';
+      // Also close the battle modal to return to challenge screen
+      closeBattleModal();
     }
 
     function viewBattleDetails() {
@@ -13360,6 +13374,13 @@ Format as JSON array:
     async function determineBattleWinner(battle) {
       try {
         console.log('Determining battle winner for battle:', battle.id);
+
+        // Check if winner has already been determined
+        if (battle.status === 'completed' && (battle.winner_id || battle.loser_id)) {
+          console.log('Battle winner already determined, skipping');
+          return;
+        }
+
         let winnerId = null;
         let loserId = null;
         let isDraw = false;
@@ -13635,6 +13656,9 @@ Format as JSON array:
           }
 
           if (battle.challenger_finished && battle.opponent_finished) {
+            // Stop polling immediately to prevent multiple executions
+            stopBattleCompletionPolling();
+
             // Both finished! Update results
             await determineBattleWinner(battle);
 
@@ -13648,8 +13672,6 @@ Format as JSON array:
             // Update the results display
             const scorePercentage = Math.round((battlePlayerScore / battleQuestions.length) * 100);
             await showBattleResultsModal(finalBattle || battle);
-
-            stopBattleCompletionPolling();
 
             // Toast notification for winner/loser
             if (finalBattle) {
