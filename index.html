@@ -12862,14 +12862,14 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
     // -------- CHALLENGE POLLING --------
 
-    // Check for new challenges every 5 seconds when on Challenge screen
+    // Check for new challenges every 5 seconds globally (all screens)
     let challengePollingInterval = null;
 
     function startChallengePolling() {
       if (challengePollingInterval) return; // Already polling
 
       challengePollingInterval = setInterval(async () => {
-        if (!currentUser || document.getElementById('challenge-screen').style.display === 'none') {
+        if (!currentUser) {
           return;
         }
 
