@@ -13679,19 +13679,34 @@ Format as JSON array:
               opponent_finished: true
             };
 
-        await supabase
+        console.log('📝 Updating battle with data:', updateData);
+        const { error: updateError } = await supabase
           .from('challenge_battles')
           .update(updateData)
           .eq('id', currentBattle.id);
 
+        if (updateError) {
+          console.error('❌ Error updating battle:', updateError);
+          throw updateError;
+        }
+        console.log('✅ Battle updated successfully');
+
         // Check if both players have finished
+        console.log('🔍 Checking if both players finished...');
         const { data: updatedBattle, error: battleError } = await supabase
           .from('challenge_battles')
           .select('*')
           .eq('id', currentBattle.id)
           .single();
 
-        if (battleError) throw battleError;
+        if (battleError) {
+          console.error('❌ Error fetching updated battle:', battleError);
+          throw battleError;
+        }
+        console.log('📊 Updated battle status:', {
+          challenger_finished: updatedBattle.challenger_finished,
+          opponent_finished: updatedBattle.opponent_finished
+        });
 
         // If both players finished, determine winner and update stats
         if (updatedBattle.challenger_finished && updatedBattle.opponent_finished) {
@@ -13714,13 +13729,17 @@ Format as JSON array:
 
         // If both players finished, show the battle results screen immediately
         if (updatedBattle.challenger_finished && updatedBattle.opponent_finished) {
+          console.log('🎯 BOTH PLAYERS FINISHED! Showing results screen...');
+          console.log('Battle data:', updatedBattle);
           // Show battle results screen after a brief delay to let the text display first
           setTimeout(async () => {
+            console.log('🚀 Calling showBattleResultsScreen for both players finished...');
             await showBattleResultsScreen(updatedBattle);
           }, 2000);
         } else {
           // If we just finished but opponent hasn't, start polling for completion
-          console.log('🔄 Starting polling for battle completion...');
+          console.log('🔄 Only one player finished, starting polling for battle completion...');
+          console.log(`Challenger finished: ${updatedBattle.challenger_finished}, Opponent finished: ${updatedBattle.opponent_finished}`);
           startBattleCompletionPolling();
         }
 
