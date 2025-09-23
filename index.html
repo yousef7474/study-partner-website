@@ -15319,9 +15319,9 @@ Format as JSON array:
 
         console.log('Loading academic performance data for user:', currentUser.id);
 
-        // Get all quiz results for the user
+        // Get all quiz results for the user from quiz_history table
         const { data: quizResults, error } = await supabase
-          .from('quiz_results')
+          .from('quiz_history')
           .select('*')
           .eq('user_id', currentUser.id)
           .order('created_at', { ascending: false });
@@ -15383,35 +15383,77 @@ Format as JSON array:
         });
       });
 
-      // Process actual quiz results
+      // Process actual quiz results from quiz_history table
       quizResults.forEach(result => {
-        if (result.chapter && result.unit) {
-          const key = `${result.subject}_${result.chapter}_${result.unit}`;
-          const percentage = Math.round((result.score / result.total_questions) * 100);
+        // Process each selected unit in the quiz
+        if (result.selected_units && result.selected_units.length > 0) {
+          result.selected_units.forEach(unitId => {
+            // Find the topic info for this unit
+            const topicInfo = findTopicInfoByUnitId(unitId, result.subject);
 
-          if (performanceMap.has(key)) {
-            const existing = performanceMap.get(key);
-            // Keep the best score
-            if (!existing.score || percentage > existing.percentage) {
-              performanceMap.set(key, {
-                ...existing,
-                score: result.score,
-                totalQuestions: result.total_questions,
-                percentage: percentage,
-                status: percentage >= 70 ? 'passed' : 'failed',
-                lastAttempt: new Date(result.created_at),
-                attempts: existing.attempts + 1
-              });
-            } else {
-              // Just update attempt count and last attempt if not better score
-              existing.attempts += 1;
-              existing.lastAttempt = new Date(result.created_at);
+            if (topicInfo) {
+              const key = `${result.subject}_${topicInfo.chapter}_${topicInfo.topic}`;
+              const percentage = result.percentage || Math.round((result.correct_answers / result.total_questions) * 100);
+
+              if (performanceMap.has(key)) {
+                const existing = performanceMap.get(key);
+                // Keep the best score
+                if (!existing.score || percentage > existing.percentage) {
+                  performanceMap.set(key, {
+                    ...existing,
+                    score: result.correct_answers,
+                    totalQuestions: result.total_questions,
+                    percentage: percentage,
+                    status: percentage >= 70 ? 'passed' : 'failed',
+                    lastAttempt: new Date(result.created_at),
+                    attempts: existing.attempts + 1
+                  });
+                } else {
+                  // Just update attempt count and last attempt if not better score
+                  existing.attempts += 1;
+                  existing.lastAttempt = new Date(result.created_at);
+                }
+              }
             }
-          }
+          });
+        } else {
+          // If no specific units, treat as general subject quiz
+          // This handles legacy data or subject-level quizzes
+          console.log('Quiz without specific units for subject:', result.subject);
         }
       });
 
       return Array.from(performanceMap.values());
+    }
+
+    // Find topic info by unit ID
+    function findTopicInfoByUnitId(unitId, subjectName) {
+      const userGrade = currentUser?.grade || '10';
+      const subjects = subjectsByGrade[userGrade] || [];
+      const subjectData = subjects.find(s => s.name === subjectName);
+
+      if (subjectData && subjectData.chapters) {
+        for (const chapter of subjectData.chapters) {
+          if (chapter.units) {
+            for (const unit of chapter.units) {
+              if (unit.id === unitId) {
+                return {
+                  subject: subjectName,
+                  subjectAr: subjectData.nameAr || subjectName,
+                  chapter: chapter.name,
+                  chapterAr: chapter.nameAr || chapter.name,
+                  topic: unit.name,
+                  topicAr: unit.nameAr || unit.name
+                };
+              }
+            }
+          }
+        }
+      }
+
+      // If not found, return null
+      console.log('Unit not found:', unitId, 'in subject:', subjectName);
+      return null;
     }
 
     // Get all topics for user's selected subjects
