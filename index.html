@@ -12035,8 +12035,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           return;
         }
 
-        // Clean up expired challenges first
-        await cleanupExpiredChallenges();
+        // Note: Cleanup is handled during screen initialization to avoid interfering with active challenges
 
         // Check for existing pending challenge between these users
         const { data: existingChallenge, error: checkError } = await supabase
@@ -12247,19 +12246,26 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
     async function acceptChallenge(challengeId) {
       try {
+        console.log('Accepting challenge:', challengeId);
+
         if (!supabase) {
           toast('Database not available', 'error');
           return;
         }
 
         // Update challenge status to accepted
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('challenge_requests')
           .update({ status: 'accepted' })
-          .eq('id', challengeId);
+          .eq('id', challengeId)
+          .select();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error updating challenge status:', error);
+          throw error;
+        }
 
+        console.log('Challenge status updated:', data);
         toast('Challenge accepted! Preparing battle...', 'success');
 
         // Reload incoming challenges
@@ -12277,19 +12283,26 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
     async function rejectChallenge(challengeId) {
       try {
+        console.log('Rejecting challenge:', challengeId);
+
         if (!supabase) {
           toast('Database not available', 'error');
           return;
         }
 
         // Update challenge status to rejected
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('challenge_requests')
           .update({ status: 'rejected' })
-          .eq('id', challengeId);
+          .eq('id', challengeId)
+          .select();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error updating challenge status:', error);
+          throw error;
+        }
 
+        console.log('Challenge rejected:', data);
         toast('Challenge declined', 'info');
 
         // Reload incoming challenges
@@ -12715,7 +12728,8 @@ Format as JSON array:
         });
 
         if (!response.ok) {
-          throw new Error('Failed to generate questions');
+          console.log('AI API not available, using fallback questions');
+          throw new Error('AI API not available');
         }
 
         const result = await response.json();
@@ -12729,28 +12743,86 @@ Format as JSON array:
     }
 
     function getFallbackBattleQuestions(category, questionCount) {
-      const fallbackQuestions = [
-        {
-          question: `${category} - Sample Question 1`,
-          options: ["Option A", "Option B", "Option C", "Option D"],
-          correct: 0,
-          explanation: "This is a sample question for testing."
-        },
-        {
-          question: `${category} - Sample Question 2`,
-          options: ["Choice 1", "Choice 2", "Choice 3", "Choice 4"],
-          correct: 1,
-          explanation: "This is another sample question."
-        }
-      ];
+      const questionsByCategory = {
+        'general': [
+          {
+            question: "What is the chemical symbol for Gold?",
+            options: ["Au", "Ag", "Go", "Gd"],
+            correct: 0,
+            explanation: "Au comes from the Latin word 'aurum' meaning gold."
+          },
+          {
+            question: "Who wrote the novel 'Pride and Prejudice'?",
+            options: ["Charlotte Brontë", "Jane Austen", "Emily Dickinson", "Virginia Woolf"],
+            correct: 1,
+            explanation: "Jane Austen published Pride and Prejudice in 1813."
+          },
+          {
+            question: "What is the value of π (pi) to two decimal places?",
+            options: ["3.14", "3.15", "3.13", "3.16"],
+            correct: 0,
+            explanation: "π ≈ 3.14159, which rounds to 3.14 to two decimal places."
+          },
+          {
+            question: "Which planet is closest to the Sun?",
+            options: ["Venus", "Earth", "Mercury", "Mars"],
+            correct: 2,
+            explanation: "Mercury is the innermost planet in our solar system."
+          }
+        ],
+        'international': [
+          {
+            question: "What is the powerhouse of the cell?",
+            options: ["Nucleus", "Mitochondria", "Ribosome", "Endoplasmic Reticulum"],
+            correct: 1,
+            explanation: "Mitochondria produce ATP, the cell's main energy currency."
+          },
+          {
+            question: "Who developed the theory of relativity?",
+            options: ["Newton", "Einstein", "Galileo", "Hawking"],
+            correct: 1,
+            explanation: "Albert Einstein developed both special and general relativity theories."
+          }
+        ],
+        'qudrat': [
+          {
+            question: "إذا كان 2س + 3 = 11، فما قيمة س؟",
+            options: ["4", "5", "6", "7"],
+            correct: 0,
+            explanation: "2س = 11 - 3 = 8، إذن س = 4"
+          },
+          {
+            question: "ما هو المعنى المناسب لكلمة 'استقلال'؟",
+            options: ["التبعية", "الحرية", "الخضوع", "التقيد"],
+            correct: 1,
+            explanation: "الاستقلال يعني الحرية وعدم التبعية للغير"
+          }
+        ],
+        'tahsili': [
+          {
+            question: "ما هو الجذر التربيعي للعدد 64؟",
+            options: ["6", "7", "8", "9"],
+            correct: 2,
+            explanation: "8 × 8 = 64، إذن الجذر التربيعي لـ 64 هو 8"
+          },
+          {
+            question: "ما هي الصيغة الكيميائية للماء؟",
+            options: ["H₂O", "CO₂", "NaCl", "CH₄"],
+            correct: 0,
+            explanation: "الماء يتكون من ذرتين هيدروجين وذرة أكسجين واحدة"
+          }
+        ]
+      };
+
+      const categoryQuestions = questionsByCategory[category] || questionsByCategory['general'];
+      const questions = [];
 
       // Repeat questions to match requested count
-      const questions = [];
       for (let i = 0; i < questionCount; i++) {
-        const baseQuestion = fallbackQuestions[i % fallbackQuestions.length];
+        const baseQuestion = categoryQuestions[i % categoryQuestions.length];
         questions.push({
           ...baseQuestion,
-          question: `${category} - Question ${i + 1}` + (i >= fallbackQuestions.length ? ` (${Math.floor(i / fallbackQuestions.length) + 1})` : '')
+          question: baseQuestion.question + (i >= categoryQuestions.length ? ` (${Math.floor(i / categoryQuestions.length) + 1})` : '')
         });
       }
       return questions;
