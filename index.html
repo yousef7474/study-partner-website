@@ -12969,10 +12969,27 @@ Format as JSON array:
 
         // Parse the AI response to extract questions
         try {
-          // Try to parse as JSON first
-          const jsonMatch = data.match(/\[[\s\S]*\]/);
+          // First, try to parse the entire response as JSON (Claude API format)
+          const responseData = JSON.parse(data);
+          console.log('Parsed Claude API response structure');
+
+          // Extract the actual content from Claude's response
+          let textContent = '';
+          if (responseData.content && Array.isArray(responseData.content)) {
+            // Find text content in Claude's response
+            const textBlock = responseData.content.find(block => block.type === 'text');
+            if (textBlock && textBlock.text) {
+              textContent = textBlock.text;
+              console.log('Extracted text from Claude response:', textContent.substring(0, 200));
+            }
+          } else if (typeof responseData === 'string') {
+            textContent = responseData;
+          }
+
+          // Now extract the JSON array from the text content
+          const jsonMatch = textContent.match(/\[[\s\S]*\]/);
           if (jsonMatch) {
-            console.log('Found JSON in response:', jsonMatch[0].substring(0, 200));
+            console.log('Found JSON in text content:', jsonMatch[0].substring(0, 200));
             const questions = JSON.parse(jsonMatch[0]);
             if (Array.isArray(questions) && questions.length > 0) {
               console.log('AI questions generated successfully:', questions.length);
@@ -12980,10 +12997,25 @@ Format as JSON array:
               return questions.slice(0, questionCount);
             }
           } else {
-            console.log('No JSON array found in AI response');
+            console.log('No JSON array found in text content');
           }
         } catch (parseError) {
-          console.log('Could not parse AI response as JSON:', parseError.message);
+          console.log('Could not parse AI response:', parseError.message);
+
+          // Fallback: try to extract JSON directly from raw data
+          try {
+            const jsonMatch = data.match(/\[[\s\S]*\]/);
+            if (jsonMatch) {
+              console.log('Fallback: Found JSON in raw data:', jsonMatch[0].substring(0, 200));
+              const questions = JSON.parse(jsonMatch[0]);
+              if (Array.isArray(questions) && questions.length > 0) {
+                console.log('Fallback parsing successful:', questions.length);
+                return questions.slice(0, questionCount);
+              }
+            }
+          } catch (fallbackError) {
+            console.log('Fallback parsing also failed:', fallbackError.message);
+          }
         }
 
         console.log('AI response format not recognized, using fallback questions');
