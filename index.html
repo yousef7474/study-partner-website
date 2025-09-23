@@ -1230,6 +1230,9 @@
             <button class="btn btn-secondary" onclick="exportSchedule()" id="export-schedule-btn" style="display: none;">
               <span data-translate="exportSchedule">📤 Export Schedule</span>
             </button>
+            <button class="btn btn-danger" onclick="deleteSchedule()" id="delete-schedule-btn" style="display: none;">
+              <span data-translate="deleteSchedule">🗑️ Delete Schedule</span>
+            </button>
           </div>
         </div>
 
@@ -1506,7 +1509,7 @@
         appName:"Study Partner", toggleSidebar:"Toggle Sidebar", menuToggle:"Menu",
         copyCode:"Copy Code", shareLink:"Share Link", save:"Save", delete:"Delete", enterRooms:"Enter Rooms",
         // Study Schedule translations
-        generateSchedule:"🎯 Generate Smart Schedule", exportSchedule:"📤 Export Schedule", scheduleSettings:"Schedule Settings",
+        generateSchedule:"🎯 Generate Smart Schedule", exportSchedule:"📤 Export Schedule", deleteSchedule:"🗑️ Delete Schedule", scheduleSettings:"Schedule Settings",
         yourSelectedSubjects:"Your Selected Subjects", scheduleDuration:"Schedule Duration", dailyStudyHours:"Daily Study Hours", studyPreference:"Study Preference",
         oneWeek:"1 Week", twoWeeks:"2 Weeks", oneMonth:"1 Month", twoMonths:"2 Months",
         morningLearner:"Morning Learner", afternoonLearner:"Afternoon Learner", eveningLearner:"Evening Learner", flexible:"Flexible",
@@ -1703,7 +1706,7 @@
         challengeSent:"تم إرسال التحدي!", waitingResponse:"في انتظار رد الخصم...", cancel:"إلغاء",
         generalEducation:"تعليم عام", international:"دولي", qudrat:"قدرات", tahsili:"تحصيلي",
         // Study Schedule Arabic translations
-        generateSchedule:"🎯 إنشاء جدول ذكي", exportSchedule:"📤 تصدير الجدول", scheduleSettings:"إعدادات الجدول",
+        generateSchedule:"🎯 إنشاء جدول ذكي", exportSchedule:"📤 تصدير الجدول", deleteSchedule:"🗑️ حذف الجدول", scheduleSettings:"إعدادات الجدول",
         yourSelectedSubjects:"مواد الطالب المختارة", scheduleDuration:"مدة الجدول", dailyStudyHours:"ساعات الدراسة اليومية", studyPreference:"تفضيل الدراسة",
         oneWeek:"أسبوع واحد", twoWeeks:"أسبوعان", oneMonth:"شهر واحد", twoMonths:"شهران",
         morningLearner:"متعلم صباحي", afternoonLearner:"متعلم بعد الظهر", eveningLearner:"متعلم مسائي", flexible:"مرن",
@@ -14386,6 +14389,25 @@ Format as JSON array:
 
       // Load and display performance summary
       loadPerformanceSummary();
+
+      // Load saved schedule if exists
+      const savedScheduleData = loadSavedSchedule();
+      if (savedScheduleData && savedScheduleData.schedule) {
+        // Restore settings
+        document.getElementById('schedule-duration').value = savedScheduleData.settings.duration;
+        document.getElementById('daily-study-hours').value = savedScheduleData.settings.dailyHours;
+        document.getElementById('study-preference').value = savedScheduleData.settings.preference;
+
+        // Display the saved schedule
+        displaySchedule(savedScheduleData.schedule);
+
+        // Show the schedule section and buttons
+        document.getElementById('generated-schedule').style.display = 'block';
+        document.getElementById('export-schedule-btn').style.display = 'block';
+        document.getElementById('delete-schedule-btn').style.display = 'block';
+
+        console.log('Loaded and displayed saved schedule');
+      }
     }
 
     // Display selected subjects on Study Schedule screen
@@ -14549,12 +14571,16 @@ Format as JSON array:
         // Generate schedule
         const schedule = await createPersonalizedSchedule(duration, dailyHours, preference);
 
+        // Save schedule to localStorage
+        saveScheduleToStorage(schedule);
+
         // Display the generated schedule
         displaySchedule(schedule);
 
         // Show the schedule section
         document.getElementById('generated-schedule').style.display = 'block';
         document.getElementById('export-schedule-btn').style.display = 'block';
+        document.getElementById('delete-schedule-btn').style.display = 'block';
 
         // Scroll to schedule
         document.getElementById('generated-schedule').scrollIntoView({ behavior: 'smooth' });
@@ -14828,6 +14854,172 @@ Format as JSON array:
     // Regenerate schedule
     function regenerateSchedule() {
       generateStudySchedule();
+    }
+
+    // Save schedule to localStorage
+    function saveScheduleToStorage(schedule) {
+      if (!currentUser) return;
+
+      const scheduleData = {
+        schedule: schedule,
+        timestamp: new Date().toISOString(),
+        settings: {
+          duration: document.getElementById('schedule-duration').value,
+          dailyHours: document.getElementById('daily-study-hours').value,
+          preference: document.getElementById('study-preference').value
+        }
+      };
+
+      localStorage.setItem(`studySchedule_${currentUser.id}`, JSON.stringify(scheduleData));
+      console.log('Schedule saved to localStorage');
+    }
+
+    // Load schedule from localStorage
+    function loadSavedSchedule() {
+      if (!currentUser) return null;
+
+      const savedData = localStorage.getItem(`studySchedule_${currentUser.id}`);
+      if (savedData) {
+        try {
+          const scheduleData = JSON.parse(savedData);
+          console.log('Schedule loaded from localStorage');
+          return scheduleData;
+        } catch (error) {
+          console.error('Error parsing saved schedule:', error);
+          return null;
+        }
+      }
+      return null;
+    }
+
+    // Delete saved schedule
+    function deleteSchedule() {
+      if (!currentUser) return;
+
+      const confirmMessage = currentLanguage === 'ar' ?
+        'هل أنت متأكد من حذف الجدول الدراسي؟' :
+        'Are you sure you want to delete the study schedule?';
+
+      if (confirm(confirmMessage)) {
+        localStorage.removeItem(`studySchedule_${currentUser.id}`);
+
+        // Hide schedule display
+        document.getElementById('generated-schedule').style.display = 'none';
+        document.getElementById('export-schedule-btn').style.display = 'none';
+        document.getElementById('delete-schedule-btn').style.display = 'none';
+
+        // Clear the current schedule
+        window.currentSchedule = null;
+
+        toast(currentLanguage === 'ar' ? 'تم حذف الجدول الدراسي' : 'Study schedule deleted', 'success');
+      }
+    }
+
+    // Enhanced edit function for schedule sessions
+    function editScheduleSession(dayIndex, sessionIndex) {
+      const session = window.currentSchedule[dayIndex].sessions[sessionIndex];
+      const dayName = window.currentSchedule[dayIndex].day;
+
+      // Create modal for editing
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+      `;
+
+      modal.innerHTML = `
+        <div style="
+          background: var(--bg-primary);
+          border-radius: 16px;
+          padding: 2rem;
+          max-width: 500px;
+          width: 90%;
+          box-shadow: var(--shadow-heavy);
+        ">
+          <h3 style="margin-bottom: 1.5rem; color: var(--text-primary);">
+            ${currentLanguage === 'ar' ? 'تعديل جلسة الدراسة' : 'Edit Study Session'}
+          </h3>
+
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary);">
+              ${currentLanguage === 'ar' ? 'اليوم:' : 'Day:'}
+            </label>
+            <select id="edit-day" class="form-input" style="width: 100%;">
+              <option value="${dayName}">${dayName}</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary);">
+              ${currentLanguage === 'ar' ? 'الوقت:' : 'Time:'}
+            </label>
+            <input type="time" id="edit-time" class="form-input" style="width: 100%;" value="${session.time}">
+          </div>
+
+          <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary);">
+              ${currentLanguage === 'ar' ? 'الموضوع:' : 'Topic:'}
+            </label>
+            <input type="text" id="edit-topic" class="form-input" style="width: 100%;" value="${session.topic}">
+          </div>
+
+          <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+            <button onclick="closeEditModal()" class="btn btn-secondary">
+              ${currentLanguage === 'ar' ? 'إلغاء' : 'Cancel'}
+            </button>
+            <button onclick="saveSessionEdit(${dayIndex}, ${sessionIndex})" class="btn btn-primary">
+              ${currentLanguage === 'ar' ? 'حفظ' : 'Save'}
+            </button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(modal);
+
+      // Store modal reference for cleanup
+      window.editModal = modal;
+    }
+
+    // Close edit modal
+    function closeEditModal() {
+      if (window.editModal) {
+        document.body.removeChild(window.editModal);
+        window.editModal = null;
+      }
+    }
+
+    // Save session edits
+    function saveSessionEdit(dayIndex, sessionIndex) {
+      const newTime = document.getElementById('edit-time').value;
+      const newTopic = document.getElementById('edit-topic').value;
+
+      if (!newTime || !newTopic.trim()) {
+        alert(currentLanguage === 'ar' ? 'يرجى ملء جميع الحقول' : 'Please fill all fields');
+        return;
+      }
+
+      // Update the session
+      window.currentSchedule[dayIndex].sessions[sessionIndex].time = newTime;
+      window.currentSchedule[dayIndex].sessions[sessionIndex].topic = newTopic.trim();
+
+      // Save updated schedule
+      saveScheduleToStorage(window.currentSchedule);
+
+      // Refresh display
+      displaySchedule(window.currentSchedule);
+
+      // Close modal
+      closeEditModal();
+
+      toast(currentLanguage === 'ar' ? 'تم تحديث الجلسة' : 'Session updated', 'success');
     }
 
     // Export schedule
