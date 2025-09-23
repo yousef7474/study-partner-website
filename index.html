@@ -13693,11 +13693,13 @@ Format as JSON array:
 
         // Check if both players have finished
         console.log('🔍 Checking if both players finished...');
-        const { data: updatedBattle, error: battleError } = await supabase
+        const { data: battleData, error: battleError } = await supabase
           .from('challenge_battles')
           .select('*')
           .eq('id', currentBattle.id)
           .single();
+
+        let updatedBattle = battleData;
 
         if (battleError) {
           console.error('❌ Error fetching updated battle:', battleError);
