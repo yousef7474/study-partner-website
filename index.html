@@ -492,6 +492,7 @@
       <button class="nav-item" data-screen="library-screen" onclick="navigateToScreen('library-screen')"><span class="nav-icon">📚</span><span data-translate="digitalLibrary">Digital Library</span></button>
       <button class="nav-item" data-screen="calendar-screen" onclick="navigateToScreen('calendar-screen')"><span class="nav-icon">📅</span><span data-translate="calendar">Academic Calendar</span></button>
       <button class="nav-item" data-screen="study-schedule-screen" onclick="navigateToScreen('study-schedule-screen')"><span class="nav-icon">📝</span><span data-translate="studySchedule">Study Schedule</span></button>
+      <button class="nav-item" data-screen="academic-performance-screen" onclick="navigateToScreen('academic-performance-screen')"><span class="nav-icon">📊</span><span data-translate="academicPerformance">Academic Performance</span></button>
       <button class="nav-item" data-screen="about-screen" onclick="navigateToScreen('about-screen')"><span class="nav-icon">ℹ️</span><span data-translate="about">About</span></button>
       <button class="nav-item" data-screen="settings-screen" onclick="navigateToScreen('settings-screen')"><span class="nav-icon">⚙️</span><span data-translate="settings">Settings</span></button>
     </nav>
@@ -1314,6 +1315,94 @@
 
       </div>
 
+      <!-- Academic Performance Screen -->
+      <div id="academic-performance-screen" class="screen">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+          <h1 class="page-title" data-translate="academicPerformance">Academic Performance</h1>
+          <div style="display: flex; gap: 1rem;">
+            <button class="btn btn-secondary" onclick="refreshPerformanceData()" id="refresh-performance-btn">
+              <span data-translate="refreshData">🔄 Refresh Data</span>
+            </button>
+            <button class="btn btn-secondary" onclick="exportPerformanceData()" id="export-performance-btn">
+              <span data-translate="exportData">📤 Export Data</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Performance Summary Cards -->
+        <div id="performance-overview" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+          <!-- Summary cards will be generated here -->
+        </div>
+
+        <!-- Performance Filter -->
+        <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
+          <h3 style="margin-bottom: 1rem; color: var(--text-primary);" data-translate="filterOptions">Filter Options</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div>
+              <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;" data-translate="selectSubject">Select Subject</label>
+              <select id="performance-subject-filter" class="form-input">
+                <option value="all" data-translate="allSubjects">All Subjects</option>
+              </select>
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;" data-translate="performanceStatus">Performance Status</label>
+              <select id="performance-status-filter" class="form-input">
+                <option value="all" data-translate="allStatus">All Status</option>
+                <option value="passed" data-translate="passed">Passed (≥70%)</option>
+                <option value="failed" data-translate="needsImprovement">Needs Improvement (<70%)</option>
+                <option value="not-attempted" data-translate="notAttempted">Not Attempted</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Table -->
+        <div style="background: var(--bg-secondary); border-radius: 16px; padding: 2rem;">
+          <h3 style="margin-bottom: 1.5rem; color: var(--text-primary);" data-translate="detailedPerformance">Detailed Performance by Chapter/Topic</h3>
+
+          <div style="overflow-x: auto;">
+            <table id="performance-table" style="width: 100%; border-collapse: collapse; min-width: 800px;">
+              <thead>
+                <tr style="background: var(--bg-tertiary);">
+                  <th style="padding: 1rem; border: 1px solid var(--border-color); font-weight: 600; color: var(--text-primary);">
+                    <span data-translate="subject">Subject</span>
+                  </th>
+                  <th style="padding: 1rem; border: 1px solid var(--border-color); font-weight: 600; color: var(--text-primary);">
+                    <span data-translate="chapter">Chapter</span>
+                  </th>
+                  <th style="padding: 1rem; border: 1px solid var(--border-color); font-weight: 600; color: var(--text-primary);">
+                    <span data-translate="topic">Topic</span>
+                  </th>
+                  <th style="padding: 1rem; border: 1px solid var(--border-color); font-weight: 600; color: var(--text-primary);">
+                    <span data-translate="score">Score</span>
+                  </th>
+                  <th style="padding: 1rem; border: 1px solid var(--border-color); font-weight: 600; color: var(--text-primary);">
+                    <span data-translate="status">Status</span>
+                  </th>
+                  <th style="padding: 1rem; border: 1px solid var(--border-color); font-weight: 600; color: var(--text-primary);">
+                    <span data-translate="recommendation">Recommendation</span>
+                  </th>
+                  <th style="padding: 1rem; border: 1px solid var(--border-color); font-weight: 600; color: var(--text-primary);">
+                    <span data-translate="lastAttempt">Last Attempt</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="performance-table-body">
+                <!-- Performance data will be populated here -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- No Data Message -->
+          <div id="no-performance-data" style="text-align: center; padding: 3rem; display: none;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+            <h3 style="color: var(--text-primary); margin-bottom: 1rem;" data-translate="noPerformanceData">No Performance Data Available</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;" data-translate="takeQuizzesToSeeData">Take some quizzes to see your academic performance data here.</p>
+            <button class="btn btn-primary" onclick="navigateToScreen('library-screen')" data-translate="startQuiz">Take a Quiz</button>
+          </div>
+        </div>
+      </div>
+
       <div id="about-screen" class="screen">
         <h1 class="page-title">About Study Partner</h1>
         <div style="max-width:800px;margin:0 auto;background:var(--bg-secondary);padding:3rem;border-radius:24px;box-shadow:var(--shadow-medium);text-align:center;">
@@ -1516,6 +1605,15 @@
         performanceSummary:"Performance Summary", yourPersonalizedSchedule:"Your Personalized Study Schedule", regenerate:"🔄 Regenerate",
         noSubjectsSelected:"No Subjects Selected", selectSubjectsFirst:"Please select your subjects in the Settings to generate a personalized study schedule.",
         goToSettings:"Go to Settings",
+        // Academic Performance translations
+        academicPerformance:"Academic Performance", refreshData:"🔄 Refresh Data", exportData:"📤 Export Data",
+        filterOptions:"Filter Options", selectSubject:"Select Subject", allSubjects:"All Subjects", performanceStatus:"Performance Status",
+        allStatus:"All Status", passed:"Passed", needsImprovement:"Needs Improvement", notAttempted:"Not Attempted",
+        detailedPerformance:"Detailed Performance by Chapter/Topic", subject:"Subject", chapter:"Chapter", topic:"Topic",
+        score:"Score", status:"Status", recommendation:"Recommendation", lastAttempt:"Last Attempt",
+        noPerformanceData:"No Performance Data Available", takeQuizzesToSeeData:"Take some quizzes to see your academic performance data here.",
+        startQuiz:"Take a Quiz", retakeQuiz:"Retake Quiz", focusOnThis:"Focus on this topic", wellDone:"Well done!",
+        keepItUp:"Keep it up!", needsMorePractice:"Needs more practice", reviewRecommended:"Review recommended",
         challengeDesc:"Battle other students in epic knowledge duels", startBattle:"Start Battle",
         browse:"Browse", createNow:"Create Now", joinNow:"Join Now", joinRoom:"Join Room",
         createRoom:"Create Room", enterRoomCode:"Enter Room Code", leaveRoom:"Leave Room",
@@ -1712,7 +1810,16 @@
         morningLearner:"متعلم صباحي", afternoonLearner:"متعلم بعد الظهر", eveningLearner:"متعلم مسائي", flexible:"مرن",
         performanceSummary:"ملخص الأداء", yourPersonalizedSchedule:"جدولك الدراسي الشخصي", regenerate:"🔄 إعادة إنشاء",
         noSubjectsSelected:"لم يتم اختيار مواد", selectSubjectsFirst:"يرجى اختيار مواد في الإعدادات لإنشاء جدول دراسي شخصي.",
-        goToSettings:"الذهاب للإعدادات"
+        goToSettings:"الذهاب للإعدادات",
+        // Academic Performance Arabic translations
+        academicPerformance:"الأداء الأكاديمي", refreshData:"🔄 تحديث البيانات", exportData:"📤 تصدير البيانات",
+        filterOptions:"خيارات التصفية", selectSubject:"اختر المادة", allSubjects:"جميع المواد", performanceStatus:"حالة الأداء",
+        allStatus:"جميع الحالات", passed:"نجح", needsImprovement:"يحتاج تحسين", notAttempted:"لم يحاول",
+        detailedPerformance:"الأداء التفصيلي حسب الفصل/الموضوع", subject:"المادة", chapter:"الفصل", topic:"الموضوع",
+        score:"النتيجة", status:"الحالة", recommendation:"التوصية", lastAttempt:"آخر محاولة",
+        noPerformanceData:"لا توجد بيانات أداء متاحة", takeQuizzesToSeeData:"حل بعض الاختبارات لرؤية بيانات أدائك الأكاديمي هنا.",
+        startQuiz:"بدء اختبار", retakeQuiz:"إعادة الاختبار", focusOnThis:"ركز على هذا الموضوع", wellDone:"أحسنت!",
+        keepItUp:"استمر على هذا المستوى!", needsMorePractice:"يحتاج مزيد من الممارسة", reviewRecommended:"ينصح بالمراجعة",
       }
     };
     
@@ -6825,6 +6932,7 @@
       if(screenId === 'calendar-screen') initializeCalendar();
       if(screenId === 'challenge-screen') initializeChallengeScreen();
       if(screenId === 'study-schedule-screen') initializeStudySchedule();
+      if(screenId === 'academic-performance-screen') initializeAcademicPerformance();
 
       // Save current screen to localStorage for persistence
       localStorage.setItem('studyTogether_currentScreen', screenId);
@@ -15179,6 +15287,396 @@ Format as JSON array:
       link.click();
 
       toast(currentLanguage === 'ar' ? 'تم تصدير الجدول بنجاح' : 'Schedule exported successfully', 'success');
+    }
+
+    // -------- ACADEMIC PERFORMANCE FUNCTIONS --------
+
+    // Initialize Academic Performance screen
+    function initializeAcademicPerformance() {
+      console.log('Initializing Academic Performance screen');
+
+      if (!currentUser) {
+        console.log('currentUser is null, retrying in 500ms...');
+        setTimeout(() => {
+          if (currentUser && document.getElementById('academic-performance-screen').classList.contains('active')) {
+            initializeAcademicPerformance();
+          }
+        }, 500);
+        return;
+      }
+
+      // Load and display performance data
+      loadAcademicPerformanceData();
+
+      // Set up filter event listeners
+      setupPerformanceFilters();
+    }
+
+    // Load academic performance data from quiz results
+    async function loadAcademicPerformanceData() {
+      try {
+        if (!currentUser) return;
+
+        console.log('Loading academic performance data for user:', currentUser.id);
+
+        // Get all quiz results for the user
+        const { data: quizResults, error } = await supabase
+          .from('quiz_results')
+          .select('*')
+          .eq('user_id', currentUser.id)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error loading quiz results:', error);
+          showNoPerformanceData();
+          return;
+        }
+
+        console.log('Quiz results loaded:', quizResults);
+
+        if (!quizResults || quizResults.length === 0) {
+          showNoPerformanceData();
+          return;
+        }
+
+        // Process quiz results and generate performance data
+        const performanceData = await processQuizResults(quizResults);
+
+        // Display performance overview
+        displayPerformanceOverview(performanceData);
+
+        // Display performance table
+        displayPerformanceTable(performanceData);
+
+        // Populate subject filter
+        populateSubjectFilter(performanceData);
+
+      } catch (error) {
+        console.error('Error in loadAcademicPerformanceData:', error);
+        showNoPerformanceData();
+      }
+    }
+
+    // Process quiz results to extract chapter/topic performance
+    async function processQuizResults(quizResults) {
+      const performanceMap = new Map();
+      const userSubjects = currentUser.selected_subjects || [];
+
+      // Get all chapters and topics for user's subjects
+      const allTopics = getAllTopicsForUserSubjects(userSubjects);
+
+      // Initialize all topics with "not attempted" status
+      allTopics.forEach(topicInfo => {
+        const key = `${topicInfo.subject}_${topicInfo.chapter}_${topicInfo.topic}`;
+        performanceMap.set(key, {
+          subject: topicInfo.subject,
+          subjectAr: topicInfo.subjectAr,
+          chapter: topicInfo.chapter,
+          chapterAr: topicInfo.chapterAr,
+          topic: topicInfo.topic,
+          topicAr: topicInfo.topicAr,
+          score: null,
+          percentage: null,
+          status: 'not-attempted',
+          lastAttempt: null,
+          attempts: 0
+        });
+      });
+
+      // Process actual quiz results
+      quizResults.forEach(result => {
+        if (result.chapter && result.unit) {
+          const key = `${result.subject}_${result.chapter}_${result.unit}`;
+          const percentage = Math.round((result.score / result.total_questions) * 100);
+
+          if (performanceMap.has(key)) {
+            const existing = performanceMap.get(key);
+            // Keep the best score
+            if (!existing.score || percentage > existing.percentage) {
+              performanceMap.set(key, {
+                ...existing,
+                score: result.score,
+                totalQuestions: result.total_questions,
+                percentage: percentage,
+                status: percentage >= 70 ? 'passed' : 'failed',
+                lastAttempt: new Date(result.created_at),
+                attempts: existing.attempts + 1
+              });
+            } else {
+              // Just update attempt count and last attempt if not better score
+              existing.attempts += 1;
+              existing.lastAttempt = new Date(result.created_at);
+            }
+          }
+        }
+      });
+
+      return Array.from(performanceMap.values());
+    }
+
+    // Get all topics for user's selected subjects
+    function getAllTopicsForUserSubjects(userSubjects) {
+      const topics = [];
+      const userGrade = currentUser?.grade || '10';
+
+      userSubjects.forEach(subjectName => {
+        const subjects = subjectsByGrade[userGrade] || [];
+        const subjectData = subjects.find(s => s.name === subjectName);
+
+        if (subjectData && subjectData.chapters) {
+          subjectData.chapters.forEach(chapter => {
+            if (chapter.units) {
+              chapter.units.forEach(unit => {
+                topics.push({
+                  subject: subjectName,
+                  subjectAr: subjectData.nameAr || subjectName,
+                  chapter: chapter.name,
+                  chapterAr: chapter.nameAr || chapter.name,
+                  topic: unit.name,
+                  topicAr: unit.nameAr || unit.name
+                });
+              });
+            }
+          });
+        }
+      });
+
+      return topics;
+    }
+
+    // Display performance overview cards
+    function displayPerformanceOverview(performanceData) {
+      const overview = document.getElementById('performance-overview');
+
+      // Calculate statistics
+      const total = performanceData.length;
+      const attempted = performanceData.filter(p => p.status !== 'not-attempted').length;
+      const passed = performanceData.filter(p => p.status === 'passed').length;
+      const failed = performanceData.filter(p => p.status === 'failed').length;
+      const notAttempted = total - attempted;
+
+      const passRate = attempted > 0 ? Math.round((passed / attempted) * 100) : 0;
+
+      overview.innerHTML = `
+        <div style="background: var(--bg-primary); padding: 1.5rem; border-radius: 12px; border-left: 4px solid #3b82f6;">
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--text-primary);">${currentLanguage === 'ar' ? 'إجمالي المواضيع' : 'Total Topics'}</h4>
+          <div style="font-size: 2rem; font-weight: bold; color: #3b82f6;">${total}</div>
+        </div>
+
+        <div style="background: var(--bg-primary); padding: 1.5rem; border-radius: 12px; border-left: 4px solid #10b981;">
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--text-primary);">${currentLanguage === 'ar' ? 'نجح' : 'Passed'}</h4>
+          <div style="font-size: 2rem; font-weight: bold; color: #10b981;">${passed}</div>
+          <div style="font-size: 0.8rem; color: var(--text-secondary);">≥70%</div>
+        </div>
+
+        <div style="background: var(--bg-primary); padding: 1.5rem; border-radius: 12px; border-left: 4px solid #ef4444;">
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--text-primary);">${currentLanguage === 'ar' ? 'يحتاج تحسين' : 'Needs Improvement'}</h4>
+          <div style="font-size: 2rem; font-weight: bold; color: #ef4444;">${failed}</div>
+          <div style="font-size: 0.8rem; color: var(--text-secondary);"><70%</div>
+        </div>
+
+        <div style="background: var(--bg-primary); padding: 1.5rem; border-radius: 12px; border-left: 4px solid #6b7280;">
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--text-primary);">${currentLanguage === 'ar' ? 'لم يحاول' : 'Not Attempted'}</h4>
+          <div style="font-size: 2rem; font-weight: bold; color: #6b7280;">${notAttempted}</div>
+        </div>
+
+        <div style="background: var(--bg-primary); padding: 1.5rem; border-radius: 12px; border-left: 4px solid #8b5cf6;">
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--text-primary);">${currentLanguage === 'ar' ? 'معدل النجاح' : 'Pass Rate'}</h4>
+          <div style="font-size: 2rem; font-weight: bold; color: #8b5cf6;">${passRate}%</div>
+          <div style="font-size: 0.8rem; color: var(--text-secondary);">${attempted}/${total} ${currentLanguage === 'ar' ? 'محاولة' : 'attempted'}</div>
+        </div>
+      `;
+    }
+
+    // Display performance table
+    function displayPerformanceTable(performanceData) {
+      const tableBody = document.getElementById('performance-table-body');
+
+      if (performanceData.length === 0) {
+        showNoPerformanceData();
+        return;
+      }
+
+      document.getElementById('no-performance-data').style.display = 'none';
+
+      let html = '';
+      performanceData.forEach(item => {
+        const statusColor = item.status === 'passed' ? '#10b981' :
+                           item.status === 'failed' ? '#ef4444' : '#6b7280';
+
+        const statusText = item.status === 'passed' ? (currentLanguage === 'ar' ? 'نجح' : 'Passed') :
+                          item.status === 'failed' ? (currentLanguage === 'ar' ? 'يحتاج تحسين' : 'Needs Improvement') :
+                          (currentLanguage === 'ar' ? 'لم يحاول' : 'Not Attempted');
+
+        const recommendationText = getRecommendationText(item);
+
+        const scoreDisplay = item.score !== null ?
+          `${item.score}/${item.totalQuestions} (${item.percentage}%)` :
+          (currentLanguage === 'ar' ? 'لم يحاول' : 'Not Attempted');
+
+        const lastAttemptDisplay = item.lastAttempt ?
+          item.lastAttempt.toLocaleDateString(currentLanguage === 'ar' ? 'ar-SA' : 'en-US') :
+          (currentLanguage === 'ar' ? 'لم يحاول' : 'Never');
+
+        html += `
+          <tr style="border-bottom: 1px solid var(--border-color);">
+            <td style="padding: 1rem; border: 1px solid var(--border-color); color: var(--text-primary);">
+              ${currentLanguage === 'ar' ? item.subjectAr : item.subject}
+            </td>
+            <td style="padding: 1rem; border: 1px solid var(--border-color); color: var(--text-secondary);">
+              ${currentLanguage === 'ar' ? item.chapterAr : item.chapter}
+            </td>
+            <td style="padding: 1rem; border: 1px solid var(--border-color); color: var(--text-primary);">
+              ${currentLanguage === 'ar' ? item.topicAr : item.topic}
+            </td>
+            <td style="padding: 1rem; border: 1px solid var(--border-color); color: var(--text-primary); font-weight: 500;">
+              ${scoreDisplay}
+            </td>
+            <td style="padding: 1rem; border: 1px solid var(--border-color);">
+              <span style="
+                background: ${statusColor}20;
+                color: ${statusColor};
+                padding: 0.25rem 0.75rem;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 600;
+              ">
+                ${statusText}
+              </span>
+            </td>
+            <td style="padding: 1rem; border: 1px solid var(--border-color); color: var(--text-secondary);">
+              ${recommendationText}
+            </td>
+            <td style="padding: 1rem; border: 1px solid var(--border-color); color: var(--text-secondary);">
+              ${lastAttemptDisplay}
+            </td>
+          </tr>
+        `;
+      });
+
+      tableBody.innerHTML = html;
+    }
+
+    // Get recommendation text based on performance
+    function getRecommendationText(item) {
+      if (item.status === 'passed') {
+        return currentLanguage === 'ar' ? '🎉 أحسنت! استمر على هذا المستوى' : '🎉 Well done! Keep it up!';
+      } else if (item.status === 'failed') {
+        return currentLanguage === 'ar' ? '📚 ركز على هذا الموضوع وأعد المحاولة' : '📚 Focus on this topic and retake quiz';
+      } else {
+        return currentLanguage === 'ar' ? '📝 ابدأ بحل اختبار في هذا الموضوع' : '📝 Take a quiz on this topic';
+      }
+    }
+
+    // Show no performance data message
+    function showNoPerformanceData() {
+      document.getElementById('performance-overview').innerHTML = '';
+      document.getElementById('performance-table-body').innerHTML = '';
+      document.getElementById('no-performance-data').style.display = 'block';
+    }
+
+    // Populate subject filter dropdown
+    function populateSubjectFilter(performanceData) {
+      const filter = document.getElementById('performance-subject-filter');
+      const subjects = [...new Set(performanceData.map(item => item.subject))];
+
+      let html = `<option value="all">${currentLanguage === 'ar' ? 'جميع المواد' : 'All Subjects'}</option>`;
+
+      subjects.forEach(subject => {
+        const subjectData = getSubjectByName(subject);
+        const displayName = currentLanguage === 'ar' && subjectData ? subjectData.nameAr : subject;
+        html += `<option value="${subject}">${displayName}</option>`;
+      });
+
+      filter.innerHTML = html;
+    }
+
+    // Set up performance filters
+    function setupPerformanceFilters() {
+      const subjectFilter = document.getElementById('performance-subject-filter');
+      const statusFilter = document.getElementById('performance-status-filter');
+
+      subjectFilter.addEventListener('change', filterPerformanceTable);
+      statusFilter.addEventListener('change', filterPerformanceTable);
+    }
+
+    // Filter performance table
+    function filterPerformanceTable() {
+      const subjectFilter = document.getElementById('performance-subject-filter').value;
+      const statusFilter = document.getElementById('performance-status-filter').value;
+      const rows = document.querySelectorAll('#performance-table-body tr');
+
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length === 0) return;
+
+        const subject = cells[0].textContent.trim();
+        const statusElement = cells[4].querySelector('span');
+        const status = statusElement ? statusElement.textContent.trim().toLowerCase() : '';
+
+        let showRow = true;
+
+        // Filter by subject
+        if (subjectFilter !== 'all') {
+          const subjectData = getSubjectByName(subjectFilter);
+          const subjectToMatch = currentLanguage === 'ar' && subjectData ? subjectData.nameAr : subjectFilter;
+          if (subject !== subjectToMatch) {
+            showRow = false;
+          }
+        }
+
+        // Filter by status
+        if (statusFilter !== 'all' && showRow) {
+          const statusMap = {
+            'passed': currentLanguage === 'ar' ? 'نجح' : 'passed',
+            'failed': currentLanguage === 'ar' ? 'يحتاج تحسين' : 'needs improvement',
+            'not-attempted': currentLanguage === 'ar' ? 'لم يحاول' : 'not attempted'
+          };
+
+          if (status !== statusMap[statusFilter]) {
+            showRow = false;
+          }
+        }
+
+        row.style.display = showRow ? '' : 'none';
+      });
+    }
+
+    // Refresh performance data
+    function refreshPerformanceData() {
+      loadAcademicPerformanceData();
+      toast(currentLanguage === 'ar' ? 'تم تحديث بيانات الأداء' : 'Performance data refreshed', 'success');
+    }
+
+    // Export performance data as CSV
+    function exportPerformanceData() {
+      const rows = document.querySelectorAll('#performance-table-body tr');
+      const csvHeader = currentLanguage === 'ar'
+        ? 'المادة,الفصل,الموضوع,النتيجة,الحالة,التوصية,آخر محاولة\n'
+        : 'Subject,Chapter,Topic,Score,Status,Recommendation,Last Attempt\n';
+
+      let csv = csvHeader;
+
+      rows.forEach(row => {
+        if (row.style.display !== 'none') {
+          const cells = row.querySelectorAll('td');
+          const rowData = Array.from(cells).map(cell => `"${cell.textContent.trim()}"`).join(',');
+          csv += rowData + '\n';
+        }
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `academic_performance_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast(currentLanguage === 'ar' ? 'تم تصدير بيانات الأداء بنجاح' : 'Performance data exported successfully', 'success');
     }
 
     // Get subject by ID
