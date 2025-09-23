@@ -12013,9 +12013,58 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         return;
       }
 
+      // Show loading state
+      const sendButton = document.querySelector('#challenge-setup button[onclick="sendChallengeRequest()"]');
+      const originalText = sendButton.textContent;
+      sendButton.textContent = 'Sending...';
+      sendButton.disabled = true;
+
       try {
         if (!supabase) {
           toast('Database not available', 'error');
+          return;
+        }
+
+        // Clean up expired challenges first
+        await cleanupExpiredChallenges();
+
+        // Check for existing pending challenge between these users
+        const { data: existingChallenge, error: checkError } = await supabase
+          .from('challenge_requests')
+          .select('*')
+          .eq('challenger_id', currentUser.id)
+          .eq('opponent_id', challengeSetup.opponent.id)
+          .eq('status', 'pending')
+          .single();
+
+        if (checkError && checkError.code !== 'PGRST116') {
+          throw checkError;
+        }
+
+        if (existingChallenge) {
+          toast('You already have a pending challenge with this opponent. Please wait for their response.', 'warning');
+          sendButton.textContent = originalText;
+          sendButton.disabled = false;
+          return;
+        }
+
+        // Also check if opponent has sent a challenge to current user
+        const { data: reverseChallenge, error: reverseCheckError } = await supabase
+          .from('challenge_requests')
+          .select('*')
+          .eq('challenger_id', challengeSetup.opponent.id)
+          .eq('opponent_id', currentUser.id)
+          .eq('status', 'pending')
+          .single();
+
+        if (reverseCheckError && reverseCheckError.code !== 'PGRST116') {
+          throw reverseCheckError;
+        }
+
+        if (reverseChallenge) {
+          toast(`${challengeSetup.opponent.name} has already sent you a challenge! Check your incoming challenges.`, 'info');
+          sendButton.textContent = originalText;
+          sendButton.disabled = false;
           return;
         }
 
@@ -12034,7 +12083,16 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           .select()
           .single();
 
-        if (error) throw error;
+        if (error) {
+          // Handle specific duplicate constraint error
+          if (error.code === '23505') {
+            toast('A challenge with this opponent is already pending. Please wait for their response.', 'warning');
+            sendButton.textContent = originalText;
+            sendButton.disabled = false;
+            return;
+          }
+          throw error;
+        }
 
         // Show challenge sent status
         document.getElementById('challenge-setup').style.display = 'none';
@@ -12047,6 +12105,8 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       } catch (error) {
         console.error('Error sending challenge:', error);
         toast('Failed to send challenge. Please try again.', 'error');
+        sendButton.textContent = originalText;
+        sendButton.disabled = false;
       }
     }
 
@@ -12302,6 +12362,20 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
     function initializeChallengeScreen() {
       loadIncomingChallenges();
       startChallengePolling();
+    }
+
+    // Clean up expired challenges (auto-cancel after 5 minutes)
+    async function cleanupExpiredChallenges() {
+      try {
+        if (!supabase) return;
+
+        await supabase
+          .rpc('cleanup_expired_challenges');
+
+      } catch (error) {
+        console.error('Error cleaning up expired challenges:', error);
+        // Non-critical error, continue operation
+      }
     }
 
     // -------- BATTLE SYSTEM --------
