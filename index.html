@@ -13653,6 +13653,14 @@ Format as JSON array:
         console.log('🏁 Starting finishBattle function...');
         console.log(`📊 Final score: ${battlePlayerScore}/${battleQuestions.length}`);
 
+        // Close battle modal immediately when player finishes
+        console.log('🚪 Closing battle modal in finishBattle...');
+        const battleModal = document.getElementById('battle-modal');
+        if (battleModal) {
+          battleModal.style.display = 'none';
+          console.log('✅ Battle modal closed in finishBattle');
+        }
+
         // Calculate final score percentage
         const scorePercentage = Math.round((battlePlayerScore / battleQuestions.length) * 100);
         console.log(`📈 Score percentage: ${scorePercentage}%`);
@@ -14123,6 +14131,16 @@ Format as JSON array:
 
       document.getElementById('battle-results').style.display = 'block';
       document.getElementById('battle-questions').style.display = 'none';
+
+      // If battle is finished (regardless of whether both players finished),
+      // navigate to the results screen instead of staying in modal
+      console.log('🎯 Player finished battle, navigating to challenge screen to show results...');
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('challenge-screen').classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(item =>
+        item.classList.toggle('active', item.dataset.screen === 'challenge-screen')
+      );
+      localStorage.setItem('studyTogether_currentScreen', 'challenge-screen');
     }
 
     function closeBattleModal() {
