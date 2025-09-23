@@ -454,6 +454,26 @@
     <span id="connection-text">Connecting...</span>
   </div>
 
+  <!-- Global Challenge Request Notification -->
+  <div id="challenge-notification" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 10001; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4); max-width: 350px;">
+    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+      <div style="font-size: 2rem;">⚔️</div>
+      <div>
+        <h4 id="challenge-notification-title" style="margin: 0; font-size: 1.1rem;">Challenge Request!</h4>
+        <p id="challenge-notification-text" style="margin: 0; opacity: 0.9; font-size: 0.9rem;"></p>
+      </div>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+      <button id="challenge-notification-accept" class="btn" onclick="acceptChallengeFromNotification()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; flex: 1;">
+        ✅ Accept
+      </button>
+      <button id="challenge-notification-reject" class="btn" onclick="rejectChallengeFromNotification()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; flex: 1;">
+        ❌ Reject
+      </button>
+      <button onclick="hideChallengeNotification()" style="background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer;">✕</button>
+    </div>
+  </div>
+
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar" style="display:none;">
     <div class="sidebar-header">
@@ -1012,25 +1032,6 @@
           </div>
         </div>
 
-        <!-- Challenge Request Notification -->
-        <div id="challenge-notification" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 10001; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4); max-width: 350px;">
-          <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-            <div style="font-size: 2rem;">⚔️</div>
-            <div>
-              <h4 style="margin: 0; font-size: 1.1rem;">Challenge Request!</h4>
-              <p id="challenge-notification-text" style="margin: 0; opacity: 0.9; font-size: 0.9rem;"></p>
-            </div>
-          </div>
-          <div style="display: flex; gap: 0.5rem;">
-            <button class="btn" onclick="acceptChallengeFromNotification()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; flex: 1;">
-              ✅ Accept
-            </button>
-            <button class="btn" onclick="rejectChallengeFromNotification()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; flex: 1;">
-              ❌ Reject
-            </button>
-            <button onclick="hideChallengeNotification()" style="background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer;">✕</button>
-          </div>
-        </div>
       </div>
 
   <!-- Battle Results Modal -->
@@ -12480,8 +12481,16 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       console.log('📢 showChallengeNotification called with:', challenge);
       currentNotificationChallenge = challenge;
 
-      const notificationText = `${challenge.challenger_name} wants to battle you in ${challenge.category} (${challenge.question_count} questions)`;
+      const notificationText = currentLanguage === 'ar'
+        ? `${challenge.challenger_name} يريد أن يتحداك في ${challenge.category} (${challenge.question_count} أسئلة)`
+        : `${challenge.challenger_name} wants to battle you in ${challenge.category} (${challenge.question_count} questions)`;
+
+      // Update notification content with translations
+      document.getElementById('challenge-notification-title').textContent = currentLanguage === 'ar' ? 'طلب تحدي!' : 'Challenge Request!';
       document.getElementById('challenge-notification-text').textContent = notificationText;
+      document.getElementById('challenge-notification-accept').innerHTML = currentLanguage === 'ar' ? '✅ قبول' : '✅ Accept';
+      document.getElementById('challenge-notification-reject').innerHTML = currentLanguage === 'ar' ? '❌ رفض' : '❌ Reject';
+
       document.getElementById('challenge-notification').style.display = 'block';
       console.log('📢 Challenge notification displayed');
 
