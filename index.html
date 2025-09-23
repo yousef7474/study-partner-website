@@ -127,6 +127,11 @@
     .quiz-option.correct{background:var(--success-color);color:#fff;border-color:var(--success-color)}
     .quiz-option.incorrect{background:var(--error-color);color:#fff;border-color:var(--error-color)}
     .option-letter{background:var(--primary-color);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600}
+
+    /* Battle Option Styles */
+    .battle-option{background:var(--bg-tertiary);border:2px solid var(--border-color);border-radius:12px;padding:1.25rem;cursor:pointer;transition:all 0.3s ease;font-size:1rem;font-weight:500;text-align:left;width:100%}
+    .battle-option:hover{background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%);color:#fff;border-color:var(--accent-color);transform:translateY(-2px);box-shadow:0 8px 25px rgba(245, 158, 11, 0.3)}
+    .battle-option:disabled{cursor:not-allowed;opacity:0.8;transform:none}
     .quiz-controls{display:flex;gap:1rem;justify-content:center;margin-top:2rem}
     .quiz-results{text-align:center;padding:2rem}
     .quiz-score{font-size:3rem;font-weight:700;color:var(--primary-color);margin-bottom:1rem}
@@ -12173,7 +12178,8 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         // Reload incoming challenges
         loadIncomingChallenges();
 
-        // TODO: Start the battle interface
+        // Start the battle interface
+        await startBattle(challengeId);
         console.log('Starting battle for challenge:', challengeId);
 
       } catch (error) {
@@ -12298,6 +12304,515 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       startChallengePolling();
     }
 
+    // -------- BATTLE SYSTEM --------
+
+    let currentBattle = null;
+    let battleQuestions = [];
+    let currentQuestionIndex = 0;
+    let playerAnswers = [];
+    let playerScore = 0;
+    let battleStartTime = null;
+
+    // Map challenge categories to subject contexts for AI question generation
+    function getCategorySubjectContext(category) {
+      const contexts = {
+        'تعليم عام': 'Saudi General Education curriculum for high school students covering Mathematics, Physics, Chemistry, Biology, Arabic Literature, Islamic Studies, History, and Geography',
+        'international': 'International Education curriculum including IGCSE, A-Levels, IB, SAT subjects covering Mathematics, Physics, Chemistry, Biology, English Literature, Computer Science, Economics, and History',
+        'قدرات': 'Saudi Qudrat (General Aptitude Test) covering verbal reasoning, quantitative reasoning, analytical thinking, reading comprehension, mathematical problem solving, and logical reasoning in Arabic',
+        'تحصيلي': 'Saudi Tahsili (Achievement Test) covering Mathematics (Algebra, Calculus, Statistics), Physics (Mechanics, Electricity, Optics), Chemistry (Organic, Inorganic, Physical), and Biology (Cell Biology, Genetics, Ecology)'
+      };
+      return contexts[category] || contexts['تعليم عام'];
+    }
+
+    async function startBattle(challengeId) {
+      try {
+        if (!supabase) {
+          toast('Database not available', 'error');
+          return;
+        }
+
+        // Get challenge details
+        const { data: challenge, error: challengeError } = await supabase
+          .from('challenge_requests')
+          .select('*')
+          .eq('id', challengeId)
+          .single();
+
+        if (challengeError) throw challengeError;
+
+        // Generate AI questions based on category
+        const subjectContext = getCategorySubjectContext(challenge.category);
+        const questions = await generateBattleQuestions(challenge.category, challenge.question_count, subjectContext);
+
+        if (!questions || questions.length === 0) {
+          toast('Failed to generate questions. Try again.', 'error');
+          return;
+        }
+
+        // Create battle record in database
+        const battleData = {
+          challenge_request_id: challengeId,
+          challenger_id: challenge.challenger_id,
+          opponent_id: challenge.opponent_id,
+          category: challenge.category,
+          question_count: challenge.question_count,
+          questions: questions,
+          status: 'active'
+        };
+
+        const { data: battle, error: battleError } = await supabase
+          .from('challenge_battles')
+          .insert(battleData)
+          .select()
+          .single();
+
+        if (battleError) throw battleError;
+
+        // Update challenge status to completed
+        await supabase
+          .from('challenge_requests')
+          .update({ status: 'completed' })
+          .eq('id', challengeId);
+
+        // Initialize battle state
+        currentBattle = battle;
+        battleQuestions = questions;
+        currentQuestionIndex = 0;
+        playerAnswers = [];
+        playerScore = 0;
+        battleStartTime = Date.now();
+
+        // Show battle interface
+        showBattleInterface();
+
+      } catch (error) {
+        console.error('Error starting battle:', error);
+        toast('Failed to start battle: ' + error.message, 'error');
+      }
+    }
+
+    async function generateBattleQuestions(category, questionCount, subjectContext) {
+      try {
+        console.log('Generating battle questions for category:', category);
+
+        const prompt = `Generate ${questionCount} multiple choice questions for ${category} category.
+
+Context: ${subjectContext}
+
+Requirements:
+- Questions should be challenging and appropriate for high school level
+- Each question should have 4 options (A, B, C, D)
+- Questions should be in Arabic if category is قدرات or تحصيلي, otherwise in English
+- Cover diverse topics within the subject area
+- Include both theoretical and practical questions
+
+Format as JSON array:
+[
+  {
+    "question": "Question text here",
+    "options": ["Option A", "Option B", "Option C", "Option D"],
+    "correct": 0,
+    "explanation": "Brief explanation of the correct answer"
+  }
+]`;
+
+        const response = await fetch('/api/ai-questions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt, subject: category })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to generate questions');
+        }
+
+        const result = await response.json();
+        return result.questions || [];
+
+      } catch (error) {
+        console.error('Error generating battle questions:', error);
+        // Return fallback questions if AI fails
+        return getFallbackBattleQuestions(category, questionCount);
+      }
+    }
+
+    function getFallbackBattleQuestions(category, questionCount) {
+      const fallbackQuestions = [
+        {
+          question: `${category} - Sample Question 1`,
+          options: ["Option A", "Option B", "Option C", "Option D"],
+          correct: 0,
+          explanation: "This is a sample question for testing."
+        },
+        {
+          question: `${category} - Sample Question 2`,
+          options: ["Choice 1", "Choice 2", "Choice 3", "Choice 4"],
+          correct: 1,
+          explanation: "This is another sample question."
+        }
+      ];
+
+      // Repeat questions to match requested count
+      const questions = [];
+      for (let i = 0; i < questionCount; i++) {
+        const baseQuestion = fallbackQuestions[i % fallbackQuestions.length];
+        questions.push({
+          ...baseQuestion,
+          question: `${category} - Question ${i + 1}` + (i >= fallbackQuestions.length ? ` (${Math.floor(i / fallbackQuestions.length) + 1})` : '')
+        });
+      }
+      return questions;
+    }
+
+    function showBattleInterface() {
+      // Hide challenge screen and show battle modal
+      document.getElementById('battle-modal').style.display = 'flex';
+      startBattleQuestion();
+    }
+
+    function startBattleQuestion() {
+      if (currentQuestionIndex >= battleQuestions.length) {
+        finishBattle();
+        return;
+      }
+
+      const question = battleQuestions[currentQuestionIndex];
+      const isArabic = currentBattle.category === 'قدرات' || currentBattle.category === 'تحصيلي';
+
+      document.getElementById('battle-question-number').textContent =
+        isArabic ? `السؤال ${currentQuestionIndex + 1} من ${battleQuestions.length}`
+                 : `Question ${currentQuestionIndex + 1} of ${battleQuestions.length}`;
+
+      document.getElementById('battle-question-text').textContent = question.question;
+
+      const optionsContainer = document.getElementById('battle-options');
+      optionsContainer.innerHTML = '';
+
+      question.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.className = 'battle-option';
+        button.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
+        button.onclick = () => selectBattleAnswer(index);
+        optionsContainer.appendChild(button);
+      });
+
+      // Update progress bar
+      const progress = ((currentQuestionIndex + 1) / battleQuestions.length) * 100;
+      document.getElementById('battle-progress-fill').style.width = `${progress}%`;
+    }
+
+    function selectBattleAnswer(selectedIndex) {
+      const question = battleQuestions[currentQuestionIndex];
+      const isCorrect = selectedIndex === question.correct;
+
+      // Store answer
+      playerAnswers.push({
+        questionIndex: currentQuestionIndex,
+        selectedAnswer: selectedIndex,
+        correct: isCorrect,
+        timeSpent: Date.now() - battleStartTime
+      });
+
+      if (isCorrect) {
+        playerScore++;
+      }
+
+      // Visual feedback
+      const options = document.querySelectorAll('.battle-option');
+      options[selectedIndex].style.background = isCorrect ? '#10b981' : '#ef4444';
+      options[question.correct].style.background = '#10b981';
+
+      // Disable all options
+      options.forEach(option => option.disabled = true);
+
+      // Move to next question after 2 seconds
+      setTimeout(() => {
+        currentQuestionIndex++;
+        startBattleQuestion();
+      }, 2000);
+    }
+
+    async function finishBattle() {
+      try {
+        // Calculate final score percentage
+        const scorePercentage = Math.round((playerScore / battleQuestions.length) * 100);
+
+        // Update battle record with player's results
+        const isChallenger = currentUser.id === currentBattle.challenger_id;
+        const updateData = isChallenger
+          ? {
+              challenger_answers: playerAnswers,
+              challenger_score: playerScore,
+              challenger_finished: true
+            }
+          : {
+              opponent_answers: playerAnswers,
+              opponent_score: playerScore,
+              opponent_finished: true
+            };
+
+        await supabase
+          .from('challenge_battles')
+          .update(updateData)
+          .eq('id', currentBattle.id);
+
+        // Check if both players have finished
+        const { data: updatedBattle, error: battleError } = await supabase
+          .from('challenge_battles')
+          .select('*')
+          .eq('id', currentBattle.id)
+          .single();
+
+        if (battleError) throw battleError;
+
+        // If both players finished, determine winner and update stats
+        if (updatedBattle.challenger_finished && updatedBattle.opponent_finished) {
+          await determineBattleWinner(updatedBattle);
+        }
+
+        // Show results
+        showBattleResults(scorePercentage, updatedBattle);
+
+      } catch (error) {
+        console.error('Error finishing battle:', error);
+        toast('Error saving battle results', 'error');
+      }
+    }
+
+    async function determineBattleWinner(battle) {
+      try {
+        let winnerId = null;
+        let loserId = null;
+        let isDraw = false;
+
+        // Determine winner based on scores
+        if (battle.challenger_score > battle.opponent_score) {
+          winnerId = battle.challenger_id;
+          loserId = battle.opponent_id;
+        } else if (battle.opponent_score > battle.challenger_score) {
+          winnerId = battle.opponent_id;
+          loserId = battle.challenger_id;
+        } else {
+          isDraw = true;
+        }
+
+        // Update battle with winner/loser
+        const battleUpdateData = {
+          status: 'completed',
+          battle_ended_at: new Date().toISOString(),
+          winner_id: winnerId,
+          loser_id: loserId
+        };
+
+        await supabase
+          .from('challenge_battles')
+          .update(battleUpdateData)
+          .eq('id', battle.id);
+
+        // Calculate battle points for both players
+        const challengerPoints = await calculatePlayerBattlePoints(
+          battle.category,
+          battle.challenger_score,
+          battle.question_count,
+          winnerId === battle.challenger_id
+        );
+
+        const opponentPoints = await calculatePlayerBattlePoints(
+          battle.category,
+          battle.opponent_score,
+          battle.question_count,
+          winnerId === battle.opponent_id
+        );
+
+        // Update or create battle stats for both players
+        await updatePlayerBattleStats(battle.challenger_id, challengerPoints, winnerId === battle.challenger_id, isDraw, battle.category);
+        await updatePlayerBattleStats(battle.opponent_id, opponentPoints, winnerId === battle.opponent_id, isDraw, battle.category);
+
+        console.log('Battle completed successfully:', {
+          winner: winnerId,
+          loser: loserId,
+          isDraw,
+          challengerPoints,
+          opponentPoints
+        });
+
+      } catch (error) {
+        console.error('Error determining battle winner:', error);
+      }
+    }
+
+    async function calculatePlayerBattlePoints(category, score, totalQuestions, won) {
+      try {
+        // Use the database function to calculate points
+        const { data, error } = await supabase
+          .rpc('calculate_battle_points', {
+            category: category,
+            score: score,
+            total_questions: totalQuestions,
+            won: won
+          });
+
+        if (error) throw error;
+        return data || 0;
+
+      } catch (error) {
+        console.error('Error calculating battle points:', error);
+        // Fallback calculation
+        const basePoints = category === 'قدرات' || category === 'تحصيلي' ? 15 :
+                          category === 'international' ? 12 : 10;
+        const performanceBonus = Math.round((score / totalQuestions) * basePoints);
+        const winBonus = won ? basePoints : 0;
+        return basePoints + performanceBonus + winBonus;
+      }
+    }
+
+    async function updatePlayerBattleStats(userId, battlePoints, won, isDraw, category) {
+      try {
+        // First, ensure user has battle stats record
+        const { data: existingStats, error: checkError } = await supabase
+          .from('user_battle_stats')
+          .select('*')
+          .eq('user_id', userId)
+          .single();
+
+        if (checkError && checkError.code !== 'PGRST116') {
+          throw checkError;
+        }
+
+        if (!existingStats) {
+          // Create initial stats record
+          await supabase
+            .from('user_battle_stats')
+            .insert({
+              user_id: userId,
+              battle_points: battlePoints,
+              total_battles: 1,
+              wins: won ? 1 : 0,
+              losses: (!won && !isDraw) ? 1 : 0,
+              draws: isDraw ? 1 : 0,
+              current_win_streak: won ? 1 : 0,
+              best_win_streak: won ? 1 : 0,
+              [`${category.toLowerCase()}_wins`]: won ? 1 : 0
+            });
+        } else {
+          // Update existing stats
+          const newWinStreak = won ? (existingStats.current_win_streak + 1) : 0;
+          const updateData = {
+            battle_points: existingStats.battle_points + battlePoints,
+            total_battles: existingStats.total_battles + 1,
+            wins: won ? existingStats.wins + 1 : existingStats.wins,
+            losses: (!won && !isDraw) ? existingStats.losses + 1 : existingStats.losses,
+            draws: isDraw ? existingStats.draws + 1 : existingStats.draws,
+            current_win_streak: newWinStreak,
+            best_win_streak: Math.max(existingStats.best_win_streak, newWinStreak)
+          };
+
+          // Add category-specific wins
+          const categoryKey = `${category.toLowerCase()}_wins`;
+          if (won && updateData[categoryKey] !== undefined) {
+            updateData[categoryKey] = (existingStats[categoryKey] || 0) + 1;
+          }
+
+          await supabase
+            .from('user_battle_stats')
+            .update(updateData)
+            .eq('user_id', userId);
+        }
+
+        // Update user rank
+        await supabase
+          .rpc('update_user_rank', { user_id_param: userId });
+
+      } catch (error) {
+        console.error('Error updating player battle stats:', error);
+      }
+    }
+
+    async function showBattleResults(scorePercentage, battleData = null) {
+      const isArabic = currentBattle.category === 'قدرات' || currentBattle.category === 'تحصيلي';
+
+      document.getElementById('battle-score').textContent = `${playerScore}/${battleQuestions.length}`;
+      document.getElementById('battle-percentage').textContent = `${scorePercentage}%`;
+
+      // Calculate points earned
+      const pointsEarned = await calculatePlayerBattlePoints(
+        currentBattle.category,
+        playerScore,
+        battleQuestions.length,
+        false // We'll update this when we know the battle outcome
+      );
+
+      let resultText = '';
+      let battleOutcome = '';
+
+      if (battleData && battleData.challenger_finished && battleData.opponent_finished) {
+        // Both players finished - show final results
+        const playerIsChallenger = currentUser.id === currentBattle.challenger_id;
+        const playerFinalScore = playerIsChallenger ? battleData.challenger_score : battleData.opponent_score;
+        const opponentFinalScore = playerIsChallenger ? battleData.opponent_score : battleData.challenger_score;
+        const opponentName = playerIsChallenger ?
+          battleData.opponent_id === currentBattle.opponent_id ? 'Opponent' : 'Unknown' :
+          battleData.challenger_id === currentBattle.challenger_id ? 'Challenger' : 'Unknown';
+
+        if (playerFinalScore > opponentFinalScore) {
+          battleOutcome = isArabic ? '🏆 مبروك! لقد فزت!' : '🏆 Congratulations! You Won!';
+          resultText = isArabic ? `فزت على ${opponentName} بنتيجة ${playerFinalScore}-${opponentFinalScore}` :
+                                 `You defeated ${opponentName} ${playerFinalScore}-${opponentFinalScore}`;
+        } else if (opponentFinalScore > playerFinalScore) {
+          battleOutcome = isArabic ? '⚔️ خسرت المعركة' : '⚔️ Battle Lost';
+          resultText = isArabic ? `خسرت أمام ${opponentName} بنتيجة ${opponentFinalScore}-${playerFinalScore}` :
+                                 `You lost to ${opponentName} ${opponentFinalScore}-${playerFinalScore}`;
+        } else {
+          battleOutcome = isArabic ? '🤝 تعادل!' : '🤝 Draw!';
+          resultText = isArabic ? `تعادلت مع ${opponentName} بنتيجة ${playerFinalScore}-${opponentFinalScore}` :
+                                 `You drew with ${opponentName} ${playerFinalScore}-${opponentFinalScore}`;
+        }
+
+        // Recalculate points with win/loss information
+        const won = playerFinalScore > opponentFinalScore;
+        const finalPoints = await calculatePlayerBattlePoints(
+          currentBattle.category,
+          playerScore,
+          battleQuestions.length,
+          won
+        );
+
+        // Update the battle result text with points
+        resultText += isArabic ? ` | نقاط المعركة: +${finalPoints}` : ` | Battle Points: +${finalPoints}`;
+
+      } else {
+        // Only current player finished
+        battleOutcome = isArabic ? '⏳ في انتظار الخصم...' : '⏳ Waiting for opponent...';
+        resultText = isArabic ?
+          `أنهيت المعركة! سجلت ${playerScore} من ${battleQuestions.length} نقاط` :
+          `Battle completed! You scored ${playerScore} out of ${battleQuestions.length}`;
+
+        resultText += isArabic ? ` | نقاط أولية: +${pointsEarned}` : ` | Preliminary Points: +${pointsEarned}`;
+      }
+
+      // Update the UI
+      document.getElementById('battle-result-text').innerHTML = `
+        <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem;">${battleOutcome}</div>
+        <div style="font-size: 1rem;">${resultText}</div>
+      `;
+
+      document.getElementById('battle-results').style.display = 'block';
+      document.getElementById('battle-questions').style.display = 'none';
+    }
+
+    function closeBattleModal() {
+      document.getElementById('battle-modal').style.display = 'none';
+      currentBattle = null;
+      battleQuestions = [];
+      currentQuestionIndex = 0;
+      playerAnswers = [];
+      playerScore = 0;
+      battleStartTime = null;
+
+      // Refresh challenge screen
+      loadIncomingChallenges();
+    }
+
 
   </script>
 
@@ -12370,6 +12885,63 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       <div id="no-join-requests" style="display: none; text-align: center; padding: 2rem; color: var(--text-secondary);">
         <div style="font-size: 2rem; margin-bottom: 1rem;">📝</div>
         <p>No pending join requests</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Battle/Duel Modal -->
+  <div id="battle-modal" class="quiz-modal" style="display: none;">
+    <div class="quiz-container" style="max-width: 800px; height: 90vh;">
+      <!-- Battle Questions Section -->
+      <div id="battle-questions">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+          <div>
+            <h2 style="margin: 0; font-size: 1.5rem; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+              ⚔️ Battle Arena
+            </h2>
+            <p id="battle-question-number" style="margin: 0.5rem 0 0 0; color: var(--text-secondary);">Question 1 of 5</p>
+          </div>
+          <button onclick="closeBattleModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);">×</button>
+        </div>
+
+        <!-- Progress Bar -->
+        <div style="background: var(--bg-secondary); border-radius: 10px; height: 8px; margin-bottom: 2rem; overflow: hidden;">
+          <div id="battle-progress-fill" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+        </div>
+
+        <!-- Question -->
+        <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 16px; margin-bottom: 2rem;">
+          <h3 id="battle-question-text" style="margin: 0; line-height: 1.6; font-size: 1.2rem;">Loading question...</h3>
+        </div>
+
+        <!-- Options -->
+        <div id="battle-options" style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+          <!-- Options will be populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Battle Results Section -->
+      <div id="battle-results" style="display: none; text-align: center;">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">🏆</div>
+        <h2 style="margin-bottom: 1rem;">Battle Complete!</h2>
+
+        <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 16px; margin-bottom: 2rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 1rem;">
+            <div>
+              <div style="font-size: 2rem; font-weight: bold; color: var(--accent-color);" id="battle-score">5/5</div>
+              <div style="color: var(--text-secondary);">Score</div>
+            </div>
+            <div>
+              <div style="font-size: 2rem; font-weight: bold; color: var(--accent-color);" id="battle-percentage">100%</div>
+              <div style="color: var(--text-secondary);">Accuracy</div>
+            </div>
+          </div>
+          <div id="battle-result-text" style="font-size: 1.1rem; font-weight: 500;">Excellent! Great performance</div>
+        </div>
+
+        <button class="btn" onclick="closeBattleModal()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+          🎯 Back to Challenges
+        </button>
       </div>
     </div>
   </div>
