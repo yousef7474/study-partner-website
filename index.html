@@ -6785,6 +6785,14 @@
       document.getElementById('registration-screen').classList.remove('active');
       updateSidebarUserInfo();
       setTimeout(() => updateLayoutForSidebar(true), 50);
+
+      // If Study Schedule screen is active, refresh it after user data is available
+      setTimeout(() => {
+        if (document.getElementById('study-schedule-screen').classList.contains('active')) {
+          console.log('Refreshing Study Schedule after login layout setup');
+          initializeStudySchedule();
+        }
+      }, 100);
     }
 
     function showLoggedOutLayout(){
@@ -14371,12 +14379,24 @@ Format as JSON array:
 
     // Initialize Study Schedule screen
     function initializeStudySchedule() {
+      console.log('Initializing Study Schedule screen, currentUser:', currentUser ? 'available' : 'null');
+
       // Check if user has selected subjects
       if (!currentUser || !currentUser.selected_subjects || currentUser.selected_subjects.length === 0) {
         document.getElementById('schedule-options').style.display = 'none';
         document.getElementById('performance-summary').style.display = 'none';
         document.getElementById('generated-schedule').style.display = 'none';
         document.getElementById('no-subjects-message').style.display = 'block';
+
+        // If currentUser is null, try again after a short delay
+        if (!currentUser) {
+          console.log('currentUser is null, retrying in 500ms...');
+          setTimeout(() => {
+            if (currentUser && document.getElementById('study-schedule-screen').classList.contains('active')) {
+              initializeStudySchedule();
+            }
+          }, 500);
+        }
         return;
       }
 
@@ -14393,6 +14413,8 @@ Format as JSON array:
       // Load saved schedule if exists
       const savedScheduleData = loadSavedSchedule();
       if (savedScheduleData && savedScheduleData.schedule) {
+        console.log('Found saved schedule data:', savedScheduleData);
+
         // Restore settings
         document.getElementById('schedule-duration').value = savedScheduleData.settings.duration;
         document.getElementById('daily-study-hours').value = savedScheduleData.settings.dailyHours;
@@ -14406,7 +14428,9 @@ Format as JSON array:
         document.getElementById('export-schedule-btn').style.display = 'block';
         document.getElementById('delete-schedule-btn').style.display = 'block';
 
-        console.log('Loaded and displayed saved schedule');
+        console.log('Loaded and displayed saved schedule successfully');
+      } else {
+        console.log('No saved schedule found or schedule data is invalid');
       }
     }
 
@@ -14876,18 +14900,26 @@ Format as JSON array:
 
     // Load schedule from localStorage
     function loadSavedSchedule() {
-      if (!currentUser) return null;
+      if (!currentUser) {
+        console.log('Cannot load schedule: currentUser is null');
+        return null;
+      }
 
-      const savedData = localStorage.getItem(`studySchedule_${currentUser.id}`);
+      const scheduleKey = `studySchedule_${currentUser.id}`;
+      console.log('Looking for saved schedule with key:', scheduleKey);
+
+      const savedData = localStorage.getItem(scheduleKey);
       if (savedData) {
         try {
           const scheduleData = JSON.parse(savedData);
-          console.log('Schedule loaded from localStorage');
+          console.log('Schedule loaded from localStorage:', scheduleData);
           return scheduleData;
         } catch (error) {
           console.error('Error parsing saved schedule:', error);
           return null;
         }
+      } else {
+        console.log('No saved schedule found in localStorage');
       }
       return null;
     }
@@ -14953,7 +14985,9 @@ Format as JSON array:
               ${currentLanguage === 'ar' ? 'اليوم:' : 'Day:'}
             </label>
             <select id="edit-day" class="form-input" style="width: 100%;">
-              <option value="${dayName}">${dayName}</option>
+              ${window.currentSchedule.map(day =>
+                `<option value="${day.day}" ${day.day === dayName ? 'selected' : ''}>${day.day}</option>`
+              ).join('')}
             </select>
           </div>
 
@@ -14998,17 +15032,43 @@ Format as JSON array:
 
     // Save session edits
     function saveSessionEdit(dayIndex, sessionIndex) {
+      const newDay = document.getElementById('edit-day').value;
       const newTime = document.getElementById('edit-time').value;
       const newTopic = document.getElementById('edit-topic').value;
 
-      if (!newTime || !newTopic.trim()) {
+      if (!newDay || !newTime || !newTopic.trim()) {
         alert(currentLanguage === 'ar' ? 'يرجى ملء جميع الحقول' : 'Please fill all fields');
         return;
       }
 
-      // Update the session
-      window.currentSchedule[dayIndex].sessions[sessionIndex].time = newTime;
-      window.currentSchedule[dayIndex].sessions[sessionIndex].topic = newTopic.trim();
+      // Get the session data
+      const session = window.currentSchedule[dayIndex].sessions[sessionIndex];
+      const originalDay = window.currentSchedule[dayIndex].day;
+
+      // If day changed, move the session to the new day
+      if (newDay !== originalDay) {
+        // Remove session from original day
+        window.currentSchedule[dayIndex].sessions.splice(sessionIndex, 1);
+
+        // Find the target day and add the session
+        const targetDayIndex = window.currentSchedule.findIndex(day => day.day === newDay);
+        if (targetDayIndex !== -1) {
+          // Update session data
+          session.time = newTime;
+          session.topic = newTopic.trim();
+
+          // Add to target day and sort by time
+          window.currentSchedule[targetDayIndex].sessions.push(session);
+          window.currentSchedule[targetDayIndex].sessions.sort((a, b) => a.time.localeCompare(b.time));
+        }
+      } else {
+        // Same day, just update the session
+        session.time = newTime;
+        session.topic = newTopic.trim();
+
+        // Re-sort sessions by time
+        window.currentSchedule[dayIndex].sessions.sort((a, b) => a.time.localeCompare(b.time));
+      }
 
       // Save updated schedule
       saveScheduleToStorage(window.currentSchedule);
