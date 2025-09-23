@@ -14661,8 +14661,13 @@ Format as JSON array:
           const currentDate = new Date(startDate);
           currentDate.setDate(startDate.getDate() + (week * 7) + day);
 
+          const dayNames = currentLanguage === 'ar'
+            ? ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
+            : ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
           const daySchedule = {
             date: currentDate,
+            day: dayNames[currentDate.getDay()],
             sessions: []
           };
 
@@ -14912,6 +14917,24 @@ Format as JSON array:
       if (savedData) {
         try {
           const scheduleData = JSON.parse(savedData);
+
+          // Restore Date objects that were converted to strings during JSON serialization
+          if (scheduleData.schedule) {
+            const dayNames = currentLanguage === 'ar'
+              ? ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
+              : ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+            scheduleData.schedule.forEach(day => {
+              if (day.date && typeof day.date === 'string') {
+                day.date = new Date(day.date);
+              }
+              // Add day name if missing (for backwards compatibility)
+              if (!day.day && day.date) {
+                day.day = dayNames[day.date.getDay()];
+              }
+            });
+          }
+
           console.log('Schedule loaded from localStorage:', scheduleData);
           return scheduleData;
         } catch (error) {
@@ -14995,7 +15018,7 @@ Format as JSON array:
             <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary);">
               ${currentLanguage === 'ar' ? 'الوقت:' : 'Time:'}
             </label>
-            <input type="time" id="edit-time" class="form-input" style="width: 100%;" value="${session.time}">
+            <input type="time" id="edit-time" class="form-input" style="width: 100%;" value="${session.time.includes(' - ') ? session.time.split(' - ')[0] : session.time}">
           </div>
 
           <div style="margin-bottom: 1.5rem;">
@@ -15030,6 +15053,23 @@ Format as JSON array:
       }
     }
 
+    // Convert time to range format
+    function convertTimeToRange(startTime, duration) {
+      if (!startTime || !duration) return startTime;
+
+      // Parse start time
+      const [hours, minutes] = startTime.split(':').map(Number);
+      const startDate = new Date();
+      startDate.setHours(hours, minutes, 0, 0);
+
+      // Calculate end time
+      const endDate = new Date(startDate.getTime() + duration * 60000);
+      const endHours = String(endDate.getHours()).padStart(2, '0');
+      const endMinutes = String(endDate.getMinutes()).padStart(2, '0');
+
+      return `${startTime} - ${endHours}:${endMinutes}`;
+    }
+
     // Save session edits
     function saveSessionEdit(dayIndex, sessionIndex) {
       const newDay = document.getElementById('edit-day').value;
@@ -15045,6 +15085,9 @@ Format as JSON array:
       const session = window.currentSchedule[dayIndex].sessions[sessionIndex];
       const originalDay = window.currentSchedule[dayIndex].day;
 
+      // Convert time back to range format if needed
+      const timeRange = convertTimeToRange(newTime, session.duration);
+
       // If day changed, move the session to the new day
       if (newDay !== originalDay) {
         // Remove session from original day
@@ -15054,7 +15097,7 @@ Format as JSON array:
         const targetDayIndex = window.currentSchedule.findIndex(day => day.day === newDay);
         if (targetDayIndex !== -1) {
           // Update session data
-          session.time = newTime;
+          session.time = timeRange;
           session.topic = newTopic.trim();
 
           // Add to target day and sort by time
@@ -15063,7 +15106,7 @@ Format as JSON array:
         }
       } else {
         // Same day, just update the session
-        session.time = newTime;
+        session.time = timeRange;
         session.topic = newTopic.trim();
 
         // Re-sort sessions by time
