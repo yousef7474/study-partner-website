@@ -12014,7 +12014,12 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       }
 
       // Show loading state
-      const sendButton = document.querySelector('#challenge-setup button[onclick="sendChallengeRequest()"]');
+      const sendButton = document.getElementById('send-challenge-btn');
+      if (!sendButton) {
+        console.error('Send challenge button not found');
+        toast('Interface error. Please try again.', 'error');
+        return;
+      }
       const originalText = sendButton.textContent;
       sendButton.textContent = 'Sending...';
       sendButton.disabled = true;
