@@ -14361,7 +14361,7 @@ Format as JSON array:
     // Initialize Study Schedule screen
     function initializeStudySchedule() {
       // Check if user has selected subjects
-      if (!currentUser || !currentUser.subjects || currentUser.subjects.length === 0) {
+      if (!currentUser || !currentUser.selected_subjects || currentUser.selected_subjects.length === 0) {
         document.getElementById('schedule-options').style.display = 'none';
         document.getElementById('performance-summary').style.display = 'none';
         document.getElementById('generated-schedule').style.display = 'none';
@@ -14475,7 +14475,7 @@ Format as JSON array:
     // Generate study schedule based on performance
     async function generateStudySchedule() {
       try {
-        if (!currentUser || !currentUser.subjects || currentUser.subjects.length === 0) {
+        if (!currentUser || !currentUser.selected_subjects || currentUser.selected_subjects.length === 0) {
           alert(currentLanguage === 'ar' ? 'يرجى اختيار مواد في الإعدادات أولاً' : 'Please select subjects in Settings first');
           return;
         }
