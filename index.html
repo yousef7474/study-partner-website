@@ -12626,7 +12626,14 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       }
 
       // Close battle modal first
-      document.getElementById('battle-modal').style.display = 'none';
+      console.log('🚪 Closing battle modal...');
+      const battleModal = document.getElementById('battle-modal');
+      if (battleModal) {
+        battleModal.style.display = 'none';
+        console.log('✅ Battle modal closed');
+      } else {
+        console.log('⚠️ Battle modal not found');
+      }
 
       // Determine battle outcome and player data
       const isWinner = battleData.winner_id === currentUser.id;
@@ -12732,8 +12739,24 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       // Get and display updated user stats
       await updateBattleResultsStats();
 
-      // Navigate to results screen
-      navigateToScreen('battle-results-screen');
+      // Navigate to results screen - force navigation without room confirmation
+      console.log('🚀 Forcing navigation to battle-results-screen...');
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+
+      const resultsScreen = document.getElementById('battle-results-screen');
+      if (resultsScreen) {
+        resultsScreen.classList.add('active');
+        console.log('✅ Battle results screen activated');
+      } else {
+        console.error('❌ Battle results screen not found!');
+      }
+
+      document.querySelectorAll('.nav-item').forEach(item =>
+        item.classList.toggle('active', item.dataset.screen === 'battle-results-screen')
+      );
+      // Save current screen to localStorage for persistence
+      localStorage.setItem('studyTogether_currentScreen', 'battle-results-screen');
+      console.log('📱 Navigation to battle results screen completed');
 
       // Clean up battle state
       stopBattleCompletionPolling();
