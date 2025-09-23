@@ -15005,13 +15005,9 @@ Format as JSON array:
 
           <div style="margin-bottom: 1rem;">
             <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary);">
-              ${currentLanguage === 'ar' ? 'اليوم:' : 'Day:'}
+              ${currentLanguage === 'ar' ? 'التاريخ:' : 'Date:'}
             </label>
-            <select id="edit-day" class="form-input" style="width: 100%;">
-              ${window.currentSchedule.map(day =>
-                `<option value="${day.day}" ${day.day === dayName ? 'selected' : ''}>${day.day}</option>`
-              ).join('')}
-            </select>
+            <input type="date" id="edit-date" class="form-input" style="width: 100%;" value="${window.currentSchedule[dayIndex].date.toISOString().split('T')[0]}">
           </div>
 
           <div style="margin-bottom: 1rem;">
@@ -15072,37 +15068,70 @@ Format as JSON array:
 
     // Save session edits
     function saveSessionEdit(dayIndex, sessionIndex) {
-      const newDay = document.getElementById('edit-day').value;
+      const newDate = document.getElementById('edit-date').value;
       const newTime = document.getElementById('edit-time').value;
       const newTopic = document.getElementById('edit-topic').value;
 
-      if (!newDay || !newTime || !newTopic.trim()) {
+      if (!newDate || !newTime || !newTopic.trim()) {
         alert(currentLanguage === 'ar' ? 'يرجى ملء جميع الحقول' : 'Please fill all fields');
         return;
       }
 
       // Get the session data
       const session = window.currentSchedule[dayIndex].sessions[sessionIndex];
-      const originalDay = window.currentSchedule[dayIndex].day;
+      const originalDate = window.currentSchedule[dayIndex].date;
+      const selectedDate = new Date(newDate);
 
       // Convert time back to range format if needed
       const timeRange = convertTimeToRange(newTime, session.duration);
 
-      // If day changed, move the session to the new day
-      if (newDay !== originalDay) {
+      // Check if date changed
+      const dateChanged = originalDate.toDateString() !== selectedDate.toDateString();
+
+      if (dateChanged) {
+        // Find or create target day in schedule
+        let targetDayIndex = window.currentSchedule.findIndex(day =>
+          day.date.toDateString() === selectedDate.toDateString()
+        );
+
+        if (targetDayIndex === -1) {
+          // Create new day if it doesn't exist
+          const dayNames = currentLanguage === 'ar'
+            ? ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
+            : ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+          const newDay = {
+            date: selectedDate,
+            day: dayNames[selectedDate.getDay()],
+            sessions: []
+          };
+
+          window.currentSchedule.push(newDay);
+          targetDayIndex = window.currentSchedule.length - 1;
+
+          // Sort schedule by date
+          window.currentSchedule.sort((a, b) => a.date - b.date);
+
+          // Update targetDayIndex after sorting
+          targetDayIndex = window.currentSchedule.findIndex(day =>
+            day.date.toDateString() === selectedDate.toDateString()
+          );
+        }
+
         // Remove session from original day
         window.currentSchedule[dayIndex].sessions.splice(sessionIndex, 1);
 
-        // Find the target day and add the session
-        const targetDayIndex = window.currentSchedule.findIndex(day => day.day === newDay);
-        if (targetDayIndex !== -1) {
-          // Update session data
-          session.time = timeRange;
-          session.topic = newTopic.trim();
+        // Update session data
+        session.time = timeRange;
+        session.topic = newTopic.trim();
 
-          // Add to target day and sort by time
-          window.currentSchedule[targetDayIndex].sessions.push(session);
-          window.currentSchedule[targetDayIndex].sessions.sort((a, b) => a.time.localeCompare(b.time));
+        // Add to target day and sort by time
+        window.currentSchedule[targetDayIndex].sessions.push(session);
+        window.currentSchedule[targetDayIndex].sessions.sort((a, b) => a.time.localeCompare(b.time));
+
+        // Remove original day if it has no sessions left
+        if (window.currentSchedule[dayIndex].sessions.length === 0) {
+          window.currentSchedule.splice(dayIndex, 1);
         }
       } else {
         // Same day, just update the session
