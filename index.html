@@ -491,6 +491,7 @@
       <button class="nav-item" data-screen="challenge-screen" onclick="navigateToScreen('challenge-screen')"><span class="nav-icon">⚔️</span><span data-translate="challengeOne">Challenge One</span></button>
       <button class="nav-item" data-screen="library-screen" onclick="navigateToScreen('library-screen')"><span class="nav-icon">📚</span><span data-translate="digitalLibrary">Digital Library</span></button>
       <button class="nav-item" data-screen="calendar-screen" onclick="navigateToScreen('calendar-screen')"><span class="nav-icon">📅</span><span data-translate="calendar">Academic Calendar</span></button>
+      <button class="nav-item" data-screen="study-schedule-screen" onclick="navigateToScreen('study-schedule-screen')"><span class="nav-icon">📝</span><span data-translate="studySchedule">Study Schedule</span></button>
       <button class="nav-item" data-screen="about-screen" onclick="navigateToScreen('about-screen')"><span class="nav-icon">ℹ️</span><span data-translate="about">About</span></button>
       <button class="nav-item" data-screen="settings-screen" onclick="navigateToScreen('settings-screen')"><span class="nav-icon">⚙️</span><span data-translate="settings">Settings</span></button>
     </nav>
@@ -1218,6 +1219,90 @@
         </div>
       </div>
 
+      <!-- Study Schedule Screen -->
+      <div id="study-schedule-screen" class="screen">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+          <h1 class="page-title" data-translate="studySchedule">Study Schedule</h1>
+          <div style="display: flex; gap: 1rem;">
+            <button class="btn btn-primary" onclick="generateStudySchedule()" id="generate-schedule-btn">
+              <span data-translate="generateSchedule">🎯 Generate Smart Schedule</span>
+            </button>
+            <button class="btn btn-secondary" onclick="exportSchedule()" id="export-schedule-btn" style="display: none;">
+              <span data-translate="exportSchedule">📤 Export Schedule</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Schedule Options -->
+        <div id="schedule-options" style="background: var(--bg-secondary); padding: 2rem; border-radius: 16px; margin-bottom: 2rem;">
+          <h3 style="margin-bottom: 1.5rem; color: var(--text-primary);" data-translate="scheduleSettings">Schedule Settings</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+
+            <div>
+              <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;" data-translate="scheduleDuration">Schedule Duration</label>
+              <select id="schedule-duration" class="form-input">
+                <option value="1" data-translate="oneWeek">1 Week</option>
+                <option value="2" data-translate="twoWeeks">2 Weeks</option>
+                <option value="4" selected data-translate="oneMonth">1 Month</option>
+                <option value="8" data-translate="twoMonths">2 Months</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;" data-translate="dailyStudyHours">Daily Study Hours</label>
+              <select id="daily-study-hours" class="form-input">
+                <option value="2">2 Hours</option>
+                <option value="3" selected>3 Hours</option>
+                <option value="4">4 Hours</option>
+                <option value="5">5 Hours</option>
+                <option value="6">6 Hours</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;" data-translate="studyPreference">Study Preference</label>
+              <select id="study-preference" class="form-input">
+                <option value="morning" data-translate="morningLearner">Morning Learner</option>
+                <option value="afternoon" selected data-translate="afternoonLearner">Afternoon Learner</option>
+                <option value="evening" data-translate="eveningLearner">Evening Learner</option>
+                <option value="mixed" data-translate="flexible">Flexible</option>
+              </select>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Performance Summary -->
+        <div id="performance-summary" style="background: var(--bg-secondary); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; display: none;">
+          <h3 style="margin-bottom: 1.5rem; color: var(--text-primary);" data-translate="performanceSummary">Performance Summary</h3>
+          <div id="performance-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <!-- Performance cards will be generated here -->
+          </div>
+        </div>
+
+        <!-- Generated Schedule -->
+        <div id="generated-schedule" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3 style="color: var(--text-primary);" data-translate="yourPersonalizedSchedule">Your Personalized Study Schedule</h3>
+            <button class="btn btn-outline" onclick="regenerateSchedule()" data-translate="regenerate">🔄 Regenerate</button>
+          </div>
+
+          <!-- Schedule Table -->
+          <div id="schedule-table-container" style="background: var(--bg-secondary); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-medium);">
+            <!-- Schedule table will be generated here -->
+          </div>
+        </div>
+
+        <!-- No Subjects Selected Message -->
+        <div id="no-subjects-message" style="text-align: center; padding: 3rem; background: var(--bg-secondary); border-radius: 16px; display: none;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
+          <h3 style="color: var(--text-primary); margin-bottom: 1rem;" data-translate="noSubjectsSelected">No Subjects Selected</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 2rem;" data-translate="selectSubjectsFirst">Please select your subjects in the Settings to generate a personalized study schedule.</p>
+          <button class="btn btn-primary" onclick="navigateToScreen('settings-screen')" data-translate="goToSettings">Go to Settings</button>
+        </div>
+
+      </div>
+
       <div id="about-screen" class="screen">
         <h1 class="page-title">About Study Partner</h1>
         <div style="max-width:800px;margin:0 auto;background:var(--bg-secondary);padding:3rem;border-radius:24px;box-shadow:var(--shadow-medium);text-align:center;">
@@ -1407,11 +1492,19 @@
     const translations={
       en:{
         home:"Home", dashboard:"Dashboard", studyRooms:"Study Rooms", lookForPartner:"Look for Partners", challengeOne:"Challenge One", digitalLibrary:"Digital Library",
-        calendar:"Academic Calendar", about:"About", settings:"Settings", logout:"Logout", welcome:"Welcome",
+        calendar:"Academic Calendar", studySchedule:"Study Schedule", about:"About", settings:"Settings", logout:"Logout", welcome:"Welcome",
         welcomeDesc:"Create your profile to start", yourName:"Your Name",
         chooseAvatar:"Choose Avatar Color", selectGrade:"Select Grade", joinPlatform:"Join Platform",
         appName:"Study Partner", toggleSidebar:"Toggle Sidebar", menuToggle:"Menu",
         copyCode:"Copy Code", shareLink:"Share Link", save:"Save", delete:"Delete", enterRooms:"Enter Rooms",
+        // Study Schedule translations
+        generateSchedule:"🎯 Generate Smart Schedule", exportSchedule:"📤 Export Schedule", scheduleSettings:"Schedule Settings",
+        scheduleDuration:"Schedule Duration", dailyStudyHours:"Daily Study Hours", studyPreference:"Study Preference",
+        oneWeek:"1 Week", twoWeeks:"2 Weeks", oneMonth:"1 Month", twoMonths:"2 Months",
+        morningLearner:"Morning Learner", afternoonLearner:"Afternoon Learner", eveningLearner:"Evening Learner", flexible:"Flexible",
+        performanceSummary:"Performance Summary", yourPersonalizedSchedule:"Your Personalized Study Schedule", regenerate:"🔄 Regenerate",
+        noSubjectsSelected:"No Subjects Selected", selectSubjectsFirst:"Please select your subjects in the Settings to generate a personalized study schedule.",
+        goToSettings:"Go to Settings",
         challengeDesc:"Battle other students in epic knowledge duels", startBattle:"Start Battle",
         browse:"Browse", createNow:"Create Now", joinNow:"Join Now", joinRoom:"Join Room",
         createRoom:"Create Room", enterRoomCode:"Enter Room Code", leaveRoom:"Leave Room",
@@ -1505,7 +1598,7 @@
       },
       ar:{
         home:"الرئيسية", dashboard:"لوحة التحكم", studyRooms:"غرف الدراسة", lookForPartner:"البحث عن شركاء",
-        challengeOne:"تحدي واحد", digitalLibrary:"المكتبة الرقمية", calendar:"التقويم الأكاديمي", about:"حول", settings:"الإعدادات",
+        challengeOne:"تحدي واحد", digitalLibrary:"المكتبة الرقمية", calendar:"التقويم الأكاديمي", studySchedule:"جدول الدراسة", about:"حول", settings:"الإعدادات",
         logout:"خروج", welcome:"مرحباً بك", welcomeDesc:"أنشئ ملفك الشخصي للبدء",
         yourName:"اسمك", chooseAvatar:"اختر لون الصورة الرمزية",
         selectGrade:"اختر الصف الدراسي", joinPlatform:"انضم للمنصة",
@@ -1600,7 +1693,15 @@
         uploadedOn:"تم الرفع في", status:"الحالة", actions:"الإجراءات",
         battlePoints:"نقاط المعركة", victories:"الانتصارات", rank:"الرتبة", winStreak:"سلسلة الانتصارات",
         challengeSent:"تم إرسال التحدي!", waitingResponse:"في انتظار رد الخصم...", cancel:"إلغاء",
-        generalEducation:"تعليم عام", international:"دولي", qudrat:"قدرات", tahsili:"تحصيلي"
+        generalEducation:"تعليم عام", international:"دولي", qudrat:"قدرات", tahsili:"تحصيلي",
+        // Study Schedule Arabic translations
+        generateSchedule:"🎯 إنشاء جدول ذكي", exportSchedule:"📤 تصدير الجدول", scheduleSettings:"إعدادات الجدول",
+        scheduleDuration:"مدة الجدول", dailyStudyHours:"ساعات الدراسة اليومية", studyPreference:"تفضيل الدراسة",
+        oneWeek:"أسبوع واحد", twoWeeks:"أسبوعان", oneMonth:"شهر واحد", twoMonths:"شهران",
+        morningLearner:"متعلم صباحي", afternoonLearner:"متعلم بعد الظهر", eveningLearner:"متعلم مسائي", flexible:"مرن",
+        performanceSummary:"ملخص الأداء", yourPersonalizedSchedule:"جدولك الدراسي الشخصي", regenerate:"🔄 إعادة إنشاء",
+        noSubjectsSelected:"لم يتم اختيار مواد", selectSubjectsFirst:"يرجى اختيار مواد في الإعدادات لإنشاء جدول دراسي شخصي.",
+        goToSettings:"الذهاب للإعدادات"
       }
     };
     
@@ -6704,6 +6805,7 @@
       if(screenId === 'settings-screen') populateSettings();
       if(screenId === 'calendar-screen') initializeCalendar();
       if(screenId === 'challenge-screen') initializeChallengeScreen();
+      if(screenId === 'study-schedule-screen') initializeStudySchedule();
 
       // Save current screen to localStorage for persistence
       localStorage.setItem('studyTogether_currentScreen', screenId);
@@ -14253,6 +14355,456 @@ Format as JSON array:
       loadIncomingChallenges();
     }
 
+
+    // -------- STUDY SCHEDULE FUNCTIONS --------
+
+    // Initialize Study Schedule screen
+    function initializeStudySchedule() {
+      // Check if user has selected subjects
+      if (!currentUser || !currentUser.subjects || currentUser.subjects.length === 0) {
+        document.getElementById('schedule-options').style.display = 'none';
+        document.getElementById('performance-summary').style.display = 'none';
+        document.getElementById('generated-schedule').style.display = 'none';
+        document.getElementById('no-subjects-message').style.display = 'block';
+        return;
+      }
+
+      // Show schedule options
+      document.getElementById('schedule-options').style.display = 'block';
+      document.getElementById('no-subjects-message').style.display = 'none';
+
+      // Load and display performance summary
+      loadPerformanceSummary();
+    }
+
+    // Load performance summary based on quiz results
+    async function loadPerformanceSummary() {
+      try {
+        if (!currentUser || !currentUser.subjects) return;
+
+        const performanceCards = document.getElementById('performance-cards');
+        performanceCards.innerHTML = '';
+
+        const performanceData = [];
+
+        for (const subjectId of currentUser.subjects) {
+          // Get subject info
+          const subject = getSubjectById(subjectId);
+          if (!subject) continue;
+
+          // Get quiz results for this subject
+          const { data: quizResults, error } = await supabase
+            .from('quiz_results')
+            .select('score, total_questions')
+            .eq('user_id', currentUser.id)
+            .eq('subject', subject.name)
+            .order('created_at', { ascending: false })
+            .limit(5); // Last 5 quizzes
+
+          let averagePerformance = 0;
+          let quizCount = 0;
+          let totalScore = 0;
+          let totalQuestions = 0;
+
+          if (quizResults && quizResults.length > 0) {
+            quizResults.forEach(result => {
+              totalScore += result.score;
+              totalQuestions += result.total_questions;
+              quizCount++;
+            });
+            averagePerformance = totalQuestions > 0 ? Math.round((totalScore / totalQuestions) * 100) : 0;
+          } else {
+            // No quiz data, assume 50% (neutral)
+            averagePerformance = 50;
+          }
+
+          performanceData.push({
+            subject: subject,
+            performance: averagePerformance,
+            quizCount: quizCount,
+            needsMoreStudy: averagePerformance < 70
+          });
+
+          // Create performance card
+          const card = document.createElement('div');
+          card.style.cssText = `
+            background: var(--bg-primary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid ${averagePerformance >= 70 ? '#10b981' : '#ef4444'};
+            box-shadow: var(--shadow-light);
+          `;
+
+          card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <h4 style="margin: 0; color: var(--text-primary); font-size: 1rem;">${currentLanguage === 'ar' ? subject.nameAr : subject.name}</h4>
+              <span style="
+                background: ${averagePerformance >= 70 ? '#10b981' : '#ef4444'};
+                color: white;
+                padding: 0.25rem 0.75rem;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 600;
+              ">
+                ${averagePerformance}%
+              </span>
+            </div>
+            <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">
+              ${currentLanguage === 'ar' ? 'الاختبارات' : 'Quizzes'}: ${quizCount}
+            </div>
+            <div style="color: ${averagePerformance >= 70 ? '#10b981' : '#ef4444'}; font-size: 0.8rem; font-weight: 500;">
+              ${averagePerformance >= 70
+                ? (currentLanguage === 'ar' ? '✅ أداء جيد - وقت دراسة أقل' : '✅ Good Performance - Less Study Time')
+                : (currentLanguage === 'ar' ? '⚠️ يحتاج تحسين - وقت دراسة أكثر' : '⚠️ Needs Improvement - More Study Time')
+              }
+            </div>
+          `;
+
+          performanceCards.appendChild(card);
+        }
+
+        // Store performance data for schedule generation
+        window.studentPerformanceData = performanceData;
+        document.getElementById('performance-summary').style.display = 'block';
+
+      } catch (error) {
+        console.error('Error loading performance summary:', error);
+      }
+    }
+
+    // Generate study schedule based on performance
+    async function generateStudySchedule() {
+      try {
+        if (!currentUser || !currentUser.subjects || currentUser.subjects.length === 0) {
+          alert(currentLanguage === 'ar' ? 'يرجى اختيار مواد في الإعدادات أولاً' : 'Please select subjects in Settings first');
+          return;
+        }
+
+        // Get schedule settings
+        const duration = parseInt(document.getElementById('schedule-duration').value);
+        const dailyHours = parseInt(document.getElementById('daily-study-hours').value);
+        const preference = document.getElementById('study-preference').value;
+
+        // Generate schedule
+        const schedule = await createPersonalizedSchedule(duration, dailyHours, preference);
+
+        // Display the generated schedule
+        displaySchedule(schedule);
+
+        // Show the schedule section
+        document.getElementById('generated-schedule').style.display = 'block';
+        document.getElementById('export-schedule-btn').style.display = 'block';
+
+        // Scroll to schedule
+        document.getElementById('generated-schedule').scrollIntoView({ behavior: 'smooth' });
+
+        toast(currentLanguage === 'ar' ? 'تم إنشاء الجدول الدراسي بنجاح!' : 'Study schedule generated successfully!', 'success');
+
+      } catch (error) {
+        console.error('Error generating schedule:', error);
+        toast(currentLanguage === 'ar' ? 'حدث خطأ في إنشاء الجدول' : 'Error generating schedule', 'error');
+      }
+    }
+
+    // Create personalized schedule algorithm
+    async function createPersonalizedSchedule(durationWeeks, dailyHours, preference) {
+      const performanceData = window.studentPerformanceData || [];
+      const schedule = [];
+
+      // Calculate time allocation based on performance
+      const totalWeeklyHours = dailyHours * 7;
+      const subjects = [];
+
+      performanceData.forEach(data => {
+        let timeMultiplier = 1; // Base time allocation
+
+        // Adjust time based on performance
+        if (data.performance < 70) {
+          timeMultiplier = 1.5; // 50% more time for struggling subjects
+        } else if (data.performance >= 85) {
+          timeMultiplier = 0.7; // 30% less time for strong subjects
+        }
+
+        subjects.push({
+          ...data.subject,
+          performance: data.performance,
+          timeMultiplier: timeMultiplier,
+          needsMoreTime: data.performance < 70
+        });
+      });
+
+      // Calculate total time multipliers
+      const totalMultipliers = subjects.reduce((sum, s) => sum + s.timeMultiplier, 0);
+
+      // Allocate weekly hours per subject
+      subjects.forEach(subject => {
+        subject.weeklyHours = (subject.timeMultiplier / totalMultipliers) * totalWeeklyHours;
+        subject.dailyMinutes = Math.round((subject.weeklyHours * 60) / 7);
+      });
+
+      // Generate daily schedule for the duration
+      const startDate = new Date();
+
+      for (let week = 0; week < durationWeeks; week++) {
+        for (let day = 0; day < 7; day++) {
+          const currentDate = new Date(startDate);
+          currentDate.setDate(startDate.getDate() + (week * 7) + day);
+
+          const daySchedule = {
+            date: currentDate,
+            sessions: []
+          };
+
+          // Get time slots based on preference
+          const timeSlots = getTimeSlots(preference, dailyHours);
+          let slotIndex = 0;
+
+          // Distribute subjects across the day
+          const dailySubjects = [...subjects].sort((a, b) => {
+            // Prioritize subjects that need more time
+            if (a.needsMoreTime && !b.needsMoreTime) return -1;
+            if (!a.needsMoreTime && b.needsMoreTime) return 1;
+            return 0;
+          });
+
+          dailySubjects.forEach(subject => {
+            if (slotIndex >= timeSlots.length) return;
+
+            const sessionDuration = Math.min(subject.dailyMinutes, 120); // Max 2 hours per session
+            if (sessionDuration >= 30) { // Minimum 30 minutes
+
+              const session = {
+                time: timeSlots[slotIndex],
+                duration: sessionDuration,
+                subject: subject,
+                topic: getTopicForSubject(subject, week, day),
+                editable: true
+              };
+
+              daySchedule.sessions.push(session);
+              slotIndex++;
+            }
+          });
+
+          schedule.push(daySchedule);
+        }
+      }
+
+      return schedule;
+    }
+
+    // Get time slots based on preference
+    function getTimeSlots(preference, dailyHours) {
+      const slots = [];
+
+      switch (preference) {
+        case 'morning':
+          for (let i = 0; i < dailyHours; i++) {
+            slots.push(`${8 + i}:00 - ${9 + i}:00`);
+          }
+          break;
+        case 'afternoon':
+          for (let i = 0; i < dailyHours; i++) {
+            slots.push(`${14 + i}:00 - ${15 + i}:00`);
+          }
+          break;
+        case 'evening':
+          for (let i = 0; i < dailyHours; i++) {
+            slots.push(`${18 + i}:00 - ${19 + i}:00`);
+          }
+          break;
+        case 'mixed':
+        default:
+          // Mix of morning, afternoon, and evening
+          const morningSlots = Math.ceil(dailyHours / 3);
+          const afternoonSlots = Math.ceil(dailyHours / 3);
+          const eveningSlots = dailyHours - morningSlots - afternoonSlots;
+
+          for (let i = 0; i < morningSlots; i++) {
+            slots.push(`${8 + i}:00 - ${9 + i}:00`);
+          }
+          for (let i = 0; i < afternoonSlots; i++) {
+            slots.push(`${14 + i}:00 - ${15 + i}:00`);
+          }
+          for (let i = 0; i < eveningSlots; i++) {
+            slots.push(`${18 + i}:00 - ${19 + i}:00`);
+          }
+          break;
+      }
+
+      return slots;
+    }
+
+    // Get topic/chapter for subject based on curriculum
+    function getTopicForSubject(subject, week, day) {
+      // This would ideally integrate with the curriculum data
+      // For now, return sample topics
+      const topics = [
+        'Introduction & Basics',
+        'Core Concepts',
+        'Advanced Topics',
+        'Practice & Exercises',
+        'Review & Assessment',
+        'Application & Projects',
+        'Problem Solving',
+        'Exam Preparation'
+      ];
+
+      const topicIndex = (week + day) % topics.length;
+      return currentLanguage === 'ar'
+        ? `الوحدة ${Math.floor(topicIndex/2) + 1} - ${topics[topicIndex]}`
+        : `Unit ${Math.floor(topicIndex/2) + 1} - ${topics[topicIndex]}`;
+    }
+
+    // Display the generated schedule
+    function displaySchedule(schedule) {
+      const container = document.getElementById('schedule-table-container');
+
+      let html = `
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
+            <thead>
+              <tr style="background: var(--bg-tertiary);">
+                <th style="padding: 1rem; border: 1px solid var(--border-color); font-weight: 600; color: var(--text-primary);">
+                  ${currentLanguage === 'ar' ? 'التاريخ' : 'Date'}
+                </th>
+                <th style="padding: 1rem; border: 1px solid var(--border-color); font-weight: 600; color: var(--text-primary);">
+                  ${currentLanguage === 'ar' ? 'الوقت' : 'Time'}
+                </th>
+                <th style="padding: 1rem; border: 1px solid var(--border-color); font-weight: 600; color: var(--text-primary);">
+                  ${currentLanguage === 'ar' ? 'المادة' : 'Subject'}
+                </th>
+                <th style="padding: 1rem; border: 1px solid var(--border-color); font-weight: 600; color: var(--text-primary);">
+                  ${currentLanguage === 'ar' ? 'الموضوع' : 'Topic'}
+                </th>
+                <th style="padding: 1rem; border: 1px solid var(--border-color); font-weight: 600; color: var(--text-primary);">
+                  ${currentLanguage === 'ar' ? 'المدة' : 'Duration'}
+                </th>
+                <th style="padding: 1rem; border: 1px solid var(--border-color); font-weight: 600; color: var(--text-primary);">
+                  ${currentLanguage === 'ar' ? 'إجراءات' : 'Actions'}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      schedule.forEach((day, dayIndex) => {
+        if (day.sessions.length === 0) return;
+
+        day.sessions.forEach((session, sessionIndex) => {
+          const isWeekend = day.date.getDay() === 0 || day.date.getDay() === 6;
+          const performanceColor = session.subject.performance >= 70 ? '#10b981' : '#ef4444';
+
+          html += `
+            <tr style="background: ${isWeekend ? 'var(--bg-tertiary)' : 'var(--bg-primary)'};">
+              <td style="padding: 1rem; border: 1px solid var(--border-color); color: var(--text-primary);">
+                ${day.date.toLocaleDateString(currentLanguage === 'ar' ? 'ar-SA' : 'en-US', {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </td>
+              <td style="padding: 1rem; border: 1px solid var(--border-color); color: var(--text-primary); font-weight: 500;">
+                ${session.time}
+              </td>
+              <td style="padding: 1rem; border: 1px solid var(--border-color);">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <div style="width: 4px; height: 40px; background: ${performanceColor}; border-radius: 2px;"></div>
+                  <div>
+                    <div style="color: var(--text-primary); font-weight: 500;">
+                      ${currentLanguage === 'ar' ? session.subject.nameAr : session.subject.name}
+                    </div>
+                    <div style="color: var(--text-secondary); font-size: 0.8rem;">
+                      ${currentLanguage === 'ar' ? 'الأداء' : 'Performance'}: ${session.subject.performance}%
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td style="padding: 1rem; border: 1px solid var(--border-color); color: var(--text-secondary);">
+                ${session.topic}
+              </td>
+              <td style="padding: 1rem; border: 1px solid var(--border-color); color: var(--text-primary); font-weight: 500;">
+                ${Math.round(session.duration)} ${currentLanguage === 'ar' ? 'دقيقة' : 'min'}
+              </td>
+              <td style="padding: 1rem; border: 1px solid var(--border-color);">
+                <button class="btn btn-small btn-outline" onclick="editScheduleSession(${dayIndex}, ${sessionIndex})">
+                  ${currentLanguage === 'ar' ? '✏️ تعديل' : '✏️ Edit'}
+                </button>
+              </td>
+            </tr>
+          `;
+        });
+      });
+
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      container.innerHTML = html;
+
+      // Store schedule data globally for editing
+      window.currentSchedule = schedule;
+    }
+
+    // Edit schedule session
+    function editScheduleSession(dayIndex, sessionIndex) {
+      const session = window.currentSchedule[dayIndex].sessions[sessionIndex];
+
+      const newTopic = prompt(
+        currentLanguage === 'ar' ? 'تعديل الموضوع:' : 'Edit topic:',
+        session.topic
+      );
+
+      if (newTopic && newTopic.trim()) {
+        session.topic = newTopic.trim();
+        displaySchedule(window.currentSchedule);
+        toast(currentLanguage === 'ar' ? 'تم تحديث الموضوع' : 'Topic updated', 'success');
+      }
+    }
+
+    // Regenerate schedule
+    function regenerateSchedule() {
+      generateStudySchedule();
+    }
+
+    // Export schedule
+    function exportSchedule() {
+      if (!window.currentSchedule) return;
+
+      // Create CSV content
+      let csv = currentLanguage === 'ar'
+        ? 'التاريخ,الوقت,المادة,الموضوع,المدة\n'
+        : 'Date,Time,Subject,Topic,Duration\n';
+
+      window.currentSchedule.forEach(day => {
+        day.sessions.forEach(session => {
+          const date = day.date.toLocaleDateString();
+          const subject = currentLanguage === 'ar' ? session.subject.nameAr : session.subject.name;
+          csv += `"${date}","${session.time}","${subject}","${session.topic}","${session.duration} min"\n`;
+        });
+      });
+
+      // Download CSV
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `study-schedule-${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+
+      toast(currentLanguage === 'ar' ? 'تم تصدير الجدول بنجاح' : 'Schedule exported successfully', 'success');
+    }
+
+    // Get subject by ID
+    function getSubjectById(subjectId) {
+      // Search through all grades and subjects
+      for (const grade in subjectCatalog) {
+        const subject = subjectCatalog[grade].find(s => s.id === subjectId);
+        if (subject) return subject;
+      }
+      return null;
+    }
 
   </script>
 
