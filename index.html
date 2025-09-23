@@ -12308,20 +12308,20 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
     let currentBattle = null;
     let battleQuestions = [];
-    let currentQuestionIndex = 0;
-    let playerAnswers = [];
-    let playerScore = 0;
+    let battleCurrentQuestionIndex = 0;
+    let battlePlayerAnswers = [];
+    let battlePlayerScore = 0;
     let battleStartTime = null;
 
     // Map challenge categories to subject contexts for AI question generation
     function getCategorySubjectContext(category) {
       const contexts = {
-        'تعليم عام': 'Saudi General Education curriculum for high school students covering Mathematics, Physics, Chemistry, Biology, Arabic Literature, Islamic Studies, History, and Geography',
+        'general': 'Saudi General Education curriculum for high school students covering Mathematics, Physics, Chemistry, Biology, Arabic Literature, Islamic Studies, History, and Geography',
         'international': 'International Education curriculum including IGCSE, A-Levels, IB, SAT subjects covering Mathematics, Physics, Chemistry, Biology, English Literature, Computer Science, Economics, and History',
-        'قدرات': 'Saudi Qudrat (General Aptitude Test) covering verbal reasoning, quantitative reasoning, analytical thinking, reading comprehension, mathematical problem solving, and logical reasoning in Arabic',
-        'تحصيلي': 'Saudi Tahsili (Achievement Test) covering Mathematics (Algebra, Calculus, Statistics), Physics (Mechanics, Electricity, Optics), Chemistry (Organic, Inorganic, Physical), and Biology (Cell Biology, Genetics, Ecology)'
+        'qudrat': 'Saudi Qudrat (General Aptitude Test) covering verbal reasoning, quantitative reasoning, analytical thinking, reading comprehension, mathematical problem solving, and logical reasoning in Arabic',
+        'tahsili': 'Saudi Tahsili (Achievement Test) covering Mathematics (Algebra, Calculus, Statistics), Physics (Mechanics, Electricity, Optics), Chemistry (Organic, Inorganic, Physical), and Biology (Cell Biology, Genetics, Ecology)'
       };
-      return contexts[category] || contexts['تعليم عام'];
+      return contexts[category] || contexts['general'];
     }
 
     async function startBattle(challengeId) {
@@ -12377,9 +12377,9 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         // Initialize battle state
         currentBattle = battle;
         battleQuestions = questions;
-        currentQuestionIndex = 0;
-        playerAnswers = [];
-        playerScore = 0;
+        battleCurrentQuestionIndex = 0;
+        battlePlayerAnswers = [];
+        battlePlayerScore = 0;
         battleStartTime = Date.now();
 
         // Show battle interface
@@ -12402,7 +12402,7 @@ Context: ${subjectContext}
 Requirements:
 - Questions should be challenging and appropriate for high school level
 - Each question should have 4 options (A, B, C, D)
-- Questions should be in Arabic if category is قدرات or تحصيلي, otherwise in English
+- Questions should be in Arabic if category is qudrat or tahsili, otherwise in English
 - Cover diverse topics within the subject area
 - Include both theoretical and practical questions
 
@@ -12471,17 +12471,17 @@ Format as JSON array:
     }
 
     function startBattleQuestion() {
-      if (currentQuestionIndex >= battleQuestions.length) {
+      if (battleCurrentQuestionIndex >= battleQuestions.length) {
         finishBattle();
         return;
       }
 
-      const question = battleQuestions[currentQuestionIndex];
-      const isArabic = currentBattle.category === 'قدرات' || currentBattle.category === 'تحصيلي';
+      const question = battleQuestions[battleCurrentQuestionIndex];
+      const isArabic = currentBattle.category === 'qudrat' || currentBattle.category === 'tahsili';
 
       document.getElementById('battle-question-number').textContent =
-        isArabic ? `السؤال ${currentQuestionIndex + 1} من ${battleQuestions.length}`
-                 : `Question ${currentQuestionIndex + 1} of ${battleQuestions.length}`;
+        isArabic ? `السؤال ${battleCurrentQuestionIndex + 1} من ${battleQuestions.length}`
+                 : `Question ${battleCurrentQuestionIndex + 1} of ${battleQuestions.length}`;
 
       document.getElementById('battle-question-text').textContent = question.question;
 
@@ -12497,24 +12497,24 @@ Format as JSON array:
       });
 
       // Update progress bar
-      const progress = ((currentQuestionIndex + 1) / battleQuestions.length) * 100;
+      const progress = ((battleCurrentQuestionIndex + 1) / battleQuestions.length) * 100;
       document.getElementById('battle-progress-fill').style.width = `${progress}%`;
     }
 
     function selectBattleAnswer(selectedIndex) {
-      const question = battleQuestions[currentQuestionIndex];
+      const question = battleQuestions[battleCurrentQuestionIndex];
       const isCorrect = selectedIndex === question.correct;
 
       // Store answer
-      playerAnswers.push({
-        questionIndex: currentQuestionIndex,
+      battlePlayerAnswers.push({
+        questionIndex: battleCurrentQuestionIndex,
         selectedAnswer: selectedIndex,
         correct: isCorrect,
         timeSpent: Date.now() - battleStartTime
       });
 
       if (isCorrect) {
-        playerScore++;
+        battlePlayerScore++;
       }
 
       // Visual feedback
@@ -12527,7 +12527,7 @@ Format as JSON array:
 
       // Move to next question after 2 seconds
       setTimeout(() => {
-        currentQuestionIndex++;
+        battleCurrentQuestionIndex++;
         startBattleQuestion();
       }, 2000);
     }
@@ -12535,19 +12535,19 @@ Format as JSON array:
     async function finishBattle() {
       try {
         // Calculate final score percentage
-        const scorePercentage = Math.round((playerScore / battleQuestions.length) * 100);
+        const scorePercentage = Math.round((battlePlayerScore / battleQuestions.length) * 100);
 
         // Update battle record with player's results
         const isChallenger = currentUser.id === currentBattle.challenger_id;
         const updateData = isChallenger
           ? {
-              challenger_answers: playerAnswers,
-              challenger_score: playerScore,
+              challenger_answers: battlePlayerAnswers,
+              challenger_score: battlePlayerScore,
               challenger_finished: true
             }
           : {
-              opponent_answers: playerAnswers,
-              opponent_score: playerScore,
+              opponent_answers: battlePlayerAnswers,
+              opponent_score: battlePlayerScore,
               opponent_finished: true
             };
 
@@ -12658,7 +12658,7 @@ Format as JSON array:
       } catch (error) {
         console.error('Error calculating battle points:', error);
         // Fallback calculation
-        const basePoints = category === 'قدرات' || category === 'تحصيلي' ? 15 :
+        const basePoints = category === 'qudrat' || category === 'tahsili' ? 15 :
                           category === 'international' ? 12 : 10;
         const performanceBonus = Math.round((score / totalQuestions) * basePoints);
         const winBonus = won ? basePoints : 0;
@@ -12729,15 +12729,15 @@ Format as JSON array:
     }
 
     async function showBattleResults(scorePercentage, battleData = null) {
-      const isArabic = currentBattle.category === 'قدرات' || currentBattle.category === 'تحصيلي';
+      const isArabic = currentBattle.category === 'qudrat' || currentBattle.category === 'tahsili';
 
-      document.getElementById('battle-score').textContent = `${playerScore}/${battleQuestions.length}`;
+      document.getElementById('battle-score').textContent = `${battlePlayerScore}/${battleQuestions.length}`;
       document.getElementById('battle-percentage').textContent = `${scorePercentage}%`;
 
       // Calculate points earned
       const pointsEarned = await calculatePlayerBattlePoints(
         currentBattle.category,
-        playerScore,
+        battlePlayerScore,
         battleQuestions.length,
         false // We'll update this when we know the battle outcome
       );
@@ -12772,7 +12772,7 @@ Format as JSON array:
         const won = playerFinalScore > opponentFinalScore;
         const finalPoints = await calculatePlayerBattlePoints(
           currentBattle.category,
-          playerScore,
+          battlePlayerScore,
           battleQuestions.length,
           won
         );
@@ -12784,8 +12784,8 @@ Format as JSON array:
         // Only current player finished
         battleOutcome = isArabic ? '⏳ في انتظار الخصم...' : '⏳ Waiting for opponent...';
         resultText = isArabic ?
-          `أنهيت المعركة! سجلت ${playerScore} من ${battleQuestions.length} نقاط` :
-          `Battle completed! You scored ${playerScore} out of ${battleQuestions.length}`;
+          `أنهيت المعركة! سجلت ${battlePlayerScore} من ${battleQuestions.length} نقاط` :
+          `Battle completed! You scored ${battlePlayerScore} out of ${battleQuestions.length}`;
 
         resultText += isArabic ? ` | نقاط أولية: +${pointsEarned}` : ` | Preliminary Points: +${pointsEarned}`;
       }
@@ -12804,9 +12804,9 @@ Format as JSON array:
       document.getElementById('battle-modal').style.display = 'none';
       currentBattle = null;
       battleQuestions = [];
-      currentQuestionIndex = 0;
-      playerAnswers = [];
-      playerScore = 0;
+      battleCurrentQuestionIndex = 0;
+      battlePlayerAnswers = [];
+      battlePlayerScore = 0;
       battleStartTime = null;
 
       // Refresh challenge screen
