@@ -1233,6 +1233,14 @@
           </div>
         </div>
 
+        <!-- Selected Subjects Display -->
+        <div id="selected-subjects-display" style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
+          <h3 style="margin-bottom: 1rem; color: var(--text-primary);" data-translate="yourSelectedSubjects">Your Selected Subjects</h3>
+          <div id="schedule-subjects-list" style="display: flex; flex-wrap: wrap; gap: 0.8rem;">
+            <!-- Selected subjects will be displayed here -->
+          </div>
+        </div>
+
         <!-- Schedule Options -->
         <div id="schedule-options" style="background: var(--bg-secondary); padding: 2rem; border-radius: 16px; margin-bottom: 2rem;">
           <h3 style="margin-bottom: 1.5rem; color: var(--text-primary);" data-translate="scheduleSettings">Schedule Settings</h3>
@@ -1499,7 +1507,7 @@
         copyCode:"Copy Code", shareLink:"Share Link", save:"Save", delete:"Delete", enterRooms:"Enter Rooms",
         // Study Schedule translations
         generateSchedule:"🎯 Generate Smart Schedule", exportSchedule:"📤 Export Schedule", scheduleSettings:"Schedule Settings",
-        scheduleDuration:"Schedule Duration", dailyStudyHours:"Daily Study Hours", studyPreference:"Study Preference",
+        yourSelectedSubjects:"Your Selected Subjects", scheduleDuration:"Schedule Duration", dailyStudyHours:"Daily Study Hours", studyPreference:"Study Preference",
         oneWeek:"1 Week", twoWeeks:"2 Weeks", oneMonth:"1 Month", twoMonths:"2 Months",
         morningLearner:"Morning Learner", afternoonLearner:"Afternoon Learner", eveningLearner:"Evening Learner", flexible:"Flexible",
         performanceSummary:"Performance Summary", yourPersonalizedSchedule:"Your Personalized Study Schedule", regenerate:"🔄 Regenerate",
@@ -1696,7 +1704,7 @@
         generalEducation:"تعليم عام", international:"دولي", qudrat:"قدرات", tahsili:"تحصيلي",
         // Study Schedule Arabic translations
         generateSchedule:"🎯 إنشاء جدول ذكي", exportSchedule:"📤 تصدير الجدول", scheduleSettings:"إعدادات الجدول",
-        scheduleDuration:"مدة الجدول", dailyStudyHours:"ساعات الدراسة اليومية", studyPreference:"تفضيل الدراسة",
+        yourSelectedSubjects:"مواد الطالب المختارة", scheduleDuration:"مدة الجدول", dailyStudyHours:"ساعات الدراسة اليومية", studyPreference:"تفضيل الدراسة",
         oneWeek:"أسبوع واحد", twoWeeks:"أسبوعان", oneMonth:"شهر واحد", twoMonths:"شهران",
         morningLearner:"متعلم صباحي", afternoonLearner:"متعلم بعد الظهر", eveningLearner:"متعلم مسائي", flexible:"مرن",
         performanceSummary:"ملخص الأداء", yourPersonalizedSchedule:"جدولك الدراسي الشخصي", regenerate:"🔄 إعادة إنشاء",
@@ -14373,31 +14381,84 @@ Format as JSON array:
       document.getElementById('schedule-options').style.display = 'block';
       document.getElementById('no-subjects-message').style.display = 'none';
 
+      // Display selected subjects
+      displaySelectedSubjects();
+
       // Load and display performance summary
       loadPerformanceSummary();
+    }
+
+    // Display selected subjects on Study Schedule screen
+    function displaySelectedSubjects() {
+      if (!currentUser || !currentUser.selected_subjects) return;
+
+      const subjectsList = document.getElementById('schedule-subjects-list');
+      subjectsList.innerHTML = '';
+
+      currentUser.selected_subjects.forEach(subjectName => {
+        const subject = getSubjectByName(subjectName);
+        const displayName = currentLanguage === 'ar' && subject ? subject.nameAr : subjectName;
+
+        const subjectBadge = document.createElement('div');
+        subjectBadge.style.cssText = `
+          background: var(--accent-color);
+          color: white;
+          padding: 0.5rem 1rem;
+          border-radius: 8px;
+          font-size: 0.9rem;
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        `;
+        subjectBadge.innerHTML = `<span>📚</span>${displayName}`;
+        subjectsList.appendChild(subjectBadge);
+      });
+
+      // Show total count
+      const countElement = document.createElement('div');
+      countElement.style.cssText = `
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+        background: var(--bg-tertiary);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      `;
+      countElement.innerHTML = `<span>📊</span>${currentUser.selected_subjects.length} ${currentLanguage === 'ar' ? 'مواد مختارة' : 'subjects selected'}`;
+      subjectsList.appendChild(countElement);
+    }
+
+    // Helper function to get subject by name
+    function getSubjectByName(subjectName) {
+      const grade = currentUser?.grade || '10';
+      const subjects = subjectsByGrade[grade] || [];
+      return subjects.find(s => s.name === subjectName || s.nameAr === subjectName);
     }
 
     // Load performance summary based on quiz results
     async function loadPerformanceSummary() {
       try {
-        if (!currentUser || !currentUser.subjects) return;
+        if (!currentUser || !currentUser.selected_subjects) return;
 
         const performanceCards = document.getElementById('performance-cards');
         performanceCards.innerHTML = '';
 
         const performanceData = [];
 
-        for (const subjectId of currentUser.subjects) {
+        for (const subjectName of currentUser.selected_subjects) {
           // Get subject info
-          const subject = getSubjectById(subjectId);
-          if (!subject) continue;
+          const subject = getSubjectByName(subjectName);
+          const subjectDisplayName = subject ? (currentLanguage === 'ar' ? subject.nameAr : subject.name) : subjectName;
 
           // Get quiz results for this subject
           const { data: quizResults, error } = await supabase
             .from('quiz_results')
             .select('score, total_questions')
             .eq('user_id', currentUser.id)
-            .eq('subject', subject.name)
+            .eq('subject', subjectName)
             .order('created_at', { ascending: false })
             .limit(5); // Last 5 quizzes
 
@@ -14419,7 +14480,7 @@ Format as JSON array:
           }
 
           performanceData.push({
-            subject: subject,
+            subject: { name: subjectName, nameAr: subjectDisplayName },
             performance: averagePerformance,
             quizCount: quizCount,
             needsMoreStudy: averagePerformance < 70
@@ -14437,7 +14498,7 @@ Format as JSON array:
 
           card.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-              <h4 style="margin: 0; color: var(--text-primary); font-size: 1rem;">${currentLanguage === 'ar' ? subject.nameAr : subject.name}</h4>
+              <h4 style="margin: 0; color: var(--text-primary); font-size: 1rem;">${subjectDisplayName}</h4>
               <span style="
                 background: ${averagePerformance >= 70 ? '#10b981' : '#ef4444'};
                 color: white;
