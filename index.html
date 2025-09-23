@@ -12376,7 +12376,12 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           await checkForActiveBattles();
 
         } catch (error) {
-          console.log('Challenge polling error:', error);
+          // Handle network errors gracefully without spamming console
+          if (error.message && (error.message.includes('Failed to fetch') || error.message.includes('network'))) {
+            console.log('Network connectivity issue, skipping polling cycle');
+          } else {
+            console.log('Challenge polling error:', error.message || error);
+          }
         }
       }, 5000);
     }
@@ -12393,38 +12398,83 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       try {
         if (!supabase || !currentUser) return;
 
+        // Skip if we're already in a battle or if connection is poor
+        if (currentBattle || document.getElementById('battle-modal').style.display === 'flex') {
+          return;
+        }
+
         // Check for active battles where user is involved but hasn't started battle interface yet
+        // Only check for battles created in the last 10 minutes to avoid old stale battles
+        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+
         const { data: activeBattles, error } = await supabase
           .from('challenge_battles')
           .select('*')
           .or(`challenger_id.eq.${currentUser.id},opponent_id.eq.${currentUser.id}`)
           .eq('status', 'active')
+          .gte('created_at', tenMinutesAgo) // Only recent battles
           .order('created_at', { ascending: false })
           .limit(1);
 
-        if (error) throw error;
+        if (error) {
+          // Handle network errors gracefully
+          if (error.message.includes('Failed to fetch') || error.message.includes('network')) {
+            console.log('Network connectivity issue, skipping battle check');
+            return;
+          }
+          throw error;
+        }
 
         // If there's an active battle and we're not already in battle mode
-        if (activeBattles && activeBattles.length > 0 && !currentBattle) {
+        if (activeBattles && activeBattles.length > 0) {
           const battle = activeBattles[0];
 
-          // Start the battle interface for this user
-          await joinExistingBattle(battle);
+          // Only join if the battle was created recently (within last 2 minutes)
+          const battleCreated = new Date(battle.created_at);
+          const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
+
+          if (battleCreated > twoMinutesAgo) {
+            // Check if user has already finished this battle
+            const isChallenger = currentUser.id === battle.challenger_id;
+            const userFinished = isChallenger ? battle.challenger_finished : battle.opponent_finished;
+
+            if (!userFinished) {
+              // Start the battle interface for this user
+              await joinExistingBattle(battle);
+            }
+          }
         }
 
       } catch (error) {
-        console.error('Error checking for active battles:', error);
+        console.log('Battle check error (non-critical):', error.message || error);
+        // Don't throw - this is a background operation that shouldn't break the app
       }
     }
 
     // Join an existing battle that was created by the opponent accepting a challenge
     async function joinExistingBattle(battle) {
       try {
+        // Double-check that we should join this battle
+        if (currentBattle || document.getElementById('battle-modal').style.display === 'flex') {
+          console.log('Already in a battle, skipping join');
+          return;
+        }
+
         // Get the questions from the battle
         const questions = battle.questions;
 
         if (!questions || questions.length === 0) {
           console.error('Battle has no questions');
+          return;
+        }
+
+        // Ask user if they want to join the battle (for UX clarity)
+        const opponentName = currentUser.id === battle.challenger_id ?
+          'your opponent' : 'your challenger';
+
+        const shouldJoin = confirm(`Battle with ${opponentName} is ready! Start now?`);
+        if (!shouldJoin) {
+          console.log('User declined to join battle');
           return;
         }
 
@@ -12451,6 +12501,30 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
     function initializeChallengeScreen() {
       loadIncomingChallenges();
       startChallengePolling();
+
+      // Clean up old battles on screen initialization
+      cleanupOldBattles();
+    }
+
+    // Clean up old/stale battles to prevent automatic joining
+    async function cleanupOldBattles() {
+      try {
+        if (!supabase || !currentUser) return;
+
+        // Mark battles older than 30 minutes as abandoned
+        const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+
+        await supabase
+          .from('challenge_battles')
+          .update({ status: 'abandoned' })
+          .eq('status', 'active')
+          .lt('created_at', thirtyMinutesAgo);
+
+        console.log('Cleaned up old battles');
+
+      } catch (error) {
+        console.log('Battle cleanup error (non-critical):', error.message || error);
+      }
     }
 
     // Clean up expired challenges (auto-cancel after 5 minutes)
