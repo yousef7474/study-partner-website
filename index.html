@@ -12477,11 +12477,13 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
     // -------- CHALLENGE NOTIFICATIONS --------
 
     function showChallengeNotification(challenge) {
+      console.log('📢 showChallengeNotification called with:', challenge);
       currentNotificationChallenge = challenge;
 
       const notificationText = `${challenge.challenger_name} wants to battle you in ${challenge.category} (${challenge.question_count} questions)`;
       document.getElementById('challenge-notification-text').textContent = notificationText;
       document.getElementById('challenge-notification').style.display = 'block';
+      console.log('📢 Challenge notification displayed');
 
       // Auto-hide after 10 seconds
       setTimeout(() => {
@@ -12866,12 +12868,18 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
     let challengePollingInterval = null;
 
     function startChallengePolling() {
-      if (challengePollingInterval) return; // Already polling
+      if (challengePollingInterval) {
+        console.log('🔔 Challenge polling already running');
+        return; // Already polling
+      }
 
+      console.log('🔔 Starting challenge polling...');
       challengePollingInterval = setInterval(async () => {
         if (!currentUser) {
           return;
         }
+
+        console.log('🔔 Challenge polling running - checking for new challenges...');
 
         try {
           // Check for new pending challenges
@@ -12885,6 +12893,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           if (error) throw error;
 
           if (newChallenges && newChallenges.length > 0) {
+            console.log('🎯 New challenge found, showing notification:', newChallenges[0]);
             // Show notification for the latest challenge
             showChallengeNotification(newChallenges[0]);
 
