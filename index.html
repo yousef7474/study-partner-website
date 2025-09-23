@@ -6199,6 +6199,9 @@
         // Migrate old Arabic subject format to new English format
         migrateUserSubjects();
 
+        // Start challenge polling for notifications everywhere
+        startChallengePolling();
+
         showLoggedInLayout();
         const savedRoomStr = localStorage.getItem('studyTogether_room');
         // PRIORITY: If there's a room code in URL, join that room (ignore saved room)
@@ -6336,6 +6339,9 @@
 
         // Migrate old Arabic subject format to new English format
         migrateUserSubjects();
+
+        // Start challenge polling for notifications everywhere
+        startChallengePolling();
 
         localStorage.setItem('studyTogether_user', JSON.stringify(currentUser));
         showLoggedInLayout();
@@ -6645,6 +6651,10 @@
 
     function logout(){
       if(currentRoom) leaveRoom(true);
+
+      // Stop challenge polling when logging out
+      stopChallengePolling();
+
       currentUser = null;
       localStorage.clear();
       showLoggedOutLayout();
@@ -6682,11 +6692,8 @@
         leaveRoom();
       }
 
-      // Stop challenge polling when leaving challenge screen
-      const currentActiveScreen = document.querySelector('.screen.active');
-      if(currentActiveScreen && currentActiveScreen.id === 'challenge-screen' && screenId !== 'challenge-screen') {
-        stopChallengePolling();
-      }
+      // Note: Challenge polling now runs continuously while logged in for global notifications
+      // No need to stop polling when leaving challenge screen
 
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(screenId).classList.add('active');
@@ -12556,12 +12563,12 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       if (isDraw) {
         resultIcon.textContent = '🤝';
         resultTitle.textContent = 'Draw!';
-        resultSubtitle.textContent = 'Great battle! You tied with your opponent.';
+        resultSubtitle.textContent = currentLanguage === 'ar' ? 'معركة رائعة! تعادلت مع خصمك.' : 'Great battle! You tied with your opponent.';
         resultTitle.style.color = '#f59e0b';
       } else if (isWinner) {
         resultIcon.textContent = '🏆';
-        resultTitle.textContent = 'Victory!';
-        resultSubtitle.textContent = 'Congratulations! You won the battle!';
+        resultTitle.textContent = currentLanguage === 'ar' ? 'النصر!' : 'Victory!';
+        resultSubtitle.textContent = currentLanguage === 'ar' ? 'مبروك! لقد فزت في المعركة!' : 'Congratulations! You won the battle!';
         resultTitle.style.color = '#10b981';
       } else {
         resultIcon.textContent = '💪';
@@ -12679,14 +12686,14 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         resultTitle.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
         resultTitle.style.webkitBackgroundClip = 'text';
         resultTitle.style.webkitTextFillColor = 'transparent';
-        resultSubtitle.textContent = 'Great battle! You tied with your opponent.';
+        resultSubtitle.textContent = currentLanguage === 'ar' ? 'معركة رائعة! تعادلت مع خصمك.' : 'Great battle! You tied with your opponent.';
       } else if (isWinner) {
         resultIcon.textContent = '🏆';
-        resultTitle.textContent = 'Victory!';
+        resultTitle.textContent = currentLanguage === 'ar' ? 'النصر!' : 'Victory!';
         resultTitle.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
         resultTitle.style.webkitBackgroundClip = 'text';
         resultTitle.style.webkitTextFillColor = 'transparent';
-        resultSubtitle.textContent = 'Congratulations! You won the battle!';
+        resultSubtitle.textContent = currentLanguage === 'ar' ? 'مبروك! لقد فزت في المعركة!' : 'Congratulations! You won the battle!';
       } else {
         resultIcon.textContent = '💪';
         resultTitle.textContent = 'Defeat';
@@ -12795,7 +12802,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           return;
         }
 
-        // Update stats display
+        // Update stats display (battle results screen)
         document.getElementById('updated-total-points').textContent = stats.battle_points || 0;
         document.getElementById('updated-total-battles').textContent = stats.total_battles || 0;
         document.getElementById('updated-win-streak').textContent = stats.current_win_streak || 0;
@@ -12804,6 +12811,17 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         // Calculate win rate
         const winRate = stats.total_battles > 0 ? Math.round((stats.wins / stats.total_battles) * 100) : 0;
         document.getElementById('updated-win-rate').textContent = winRate + '%';
+
+        // Update challenge tab stats as well
+        const challengePointsEl = document.getElementById('user-battle-points');
+        const challengeWinsEl = document.getElementById('user-wins');
+        const challengeRankEl = document.getElementById('user-rank');
+        const challengeStreakEl = document.getElementById('user-streak');
+
+        if (challengePointsEl) challengePointsEl.textContent = stats.battle_points || 0;
+        if (challengeWinsEl) challengeWinsEl.textContent = stats.wins || 0;
+        if (challengeRankEl) challengeRankEl.textContent = stats.rank_title || 'Novice';
+        if (challengeStreakEl) challengeStreakEl.textContent = stats.current_win_streak || 0;
 
       } catch (error) {
         console.error('Error updating stats display:', error);
@@ -12969,7 +12987,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
         if (!questions || !Array.isArray(questions) || questions.length === 0) {
           console.error('Battle has no questions or invalid questions format:', questions);
-          toast('Battle questions not available. Please try again.', 'error');
+          toast(currentLanguage === 'ar' ? 'أسئلة المعركة غير متوفرة. يرجى المحاولة مرة أخرى.' : 'Battle questions not available. Please try again.', 'error');
           return;
         }
 
@@ -12980,7 +12998,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
         if (validQuestions.length === 0) {
           console.error('No valid questions found in battle:', questions);
-          toast('Battle questions are corrupted. Please try again.', 'error');
+          toast(currentLanguage === 'ar' ? 'أسئلة المعركة تالفة. يرجى المحاولة مرة أخرى.' : 'Battle questions are corrupted. Please try again.', 'error');
           return;
         }
 
@@ -13018,18 +13036,54 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           startBattleCompletionPolling();
         }
 
-        toast('Battle started! Answer the questions to win!', 'success');
+        toast(currentLanguage === 'ar' ? 'بدأت المعركة! أجب على الأسئلة للفوز!' : 'Battle started! Answer the questions to win!', 'success');
 
       } catch (error) {
         console.error('Error joining existing battle:', error);
-        toast('Failed to join battle. Please try again.', 'error');
+        toast(currentLanguage === 'ar' ? 'فشل في الانضمام للمعركة. يرجى المحاولة مرة أخرى.' : 'Failed to join battle. Please try again.', 'error');
+      }
+    }
+
+    // Update battle stats in challenge tab
+    async function updateChallengeTabBattleStats() {
+      try {
+        if (!currentUser) return;
+
+        // Get current user's battle stats
+        const { data: stats, error } = await supabase
+          .from('user_battle_stats')
+          .select('*')
+          .eq('user_id', currentUser.id)
+          .single();
+
+        if (error || !stats) {
+          console.log('No battle stats found for user, using default values');
+          // Set default values if no stats exist
+          document.getElementById('user-battle-points').textContent = '0';
+          document.getElementById('user-wins').textContent = '0';
+          document.getElementById('user-rank').textContent = 'Novice';
+          document.getElementById('user-streak').textContent = '0';
+          return;
+        }
+
+        // Update challenge tab battle stats
+        document.getElementById('user-battle-points').textContent = stats.battle_points || 0;
+        document.getElementById('user-wins').textContent = stats.wins || 0;
+        document.getElementById('user-rank').textContent = stats.rank_title || 'Novice';
+        document.getElementById('user-streak').textContent = stats.current_win_streak || 0;
+
+      } catch (error) {
+        console.error('Error updating challenge tab battle stats:', error);
       }
     }
 
     // Load incoming challenges when Challenge screen is opened
     function initializeChallengeScreen() {
       loadIncomingChallenges();
-      startChallengePolling();
+      // Note: Challenge polling is now started at login for global notifications
+
+      // Update battle stats display
+      updateChallengeTabBattleStats();
 
       // Clean up old battles on screen initialization
       cleanupOldBattles();
@@ -13260,7 +13314,7 @@ Generate questions appropriate for Grade ${grade} level that test understanding 
 
       } catch (error) {
         console.error('Error starting battle:', error);
-        toast('Failed to start battle: ' + error.message, 'error');
+        toast(currentLanguage === 'ar' ? 'فشل في بدء المعركة: ' + error.message : 'Failed to start battle: ' + error.message, 'error');
       }
     }
 
@@ -13560,7 +13614,7 @@ Format as JSON array:
       // Safety checks
       if (!battleQuestions || !Array.isArray(battleQuestions)) {
         console.error('Battle questions not properly initialized:', battleQuestions);
-        toast('Error loading battle questions. Please try again.', 'error');
+        toast(currentLanguage === 'ar' ? 'خطأ في تحميل أسئلة المعركة. يرجى المحاولة مرة أخرى.' : 'Error loading battle questions. Please try again.', 'error');
         return;
       }
 
@@ -13749,7 +13803,7 @@ Format as JSON array:
 
       } catch (error) {
         console.error('❌ Error finishing battle:', error);
-        toast('Error saving battle results', 'error');
+        toast(currentLanguage === 'ar' ? 'خطأ في حفظ نتائج المعركة' : 'Error saving battle results', 'error');
       }
     }
 
@@ -14060,11 +14114,11 @@ Format as JSON array:
               const isDraw = !finalBattle.winner_id;
 
               if (isDraw) {
-                toast('Battle ended in a draw! 🤝', 'info');
+                toast(currentLanguage === 'ar' ? 'انتهت المعركة بالتعادل! 🤝' : 'Battle ended in a draw! 🤝', 'info');
               } else if (playerWon) {
-                toast('🏆 Congratulations! You won the battle!', 'success');
+                toast(currentLanguage === 'ar' ? '🏆 مبروك! لقد فزت في المعركة!' : '🏆 Congratulations! You won the battle!', 'success');
               } else {
-                toast('⚔️ You lost the battle. Better luck next time!', 'info');
+                toast(currentLanguage === 'ar' ? '⚔️ خسرت المعركة. حظ أفضل في المرة القادمة!' : '⚔️ You lost the battle. Better luck next time!', 'info');
               }
             }
           }
