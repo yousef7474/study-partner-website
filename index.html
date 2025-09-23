@@ -13662,8 +13662,14 @@ Format as JSON array:
         // Show results
         showBattleResultsText(scorePercentage, updatedBattle);
 
-        // If we just finished but opponent hasn't, start polling for completion
-        if (!updatedBattle.challenger_finished || !updatedBattle.opponent_finished) {
+        // If both players finished, show the battle results screen immediately
+        if (updatedBattle.challenger_finished && updatedBattle.opponent_finished) {
+          // Show battle results screen after a brief delay to let the text display first
+          setTimeout(async () => {
+            await showBattleResultsScreen(updatedBattle);
+          }, 2000);
+        } else {
+          // If we just finished but opponent hasn't, start polling for completion
           startBattleCompletionPolling();
         }
 
@@ -14053,11 +14059,6 @@ Format as JSON array:
 
         // Update the battle result text with points
         resultText += isArabic ? ` | نقاط المعركة: +${finalPoints}` : ` | Battle Points: +${finalPoints}`;
-
-        // Show battle results screen when both players finished
-        setTimeout(async () => {
-          await showBattleResultsScreen(battleData);
-        }, 1000); // Show screen after 1 second
 
       } else {
         // Only current player finished
