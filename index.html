@@ -6276,6 +6276,2520 @@
       ]
     };
 
+    // -------- INTERNATIONAL SUBJECT CATALOG BY GRADE (EN/AR) --------
+    const internationalSubjectsByGrade = {
+      10: [
+        {
+          name: "Mathematics - Algebra I (Holt) + Geometry (McGrawHill)",
+          nameAr: "الرياضيات - الجبر الأول + الهندسة",
+          chapters: [
+            {
+              id: "ch1",
+              name: "Foundations of Algebra",
+              nameAr: "أسس الجبر",
+              units: [
+                {id: "1.1", name: "Variables, Expressions, Equations", nameAr: "المتغيرات والعبارات والمعادلات"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "Solving Linear Equations & Inequalities",
+              nameAr: "حل المعادلات والمتباينات الخطية",
+              units: [
+                {id: "2.1", name: "Linear Equations", nameAr: "المعادلات الخطية"},
+                {id: "2.2", name: "Linear Inequalities", nameAr: "المتباينات الخطية"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "Functions & Graphing Linear Functions",
+              nameAr: "الدوال ورسم الدوال الخطية",
+              units: [
+                {id: "3.1", name: "Functions", nameAr: "الدوال"},
+                {id: "3.2", name: "Graphing Linear Functions", nameAr: "رسم الدوال الخطية"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "Systems of Linear Equations & Inequalities",
+              nameAr: "أنظمة المعادلات والمتباينات الخطية",
+              units: [
+                {id: "4.1", name: "Systems of Linear Equations", nameAr: "أنظمة المعادلات الخطية"},
+                {id: "4.2", name: "Systems of Linear Inequalities", nameAr: "أنظمة المتباينات الخطية"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "Exponents & Exponential Functions",
+              nameAr: "الأسس والدوال الأسية",
+              units: [
+                {id: "5.1", name: "Exponents", nameAr: "الأسس"},
+                {id: "5.2", name: "Exponential Functions", nameAr: "الدوال الأسية"}
+              ]
+            },
+            {
+              id: "ch6",
+              name: "Polynomials & Factoring",
+              nameAr: "كثيرات الحدود والتحليل",
+              units: [
+                {id: "6.1", name: "Polynomials", nameAr: "كثيرات الحدود"},
+                {id: "6.2", name: "Factoring", nameAr: "التحليل"}
+              ]
+            },
+            {
+              id: "ch7",
+              name: "Quadratic Functions & Equations",
+              nameAr: "الدوال والمعادلات التربيعية",
+              units: [
+                {id: "7.1", name: "Quadratic Functions", nameAr: "الدوال التربيعية"},
+                {id: "7.2", name: "Quadratic Equations", nameAr: "المعادلات التربيعية"}
+              ]
+            },
+            {
+              id: "ch8",
+              name: "Radical Expressions & Equations",
+              nameAr: "العبارات والمعادلات الجذرية",
+              units: [
+                {id: "8.1", name: "Radical Expressions", nameAr: "العبارات الجذرية"},
+                {id: "8.2", name: "Radical Equations", nameAr: "المعادلات الجذرية"}
+              ]
+            },
+            {
+              id: "ch9",
+              name: "Rational Expressions & Equations",
+              nameAr: "العبارات والمعادلات النسبية",
+              units: [
+                {id: "9.1", name: "Rational Expressions", nameAr: "العبارات النسبية"},
+                {id: "9.2", name: "Rational Equations", nameAr: "المعادلات النسبية"}
+              ]
+            },
+            {
+              id: "ch10",
+              name: "Data Analysis & Probability",
+              nameAr: "تحليل البيانات والاحتمالية",
+              units: [
+                {id: "10.1", name: "Data Analysis", nameAr: "تحليل البيانات"},
+                {id: "10.2", name: "Probability", nameAr: "الاحتمالية"}
+              ]
+            },
+            // Geometry (McGrawHill) chapters
+            {
+              id: "ch11",
+              name: "Basics of Geometry",
+              nameAr: "أساسيات الهندسة",
+              units: [
+                {id: "11.1", name: "Points, Lines, Planes", nameAr: "النقاط والخطوط والمستويات"},
+                {id: "11.2", name: "Angles", nameAr: "الزوايا"}
+              ]
+            },
+            {
+              id: "ch12",
+              name: "Reasoning & Proofs",
+              nameAr: "التفكير والبراهين",
+              units: [
+                {id: "12.1", name: "Reasoning", nameAr: "التفكير"},
+                {id: "12.2", name: "Proofs", nameAr: "البراهين"}
+              ]
+            },
+            {
+              id: "ch13",
+              name: "Parallel & Perpendicular Lines",
+              nameAr: "الخطوط المتوازية والمتعامدة",
+              units: [
+                {id: "13.1", name: "Parallel Lines", nameAr: "الخطوط المتوازية"},
+                {id: "13.2", name: "Perpendicular Lines", nameAr: "الخطوط المتعامدة"}
+              ]
+            },
+            {
+              id: "ch14",
+              name: "Congruent Triangles",
+              nameAr: "المثلثات المتطابقة",
+              units: [
+                {id: "14.1", name: "Triangle Congruence", nameAr: "تطابق المثلثات"},
+                {id: "14.2", name: "Congruence Theorems", nameAr: "نظريات التطابق"}
+              ]
+            },
+            {
+              id: "ch15",
+              name: "Relationships within Triangles",
+              nameAr: "العلاقات داخل المثلثات",
+              units: [
+                {id: "15.1", name: "Triangle Relationships", nameAr: "علاقات المثلثات"},
+                {id: "15.2", name: "Triangle Inequalities", nameAr: "متباينات المثلثات"}
+              ]
+            },
+            {
+              id: "ch16",
+              name: "Similarity & Right Triangles",
+              nameAr: "التشابه والمثلثات القائمة",
+              units: [
+                {id: "16.1", name: "Similarity", nameAr: "التشابه"},
+                {id: "16.2", name: "Pythagorean Theorem", nameAr: "نظرية فيثاغورس"},
+                {id: "16.3", name: "Trigonometry Basics", nameAr: "أساسيات علم المثلثات"}
+              ]
+            },
+            {
+              id: "ch17",
+              name: "Quadrilaterals & Polygons",
+              nameAr: "الأشكال الرباعية والمضلعات",
+              units: [
+                {id: "17.1", name: "Quadrilaterals", nameAr: "الأشكال الرباعية"},
+                {id: "17.2", name: "Polygons", nameAr: "المضلعات"}
+              ]
+            },
+            {
+              id: "ch18",
+              name: "Circles",
+              nameAr: "الدوائر",
+              units: [
+                {id: "18.1", name: "Arcs and Angles", nameAr: "الأقواس والزوايا"},
+                {id: "18.2", name: "Tangents", nameAr: "المماسات"}
+              ]
+            },
+            {
+              id: "ch19",
+              name: "Area & Perimeter of Figures",
+              nameAr: "المساحة والمحيط للأشكال",
+              units: [
+                {id: "19.1", name: "Area", nameAr: "المساحة"},
+                {id: "19.2", name: "Perimeter", nameAr: "المحيط"}
+              ]
+            },
+            {
+              id: "ch20",
+              name: "Surface Area & Volume of 3D Figures",
+              nameAr: "المساحة السطحية والحجم للأشكال ثلاثية الأبعاد",
+              units: [
+                {id: "20.1", name: "Surface Area", nameAr: "المساحة السطحية"},
+                {id: "20.2", name: "Volume", nameAr: "الحجم"}
+              ]
+            },
+            {
+              id: "ch21",
+              name: "Transformations & Symmetry",
+              nameAr: "التحويلات والتماثل",
+              units: [
+                {id: "21.1", name: "Transformations", nameAr: "التحويلات"},
+                {id: "21.2", name: "Symmetry", nameAr: "التماثل"}
+              ]
+            }
+          ]
+        },
+        {
+          name: "Biology (Holt)",
+          nameAr: "الأحياء",
+          chapters: [
+            {
+              id: "ch1",
+              name: "Nature of Science & Biology",
+              nameAr: "طبيعة العلم والأحياء",
+              units: [
+                {id: "1.1", name: "Nature of Science", nameAr: "طبيعة العلم"},
+                {id: "1.2", name: "Introduction to Biology", nameAr: "مقدمة في علم الأحياء"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "Cell Structure & Function",
+              nameAr: "تركيب الخلية ووظيفتها",
+              units: [
+                {id: "2.1", name: "Cell Structure", nameAr: "تركيب الخلية"},
+                {id: "2.2", name: "Cell Function", nameAr: "وظيفة الخلية"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "Energy in Cells",
+              nameAr: "الطاقة في الخلايا",
+              units: [
+                {id: "3.1", name: "Photosynthesis", nameAr: "التمثيل الضوئي"},
+                {id: "3.2", name: "Cellular Respiration", nameAr: "التنفس الخلوي"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "Cell Division",
+              nameAr: "انقسام الخلية",
+              units: [
+                {id: "4.1", name: "Mitosis", nameAr: "الانقسام المتساوي"},
+                {id: "4.2", name: "Meiosis", nameAr: "الانقسام المنصف"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "Genetics & DNA",
+              nameAr: "الوراثة والحمض النووي",
+              units: [
+                {id: "5.1", name: "DNA Structure", nameAr: "تركيب الحمض النووي"},
+                {id: "5.2", name: "Genetics", nameAr: "الوراثة"}
+              ]
+            },
+            {
+              id: "ch6",
+              name: "Evolution & Natural Selection",
+              nameAr: "التطور والانتقاء الطبيعي",
+              units: [
+                {id: "6.1", name: "Evolution", nameAr: "التطور"},
+                {id: "6.2", name: "Natural Selection", nameAr: "الانتقاء الطبيعي"}
+              ]
+            },
+            {
+              id: "ch7",
+              name: "Classification of Life (Taxonomy)",
+              nameAr: "تصنيف الكائنات الحية",
+              units: [
+                {id: "7.1", name: "Taxonomy", nameAr: "التصنيف"},
+                {id: "7.2", name: "Classification Systems", nameAr: "أنظمة التصنيف"}
+              ]
+            },
+            {
+              id: "ch8",
+              name: "Microorganisms, Plants & Animals Overview",
+              nameAr: "نظرة عامة على الكائنات الدقيقة والنباتات والحيوانات",
+              units: [
+                {id: "8.1", name: "Microorganisms", nameAr: "الكائنات الدقيقة"},
+                {id: "8.2", name: "Plants", nameAr: "النباتات"},
+                {id: "8.3", name: "Animals", nameAr: "الحيوانات"}
+              ]
+            },
+            {
+              id: "ch9",
+              name: "Ecology & Environment",
+              nameAr: "علم البيئة والبيئة",
+              units: [
+                {id: "9.1", name: "Ecology", nameAr: "علم البيئة"},
+                {id: "9.2", name: "Environmental Issues", nameAr: "القضايا البيئية"}
+              ]
+            },
+            {
+              id: "ch10",
+              name: "Human Biology (Systems & Health)",
+              nameAr: "أحياء الإنسان (الأجهزة والصحة)",
+              units: [
+                {id: "10.1", name: "Human Body Systems", nameAr: "أجهزة جسم الإنسان"},
+                {id: "10.2", name: "Health and Disease", nameAr: "الصحة والمرض"}
+              ]
+            }
+          ]
+        },
+        {
+          name: "Chemistry - Modern Chemistry (Holt)",
+          nameAr: "الكيمياء - الكيمياء الحديثة",
+          chapters: [
+            {
+              id: "ch1",
+              name: "Introduction to Chemistry & Measurement",
+              nameAr: "مقدمة في الكيمياء والقياس",
+              units: [
+                {id: "1.1", name: "Introduction to Chemistry", nameAr: "مقدمة في الكيمياء"},
+                {id: "1.2", name: "Measurement and Units", nameAr: "القياس والوحدات"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "Matter & Energy",
+              nameAr: "المادة والطاقة",
+              units: [
+                {id: "2.1", name: "Properties of Matter", nameAr: "خصائص المادة"},
+                {id: "2.2", name: "Energy and Matter", nameAr: "الطاقة والمادة"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "Atomic Structure & Electron Configuration",
+              nameAr: "التركيب الذري وتوزيع الإلكترونات",
+              units: [
+                {id: "3.1", name: "Atomic Structure", nameAr: "التركيب الذري"},
+                {id: "3.2", name: "Electron Configuration", nameAr: "توزيع الإلكترونات"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "The Periodic Table & Periodic Trends",
+              nameAr: "الجدول الدوري والاتجاهات الدورية",
+              units: [
+                {id: "4.1", name: "Periodic Table", nameAr: "الجدول الدوري"},
+                {id: "4.2", name: "Periodic Trends", nameAr: "الاتجاهات الدورية"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "Chemical Bonding",
+              nameAr: "الترابط الكيميائي",
+              units: [
+                {id: "5.1", name: "Ionic Bonding", nameAr: "الترابط الأيوني"},
+                {id: "5.2", name: "Covalent Bonding", nameAr: "الترابط التساهمي"},
+                {id: "5.3", name: "Metallic Bonding", nameAr: "الترابط المعدني"}
+              ]
+            },
+            {
+              id: "ch6",
+              name: "Chemical Reactions & Stoichiometry",
+              nameAr: "التفاعلات الكيميائية والحسابات الكيميائية",
+              units: [
+                {id: "6.1", name: "Chemical Reactions", nameAr: "التفاعلات الكيميائية"},
+                {id: "6.2", name: "Stoichiometry", nameAr: "الحسابات الكيميائية"}
+              ]
+            },
+            {
+              id: "ch7",
+              name: "States of Matter & Gas Laws",
+              nameAr: "حالات المادة وقوانين الغازات",
+              units: [
+                {id: "7.1", name: "States of Matter", nameAr: "حالات المادة"},
+                {id: "7.2", name: "Gas Laws", nameAr: "قوانين الغازات"}
+              ]
+            },
+            {
+              id: "ch8",
+              name: "Thermochemistry",
+              nameAr: "الكيمياء الحرارية",
+              units: [
+                {id: "8.1", name: "Heat and Energy", nameAr: "الحرارة والطاقة"},
+                {id: "8.2", name: "Enthalpy Changes", nameAr: "تغيرات الإنثالبيا"}
+              ]
+            },
+            {
+              id: "ch9",
+              name: "Solutions & Solubility",
+              nameAr: "المحاليل والذوبانية",
+              units: [
+                {id: "9.1", name: "Solutions", nameAr: "المحاليل"},
+                {id: "9.2", name: "Solubility", nameAr: "الذوبانية"}
+              ]
+            },
+            {
+              id: "ch10",
+              name: "Chemical Kinetics & Equilibrium",
+              nameAr: "الحركية الكيميائية والاتزان",
+              units: [
+                {id: "10.1", name: "Chemical Kinetics", nameAr: "الحركية الكيميائية"},
+                {id: "10.2", name: "Chemical Equilibrium", nameAr: "الاتزان الكيميائي"}
+              ]
+            },
+            {
+              id: "ch11",
+              name: "Acids, Bases & pH",
+              nameAr: "الأحماض والقواعد والأس الهيدروجيني",
+              units: [
+                {id: "11.1", name: "Acids and Bases", nameAr: "الأحماض والقواعد"},
+                {id: "11.2", name: "pH and pOH", nameAr: "الأس الهيدروجيني والقاعدي"}
+              ]
+            },
+            {
+              id: "ch12",
+              name: "Redox Reactions & Electrochemistry",
+              nameAr: "تفاعلات الأكسدة والاختزال والكيمياء الكهربائية",
+              units: [
+                {id: "12.1", name: "Redox Reactions", nameAr: "تفاعلات الأكسدة والاختزال"},
+                {id: "12.2", name: "Electrochemistry", nameAr: "الكيمياء الكهربائية"}
+              ]
+            },
+            {
+              id: "ch13",
+              name: "Nuclear Chemistry",
+              nameAr: "الكيمياء النووية",
+              units: [
+                {id: "13.1", name: "Nuclear Reactions", nameAr: "التفاعلات النووية"},
+                {id: "13.2", name: "Radioactivity", nameAr: "النشاط الإشعاعي"}
+              ]
+            }
+          ]
+        },
+        {
+          name: "Physics (Holt)",
+          nameAr: "الفيزياء",
+          chapters: [
+            {
+              id: "ch1",
+              name: "Measurement & Scientific Method",
+              nameAr: "القياس والطريقة العلمية",
+              units: [
+                {id: "1.1", name: "Measurement", nameAr: "القياس"},
+                {id: "1.2", name: "Scientific Method", nameAr: "الطريقة العلمية"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "Motion in One & Two Dimensions",
+              nameAr: "الحركة في بُعد واحد وبُعدين",
+              units: [
+                {id: "2.1", name: "One-Dimensional Motion", nameAr: "الحركة في بُعد واحد"},
+                {id: "2.2", name: "Two-Dimensional Motion", nameAr: "الحركة في بُعدين"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "Forces & Newton's Laws",
+              nameAr: "القوى وقوانين نيوتن",
+              units: [
+                {id: "3.1", name: "Forces", nameAr: "القوى"},
+                {id: "3.2", name: "Newton's Laws", nameAr: "قوانين نيوتن"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "Work, Energy & Power",
+              nameAr: "الشغل والطاقة والقدرة",
+              units: [
+                {id: "4.1", name: "Work and Energy", nameAr: "الشغل والطاقة"},
+                {id: "4.2", name: "Power", nameAr: "القدرة"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "Momentum & Collisions",
+              nameAr: "الزخم والتصادمات",
+              units: [
+                {id: "5.1", name: "Momentum", nameAr: "الزخم"},
+                {id: "5.2", name: "Collisions", nameAr: "التصادمات"}
+              ]
+            },
+            {
+              id: "ch6",
+              name: "Circular Motion & Gravitation",
+              nameAr: "الحركة الدائرية والجاذبية",
+              units: [
+                {id: "6.1", name: "Circular Motion", nameAr: "الحركة الدائرية"},
+                {id: "6.2", name: "Gravitation", nameAr: "الجاذبية"}
+              ]
+            },
+            {
+              id: "ch7",
+              name: "Fluids & Thermodynamics",
+              nameAr: "الموائع والديناميكا الحرارية",
+              units: [
+                {id: "7.1", name: "Fluids", nameAr: "الموائع"},
+                {id: "7.2", name: "Thermodynamics", nameAr: "الديناميكا الحرارية"}
+              ]
+            },
+            {
+              id: "ch8",
+              name: "Waves & Sound",
+              nameAr: "الموجات والصوت",
+              units: [
+                {id: "8.1", name: "Waves", nameAr: "الموجات"},
+                {id: "8.2", name: "Sound", nameAr: "الصوت"}
+              ]
+            },
+            {
+              id: "ch9",
+              name: "Light & Optics",
+              nameAr: "الضوء والبصريات",
+              units: [
+                {id: "9.1", name: "Light", nameAr: "الضوء"},
+                {id: "9.2", name: "Optics", nameAr: "البصريات"}
+              ]
+            },
+            {
+              id: "ch10",
+              name: "Electricity",
+              nameAr: "الكهرباء",
+              units: [
+                {id: "10.1", name: "Static Electricity", nameAr: "الكهرباء الساكنة"},
+                {id: "10.2", name: "Current Electricity", nameAr: "الكهرباء المتحركة"}
+              ]
+            },
+            {
+              id: "ch11",
+              name: "Circuits",
+              nameAr: "الدوائر الكهربائية",
+              units: [
+                {id: "11.1", name: "Ohm's Law", nameAr: "قانون أوم"},
+                {id: "11.2", name: "Resistance", nameAr: "المقاومة"},
+                {id: "11.3", name: "Power", nameAr: "القدرة"}
+              ]
+            },
+            {
+              id: "ch12",
+              name: "Magnetism & Electromagnetism",
+              nameAr: "المغناطيسية والكهرومغناطيسية",
+              units: [
+                {id: "12.1", name: "Magnetism", nameAr: "المغناطيسية"},
+                {id: "12.2", name: "Electromagnetism", nameAr: "الكهرومغناطيسية"}
+              ]
+            },
+            {
+              id: "ch13",
+              name: "Modern Physics",
+              nameAr: "الفيزياء الحديثة",
+              units: [
+                {id: "13.1", name: "Nuclear Physics", nameAr: "الفيزياء النووية"},
+                {id: "13.2", name: "Quantum Physics Intro", nameAr: "مقدمة في فيزياء الكم"}
+              ]
+            }
+          ]
+        },
+        {
+          name: "English Language & Literature - My Perspectives",
+          nameAr: "اللغة الإنجليزية والأدب",
+          chapters: [
+            {
+              id: "ch1",
+              name: "Fiction & Short Stories",
+              nameAr: "الخيال والقصص القصيرة",
+              units: [
+                {id: "1.1", name: "Elements of Fiction", nameAr: "عناصر الخيال"},
+                {id: "1.2", name: "Short Story Analysis", nameAr: "تحليل القصة القصيرة"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "Nonfiction & Informational Texts",
+              nameAr: "النصوص غير الخيالية والمعلوماتية",
+              units: [
+                {id: "2.1", name: "Types of Nonfiction", nameAr: "أنواع النصوص غير الخيالية"},
+                {id: "2.2", name: "Analyzing Informational Texts", nameAr: "تحليل النصوص المعلوماتية"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "Poetry",
+              nameAr: "الشعر",
+              units: [
+                {id: "3.1", name: "Poetic Forms", nameAr: "الأشكال الشعرية"},
+                {id: "3.2", name: "Literary Devices", nameAr: "الأدوات الأدبية"},
+                {id: "3.3", name: "Poetry Analysis", nameAr: "تحليل الشعر"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "Drama",
+              nameAr: "المسرح",
+              units: [
+                {id: "4.1", name: "Classical Drama", nameAr: "المسرح الكلاسيكي"},
+                {id: "4.2", name: "Modern Drama", nameAr: "المسرح الحديث"},
+                {id: "4.3", name: "Play Analysis", nameAr: "تحليل المسرحيات"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "Novel Study",
+              nameAr: "دراسة الرواية",
+              units: [
+                {id: "5.1", name: "To Kill a Mockingbird", nameAr: "قتل الطائر المحاكي"},
+                {id: "5.2", name: "Fahrenheit 451", nameAr: "فهرنهايت 451"},
+                {id: "5.3", name: "Novel Analysis Techniques", nameAr: "تقنيات تحليل الرواية"}
+              ]
+            },
+            {
+              id: "ch6",
+              name: "Argumentative & Persuasive Writing",
+              nameAr: "الكتابة الجدلية والإقناعية",
+              units: [
+                {id: "6.1", name: "Argumentative Essays", nameAr: "المقالات الجدلية"},
+                {id: "6.2", name: "Persuasive Techniques", nameAr: "تقنيات الإقناع"}
+              ]
+            },
+            {
+              id: "ch7",
+              name: "Narrative & Creative Writing",
+              nameAr: "الكتابة السردية والإبداعية",
+              units: [
+                {id: "7.1", name: "Narrative Writing", nameAr: "الكتابة السردية"},
+                {id: "7.2", name: "Creative Writing", nameAr: "الكتابة الإبداعية"}
+              ]
+            },
+            {
+              id: "ch8",
+              name: "Research & Academic Writing",
+              nameAr: "البحث والكتابة الأكاديمية",
+              units: [
+                {id: "8.1", name: "Research Methods", nameAr: "طرق البحث"},
+                {id: "8.2", name: "MLA Format", nameAr: "تنسيق MLA"},
+                {id: "8.3", name: "APA Format", nameAr: "تنسيق APA"}
+              ]
+            },
+            {
+              id: "ch9",
+              name: "Speaking & Listening",
+              nameAr: "التحدث والاستماع",
+              units: [
+                {id: "9.1", name: "Presentations", nameAr: "العروض التقديمية"},
+                {id: "9.2", name: "Debates", nameAr: "المناقشات"}
+              ]
+            },
+            {
+              id: "ch10",
+              name: "Vocabulary, Grammar & Mechanics",
+              nameAr: "المفردات والقواعد والميكانيكا",
+              units: [
+                {id: "10.1", name: "Vocabulary Building", nameAr: "بناء المفردات"},
+                {id: "10.2", name: "Grammar Rules", nameAr: "قواعد النحو"},
+                {id: "10.3", name: "Writing Mechanics", nameAr: "ميكانيكا الكتابة"}
+              ]
+            }
+          ]
+        },
+        {
+          name: "World History - Patterns of Interaction",
+          nameAr: "التاريخ العالمي - أنماط التفاعل",
+          chapters: [
+            {
+              id: "ch1",
+              name: "The Renaissance & Reformation",
+              nameAr: "النهضة والإصلاح",
+              units: [
+                {id: "1.1", name: "The Renaissance", nameAr: "النهضة"},
+                {id: "1.2", name: "The Protestant Reformation", nameAr: "الإصلاح البروتستانتي"},
+                {id: "1.3", name: "Catholic Counter-Reformation", nameAr: "الإصلاح المضاد الكاثوليكي"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "The Age of Exploration",
+              nameAr: "عصر الاستكشاف",
+              units: [
+                {id: "2.1", name: "Causes of Exploration", nameAr: "أسباب الاستكشاف"},
+                {id: "2.2", name: "European Explorers", nameAr: "المستكشفون الأوروبيون"},
+                {id: "2.3", name: "Impact on Native Populations", nameAr: "التأثير على السكان الأصليين"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "The Scientific Revolution & Enlightenment",
+              nameAr: "الثورة العلمية وعصر التنوير",
+              units: [
+                {id: "3.1", name: "Scientific Revolution", nameAr: "الثورة العلمية"},
+                {id: "3.2", name: "The Enlightenment", nameAr: "عصر التنوير"},
+                {id: "3.3", name: "Impact on Society", nameAr: "التأثير على المجتمع"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "Revolutions",
+              nameAr: "الثورات",
+              units: [
+                {id: "4.1", name: "American Revolution", nameAr: "الثورة الأمريكية"},
+                {id: "4.2", name: "French Revolution", nameAr: "الثورة الفرنسية"},
+                {id: "4.3", name: "Industrial Revolution", nameAr: "الثورة الصناعية"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "Nationalism & Imperialism",
+              nameAr: "القومية والإمبريالية",
+              units: [
+                {id: "5.1", name: "Rise of Nationalism", nameAr: "صعود القومية"},
+                {id: "5.2", name: "European Imperialism", nameAr: "الإمبريالية الأوروبية"},
+                {id: "5.3", name: "Impact on Colonies", nameAr: "التأثير على المستعمرات"}
+              ]
+            },
+            {
+              id: "ch6",
+              name: "World War I & II",
+              nameAr: "الحرب العالمية الأولى والثانية",
+              units: [
+                {id: "6.1", name: "Causes of World War I", nameAr: "أسباب الحرب العالمية الأولى"},
+                {id: "6.2", name: "World War I Events", nameAr: "أحداث الحرب العالمية الأولى"},
+                {id: "6.3", name: "Interwar Period", nameAr: "فترة ما بين الحربين"},
+                {id: "6.4", name: "World War II", nameAr: "الحرب العالمية الثانية"}
+              ]
+            },
+            {
+              id: "ch7",
+              name: "The Cold War & Decolonization",
+              nameAr: "الحرب الباردة وإنهاء الاستعمار",
+              units: [
+                {id: "7.1", name: "Origins of Cold War", nameAr: "أصول الحرب الباردة"},
+                {id: "7.2", name: "Cold War Conflicts", nameAr: "صراعات الحرب الباردة"},
+                {id: "7.3", name: "Decolonization Movements", nameAr: "حركات إنهاء الاستعمار"}
+              ]
+            },
+            {
+              id: "ch8",
+              name: "Globalization & the Modern World",
+              nameAr: "العولمة والعالم الحديث",
+              units: [
+                {id: "8.1", name: "End of Cold War", nameAr: "نهاية الحرب الباردة"},
+                {id: "8.2", name: "Globalization", nameAr: "العولمة"},
+                {id: "8.3", name: "Modern Challenges", nameAr: "التحديات الحديثة"}
+              ]
+            }
+          ]
+        },
+        {
+          name: "Information Technology - Digital Teens 4",
+          nameAr: "تكنولوجيا المعلومات - المراهقون الرقميون 4",
+          chapters: [
+            {
+              id: "ch1",
+              name: "Digital Communication & Netiquette",
+              nameAr: "التواصل الرقمي وآداب الإنترنت",
+              units: [
+                {id: "1.1", name: "Digital Communication", nameAr: "التواصل الرقمي"},
+                {id: "1.2", name: "Internet Etiquette", nameAr: "آداب الإنترنت"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "Word Processing & Presentations",
+              nameAr: "معالجة النصوص والعروض التقديمية",
+              units: [
+                {id: "2.1", name: "Word Processing", nameAr: "معالجة النصوص"},
+                {id: "2.2", name: "Presentation Software", nameAr: "برامج العروض التقديمية"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "Spreadsheets & Data Management",
+              nameAr: "الجداول الإلكترونية وإدارة البيانات",
+              units: [
+                {id: "3.1", name: "Spreadsheet Basics", nameAr: "أساسيات الجداول الإلكترونية"},
+                {id: "3.2", name: "Data Analysis", nameAr: "تحليل البيانات"},
+                {id: "3.3", name: "Charts and Graphs", nameAr: "الرسوم البيانية والمخططات"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "Databases & Cloud Tools",
+              nameAr: "قواعد البيانات وأدوات السحابة",
+              units: [
+                {id: "4.1", name: "Database Fundamentals", nameAr: "أساسيات قواعد البيانات"},
+                {id: "4.2", name: "Cloud Computing", nameAr: "الحوسبة السحابية"},
+                {id: "4.3", name: "Cloud Collaboration Tools", nameAr: "أدوات التعاون السحابية"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "Internet Safety & Cybersecurity",
+              nameAr: "أمان الإنترنت والأمن السيبراني",
+              units: [
+                {id: "5.1", name: "Internet Safety", nameAr: "أمان الإنترنت"},
+                {id: "5.2", name: "Cybersecurity Basics", nameAr: "أساسيات الأمن السيبراني"},
+                {id: "5.3", name: "Privacy Protection", nameAr: "حماية الخصوصية"}
+              ]
+            },
+            {
+              id: "ch6",
+              name: "Social Media & Digital Citizenship",
+              nameAr: "وسائل التواصل الاجتماعي والمواطنة الرقمية",
+              units: [
+                {id: "6.1", name: "Social Media Platforms", nameAr: "منصات وسائل التواصل الاجتماعي"},
+                {id: "6.2", name: "Digital Citizenship", nameAr: "المواطنة الرقمية"},
+                {id: "6.3", name: "Online Reputation", nameAr: "السمعة الإلكترونية"}
+              ]
+            },
+            {
+              id: "ch7",
+              name: "Introduction to Programming Concepts",
+              nameAr: "مقدمة في مفاهيم البرمجة",
+              units: [
+                {id: "7.1", name: "Programming Fundamentals", nameAr: "أساسيات البرمجة"},
+                {id: "7.2", name: "Logic and Algorithms", nameAr: "المنطق والخوارزميات"},
+                {id: "7.3", name: "Basic Coding", nameAr: "البرمجة الأساسية"}
+              ]
+            },
+            {
+              id: "ch8",
+              name: "Emerging Technologies",
+              nameAr: "التقنيات الناشئة",
+              units: [
+                {id: "8.1", name: "Artificial Intelligence Basics", nameAr: "أساسيات الذكاء الاصطناعي"},
+                {id: "8.2", name: "Internet of Things (IoT)", nameAr: "إنترنت الأشياء"},
+                {id: "8.3", name: "Robotics Basics", nameAr: "أساسيات الروبوتات"}
+              ]
+            }
+          ]
+        },
+        {
+          name: "التاريخ (مناهج الوزارة - بالعربية)",
+          nameAr: "التاريخ (مناهج الوزارة - بالعربية)",
+          chapters: [
+            {
+              id: "ch1",
+              name: "الدولة السعودية الأولى والثانية",
+              nameAr: "الدولة السعودية الأولى والثانية",
+              units: [
+                {id: "1.1", name: "First Saudi State", nameAr: "الدولة السعودية الأولى"},
+                {id: "1.2", name: "Second Saudi State", nameAr: "الدولة السعودية الثانية"},
+                {id: "1.3", name: "Key Figures and Events", nameAr: "الشخصيات والأحداث المهمة"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "توحيد المملكة العربية السعودية",
+              nameAr: "توحيد المملكة العربية السعودية",
+              units: [
+                {id: "2.1", name: "King Abdulaziz's Unification", nameAr: "توحيد الملك عبد العزيز"},
+                {id: "2.2", name: "Unification Process", nameAr: "عملية التوحيد"},
+                {id: "2.3", name: "Establishment of Modern Saudi Arabia", nameAr: "تأسيس المملكة العربية السعودية الحديثة"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "تاريخ الخليج العربي والجزيرة العربية",
+              nameAr: "تاريخ الخليج العربي والجزيرة العربية",
+              units: [
+                {id: "3.1", name: "Arabian Peninsula Geography", nameAr: "جغرافية الجزيرة العربية"},
+                {id: "3.2", name: "Arabian Gulf History", nameAr: "تاريخ الخليج العربي"},
+                {id: "3.3", name: "Trade Routes and Commerce", nameAr: "طرق التجارة والتجارة"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "شخصيات تاريخية بارزة",
+              nameAr: "شخصيات تاريخية بارزة",
+              units: [
+                {id: "4.1", name: "Historical Figures - Pre-Unification", nameAr: "الشخصيات التاريخية - ما قبل التوحيد"},
+                {id: "4.2", name: "Historical Figures - Unification Era", nameAr: "الشخصيات التاريخية - عهد التوحيد"},
+                {id: "4.3", name: "Modern Era Leaders", nameAr: "قادة العصر الحديث"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "وثائق ومعاهدات مهمة",
+              nameAr: "وثائق ومعاهدات مهمة",
+              units: [
+                {id: "5.1", name: "Important Documents", nameAr: "الوثائق المهمة"},
+                {id: "5.2", name: "Treaties and Agreements", nameAr: "المعاهدات والاتفاقيات"},
+                {id: "5.3", name: "Constitutional Documents", nameAr: "الوثائق الدستورية"}
+              ]
+            }
+          ]
+        },
+        {
+          name: "التربية الإسلامية (مناهج الوزارة - بالعربية)",
+          nameAr: "التربية الإسلامية (مناهج الوزارة - بالعربية)",
+          chapters: [
+            {
+              id: "ch1",
+              name: "التوحيد والعقيدة",
+              nameAr: "التوحيد والعقيدة",
+              units: [
+                {id: "1.1", name: "Tawhid (Monotheism)", nameAr: "التوحيد"},
+                {id: "1.2", name: "Islamic Creed", nameAr: "العقيدة الإسلامية"},
+                {id: "1.3", name: "Names and Attributes of Allah", nameAr: "أسماء الله وصفاته"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "الفقه (العبادات والمعاملات)",
+              nameAr: "الفقه (العبادات والمعاملات)",
+              units: [
+                {id: "2.1", name: "Islamic Jurisprudence - Worship", nameAr: "الفقه - العبادات"},
+                {id: "2.2", name: "Islamic Jurisprudence - Transactions", nameAr: "الفقه - المعاملات"},
+                {id: "2.3", name: "Prayer and Purification", nameAr: "الصلاة والطهارة"},
+                {id: "2.4", name: "Zakat and Hajj", nameAr: "الزكاة والحج"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "الحديث والسيرة النبوية",
+              nameAr: "الحديث والسيرة النبوية",
+              units: [
+                {id: "3.1", name: "Prophetic Traditions (Hadith)", nameAr: "الحديث النبوي"},
+                {id: "3.2", name: "Prophet's Biography", nameAr: "السيرة النبوية"},
+                {id: "3.3", name: "Hadith Classification", nameAr: "تصنيف الحديث"},
+                {id: "3.4", name: "Lessons from the Seerah", nameAr: "دروس من السيرة"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "التفسير وعلوم القرآن",
+              nameAr: "التفسير وعلوم القرآن",
+              units: [
+                {id: "4.1", name: "Quranic Interpretation (Tafsir)", nameAr: "تفسير القرآن"},
+                {id: "4.2", name: "Quranic Sciences", nameAr: "علوم القرآن"},
+                {id: "4.3", name: "Quranic Recitation", nameAr: "تلاوة القرآن"},
+                {id: "4.4", name: "Memorization Techniques", nameAr: "تقنيات الحفظ"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "الأخلاق الإسلامية",
+              nameAr: "الأخلاق الإسلامية",
+              units: [
+                {id: "5.1", name: "Islamic Ethics and Morals", nameAr: "الأخلاق الإسلامية"},
+                {id: "5.2", name: "Character Building", nameAr: "بناء الشخصية"},
+                {id: "5.3", name: "Social Values", nameAr: "القيم الاجتماعية"},
+                {id: "5.4", name: "Contemporary Ethical Issues", nameAr: "القضايا الأخلاقية المعاصرة"}
+              ]
+            }
+          ]
+        },
+        {
+          name: "اللغة العربية - المصباح والنحو الشافي",
+          nameAr: "اللغة العربية - المصباح والنحو الشافي",
+          chapters: [
+            {
+              id: "ch1",
+              name: "النصوص الأدبية (شعر، نثر، مقالات)",
+              nameAr: "النصوص الأدبية (شعر، نثر، مقالات)",
+              units: [
+                {id: "1.1", name: "Classical Poetry", nameAr: "الشعر الكلاسيكي"},
+                {id: "1.2", name: "Prose Literature", nameAr: "الأدب النثري"},
+                {id: "1.3", name: "Literary Articles", nameAr: "المقالات الأدبية"},
+                {id: "1.4", name: "Text Analysis", nameAr: "تحليل النصوص"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "قواعد النحو (الإعراب، الجمل الفعلية والاسمية)",
+              nameAr: "قواعد النحو (الإعراب، الجمل الفعلية والاسمية)",
+              units: [
+                {id: "2.1", name: "Arabic Grammar Rules", nameAr: "قواعد النحو العربي"},
+                {id: "2.2", name: "Parsing (I'rab)", nameAr: "الإعراب"},
+                {id: "2.3", name: "Verbal Sentences", nameAr: "الجمل الفعلية"},
+                {id: "2.4", name: "Nominal Sentences", nameAr: "الجمل الاسمية"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "الصرف (الأوزان، الاشتقاق)",
+              nameAr: "الصرف (الأوزان، الاشتقاق)",
+              units: [
+                {id: "3.1", name: "Arabic Morphology", nameAr: "الصرف العربي"},
+                {id: "3.2", name: "Word Patterns", nameAr: "الأوزان"},
+                {id: "3.3", name: "Word Derivation", nameAr: "الاشتقاق"},
+                {id: "3.4", name: "Root Analysis", nameAr: "تحليل الجذور"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "البلاغة (التشبيه، الاستعارة، الكناية)",
+              nameAr: "البلاغة (التشبيه، الاستعارة، الكناية)",
+              units: [
+                {id: "4.1", name: "Arabic Rhetoric", nameAr: "البلاغة العربية"},
+                {id: "4.2", name: "Simile (Tashbih)", nameAr: "التشبيه"},
+                {id: "4.3", name: "Metaphor (Isti'ara)", nameAr: "الاستعارة"},
+                {id: "4.4", name: "Metonymy (Kinaya)", nameAr: "الكناية"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "التعبير الكتابي (مقال، خطاب، ملخص)",
+              nameAr: "التعبير الكتابي (مقال، خطاب، ملخص)",
+              units: [
+                {id: "5.1", name: "Arabic Writing", nameAr: "التعبير الكتابي"},
+                {id: "5.2", name: "Essay Writing", nameAr: "كتابة المقال"},
+                {id: "5.3", name: "Letter Writing", nameAr: "كتابة الخطاب"},
+                {id: "5.4", name: "Summarization", nameAr: "كتابة الملخص"}
+              ]
+            },
+            {
+              id: "ch6",
+              name: "الإملاء وعلامات الترقيم",
+              nameAr: "الإملاء وعلامات الترقيم",
+              units: [
+                {id: "6.1", name: "Arabic Spelling", nameAr: "الإملاء العربي"},
+                {id: "6.2", name: "Punctuation Marks", nameAr: "علامات الترقيم"},
+                {id: "6.3", name: "Writing Rules", nameAr: "قواعد الكتابة"},
+                {id: "6.4", name: "Common Spelling Errors", nameAr: "الأخطاء الإملائية الشائعة"}
+              ]
+            }
+          ]
+        }
+      ],
+      11: [
+        {
+          name: "Mathematics - Algebra 2 (McGrawHill)",
+          nameAr: "الرياضيات - الجبر الثاني",
+          chapters: [
+            {
+              id: "ch1",
+              name: "Foundations & Linear Functions",
+              nameAr: "الأسس والدوال الخطية",
+              units: [
+                {id: "1.1", name: "Algebraic Expressions", nameAr: "العبارات الجبرية"},
+                {id: "1.2", name: "Equations and Inequalities", nameAr: "المعادلات والمتباينات"},
+                {id: "1.3", name: "Linear Functions & Systems", nameAr: "الدوال الخطية والأنظمة"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "Quadratic Functions",
+              nameAr: "الدوال التربيعية",
+              units: [
+                {id: "2.1", name: "Graphing Quadratics", nameAr: "رسم الدوال التربيعية"},
+                {id: "2.2", name: "Solving Quadratic Equations", nameAr: "حل المعادلات التربيعية"},
+                {id: "2.3", name: "Factoring", nameAr: "التحليل"},
+                {id: "2.4", name: "Complex Numbers", nameAr: "الأعداد المركبة"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "Polynomial Functions",
+              nameAr: "دوال كثيرات الحدود",
+              units: [
+                {id: "3.1", name: "Long Division", nameAr: "القسمة المطولة"},
+                {id: "3.2", name: "Synthetic Division", nameAr: "القسمة التركيبية"},
+                {id: "3.3", name: "Zeros of Polynomials", nameAr: "أصفار كثيرات الحدود"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "Radical & Rational Functions",
+              nameAr: "الدوال الجذرية والنسبية",
+              units: [
+                {id: "4.1", name: "Roots and Rational Exponents", nameAr: "الجذور والأسس النسبية"},
+                {id: "4.2", name: "Asymptotes", nameAr: "الخطوط المقاربة"},
+                {id: "4.3", name: "Discontinuities", nameAr: "نقاط عدم الاتصال"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "Exponential & Logarithmic Functions",
+              nameAr: "الدوال الأسية واللوغاريتمية",
+              units: [
+                {id: "5.1", name: "Laws of Exponents", nameAr: "قوانين الأسس"},
+                {id: "5.2", name: "Logarithms", nameAr: "اللوغاريتمات"},
+                {id: "5.3", name: "Applications", nameAr: "التطبيقات"}
+              ]
+            },
+            {
+              id: "ch6",
+              name: "Sequences & Series",
+              nameAr: "المتتاليات والمتسلسلات",
+              units: [
+                {id: "6.1", name: "Arithmetic Progressions", nameAr: "المتتاليات الحسابية"},
+                {id: "6.2", name: "Geometric Progressions", nameAr: "المتتاليات الهندسية"},
+                {id: "6.3", name: "Binomial Theorem", nameAr: "نظرية ذات الحدين"}
+              ]
+            },
+            {
+              id: "ch7",
+              name: "Probability & Statistics",
+              nameAr: "الاحتمالات والإحصاء",
+              units: [
+                {id: "7.1", name: "Permutations & Combinations", nameAr: "التباديل والتوافيق"},
+                {id: "7.2", name: "Probability Rules", nameAr: "قوانين الاحتمال"},
+                {id: "7.3", name: "Probability Distributions", nameAr: "التوزيعات الاحتمالية"}
+              ]
+            },
+            {
+              id: "ch8",
+              name: "Trigonometry (Introductory)",
+              nameAr: "علم المثلثات (مقدمة)",
+              units: [
+                {id: "8.1", name: "Right Triangle Trigonometry", nameAr: "علم مثلثات المثلث القائم"},
+                {id: "8.2", name: "Trigonometric Functions", nameAr: "الدوال المثلثية"},
+                {id: "8.3", name: "Trigonometric Identities", nameAr: "المتطابقات المثلثية"}
+              ]
+            },
+            {
+              id: "ch9",
+              name: "Conic Sections",
+              nameAr: "القطوع المخروطية",
+              units: [
+                {id: "9.1", name: "Parabolas", nameAr: "القطع المكافئ"},
+                {id: "9.2", name: "Ellipses", nameAr: "القطع الناقص"},
+                {id: "9.3", name: "Hyperbolas", nameAr: "القطع الزائد"}
+              ]
+            },
+            {
+              id: "ch10",
+              name: "Matrices & Determinants",
+              nameAr: "المصفوفات والمحددات",
+              units: [
+                {id: "10.1", name: "Matrix Operations", nameAr: "عمليات المصفوفات"},
+                {id: "10.2", name: "Determinants", nameAr: "المحددات"},
+                {id: "10.3", name: "Matrix Applications", nameAr: "تطبيقات المصفوفات"}
+              ]
+            }
+          ]
+        },
+        {
+          name: "Biology - Holt Biology",
+          nameAr: "الأحياء - أحياء هولت",
+          chapters: [
+            {
+              id: "ch1",
+              name: "The Cell & Energy Processes",
+              nameAr: "الخلية وعمليات الطاقة",
+              units: [
+                {id: "1.1", name: "Cell Transport", nameAr: "نقل الخلية"},
+                {id: "1.2", name: "Photosynthesis", nameAr: "التمثيل الضوئي"},
+                {id: "1.3", name: "Cellular Respiration", nameAr: "التنفس الخلوي"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "DNA, RNA & Protein Synthesis",
+              nameAr: "الحمض النووي والرنا وتصنيع البروتين",
+              units: [
+                {id: "2.1", name: "DNA Structure", nameAr: "تركيب الحمض النووي"},
+                {id: "2.2", name: "RNA Structure and Function", nameAr: "تركيب الرنا ووظيفته"},
+                {id: "2.3", name: "Protein Synthesis", nameAr: "تصنيع البروتين"},
+                {id: "2.4", name: "Gene Expression", nameAr: "التعبير الجيني"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "Advanced Genetics & Biotechnology",
+              nameAr: "الوراثة المتقدمة والتكنولوجيا الحيوية",
+              units: [
+                {id: "3.1", name: "Advanced Genetics", nameAr: "الوراثة المتقدمة"},
+                {id: "3.2", name: "Genetic Engineering", nameAr: "الهندسة الوراثية"},
+                {id: "3.3", name: "Biotechnology Applications", nameAr: "تطبيقات التكنولوجيا الحيوية"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "Evolutionary Biology",
+              nameAr: "علم الأحياء التطوري",
+              units: [
+                {id: "4.1", name: "Population Genetics", nameAr: "وراثة الجماعات"},
+                {id: "4.2", name: "Speciation", nameAr: "تكوين الأنواع"},
+                {id: "4.3", name: "Phylogeny", nameAr: "علم الأنساب"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "Microbiology",
+              nameAr: "علم الأحياء الدقيقة",
+              units: [
+                {id: "5.1", name: "Viruses", nameAr: "الفيروسات"},
+                {id: "5.2", name: "Bacteria", nameAr: "البكتيريا"},
+                {id: "5.3", name: "Protists", nameAr: "الطلائعيات"},
+                {id: "5.4", name: "Fungi", nameAr: "الفطريات"}
+              ]
+            },
+            {
+              id: "ch6",
+              name: "Plant Biology",
+              nameAr: "أحياء النبات",
+              units: [
+                {id: "6.1", name: "Photosynthesis Adaptations", nameAr: "تكيفات التمثيل الضوئي"},
+                {id: "6.2", name: "Plant Growth", nameAr: "نمو النبات"},
+                {id: "6.3", name: "Plant Reproduction", nameAr: "تكاثر النبات"}
+              ]
+            },
+            {
+              id: "ch7",
+              name: "Animal Diversity",
+              nameAr: "تنوع الحيوانات",
+              units: [
+                {id: "7.1", name: "Invertebrates", nameAr: "اللافقاريات"},
+                {id: "7.2", name: "Vertebrates", nameAr: "الفقاريات"},
+                {id: "7.3", name: "Animal Classification", nameAr: "تصنيف الحيوانات"}
+              ]
+            },
+            {
+              id: "ch8",
+              name: "Human Anatomy & Physiology (Expanded)",
+              nameAr: "تشريح الإنسان وعلم وظائف الأعضاء (موسع)",
+              units: [
+                {id: "8.1", name: "Nervous System", nameAr: "الجهاز العصبي"},
+                {id: "8.2", name: "Circulatory System", nameAr: "الجهاز الدوري"},
+                {id: "8.3", name: "Respiratory System", nameAr: "الجهاز التنفسي"},
+                {id: "8.4", name: "Digestive System", nameAr: "الجهاز الهضمي"}
+              ]
+            },
+            {
+              id: "ch9",
+              name: "Ecology (Advanced)",
+              nameAr: "علم البيئة (متقدم)",
+              units: [
+                {id: "9.1", name: "Populations", nameAr: "الجماعات الحيوية"},
+                {id: "9.2", name: "Ecosystems", nameAr: "النظم البيئية"},
+                {id: "9.3", name: "Biodiversity", nameAr: "التنوع الحيوي"},
+                {id: "9.4", name: "Conservation", nameAr: "المحافظة على البيئة"}
+              ]
+            }
+          ]
+        },
+        {
+          name: "Chemistry - Holt Modern Chemistry",
+          nameAr: "الكيمياء - الكيمياء الحديثة هولت",
+          chapters: [
+            {
+              id: "ch1",
+              name: "Structure of Matter",
+              nameAr: "تركيب المادة",
+              units: [
+                {id: "1.1", name: "Electron Configurations", nameAr: "توزيع الإلكترونات"},
+                {id: "1.2", name: "Quantum Theory", nameAr: "النظرية الكمية"},
+                {id: "1.3", name: "Atomic Structure", nameAr: "التركيب الذري"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "The Periodic Table & Bonding",
+              nameAr: "الجدول الدوري والترابط",
+              units: [
+                {id: "2.1", name: "Ionic Bonding", nameAr: "الترابط الأيوني"},
+                {id: "2.2", name: "Covalent Bonding", nameAr: "الترابط التساهمي"},
+                {id: "2.3", name: "Metallic Bonding", nameAr: "الترابط المعدني"},
+                {id: "2.4", name: "Molecular Geometry & Polarity", nameAr: "الهندسة الجزيئية والقطبية"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "Stoichiometry (Advanced Applications)",
+              nameAr: "الحسابات الكيميائية (التطبيقات المتقدمة)",
+              units: [
+                {id: "3.1", name: "Advanced Stoichiometry", nameAr: "الحسابات الكيميائية المتقدمة"},
+                {id: "3.2", name: "Limiting Reactants", nameAr: "المتفاعلات المحددة"},
+                {id: "3.3", name: "Percent Yield", nameAr: "النسبة المئوية للناتج"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "States of Matter",
+              nameAr: "حالات المادة",
+              units: [
+                {id: "4.1", name: "Boyle's Law", nameAr: "قانون بويل"},
+                {id: "4.2", name: "Charles's Law", nameAr: "قانون شارل"},
+                {id: "4.3", name: "Ideal Gas Law", nameAr: "قانون الغاز المثالي"},
+                {id: "4.4", name: "Liquids & Solids", nameAr: "السوائل والمواد الصلبة"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "Thermochemistry",
+              nameAr: "الكيمياء الحرارية",
+              units: [
+                {id: "5.1", name: "Heat and Energy", nameAr: "الحرارة والطاقة"},
+                {id: "5.2", name: "Enthalpy", nameAr: "الإنثالبيا"},
+                {id: "5.3", name: "Calorimetry", nameAr: "قياس الحرارة"}
+              ]
+            },
+            {
+              id: "ch6",
+              name: "Kinetics & Equilibrium",
+              nameAr: "الحركية والاتزان",
+              units: [
+                {id: "6.1", name: "Rate Laws", nameAr: "قوانين السرعة"},
+                {id: "6.2", name: "Chemical Equilibrium", nameAr: "الاتزان الكيميائي"},
+                {id: "6.3", name: "Le Chatelier's Principle", nameAr: "مبدأ لوشاتليه"}
+              ]
+            },
+            {
+              id: "ch7",
+              name: "Acids & Bases (Detailed)",
+              nameAr: "الأحماض والقواعد (تفصيلي)",
+              units: [
+                {id: "7.1", name: "pH Calculations", nameAr: "حسابات الأس الهيدروجيني"},
+                {id: "7.2", name: "Buffers", nameAr: "المحاليل المنظمة"},
+                {id: "7.3", name: "Titrations", nameAr: "المعايرة"}
+              ]
+            },
+            {
+              id: "ch8",
+              name: "Electrochemistry",
+              nameAr: "الكيمياء الكهربائية",
+              units: [
+                {id: "8.1", name: "Redox Reactions", nameAr: "تفاعلات الأكسدة والاختزال"},
+                {id: "8.2", name: "Galvanic Cells", nameAr: "الخلايا الجلفانية"},
+                {id: "8.3", name: "Electrolysis", nameAr: "التحليل الكهربائي"}
+              ]
+            },
+            {
+              id: "ch9",
+              name: "Organic Chemistry (Introductory)",
+              nameAr: "الكيمياء العضوية (مقدمة)",
+              units: [
+                {id: "9.1", name: "Hydrocarbons", nameAr: "الهيدروكربونات"},
+                {id: "9.2", name: "Functional Groups", nameAr: "المجموعات الوظيفية"},
+                {id: "9.3", name: "Organic Reactions", nameAr: "التفاعلات العضوية"}
+              ]
+            },
+            {
+              id: "ch10",
+              name: "Nuclear Chemistry",
+              nameAr: "الكيمياء النووية",
+              units: [
+                {id: "10.1", name: "Nuclear Reactions", nameAr: "التفاعلات النووية"},
+                {id: "10.2", name: "Radioactive Decay", nameAr: "الانحلال الإشعاعي"},
+                {id: "10.3", name: "Nuclear Energy", nameAr: "الطاقة النووية"}
+              ]
+            }
+          ]
+        },
+        {
+          name: "Physics - Holt Physics",
+          nameAr: "الفيزياء - فيزياء هولت",
+          chapters: [
+            {
+              id: "ch1",
+              name: "Kinematics",
+              nameAr: "الحركة الوصفية",
+              units: [
+                {id: "1.1", name: "Motion in 1D", nameAr: "الحركة في بُعد واحد"},
+                {id: "1.2", name: "Motion in 2D", nameAr: "الحركة في بُعدين"},
+                {id: "1.3", name: "Vectors", nameAr: "المتجهات"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "Dynamics",
+              nameAr: "الديناميكا",
+              units: [
+                {id: "2.1", name: "Newton's Laws Applications", nameAr: "تطبيقات قوانين نيوتن"},
+                {id: "2.2", name: "Friction", nameAr: "الاحتكاك"},
+                {id: "2.3", name: "Tension and Forces", nameAr: "الشد والقوى"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "Work, Energy & Power (Advanced)",
+              nameAr: "الشغل والطاقة والقدرة (متقدم)",
+              units: [
+                {id: "3.1", name: "Work and Energy", nameAr: "الشغل والطاقة"},
+                {id: "3.2", name: "Power", nameAr: "القدرة"},
+                {id: "3.3", name: "Energy Conservation", nameAr: "حفظ الطاقة"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "Momentum & Impulse",
+              nameAr: "الزخم والدفع",
+              units: [
+                {id: "4.1", name: "Momentum", nameAr: "الزخم"},
+                {id: "4.2", name: "Impulse", nameAr: "الدفع"},
+                {id: "4.3", name: "Collisions", nameAr: "التصادمات"},
+                {id: "4.4", name: "Conservation Laws", nameAr: "قوانين الحفظ"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "Circular Motion & Gravitation",
+              nameAr: "الحركة الدائرية والجاذبية",
+              units: [
+                {id: "5.1", name: "Circular Motion", nameAr: "الحركة الدائرية"},
+                {id: "5.2", name: "Orbits", nameAr: "المدارات"},
+                {id: "5.3", name: "Satellites", nameAr: "الأقمار الصناعية"},
+                {id: "5.4", name: "Kepler's Laws", nameAr: "قوانين كيبلر"}
+              ]
+            },
+            {
+              id: "ch6",
+              name: "Fluid Mechanics",
+              nameAr: "ميكانيكا الموائع",
+              units: [
+                {id: "6.1", name: "Pressure", nameAr: "الضغط"},
+                {id: "6.2", name: "Buoyancy", nameAr: "الطفو"},
+                {id: "6.3", name: "Bernoulli's Principle", nameAr: "مبدأ برنولي"}
+              ]
+            },
+            {
+              id: "ch7",
+              name: "Thermodynamics",
+              nameAr: "الديناميكا الحرارية",
+              units: [
+                {id: "7.1", name: "Heat Transfer", nameAr: "انتقال الحرارة"},
+                {id: "7.2", name: "First Law of Thermodynamics", nameAr: "القانون الأول للديناميكا الحرارية"},
+                {id: "7.3", name: "Second Law of Thermodynamics", nameAr: "القانون الثاني للديناميكا الحرارية"}
+              ]
+            },
+            {
+              id: "ch8",
+              name: "Waves & Sound (Advanced Treatment)",
+              nameAr: "الموجات والصوت (معالجة متقدمة)",
+              units: [
+                {id: "8.1", name: "Wave Properties", nameAr: "خصائص الموجات"},
+                {id: "8.2", name: "Sound Waves", nameAr: "الموجات الصوتية"},
+                {id: "8.3", name: "Wave Interference", nameAr: "تداخل الموجات"}
+              ]
+            },
+            {
+              id: "ch9",
+              name: "Optics",
+              nameAr: "البصريات",
+              units: [
+                {id: "9.1", name: "Reflection", nameAr: "الانعكاس"},
+                {id: "9.2", name: "Refraction", nameAr: "الانكسار"},
+                {id: "9.3", name: "Lenses", nameAr: "العدسات"},
+                {id: "9.4", name: "Mirrors", nameAr: "المرايا"}
+              ]
+            },
+            {
+              id: "ch10",
+              name: "Electricity & Magnetism",
+              nameAr: "الكهرباء والمغناطيسية",
+              units: [
+                {id: "10.1", name: "Electrostatics", nameAr: "الكهرباء الساكنة"},
+                {id: "10.2", name: "Electric Fields", nameAr: "المجالات الكهربائية"},
+                {id: "10.3", name: "Electric Potential", nameAr: "الجهد الكهربائي"}
+              ]
+            },
+            {
+              id: "ch11",
+              name: "Circuits",
+              nameAr: "الدوائر الكهربائية",
+              units: [
+                {id: "11.1", name: "Series Circuits", nameAr: "الدوائر المتسلسلة"},
+                {id: "11.2", name: "Parallel Circuits", nameAr: "الدوائر المتوازية"},
+                {id: "11.3", name: "Combination Circuits", nameAr: "الدوائر المركبة"}
+              ]
+            },
+            {
+              id: "ch12",
+              name: "Magnetic Fields & Induction",
+              nameAr: "المجالات المغناطيسية والحث",
+              units: [
+                {id: "12.1", name: "Magnetic Fields", nameAr: "المجالات المغناطيسية"},
+                {id: "12.2", name: "Electromagnetic Induction", nameAr: "الحث الكهرومغناطيسي"},
+                {id: "12.3", name: "Generators and Motors", nameAr: "المولدات والمحركات"}
+              ]
+            },
+            {
+              id: "ch13",
+              name: "Modern Physics",
+              nameAr: "الفيزياء الحديثة",
+              units: [
+                {id: "13.1", name: "Quantum Phenomena", nameAr: "الظواهر الكمية"},
+                {id: "13.2", name: "Atomic Models", nameAr: "النماذج الذرية"},
+                {id: "13.3", name: "Nuclear Physics", nameAr: "الفيزياء النووية"}
+              ]
+            }
+          ]
+        },
+        {
+          name: "English Language & Literature - My Perspectives",
+          nameAr: "اللغة الإنجليزية والأدب - وجهات نظري",
+          chapters: [
+            {
+              id: "ch1",
+              name: "Nonfiction Analysis",
+              nameAr: "تحليل النصوص غير الخيالية",
+              units: [
+                {id: "1.1", name: "Essays", nameAr: "المقالات"},
+                {id: "1.2", name: "Speeches", nameAr: "الخطابات"},
+                {id: "1.3", name: "Memoirs", nameAr: "المذكرات"},
+                {id: "1.4", name: "Analytical Techniques", nameAr: "تقنيات التحليل"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "American & World Literature",
+              nameAr: "الأدب الأمريكي والعالمي",
+              units: [
+                {id: "2.1", name: "American Novels", nameAr: "الروايات الأمريكية"},
+                {id: "2.2", name: "World Literature", nameAr: "الأدب العالمي"},
+                {id: "2.3", name: "Plays", nameAr: "المسرحيات"},
+                {id: "2.4", name: "Poetry", nameAr: "الشعر"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "Argumentative Writing",
+              nameAr: "الكتابة الجدلية",
+              units: [
+                {id: "3.1", name: "Argumentative Essays", nameAr: "المقالات الجدلية"},
+                {id: "3.2", name: "Debate Techniques", nameAr: "تقنيات المناقشة"},
+                {id: "3.3", name: "Persuasive Writing", nameAr: "الكتابة الإقناعية"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "Research Projects",
+              nameAr: "مشاريع البحث",
+              units: [
+                {id: "4.1", name: "Research Methods", nameAr: "طرق البحث"},
+                {id: "4.2", name: "MLA Formatting", nameAr: "تنسيق MLA"},
+                {id: "4.3", name: "APA Formatting", nameAr: "تنسيق APA"},
+                {id: "4.4", name: "Source Evaluation", nameAr: "تقييم المصادر"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "Rhetorical Analysis of Texts",
+              nameAr: "التحليل البلاغي للنصوص",
+              units: [
+                {id: "5.1", name: "Rhetorical Devices", nameAr: "الأدوات البلاغية"},
+                {id: "5.2", name: "Ethos, Pathos, Logos", nameAr: "الأخلاق والعاطفة والمنطق"},
+                {id: "5.3", name: "Text Analysis", nameAr: "تحليل النصوص"}
+              ]
+            },
+            {
+              id: "ch6",
+              name: "Grammar & Advanced Composition",
+              nameAr: "القواعد والتأليف المتقدم",
+              units: [
+                {id: "6.1", name: "Advanced Grammar", nameAr: "القواعد المتقدمة"},
+                {id: "6.2", name: "Sentence Structure", nameAr: "تركيب الجملة"},
+                {id: "6.3", name: "Writing Style", nameAr: "أسلوب الكتابة"},
+                {id: "6.4", name: "Editing and Revision", nameAr: "التحرير والمراجعة"}
+              ]
+            },
+            {
+              id: "ch7",
+              name: "Presentations, Public Speaking & Debates",
+              nameAr: "العروض التقديمية والخطابة والمناقشات",
+              units: [
+                {id: "7.1", name: "Presentation Skills", nameAr: "مهارات العرض"},
+                {id: "7.2", name: "Public Speaking", nameAr: "الخطابة"},
+                {id: "7.3", name: "Debate Strategies", nameAr: "استراتيجيات المناقشة"},
+                {id: "7.4", name: "Visual Aids", nameAr: "الوسائل البصرية"}
+              ]
+            }
+          ]
+        },
+        {
+          name: "World History - Patterns of Interaction",
+          nameAr: "التاريخ العالمي - أنماط التفاعل",
+          chapters: [
+            {
+              id: "ch1",
+              name: "Absolutism & Revolutions (Europe 1600s–1800s)",
+              nameAr: "الحكم المطلق والثورات (أوروبا 1600-1800)",
+              units: [
+                {id: "1.1", name: "Absolute Monarchy", nameAr: "الملكية المطلقة"},
+                {id: "1.2", name: "The Enlightenment", nameAr: "عصر التنوير"},
+                {id: "1.3", name: "French Revolution", nameAr: "الثورة الفرنسية"},
+                {id: "1.4", name: "Napoleonic Era", nameAr: "العصر النابليوني"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "The Industrial Revolution & Global Impact",
+              nameAr: "الثورة الصناعية والتأثير العالمي",
+              units: [
+                {id: "2.1", name: "Origins of Industrialization", nameAr: "أصول التصنيع"},
+                {id: "2.2", name: "Technological Advances", nameAr: "التطورات التكنولوجية"},
+                {id: "2.3", name: "Social Changes", nameAr: "التغيرات الاجتماعية"},
+                {id: "2.4", name: "Global Spread", nameAr: "الانتشار العالمي"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "Nationalism & Nation-States",
+              nameAr: "القومية والدول القومية",
+              units: [
+                {id: "3.1", name: "Rise of Nationalism", nameAr: "صعود القومية"},
+                {id: "3.2", name: "Unification Movements", nameAr: "حركات التوحيد"},
+                {id: "3.3", name: "German Unification", nameAr: "توحيد ألمانيا"},
+                {id: "3.4", name: "Italian Unification", nameAr: "توحيد إيطاليا"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "Imperialism in Africa & Asia",
+              nameAr: "الإمبريالية في أفريقيا وآسيا",
+              units: [
+                {id: "4.1", name: "European Imperialism", nameAr: "الإمبريالية الأوروبية"},
+                {id: "4.2", name: "Scramble for Africa", nameAr: "التكالب على أفريقيا"},
+                {id: "4.3", name: "Asian Colonization", nameAr: "استعمار آسيا"},
+                {id: "4.4", name: "Resistance Movements", nameAr: "حركات المقاومة"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "Global Conflicts – WWI & WWII",
+              nameAr: "النزاعات العالمية - الحرب العالمية الأولى والثانية",
+              units: [
+                {id: "5.1", name: "Causes of World War I", nameAr: "أسباب الحرب العالمية الأولى"},
+                {id: "5.2", name: "World War I", nameAr: "الحرب العالمية الأولى"},
+                {id: "5.3", name: "Interwar Period", nameAr: "فترة ما بين الحربين"},
+                {id: "5.4", name: "World War II", nameAr: "الحرب العالمية الثانية"}
+              ]
+            },
+            {
+              id: "ch6",
+              name: "The Cold War (1945–1991)",
+              nameAr: "الحرب الباردة (1945-1991)",
+              units: [
+                {id: "6.1", name: "Origins of Cold War", nameAr: "أصول الحرب الباردة"},
+                {id: "6.2", name: "Containment Policy", nameAr: "سياسة الاحتواء"},
+                {id: "6.3", name: "Proxy Wars", nameAr: "الحروب بالوكالة"},
+                {id: "6.4", name: "End of Cold War", nameAr: "نهاية الحرب الباردة"}
+              ]
+            },
+            {
+              id: "ch7",
+              name: "Decolonization & the Developing World",
+              nameAr: "إنهاء الاستعمار والعالم النامي",
+              units: [
+                {id: "7.1", name: "African Independence", nameAr: "استقلال أفريقيا"},
+                {id: "7.2", name: "Asian Independence", nameAr: "استقلال آسيا"},
+                {id: "7.3", name: "Non-Aligned Movement", nameAr: "حركة عدم الانحياز"},
+                {id: "7.4", name: "Development Challenges", nameAr: "تحديات التنمية"}
+              ]
+            },
+            {
+              id: "ch8",
+              name: "Globalization & Modern Issues",
+              nameAr: "العولمة والقضايا الحديثة",
+              units: [
+                {id: "8.1", name: "Economic Globalization", nameAr: "العولمة الاقتصادية"},
+                {id: "8.2", name: "Cultural Exchange", nameAr: "التبادل الثقافي"},
+                {id: "8.3", name: "Environmental Issues", nameAr: "القضايا البيئية"},
+                {id: "8.4", name: "Contemporary Challenges", nameAr: "التحديات المعاصرة"}
+              ]
+            }
+          ]
+        },
+        {
+          name: "التاريخ (مناهج الوزارة - ثانوي)",
+          nameAr: "التاريخ (مناهج الوزارة - ثانوي)",
+          chapters: [
+            {
+              id: "ch1",
+              name: "تاريخ الدولة السعودية حتى العصر الحديث",
+              nameAr: "تاريخ الدولة السعودية حتى العصر الحديث",
+              units: [
+                {id: "1.1", name: "Saudi State History to Modern Era", nameAr: "تاريخ الدولة السعودية حتى العصر الحديث"},
+                {id: "1.2", name: "Foundation and Early Development", nameAr: "التأسيس والتطوير المبكر"},
+                {id: "1.3", name: "Key Historical Events", nameAr: "الأحداث التاريخية المهمة"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "تطور المملكة العربية السعودية",
+              nameAr: "تطور المملكة العربية السعودية",
+              units: [
+                {id: "2.1", name: "Development of Saudi Arabia", nameAr: "تطور المملكة العربية السعودية"},
+                {id: "2.2", name: "Modernization Efforts", nameAr: "جهود التحديث"},
+                {id: "2.3", name: "Economic and Social Development", nameAr: "التطوير الاقتصادي والاجتماعي"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "أحداث عربية وإسلامية معاصرة",
+              nameAr: "أحداث عربية وإسلامية معاصرة",
+              units: [
+                {id: "3.1", name: "Contemporary Arab Events", nameAr: "الأحداث العربية المعاصرة"},
+                {id: "3.2", name: "Contemporary Islamic Events", nameAr: "الأحداث الإسلامية المعاصرة"},
+                {id: "3.3", name: "Regional Impact", nameAr: "التأثير الإقليمي"}
+              ]
+            }
+          ]
+        },
+        {
+          name: "التربية الإسلامية (مناهج الوزارة - ثانوي)",
+          nameAr: "التربية الإسلامية (مناهج الوزارة - ثانوي)",
+          chapters: [
+            {
+              id: "ch1",
+              name: "العقيدة (الإيمان، التوحيد)",
+              nameAr: "العقيدة (الإيمان، التوحيد)",
+              units: [
+                {id: "1.1", name: "Faith (Iman)", nameAr: "الإيمان"},
+                {id: "1.2", name: "Monotheism (Tawhid)", nameAr: "التوحيد"},
+                {id: "1.3", name: "Islamic Creed Principles", nameAr: "أصول العقيدة الإسلامية"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "الفقه (العبادات، المعاملات، القضاء)",
+              nameAr: "الفقه (العبادات، المعاملات، القضاء)",
+              units: [
+                {id: "2.1", name: "Worship (Ibadah)", nameAr: "العبادات"},
+                {id: "2.2", name: "Transactions (Mu'amalat)", nameAr: "المعاملات"},
+                {id: "2.3", name: "Judiciary (Qada)", nameAr: "القضاء"},
+                {id: "2.4", name: "Islamic Law Applications", nameAr: "تطبيقات الشريعة الإسلامية"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "التفسير (سور مختارة من القرآن)",
+              nameAr: "التفسير (سور مختارة من القرآن)",
+              units: [
+                {id: "3.1", name: "Quranic Interpretation", nameAr: "تفسير القرآن"},
+                {id: "3.2", name: "Selected Chapters", nameAr: "السور المختارة"},
+                {id: "3.3", name: "Exegesis Methods", nameAr: "مناهج التفسير"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "الحديث النبوي (شروح ومتون)",
+              nameAr: "الحديث النبوي (شروح ومتون)",
+              units: [
+                {id: "4.1", name: "Prophetic Traditions", nameAr: "الحديث النبوي"},
+                {id: "4.2", name: "Hadith Texts", nameAr: "متون الحديث"},
+                {id: "4.3", name: "Hadith Commentaries", nameAr: "شروح الحديث"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "السيرة والتاريخ الإسلامي",
+              nameAr: "السيرة والتاريخ الإسلامي",
+              units: [
+                {id: "5.1", name: "Prophet's Biography", nameAr: "السيرة النبوية"},
+                {id: "5.2", name: "Islamic History", nameAr: "التاريخ الإسلامي"},
+                {id: "5.3", name: "Islamic Civilization", nameAr: "الحضارة الإسلامية"}
+              ]
+            }
+          ]
+        },
+        {
+          name: "اللغة العربية - المصباح والنحو الشافي",
+          nameAr: "اللغة العربية - المصباح والنحو الشافي",
+          chapters: [
+            {
+              id: "ch1",
+              name: "النصوص الأدبية (الشعر القديم والحديث)",
+              nameAr: "النصوص الأدبية (الشعر القديم والحديث)",
+              units: [
+                {id: "1.1", name: "Classical Poetry", nameAr: "الشعر القديم"},
+                {id: "1.2", name: "Modern Poetry", nameAr: "الشعر الحديث"},
+                {id: "1.3", name: "Literary Analysis", nameAr: "التحليل الأدبي"},
+                {id: "1.4", name: "Poetic Forms", nameAr: "الأشكال الشعرية"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "البلاغة (البيان، المعاني، البديع)",
+              nameAr: "البلاغة (البيان، المعاني، البديع)",
+              units: [
+                {id: "2.1", name: "Rhetoric (Bayan)", nameAr: "البيان"},
+                {id: "2.2", name: "Semantics (Ma'ani)", nameAr: "المعاني"},
+                {id: "2.3", name: "Literary Ornaments (Badi')", nameAr: "البديع"},
+                {id: "2.4", name: "Advanced Rhetoric", nameAr: "البلاغة المتقدمة"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "النحو (الأفعال، المشتقات، الإعراب المتقدم)",
+              nameAr: "النحو (الأفعال، المشتقات، الإعراب المتقدم)",
+              units: [
+                {id: "3.1", name: "Verbs", nameAr: "الأفعال"},
+                {id: "3.2", name: "Derivatives", nameAr: "المشتقات"},
+                {id: "3.3", name: "Advanced Parsing", nameAr: "الإعراب المتقدم"},
+                {id: "3.4", name: "Complex Grammar", nameAr: "النحو المعقد"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "الصرف (الأوزان، التصريف)",
+              nameAr: "الصرف (الأوزان، التصريف)",
+              units: [
+                {id: "4.1", name: "Morphology", nameAr: "الصرف"},
+                {id: "4.2", name: "Word Patterns", nameAr: "الأوزان"},
+                {id: "4.3", name: "Conjugation", nameAr: "التصريف"},
+                {id: "4.4", name: "Word Formation", nameAr: "تكوين الكلمات"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "التعبير الإبداعي والكتابي (مقال، تقرير، نقد)",
+              nameAr: "التعبير الإبداعي والكتابي (مقال، تقرير، نقد)",
+              units: [
+                {id: "5.1", name: "Creative Expression", nameAr: "التعبير الإبداعي"},
+                {id: "5.2", name: "Essay Writing", nameAr: "كتابة المقال"},
+                {id: "5.3", name: "Report Writing", nameAr: "كتابة التقرير"},
+                {id: "5.4", name: "Literary Criticism", nameAr: "النقد الأدبي"}
+              ]
+            },
+            {
+              id: "ch6",
+              name: "الإملاء وعلامات الترقيم",
+              nameAr: "الإملاء وعلامات الترقيم",
+              units: [
+                {id: "6.1", name: "Arabic Spelling", nameAr: "الإملاء العربي"},
+                {id: "6.2", name: "Punctuation Marks", nameAr: "علامات الترقيم"},
+                {id: "6.3", name: "Writing Rules", nameAr: "قواعد الكتابة"},
+                {id: "6.4", name: "Advanced Orthography", nameAr: "الإملاء المتقدم"}
+              ]
+            }
+          ]
+        }
+      ],
+      12: [
+        {
+          name: "Mathematics - AP Calculus (College Board Curriculum)",
+          nameAr: "الرياضيات - حساب التفاضل والتكامل المتقدم",
+          chapters: [
+            {
+              id: "ch1",
+              name: "Limits & Continuity",
+              nameAr: "النهايات والاستمرارية",
+              units: [
+                {id: "1.1", name: "Concept of Limits", nameAr: "مفهوم النهايات"},
+                {id: "1.2", name: "One-Sided Limits", nameAr: "النهايات من جانب واحد"},
+                {id: "1.3", name: "Continuity", nameAr: "الاستمرارية"},
+                {id: "1.4", name: "Discontinuities", nameAr: "عدم الاستمرارية"}
+              ]
+            },
+            {
+              id: "ch2",
+              name: "Derivatives",
+              nameAr: "المشتقات",
+              units: [
+                {id: "2.1", name: "Definition of Derivatives", nameAr: "تعريف المشتقات"},
+                {id: "2.2", name: "Rules of Differentiation", nameAr: "قوانين التفاضل"},
+                {id: "2.3", name: "Chain Rule", nameAr: "قانون السلسلة"},
+                {id: "2.4", name: "Implicit Differentiation", nameAr: "التفاضل الضمني"},
+                {id: "2.5", name: "Applications", nameAr: "التطبيقات"}
+              ]
+            },
+            {
+              id: "ch3",
+              name: "Applications of Derivatives",
+              nameAr: "تطبيقات المشتقات",
+              units: [
+                {id: "3.1", name: "Related Rates", nameAr: "المعدلات المترابطة"},
+                {id: "3.2", name: "Extrema", nameAr: "القيم القصوى"},
+                {id: "3.3", name: "Mean Value Theorem", nameAr: "نظرية القيمة المتوسطة"},
+                {id: "3.4", name: "Concavity", nameAr: "التقعر"},
+                {id: "3.5", name: "Curve Sketching", nameAr: "رسم المنحنيات"}
+              ]
+            },
+            {
+              id: "ch4",
+              name: "Integrals",
+              nameAr: "التكاملات",
+              units: [
+                {id: "4.1", name: "Antiderivatives", nameAr: "المشتقات العكسية"},
+                {id: "4.2", name: "Definite Integrals", nameAr: "التكاملات المحددة"},
+                {id: "4.3", name: "Fundamental Theorem of Calculus", nameAr: "النظرية الأساسية للحساب"},
+                {id: "4.4", name: "Integration Techniques", nameAr: "تقنيات التكامل"}
+              ]
+            },
+            {
+              id: "ch5",
+              name: "Applications of Integrals",
+              nameAr: "تطبيقات التكاملات",
+              units: [
+                {id: "5.1", name: "Area Under Curves", nameAr: "المساحة تحت المنحنيات"},
+                {id: "5.2", name: "Area Between Curves", nameAr: "المساحة بين المنحنيات"},
+                {id: "5.3", name: "Volume of Solids", nameAr: "حجم الأجسام الصلبة"},
+                {id: "5.4", name: "Work and Average Value", nameAr: "الشغل والقيمة المتوسطة"}
+              ]
+            },
+            {
+              id: "ch6",
+              name: "Differential Equations",
+              nameAr: "المعادلات التفاضلية",
+              units: [
+                {id: "6.1", name: "Slope Fields", nameAr: "حقول الميل"},
+                {id: "6.2", name: "Separation of Variables", nameAr: "فصل المتغيرات"},
+                {id: "6.3", name: "Logistic Growth Models", nameAr: "نماذج النمو اللوجستي"}
+              ]
+            },
+            {
+              id: "ch7",
+              name: "Series (AP Calculus BC)",
+              nameAr: "المتسلسلات (حساب التفاضل والتكامل BC)",
+              units: [
+                {id: "7.1", name: "Convergence Tests", nameAr: "اختبارات التقارب"},
+                {id: "7.2", name: "Taylor Series", nameAr: "متسلسلة تايلور"},
+                {id: "7.3", name: "Maclaurin Series", nameAr: "متسلسلة ماكلورين"},
+                {id: "7.4", name: "Power Series", nameAr: "المتسلسلات القوية"}
+              ]
+            }
+          ]
+        },
+        {
+          name: "Chemistry – Holt Modern Chemistry",
+          nameAr: "الكيمياء - كيمياء هولت الحديثة",
+          chapters: [
+            {
+              id: 1,
+              name: "Atomic Theory (Advanced Models, Quantum Mechanics)",
+              nameAr: "النظرية الذرية (النماذج المتقدمة، ميكانيكا الكم)",
+              units: [
+                { id: 1, name: "Quantum Mechanical Model", nameAr: "النموذج الكمي الميكانيكي" },
+                { id: 2, name: "Electron Configuration", nameAr: "التوزيع الإلكتروني" },
+                { id: 3, name: "Orbital Shapes and Energy", nameAr: "أشكال المدارات والطاقة" },
+                { id: 4, name: "Atomic Spectroscopy", nameAr: "التحليل الطيفي الذري" }
+              ]
+            },
+            {
+              id: 2,
+              name: "Periodic Properties (Transition Metals, Lanthanides, Actinides)",
+              nameAr: "الخصائص الدورية (المعادن الانتقالية، اللانثانيدات، الأكتينيدات)",
+              units: [
+                { id: 1, name: "Periodic Trends", nameAr: "الاتجاهات الدورية" },
+                { id: 2, name: "Transition Metal Chemistry", nameAr: "كيمياء المعادن الانتقالية" },
+                { id: 3, name: "Lanthanide Series", nameAr: "سلسلة اللانثانيدات" },
+                { id: 4, name: "Actinide Series", nameAr: "سلسلة الأكتينيدات" }
+              ]
+            },
+            {
+              id: 3,
+              name: "Advanced Stoichiometry & Gas Laws",
+              nameAr: "الكيمياء الحسابية المتقدمة وقوانين الغازات",
+              units: [
+                { id: 1, name: "Complex Stoichiometric Calculations", nameAr: "الحسابات الكيميائية المعقدة" },
+                { id: 2, name: "Gas Law Applications", nameAr: "تطبيقات قوانين الغازات" },
+                { id: 3, name: "Real Gas Behavior", nameAr: "سلوك الغازات الحقيقية" },
+                { id: 4, name: "Kinetic Molecular Theory", nameAr: "النظرية الحركية الجزيئية" }
+              ]
+            },
+            {
+              id: 4,
+              name: "Thermodynamics & Kinetics (Multi-step Reactions, Activation Energy)",
+              nameAr: "الديناميكا الحرارية والحركيات (التفاعلات متعددة الخطوات، طاقة التنشيط)",
+              units: [
+                { id: 1, name: "Thermodynamic Laws", nameAr: "قوانين الديناميكا الحرارية" },
+                { id: 2, name: "Enthalpy and Entropy", nameAr: "الإنثالبيا والإنتروبيا" },
+                { id: 3, name: "Reaction Mechanisms", nameAr: "آليات التفاعل" },
+                { id: 4, name: "Catalysis", nameAr: "الحفز" }
+              ]
+            },
+            {
+              id: 5,
+              name: "Chemical Equilibrium (Le Chatelier's Principle, Equilibrium Constants)",
+              nameAr: "التوازن الكيميائي (مبدأ لوشاتيليه، ثوابت التوازن)",
+              units: [
+                { id: 1, name: "Equilibrium Expressions", nameAr: "تعبيرات التوازن" },
+                { id: 2, name: "Le Chatelier's Principle", nameAr: "مبدأ لوشاتيليه" },
+                { id: 3, name: "ICE Tables", nameAr: "جداول ICE" },
+                { id: 4, name: "Equilibrium Calculations", nameAr: "حسابات التوازن" }
+              ]
+            },
+            {
+              id: 6,
+              name: "Acids, Bases & Buffers (Titrations, Buffer Capacity)",
+              nameAr: "الأحماض والقواعد والمحاليل المنظمة (المعايرات، قدرة التنظيم)",
+              units: [
+                { id: 1, name: "Acid-Base Theories", nameAr: "نظريات الأحماض والقواعد" },
+                { id: 2, name: "pH and pOH Calculations", nameAr: "حسابات الرقم الهيدروجيني" },
+                { id: 3, name: "Titration Curves", nameAr: "منحنيات المعايرة" },
+                { id: 4, name: "Buffer Systems", nameAr: "أنظمة المحاليل المنظمة" }
+              ]
+            },
+            {
+              id: 7,
+              name: "Electrochemistry (Cells, Electrolysis, Faraday's Laws)",
+              nameAr: "الكيمياء الكهربائية (الخلايا، التحليل الكهربائي، قوانين فاراداي)",
+              units: [
+                { id: 1, name: "Galvanic Cells", nameAr: "الخلايا الجلفانية" },
+                { id: 2, name: "Electrolytic Cells", nameAr: "خلايا التحليل الكهربائي" },
+                { id: 3, name: "Standard Electrode Potentials", nameAr: "الجهود القطبية المعيارية" },
+                { id: 4, name: "Faraday's Laws", nameAr: "قوانين فاراداي" }
+              ]
+            },
+            {
+              id: 8,
+              name: "Organic Chemistry (Introductory Synthesis)",
+              nameAr: "الكيمياء العضوية (التخليق التمهيدي)",
+              units: [
+                { id: 1, name: "Alkanes, Alkenes, Alkynes", nameAr: "الألكانات والألكينات والألكاينات" },
+                { id: 2, name: "Aromatic Compounds", nameAr: "المركبات العطرية" },
+                { id: 3, name: "Functional Groups", nameAr: "المجموعات الوظيفية" },
+                { id: 4, name: "Organic Reactions", nameAr: "التفاعلات العضوية" }
+              ]
+            },
+            {
+              id: 9,
+              name: "Functional Groups: Alcohols, Ketones, Carboxylic Acids",
+              nameAr: "المجموعات الوظيفية: الكحولات والكيتونات والأحماض الكربوكسيلية",
+              units: [
+                { id: 1, name: "Alcohols and Ethers", nameAr: "الكحولات والإيثرات" },
+                { id: 2, name: "Aldehydes and Ketones", nameAr: "الألدهيدات والكيتونات" },
+                { id: 3, name: "Carboxylic Acids", nameAr: "الأحماض الكربوكسيلية" },
+                { id: 4, name: "Esters and Amides", nameAr: "الإسترات والأميدات" }
+              ]
+            },
+            {
+              id: 10,
+              name: "Biochemistry (Macromolecules, Enzymes, Nucleic Acids)",
+              nameAr: "الكيمياء الحيوية (الجزيئات الكبيرة، الإنزيمات، الأحماض النووية)",
+              units: [
+                { id: 1, name: "Biological Macromolecules", nameAr: "الجزيئات الحيوية الكبيرة" },
+                { id: 2, name: "Enzyme Kinetics", nameAr: "حركيات الإنزيمات" },
+                { id: 3, name: "DNA and RNA Structure", nameAr: "تركيب الحمض النووي والحمض النووي الريبي" },
+                { id: 4, name: "Protein Structure", nameAr: "تركيب البروتين" }
+              ]
+            },
+            {
+              id: 11,
+              name: "Nuclear Chemistry (Decay, Fission, Fusion, Applications)",
+              nameAr: "الكيمياء النووية (التحلل، الانشطار، الاندماج، التطبيقات)",
+              units: [
+                { id: 1, name: "Radioactive Decay", nameAr: "التحلل الإشعاعي" },
+                { id: 2, name: "Nuclear Fission", nameAr: "الانشطار النووي" },
+                { id: 3, name: "Nuclear Fusion", nameAr: "الاندماج النووي" },
+                { id: 4, name: "Medical Applications", nameAr: "التطبيقات الطبية" }
+              ]
+            }
+          ]
+        },
+        {
+          name: "Physics – Holt Physics",
+          nameAr: "الفيزياء - فيزياء هولت",
+          chapters: [
+            {
+              id: 1,
+              name: "Advanced Mechanics",
+              nameAr: "الميكانيكا المتقدمة",
+              units: [
+                { id: 1, name: "Rotational Motion & Torque", nameAr: "الحركة الدورانية والعزم" },
+                { id: 2, name: "Angular Momentum", nameAr: "الزخم الزاوي" },
+                { id: 3, name: "Oscillations & Harmonic Motion", nameAr: "الاهتزازات والحركة التوافقية" },
+                { id: 4, name: "Complex Motion Analysis", nameAr: "تحليل الحركة المعقدة" }
+              ]
+            },
+            {
+              id: 2,
+              name: "Thermodynamics (Detailed Laws, Entropy)",
+              nameAr: "الديناميكا الحرارية (القوانين التفصيلية، الإنتروبيا)",
+              units: [
+                { id: 1, name: "First Law of Thermodynamics", nameAr: "القانون الأول للديناميكا الحرارية" },
+                { id: 2, name: "Second Law of Thermodynamics", nameAr: "القانون الثاني للديناميكا الحرارية" },
+                { id: 3, name: "Entropy and Heat Engines", nameAr: "الإنتروبيا والمحركات الحرارية" },
+                { id: 4, name: "Thermodynamic Processes", nameAr: "العمليات الحرارية الديناميكية" }
+              ]
+            },
+            {
+              id: 3,
+              name: "Waves & Sound (Superposition, Resonance)",
+              nameAr: "الموجات والصوت (التراكب، الرنين)",
+              units: [
+                { id: 1, name: "Wave Properties", nameAr: "خصائص الموجات" },
+                { id: 2, name: "Superposition Principle", nameAr: "مبدأ التراكب" },
+                { id: 3, name: "Resonance", nameAr: "الرنين" },
+                { id: 4, name: "Sound Waves", nameAr: "الموجات الصوتية" }
+              ]
+            },
+            {
+              id: 4,
+              name: "Optics (Lenses, Diffraction, Interference)",
+              nameAr: "البصريات (العدسات، الحيود، التداخل)",
+              units: [
+                { id: 1, name: "Geometric Optics", nameAr: "البصريات الهندسية" },
+                { id: 2, name: "Lenses and Mirrors", nameAr: "العدسات والمرايا" },
+                { id: 3, name: "Wave Optics", nameAr: "البصريات الموجية" },
+                { id: 4, name: "Diffraction and Interference", nameAr: "الحيود والتداخل" }
+              ]
+            },
+            {
+              id: 5,
+              name: "Electricity & Magnetism (Maxwell's Equations Intro)",
+              nameAr: "الكهرباء والمغناطيسية (مقدمة معادلات ماكسويل)",
+              units: [
+                { id: 1, name: "Electric Fields and Forces", nameAr: "المجالات والقوى الكهربائية" },
+                { id: 2, name: "Magnetic Fields", nameAr: "المجالات المغناطيسية" },
+                { id: 3, name: "Maxwell's Equations Introduction", nameAr: "مقدمة معادلات ماكسويل" },
+                { id: 4, name: "Electromagnetic Waves", nameAr: "الموجات الكهرومغناطيسية" }
+              ]
+            },
+            {
+              id: 6,
+              name: "Capacitors, Inductors",
+              nameAr: "المكثفات، الملفات",
+              units: [
+                { id: 1, name: "Capacitor Fundamentals", nameAr: "أساسيات المكثفات" },
+                { id: 2, name: "Capacitor Circuits", nameAr: "دوائر المكثفات" },
+                { id: 3, name: "Inductor Fundamentals", nameAr: "أساسيات الملفات" },
+                { id: 4, name: "LC and RLC Circuits", nameAr: "دوائر LC و RLC" }
+              ]
+            },
+            {
+              id: 7,
+              name: "AC & DC Circuits",
+              nameAr: "دوائر التيار المتردد والتيار المستمر",
+              units: [
+                { id: 1, name: "DC Circuit Analysis", nameAr: "تحليل دوائر التيار المستمر" },
+                { id: 2, name: "AC Circuit Fundamentals", nameAr: "أساسيات دوائر التيار المتردد" },
+                { id: 3, name: "AC Power and Impedance", nameAr: "قدرة التيار المتردد والمقاومة المعقدة" },
+                { id: 4, name: "Circuit Analysis Techniques", nameAr: "تقنيات تحليل الدوائر" }
+              ]
+            },
+            {
+              id: 8,
+              name: "Electromagnetic Induction",
+              nameAr: "الحث الكهرومغناطيسي",
+              units: [
+                { id: 1, name: "Faraday's Law", nameAr: "قانون فاراداي" },
+                { id: 2, name: "Lenz's Law", nameAr: "قانون لينز" },
+                { id: 3, name: "Motional EMF", nameAr: "القوة الدافعة الكهربائية الحركية" },
+                { id: 4, name: "Transformers and Generators", nameAr: "المحولات والمولدات" }
+              ]
+            },
+            {
+              id: 9,
+              name: "Modern Physics - Quantum Theory, Wave-Particle Duality",
+              nameAr: "الفيزياء الحديثة - النظرية الكمية، ازدواجية الموجة والجسيم",
+              units: [
+                { id: 1, name: "Photoelectric Effect", nameAr: "التأثير الكهروضوئي" },
+                { id: 2, name: "Wave-Particle Duality", nameAr: "ازدواجية الموجة والجسيم" },
+                { id: 3, name: "Quantum Theory Fundamentals", nameAr: "أساسيات النظرية الكمية" },
+                { id: 4, name: "Uncertainty Principle", nameAr: "مبدأ عدم اليقين" }
+              ]
+            },
+            {
+              id: 10,
+              name: "Atomic Physics (Bohr, Schrödinger Models)",
+              nameAr: "فيزياء الذرة (نماذج بور وشرودنغر)",
+              units: [
+                { id: 1, name: "Bohr Model", nameAr: "نموذج بور" },
+                { id: 2, name: "Schrödinger Equation", nameAr: "معادلة شرودنغر" },
+                { id: 3, name: "Electron Orbitals", nameAr: "المدارات الإلكترونية" },
+                { id: 4, name: "Atomic Spectra", nameAr: "الأطياف الذرية" }
+              ]
+            },
+            {
+              id: 11,
+              name: "Nuclear Physics (Radioactivity, Half-life, Nuclear Energy)",
+              nameAr: "الفيزياء النووية (النشاط الإشعاعي، عمر النصف، الطاقة النووية)",
+              units: [
+                { id: 1, name: "Nuclear Structure", nameAr: "التركيب النووي" },
+                { id: 2, name: "Radioactive Decay", nameAr: "التحلل الإشعاعي" },
+                { id: 3, name: "Half-life Calculations", nameAr: "حسابات عمر النصف" },
+                { id: 4, name: "Nuclear Energy", nameAr: "الطاقة النووية" }
+              ]
+            },
+            {
+              id: 12,
+              name: "Relativity (Introductory Concepts – Time Dilation, E=mc²)",
+              nameAr: "النسبية (المفاهيم التمهيدية - تمدد الزمن، E=mc²)",
+              units: [
+                { id: 1, name: "Special Relativity Principles", nameAr: "مبادئ النسبية الخاصة" },
+                { id: 2, name: "Time Dilation", nameAr: "تمدد الزمن" },
+                { id: 3, name: "Length Contraction", nameAr: "انكماش الطول" },
+                { id: 4, name: "Mass-Energy Equivalence", nameAr: "تكافؤ الكتلة والطاقة" }
+              ]
+            }
+          ]
+        },
+        {
+          name: "English Language & Literature – My Perspective: British & World Literature",
+          nameAr: "اللغة الإنجليزية والأدب - منظوري: الأدب البريطاني والعالمي",
+          chapters: [
+            {
+              id: 1,
+              name: "British Literature (Shakespeare, Romantic & Victorian Texts)",
+              nameAr: "الأدب البريطاني (شكسبير، النصوص الرومانسية والفيكتورية)",
+              units: [
+                { id: 1, name: "Shakespeare's Major Works", nameAr: "أعمال شكسبير الرئيسية" },
+                { id: 2, name: "Romantic Literature", nameAr: "الأدب الرومانسي" },
+                { id: 3, name: "Victorian Literature", nameAr: "الأدب الفيكتوري" },
+                { id: 4, name: "British Literary Movements", nameAr: "الحركات الأدبية البريطانية" }
+              ]
+            },
+            {
+              id: 2,
+              name: "World Literature (Translated Classics & Modern Voices)",
+              nameAr: "الأدب العالمي (الكلاسيكيات المترجمة والأصوات الحديثة)",
+              units: [
+                { id: 1, name: "Classical World Literature", nameAr: "الأدب العالمي الكلاسيكي" },
+                { id: 2, name: "Modern International Authors", nameAr: "المؤلفون الدوليون المعاصرون" },
+                { id: 3, name: "Postcolonial Literature", nameAr: "أدب ما بعد الاستعمار" },
+                { id: 4, name: "Global Literary Themes", nameAr: "الموضوعات الأدبية العالمية" }
+              ]
+            },
+            {
+              id: 3,
+              name: "Poetry Analysis (Form, Structure, Themes)",
+              nameAr: "تحليل الشعر (الشكل، البنية، الموضوعات)",
+              units: [
+                { id: 1, name: "Poetic Forms and Meters", nameAr: "الأشكال الشعرية والبحور" },
+                { id: 2, name: "Literary Devices in Poetry", nameAr: "الأساليب الأدبية في الشعر" },
+                { id: 3, name: "Thematic Analysis", nameAr: "التحليل الموضوعي" },
+                { id: 4, name: "Historical Context in Poetry", nameAr: "السياق التاريخي في الشعر" }
+              ]
+            },
+            {
+              id: 4,
+              name: "Drama & Prose (British Plays, Global Short Stories)",
+              nameAr: "الدراما والنثر (المسرحيات البريطانية، القصص القصيرة العالمية)",
+              units: [
+                { id: 1, name: "British Theatre Traditions", nameAr: "تقاليد المسرح البريطاني" },
+                { id: 2, name: "Modern Drama Analysis", nameAr: "تحليل الدراما الحديثة" },
+                { id: 3, name: "Global Short Story Forms", nameAr: "أشكال القصة القصيرة العالمية" },
+                { id: 4, name: "Narrative Techniques", nameAr: "تقنيات السرد" }
+              ]
+            },
+            {
+              id: 5,
+              name: "Advanced Writing - Critical Analysis Essays",
+              nameAr: "الكتابة المتقدمة - مقالات التحليل النقدي",
+              units: [
+                { id: 1, name: "Literary Analysis Structure", nameAr: "هيكل التحليل الأدبي" },
+                { id: 2, name: "Critical Theory Application", nameAr: "تطبيق النظرية النقدية" },
+                { id: 3, name: "Textual Evidence Integration", nameAr: "دمج الأدلة النصية" },
+                { id: 4, name: "Advanced Argumentation", nameAr: "الحجج المتقدمة" }
+              ]
+            },
+            {
+              id: 6,
+              name: "Research Writing (MLA/APA)",
+              nameAr: "الكتابة البحثية (MLA/APA)",
+              units: [
+                { id: 1, name: "Research Methodology", nameAr: "منهجية البحث" },
+                { id: 2, name: "MLA Citation Style", nameAr: "أسلوب الاستشهاد MLA" },
+                { id: 3, name: "APA Citation Style", nameAr: "أسلوب الاستشهاد APA" },
+                { id: 4, name: "Academic Writing Standards", nameAr: "معايير الكتابة الأكاديمية" }
+              ]
+            },
+            {
+              id: 7,
+              name: "Comparative Literature Essays",
+              nameAr: "مقالات الأدب المقارن",
+              units: [
+                { id: 1, name: "Cross-Cultural Analysis", nameAr: "التحليل عبر الثقافات" },
+                { id: 2, name: "Thematic Comparison", nameAr: "المقارنة الموضوعية" },
+                { id: 3, name: "Literary Period Contrasts", nameAr: "تباينات الفترات الأدبية" },
+                { id: 4, name: "Synthesis Writing", nameAr: "الكتابة التوليفية" }
+              ]
+            },
+            {
+              id: 8,
+              name: "Rhetoric & Public Speaking",
+              nameAr: "البلاغة والخطابة العامة",
+              units: [
+                { id: 1, name: "Persuasive Speeches", nameAr: "الخطب الإقناعية" },
+                { id: 2, name: "Debate Techniques", nameAr: "تقنيات المناظرة" },
+                { id: 3, name: "Literary Presentations", nameAr: "العروض الأدبية" },
+                { id: 4, name: "Public Speaking Skills", nameAr: "مهارات الخطابة العامة" }
+              ]
+            }
+          ]
+        },
+        {
+          name: "World History – Patterns of Interaction",
+          nameAr: "التاريخ العالمي - أنماط التفاعل",
+          chapters: [
+            {
+              id: 1,
+              name: "Post-WWII World",
+              nameAr: "العالم بعد الحرب العالمية الثانية",
+              units: [
+                { id: 1, name: "Aftermath of WWII", nameAr: "تداعيات الحرب العالمية الثانية" },
+                { id: 2, name: "Formation of the United Nations", nameAr: "تشكيل الأمم المتحدة" },
+                { id: 3, name: "Reconstruction of Europe", nameAr: "إعادة بناء أوروبا" },
+                { id: 4, name: "New World Order", nameAr: "النظام العالمي الجديد" }
+              ]
+            },
+            {
+              id: 2,
+              name: "Cold War Blocs",
+              nameAr: "كتل الحرب الباردة",
+              units: [
+                { id: 1, name: "Origins of the Cold War", nameAr: "أصول الحرب الباردة" },
+                { id: 2, name: "NATO vs Warsaw Pact", nameAr: "الناتو مقابل حلف وارسو" },
+                { id: 3, name: "Iron Curtain", nameAr: "الستار الحديدي" },
+                { id: 4, name: "Nuclear Arms Race", nameAr: "سباق التسلح النووي" }
+              ]
+            },
+            {
+              id: 3,
+              name: "Korean & Vietnam Wars",
+              nameAr: "حربا كوريا وفيتنام",
+              units: [
+                { id: 1, name: "Korean War (1950-1953)", nameAr: "الحرب الكورية (1950-1953)" },
+                { id: 2, name: "Division of Korea", nameAr: "تقسيم كوريا" },
+                { id: 3, name: "Vietnam War", nameAr: "حرب فيتنام" },
+                { id: 4, name: "Impact on Global Politics", nameAr: "التأثير على السياسة العالمية" }
+              ]
+            },
+            {
+              id: 4,
+              name: "Decolonization in Asia & Africa",
+              nameAr: "إنهاء الاستعمار في آسيا وأفريقيا",
+              units: [
+                { id: 1, name: "Independence Movements in Asia", nameAr: "حركات الاستقلال في آسيا" },
+                { id: 2, name: "African Independence", nameAr: "الاستقلال الأفريقي" },
+                { id: 3, name: "Challenges of New Nations", nameAr: "تحديات الدول الجديدة" },
+                { id: 4, name: "Non-Aligned Movement", nameAr: "حركة عدم الانحياز" }
+              ]
+            },
+            {
+              id: 5,
+              name: "Middle East Conflicts & Global Issues",
+              nameAr: "صراعات الشرق الأوسط والقضايا العالمية",
+              units: [
+                { id: 1, name: "Arab-Israeli Conflicts", nameAr: "الصراعات العربية الإسرائيلية" },
+                { id: 2, name: "Oil Crisis and OPEC", nameAr: "أزمة النفط وأوبك" },
+                { id: 3, name: "Iranian Revolution", nameAr: "الثورة الإيرانية" },
+                { id: 4, name: "Gulf Wars", nameAr: "حروب الخليج" }
+              ]
+            },
+            {
+              id: 6,
+              name: "Collapse of the Soviet Union",
+              nameAr: "انهيار الاتحاد السوفيتي",
+              units: [
+                { id: 1, name: "Gorbachev's Reforms", nameAr: "إصلاحات غورباتشوف" },
+                { id: 2, name: "Fall of the Berlin Wall", nameAr: "سقوط جدار برلين" },
+                { id: 3, name: "End of the Cold War", nameAr: "نهاية الحرب الباردة" },
+                { id: 4, name: "New Independent States", nameAr: "الدول المستقلة الجديدة" }
+              ]
+            },
+            {
+              id: 7,
+              name: "Globalization & Technology Revolution",
+              nameAr: "العولمة وثورة التكنولوجيا",
+              units: [
+                { id: 1, name: "Economic Globalization", nameAr: "العولمة الاقتصادية" },
+                { id: 2, name: "Information Technology Revolution", nameAr: "ثورة تكنولوجيا المعلومات" },
+                { id: 3, name: "Cultural Exchange", nameAr: "التبادل الثقافي" },
+                { id: 4, name: "Global Trade Organizations", nameAr: "منظمات التجارة العالمية" }
+              ]
+            },
+            {
+              id: 8,
+              name: "21st Century Challenges",
+              nameAr: "تحديات القرن الواحد والعشرين",
+              units: [
+                { id: 1, name: "Terrorism and Global Security", nameAr: "الإرهاب والأمن العالمي" },
+                { id: 2, name: "Climate Change", nameAr: "تغير المناخ" },
+                { id: 3, name: "Pandemics and Global Health", nameAr: "الأوبئة والصحة العالمية" },
+                { id: 4, name: "Digital Age Challenges", nameAr: "تحديات العصر الرقمي" }
+              ]
+            }
+          ]
+        },
+        {
+          name: "التاريخ (مناهج الوزارة – التوجيهي)",
+          nameAr: "التاريخ (مناهج الوزارة – التوجيهي)",
+          chapters: [
+            {
+              id: 1,
+              name: "تطور المملكة العربية السعودية المعاصر",
+              nameAr: "تطور المملكة العربية السعودية المعاصر",
+              units: [
+                { id: 1, name: "توحيد المملكة على يد الملك عبدالعزيز", nameAr: "توحيد المملكة على يد الملك عبدالعزيز" },
+                { id: 2, name: "التطوير والتحديث في عهد الملوك", nameAr: "التطوير والتحديث في عهد الملوك" },
+                { id: 3, name: "رؤية المملكة 2030", nameAr: "رؤية المملكة 2030" },
+                { id: 4, name: "دور المملكة في المنطقة والعالم", nameAr: "دور المملكة في المنطقة والعالم" }
+              ]
+            },
+            {
+              id: 2,
+              name: "القضايا العربية والإسلامية الحديثة",
+              nameAr: "القضايا العربية والإسلامية الحديثة",
+              units: [
+                { id: 1, name: "القضية الفلسطينية", nameAr: "القضية الفلسطينية" },
+                { id: 2, name: "الوحدة العربية والتعاون", nameAr: "الوحدة العربية والتعاون" },
+                { id: 3, name: "التحديات المعاصرة للأمة الإسلامية", nameAr: "التحديات المعاصرة للأمة الإسلامية" },
+                { id: 4, name: "دور المملكة في خدمة الإسلام", nameAr: "دور المملكة في خدمة الإسلام" }
+              ]
+            },
+            {
+              id: 3,
+              name: "التاريخ العالمي الحديث والمعاصر",
+              nameAr: "التاريخ العالمي الحديث والمعاصر",
+              units: [
+                { id: 1, name: "الحربان العالميتان وتأثيرهما", nameAr: "الحربان العالميتان وتأثيرهما" },
+                { id: 2, name: "الحرب الباردة والنظام العالمي", nameAr: "الحرب الباردة والنظام العالمي" },
+                { id: 3, name: "التطورات السياسية في القرن العشرين", nameAr: "التطورات السياسية في القرن العشرين" },
+                { id: 4, name: "العولمة والتحديات الراهنة", nameAr: "العولمة والتحديات الراهنة" }
+              ]
+            }
+          ]
+        },
+        {
+          name: "التربية الإسلامية (مناهج الوزارة – التوجيهي)",
+          nameAr: "التربية الإسلامية (مناهج الوزارة – التوجيهي)",
+          chapters: [
+            {
+              id: 1,
+              name: "التفسير (سور متقدمة)",
+              nameAr: "التفسير (سور متقدمة)",
+              units: [
+                { id: 1, name: "تفسير سورة الكهف", nameAr: "تفسير سورة الكهف" },
+                { id: 2, name: "تفسير سورة مريم", nameAr: "تفسير سورة مريم" },
+                { id: 3, name: "تفسير سورة طه", nameAr: "تفسير سورة طه" },
+                { id: 4, name: "المنهج في التفسير", nameAr: "المنهج في التفسير" }
+              ]
+            },
+            {
+              id: 2,
+              name: "الفقه (المعاملات المالية، قضايا العصر)",
+              nameAr: "الفقه (المعاملات المالية، قضايا العصر)",
+              units: [
+                { id: 1, name: "البيوع والمعاملات التجارية", nameAr: "البيوع والمعاملات التجارية" },
+                { id: 2, name: "الزكاة والضرائب", nameAr: "الزكاة والضرائب" },
+                { id: 3, name: "المعاملات المصرفية المعاصرة", nameAr: "المعاملات المصرفية المعاصرة" },
+                { id: 4, name: "القضايا الفقهية المعاصرة", nameAr: "القضايا الفقهية المعاصرة" }
+              ]
+            },
+            {
+              id: 3,
+              name: "الحديث (شروح الأحاديث الجامعة)",
+              nameAr: "الحديث (شروح الأحاديث الجامعة)",
+              units: [
+                { id: 1, name: "الأحاديث الأربعون النووية", nameAr: "الأحاديث الأربعون النووية" },
+                { id: 2, name: "أحاديث في الأخلاق والآداب", nameAr: "أحاديث في الأخلاق والآداب" },
+                { id: 3, name: "أحاديث في المعاملات", nameAr: "أحاديث في المعاملات" },
+                { id: 4, name: "منهج دراسة الحديث", nameAr: "منهج دراسة الحديث" }
+              ]
+            },
+            {
+              id: 4,
+              name: "العقيدة (الولاء والبراء، قضايا الإيمان)",
+              nameAr: "العقيدة (الولاء والبراء، قضايا الإيمان)",
+              units: [
+                { id: 1, name: "الولاء والبراء في الإسلام", nameAr: "الولاء والبراء في الإسلام" },
+                { id: 2, name: "قضايا الإيمان والكفر", nameAr: "قضايا الإيمان والكفر" },
+                { id: 3, name: "الفرق والمذاهب", nameAr: "الفرق والمذاهب" },
+                { id: 4, name: "العقيدة في مواجهة التحديات", nameAr: "العقيدة في مواجهة التحديات" }
+              ]
+            },
+            {
+              id: 5,
+              name: "السيرة النبوية (مواقف قيادية ودروس عملية)",
+              nameAr: "السيرة النبوية (مواقف قيادية ودروس عملية)",
+              units: [
+                { id: 1, name: "القيادة في السيرة النبوية", nameAr: "القيادة في السيرة النبوية" },
+                { id: 2, name: "الإدارة والتنظيم في دولة المدينة", nameAr: "الإدارة والتنظيم في دولة المدينة" },
+                { id: 3, name: "التعامل مع الأزمات", nameAr: "التعامل مع الأزمات" },
+                { id: 4, name: "الدروس المستفادة للعصر الحاضر", nameAr: "الدروس المستفادة للعصر الحاضر" }
+              ]
+            }
+          ]
+        },
+        {
+          name: "اللغة العربية – المصباح والنحو الشافي",
+          nameAr: "اللغة العربية – المصباح والنحو الشافي",
+          chapters: [
+            {
+              id: 1,
+              name: "النصوص الأدبية (نصوص كلاسيكية وحديثة)",
+              nameAr: "النصوص الأدبية (نصوص كلاسيكية وحديثة)",
+              units: [
+                { id: 1, name: "الشعر الجاهلي والإسلامي", nameAr: "الشعر الجاهلي والإسلامي" },
+                { id: 2, name: "النثر العربي القديم", nameAr: "النثر العربي القديم" },
+                { id: 3, name: "الأدب الحديث والمعاصر", nameAr: "الأدب الحديث والمعاصر" },
+                { id: 4, name: "تحليل النصوص الأدبية", nameAr: "تحليل النصوص الأدبية" }
+              ]
+            },
+            {
+              id: 2,
+              name: "البلاغة (الصور البيانية، الإيجاز والإطناب)",
+              nameAr: "البلاغة (الصور البيانية، الإيجاز والإطناب)",
+              units: [
+                { id: 1, name: "علم البيان", nameAr: "علم البيان" },
+                { id: 2, name: "علم المعاني", nameAr: "علم المعاني" },
+                { id: 3, name: "علم البديع", nameAr: "علم البديع" },
+                { id: 4, name: "التطبيق البلاغي", nameAr: "التطبيق البلاغي" }
+              ]
+            },
+            {
+              id: 3,
+              name: "النحو (إعراب متقدم، الأساليب الإنشائية)",
+              nameAr: "النحو (إعراب متقدم، الأساليب الإنشائية)",
+              units: [
+                { id: 1, name: "الإعراب المتقدم", nameAr: "الإعراب المتقدم" },
+                { id: 2, name: "الأساليب الإنشائية", nameAr: "الأساليب الإنشائية" },
+                { id: 3, name: "التوابع والأساليب الخاصة", nameAr: "التوابع والأساليب الخاصة" },
+                { id: 4, name: "النحو التطبيقي", nameAr: "النحو التطبيقي" }
+              ]
+            },
+            {
+              id: 4,
+              name: "الصرف (الميزان الصرفي، الاشتقاق)",
+              nameAr: "الصرف (الميزان الصرفي، الاشتقاق)",
+              units: [
+                { id: 1, name: "الميزان الصرفي", nameAr: "الميزان الصرفي" },
+                { id: 2, name: "الاشتقاق وأنواعه", nameAr: "الاشتقاق وأنواعه" },
+                { id: 3, name: "الإعلال والإبدال", nameAr: "الإعلال والإبدال" },
+                { id: 4, name: "التطبيقات الصرفية", nameAr: "التطبيقات الصرفية" }
+              ]
+            },
+            {
+              id: 5,
+              name: "التعبير الكتابي (مقال نقدي، مقالة أدبية، بحث قصير)",
+              nameAr: "التعبير الكتابي (مقال نقدي، مقالة أدبية، بحث قصير)",
+              units: [
+                { id: 1, name: "كتابة المقال النقدي", nameAr: "كتابة المقال النقدي" },
+                { id: 2, name: "المقالة الأدبية", nameAr: "المقالة الأدبية" },
+                { id: 3, name: "منهج البحث القصير", nameAr: "منهج البحث القصير" },
+                { id: 4, name: "أساليب التعبير المتقدمة", nameAr: "أساليب التعبير المتقدمة" }
+              ]
+            },
+            {
+              id: 6,
+              name: "التذوق الأدبي والتحليل البلاغي",
+              nameAr: "التذوق الأدبي والتحليل البلاغي",
+              units: [
+                { id: 1, name: "معايير التذوق الأدبي", nameAr: "معايير التذوق الأدبي" },
+                { id: 2, name: "التحليل البلاغي للنصوص", nameAr: "التحليل البلاغي للنصوص" },
+                { id: 3, name: "الجمال الفني في الأدب", nameAr: "الجمال الفني في الأدب" },
+                { id: 4, name: "النقد الأدبي التطبيقي", nameAr: "النقد الأدبي التطبيقي" }
+              ]
+            }
+          ]
+        }
+      ]
+    };
+
     // -------- DOM ELEMENTS --------
     const sidebar=document.getElementById('sidebar');
     const header=document.getElementById('header');
@@ -6635,10 +9149,9 @@
         document.getElementById('signup-step-3').style.display = 'block';
         populateGradeSelection();
       } else {
-        // For international, skip grade selection and go to subject selection
-        signupData.grade = 'international';
-        document.getElementById('signup-step-4').style.display = 'block';
-        populateSubjectSelection();
+        // For international, also show grade selection (10, 11, 12)
+        document.getElementById('signup-step-3').style.display = 'block';
+        populateGradeSelection();
       }
     }
 
@@ -6697,12 +9210,30 @@
         const gradeSubjects = subjectsByGrade[signupData.grade] || [];
         subjects = gradeSubjects;
       } else {
-        // International subjects - will be added later
-        subjects = [];
-        alert(currentLanguage === 'ar' ?
-          'المواد الدولية ستضاف لاحقاً. يرجى اختيار التعليم العام حالياً.' :
-          'International subjects will be added later. Please choose General Education for now.');
-        return;
+        // International subjects
+        const gradeSubjects = internationalSubjectsByGrade[signupData.grade] || [];
+        subjects = gradeSubjects;
+
+        // If no subjects available for this grade, show coming soon message
+        if (subjects.length === 0) {
+          subjectChecklist.innerHTML = `
+            <div style="text-align: center; padding: 2rem; background: var(--bg-secondary); border-radius: 12px; margin: 1rem 0;">
+              <div style="font-size: 2rem; margin-bottom: 1rem;">📚</div>
+              <h3 style="color: var(--primary-color); margin-bottom: 1rem;" data-translate="internationalComingSoon">
+                ${currentLanguage === 'ar' ? 'المواد الدولية لهذا الصف قريباً' : 'International Subjects for This Grade Coming Soon'}
+              </h3>
+              <p style="color: var(--text-secondary); margin-bottom: 1.5rem;" data-translate="internationalMessage">
+                ${currentLanguage === 'ar' ?
+                  'المواد الدولية لهذا الصف ستضاف لاحقاً. يرجى اختيار التعليم العام أو صف آخر.' :
+                  'International subjects for this grade will be added later. Please choose General Education or another grade.'}
+              </p>
+              <button class="btn btn-primary" onclick="switchToGeneralEducation()" data-translate="switchToGeneral">
+                ${currentLanguage === 'ar' ? 'التبديل إلى التعليم العام' : 'Switch to General Education'}
+              </button>
+            </div>
+          `;
+          return;
+        }
       }
 
       subjectChecklist.innerHTML = subjects.map(subject => {
@@ -6728,6 +9259,39 @@
       } else {
         signupData.selectedSubjects = signupData.selectedSubjects.filter(s => s !== subject);
       }
+    }
+
+    function switchToGeneralEducation() {
+      // Switch to general education
+      signupData.educationPath = 'general';
+
+      // Update the UI - go back to step 2 to select education path again
+      document.getElementById('signup-step-4').style.display = 'none';
+      document.getElementById('signup-step-2').style.display = 'block';
+
+      // Update the selected education path in the UI
+      document.querySelector('input[name="education-path"][value="general"]').checked = true;
+      document.querySelector('input[name="education-path"][value="international"]').checked = false;
+
+      // Show a brief message
+      const message = currentLanguage === 'ar' ?
+        'تم التبديل إلى التعليم العام. يرجى المتابعة.' :
+        'Switched to General Education. Please continue.';
+
+      // Create a temporary success message
+      const messageDiv = document.createElement('div');
+      messageDiv.style.cssText = 'background: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 6px; margin: 0.5rem 0; text-align: center;';
+      messageDiv.textContent = message;
+
+      const step2 = document.getElementById('signup-step-2');
+      step2.insertBefore(messageDiv, step2.firstChild);
+
+      // Remove the message after 3 seconds
+      setTimeout(() => {
+        if (messageDiv.parentNode) {
+          messageDiv.parentNode.removeChild(messageDiv);
+        }
+      }, 3000);
     }
 
     async function completeSignup() {
@@ -7170,7 +9734,13 @@
       placeholder.textContent = currentLanguage === 'ar' ? '-- اختر المادة --' : '-- Select Subject --';
       subjSel.appendChild(placeholder);
 
-      const list = subjectsByGrade[gradeVal] || [];
+      // Get subjects based on education path
+      let list = [];
+      if (currentUser?.education_path === 'international') {
+        list = internationalSubjectsByGrade[gradeVal] || [];
+      } else {
+        list = subjectsByGrade[gradeVal] || [];
+      }
 
       // Filter subjects based on user's selected subjects
       const userSelectedSubjects = currentUser?.selected_subjects || [];
@@ -7288,8 +9858,13 @@
 
       if (!modal || !checklist) return;
 
-      // Get available subjects from the actual subjectsByGrade data structure
-      const availableSubjects = subjectsByGrade[currentUser?.grade] || [];
+      // Get available subjects based on education path
+      let availableSubjects = [];
+      if (currentUser?.education_path === 'international') {
+        availableSubjects = internationalSubjectsByGrade[currentUser?.grade] || [];
+      } else {
+        availableSubjects = subjectsByGrade[currentUser?.grade] || [];
+      }
       const userSelectedSubjects = currentUser?.selected_subjects || [];
 
       checklist.innerHTML = availableSubjects.map(subject => {
@@ -8683,7 +11258,14 @@ function setupRoomSubscriptions(){
     function populateRoomSubjects(grade){
       const selectText = translations[currentLanguage]['selectSubject'] || 'Select Subject';
       roomSubjectSelect.innerHTML = `<option value="">-- ${selectText} --</option>`;
-      const subjects = subjectsByGrade[grade] || [];
+
+      // Determine which subject data to use based on user's education path
+      let subjects = [];
+      if (currentUser?.education_path === 'international') {
+        subjects = internationalSubjectsByGrade[grade] || [];
+      } else {
+        subjects = subjectsByGrade[grade] || [];
+      }
 
       // Filter subjects based on user's selected subjects
       const userSelectedSubjects = currentUser?.selected_subjects || [];
@@ -8710,14 +11292,19 @@ function setupRoomSubscriptions(){
     function onRoomSubjectChange(){
       const selectedSubject = roomSubjectSelect.value;
       const chapterSelector = document.getElementById('chapter-unit-selector');
-      
+
       if(!selectedSubject){
         chapterSelector.style.display = 'none';
         return;
       }
 
-      // Find the subject with chapters
-      const subjects = subjectsByGrade[currentUser?.grade] || [];
+      // Find the subject with chapters - check International subjects if needed
+      let subjects = [];
+      if (currentUser?.education_path === 'international') {
+        subjects = internationalSubjectsByGrade[currentUser?.grade] || [];
+      } else {
+        subjects = subjectsByGrade[currentUser?.grade] || [];
+      }
       const subjectData = subjects.find(s => s.name === selectedSubject);
       
       if(subjectData && subjectData.chapters){
@@ -8888,8 +11475,13 @@ function setupRoomSubscriptions(){
       const selectedSubject = roomSubjectSelect.value;
       if(!selectedSubject) return;
 
-      // Find the subject with chapters
-      const subjects = subjectsByGrade[currentUser?.grade] || [];
+      // Find the subject with chapters - check International subjects if needed
+      let subjects = [];
+      if (currentUser?.education_path === 'international') {
+        subjects = internationalSubjectsByGrade[currentUser?.grade] || [];
+      } else {
+        subjects = subjectsByGrade[currentUser?.grade] || [];
+      }
       const subjectData = subjects.find(s => s.name === selectedSubject);
 
       if(subjectData && subjectData.chapters){
@@ -9139,9 +11731,15 @@ function displayStudyFocusTab(studySessions){
         return [];
       }
       
-      const subjects = subjectsByGrade[grade] || [];
+      // Check education path to determine which subject structure to use
+      let subjects = [];
+      if (currentUser?.education_path === 'international') {
+        subjects = internationalSubjectsByGrade[grade] || [];
+      } else {
+        subjects = subjectsByGrade[grade] || [];
+      }
       console.log('🔥 Found subjects for grade', grade, ':', subjects.length);
-      
+
       const subjectData = subjects.find(s => s.name === subject || s.nameAr === subject);
       console.log('🔥 Found subject data:', subjectData ? 'YES' : 'NO');
       
@@ -9174,17 +11772,27 @@ function displayStudyFocusTab(studySessions){
 
     function getUnitDetails(selectedUnitIds, subject, grade){
       if(!selectedUnitIds || !subject) return [];
-      
+
       console.log('Debug - getUnitDetails searching for subject:', subject, 'in grade:', grade);
-      
-      let subjects = subjectsByGrade[grade] || [];
+
+      // Check current user's education path to determine which subject structure to use
+      let subjects = [];
+      if (currentUser?.education_path === 'international') {
+        subjects = internationalSubjectsByGrade[grade] || [];
+      } else {
+        subjects = subjectsByGrade[grade] || [];
+      }
       let subjectData = subjects.find(s => s.name === subject || s.nameAr === subject);
-      
+
       // If not found in specified grade, search in all grades
       if (!subjectData || !subjectData.chapters) {
         console.log('Debug - Subject not found in grade', grade, ', searching all grades');
         for (const gradeKey of ['10', '11', '12']) {
-          subjects = subjectsByGrade[gradeKey] || [];
+          if (currentUser?.education_path === 'international') {
+            subjects = internationalSubjectsByGrade[gradeKey] || [];
+          } else {
+            subjects = subjectsByGrade[gradeKey] || [];
+          }
           subjectData = subjects.find(s => s.name === subject || s.nameAr === subject);
           if (subjectData && subjectData.chapters) {
             console.log('Debug - Found subject in grade:', gradeKey);
@@ -9755,8 +12363,14 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
     function getUnitDetails(subject, units) {
       // Extract detailed unit information including chapters for better context
-      const gradeData = subjectsByGrade[currentUser?.grade || 12];
-      const subjectData = gradeData?.find(s => 
+      let gradeData = [];
+      if (currentUser?.education_path === 'international') {
+        gradeData = internationalSubjectsByGrade[currentUser?.grade || 12];
+      } else {
+        gradeData = subjectsByGrade[currentUser?.grade || 12];
+      }
+
+      const subjectData = gradeData?.find(s =>
         s.name === subject || s.nameAr === subject
       );
       
