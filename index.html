@@ -16275,6 +16275,67 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
     let battlePlayerScore = 0;
     let battleStartTime = null;
 
+    // Get International curriculum context for battle challenges
+    function getInternationalChallengeContext(userGrade = null, userSubjects = null) {
+      const grade = userGrade || currentUser?.grade || '10';
+      let subjects = userSubjects || currentUser?.selected_subjects || [];
+
+      // If no specific subjects provided, get all International subjects for the grade
+      if (subjects.length === 0) {
+        const gradeSubjects = internationalSubjectsByGrade[grade] || [];
+        subjects = gradeSubjects.map(s => s.name);
+      }
+
+      // Filter to only include subjects that exist in International curriculum
+      const gradeSubjects = internationalSubjectsByGrade[grade] || [];
+      const validSubjects = subjects.filter(subject =>
+        gradeSubjects.some(s => s.name === subject || s.nameAr === subject)
+      );
+
+      const finalSubjects = validSubjects.length > 0 ? validSubjects : gradeSubjects.map(s => s.name);
+
+      let context = `International Education curriculum for Grade ${grade} students focusing on: ${finalSubjects.join(', ')}.
+
+Subject Details:`;
+
+      // Add specific details for each International subject
+      finalSubjects.forEach(subjectName => {
+        const subject = gradeSubjects.find(s => s.name === subjectName || s.nameAr === subjectName);
+        if (subject) {
+          const chapterNames = subject.chapters ? subject.chapters.map(ch => ch.name || ch.nameAr).slice(0, 5).join(', ') : '';
+
+          switch(subject.name) {
+            case 'Mathematics - AP Calculus (College Board Curriculum)':
+              context += `\n- AP Calculus: Limits, derivatives, integrals, applications of calculus, differential equations, series`;
+              break;
+            case 'Biology – Holt Biology (Advanced)':
+              context += `\n- Biology: Biochemistry, cell biology, genetics, biotechnology, evolution, physiology, ecology`;
+              break;
+            case 'Chemistry – Holt Modern Chemistry':
+              context += `\n- Chemistry: Atomic theory, periodic properties, stoichiometry, thermodynamics, equilibrium, organic chemistry, nuclear chemistry`;
+              break;
+            case 'Physics – Holt Physics':
+              context += `\n- Physics: Advanced mechanics, thermodynamics, waves, optics, electricity & magnetism, modern physics, relativity`;
+              break;
+            case 'English Language & Literature – My Perspective: British & World Literature':
+              context += `\n- English Literature: British literature, world literature, poetry analysis, critical writing, rhetoric`;
+              break;
+            case 'World History – Patterns of Interaction':
+              context += `\n- World History: Post-WWII world, Cold War, decolonization, globalization, modern challenges`;
+              break;
+            default:
+              if (chapterNames) {
+                context += `\n- ${subject.name}: ${chapterNames}`;
+              }
+          }
+        }
+      });
+
+      context += `\n\nGenerate challenging questions appropriate for Grade ${grade} International curriculum level that test deep understanding and application of concepts.`;
+
+      return context;
+    }
+
     // Map challenge categories to subject contexts for AI question generation
     function getCategorySubjectContext(category, userGrade = null, userSubjects = null) {
       if (category === 'general') {
@@ -16312,7 +16373,7 @@ Generate questions appropriate for Grade ${grade} level that test understanding 
       }
 
       const contexts = {
-        'international': 'International Education curriculum including IGCSE, A-Levels, IB, SAT subjects covering Mathematics, Physics, Chemistry, Biology, English Literature, Computer Science, Economics, and History',
+        'international': getInternationalChallengeContext(userGrade, userSubjects),
         'qudrat': 'Saudi Qudrat (General Aptitude Test) covering verbal reasoning, quantitative reasoning, analytical thinking, reading comprehension, mathematical problem solving, and logical reasoning in Arabic',
         'tahsili': 'Saudi Tahsili (Achievement Test) covering Mathematics (Algebra, Calculus, Statistics), Physics (Mechanics, Electricity, Optics), Chemistry (Organic, Inorganic, Physical), and Biology (Cell Biology, Genetics, Ecology)'
       };
@@ -16323,8 +16384,13 @@ Generate questions appropriate for Grade ${grade} level that test understanding 
     function getSubjectDetailsForBattle(userSubjects, grade) {
       const details = [];
 
-      // Get subjects data for the specific grade
-      const gradeSubjects = subjectsByGrade[grade] || subjectsByGrade['10'];
+      // Get subjects data for the specific grade based on education path
+      let gradeSubjects = [];
+      if (currentUser?.education_path === 'international') {
+        gradeSubjects = internationalSubjectsByGrade[grade] || internationalSubjectsByGrade['10'];
+      } else {
+        gradeSubjects = subjectsByGrade[grade] || subjectsByGrade['10'];
+      }
 
       userSubjects.forEach(subjectName => {
         const subject = gradeSubjects.find(s => s.name === subjectName || s.nameAr === subjectName);
