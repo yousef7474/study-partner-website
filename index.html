@@ -973,22 +973,22 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem;">
               <button class="question-count-btn" onclick="selectQuestionCount(5)" data-count="5">
                 <div style="font-size: 1.5rem;">⚡</div>
-                <div>5 Questions</div>
+                <div data-translate="fiveQuestions">5 Questions</div>
                 <div style="font-size: 0.8rem; opacity: 0.7;" data-translate="quickBattle">Quick Battle</div>
               </button>
               <button class="question-count-btn" onclick="selectQuestionCount(10)" data-count="10">
                 <div style="font-size: 1.5rem;">🔥</div>
-                <div>10 Questions</div>
+                <div data-translate="tenQuestions">10 Questions</div>
                 <div style="font-size: 0.8rem; opacity: 0.7;" data-translate="standardDuel">Standard Duel</div>
               </button>
               <button class="question-count-btn" onclick="selectQuestionCount(15)" data-count="15">
                 <div style="font-size: 1.5rem;">💪</div>
-                <div>15 Questions</div>
+                <div data-translate="fifteenQuestions">15 Questions</div>
                 <div style="font-size: 0.8rem; opacity: 0.7;" data-translate="epicBattle">Epic Battle</div>
               </button>
               <button class="question-count-btn" onclick="selectQuestionCount(20)" data-count="20">
                 <div style="font-size: 1.5rem;">👑</div>
-                <div>20 Questions</div>
+                <div data-translate="twentyQuestions">20 Questions</div>
                 <div style="font-size: 0.8rem; opacity: 0.7;" data-translate="legendaryWar">Legendary War</div>
               </button>
             </div>
@@ -1024,9 +1024,9 @@
         <!-- Incoming Challenge Requests -->
         <div id="incoming-challenges-section" style="margin-top: 2rem;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h3 style="color: var(--primary-color); margin: 0;">🛡️ Incoming Challenge Requests</h3>
+            <h3 style="color: var(--primary-color); margin: 0;" data-translate="incomingChallengeRequests">🛡️ Incoming Challenge Requests</h3>
             <button class="btn btn-small btn-secondary" onclick="refreshChallengeRequests()">
-              🔄 Refresh
+              🔄 <span data-translate="refresh">Refresh</span>
             </button>
           </div>
           <div id="incoming-challenges-list">
@@ -1665,6 +1665,16 @@
         opponent:"Opponent", pointsEarned:"Points Earned", section:"Section", novice:"Novice", chooseBattleArena:"⚡ Step 1: Choose Battle Arena",
         battleArena:"⚔️ Battle Arena", questionNumber:"Question 1 of 5", loadingQuestion:"Loading question...",
         battleComplete:"Battle Complete!", score:"Score", accuracy:"Accuracy",
+        incomingChallengeRequests:"🛡️ Incoming Challenge Requests", noIncomingChallenges:"No Incoming Challenges",
+        noWarriorsChallengedYet:"No warriors have challenged you yet. Keep studying to attract challengers!",
+        fiveQuestions:"5 Questions", tenQuestions:"10 Questions", fifteenQuestions:"15 Questions", twentyQuestions:"20 Questions",
+        warriorsListRefreshed:"Warriors list refreshed!", challengeCancelled:"Challenge cancelled",
+        challengeRequestsRefreshed:"Challenge requests refreshed!", challengeAccepted:"Challenge accepted! Preparing battle...",
+        challengeDeclined:"Challenge declined", failedToSendChallenge:"Failed to send challenge. Please try again.",
+        failedToAcceptChallenge:"Failed to accept challenge. Please try again.", failedToDeclineChallenge:"Failed to decline challenge. Please try again.",
+        completeAllSteps:"Please complete all steps before sending challenge", pendingChallenge:"A challenge with this opponent is already pending. Please wait for their response.",
+        challengeSentTo:"Challenge sent to", databaseNotAvailable:"Database not available", interfaceError:"Interface error. Please try again.",
+        noWarriorsOnline:"No Warriors Online", noStudentsOnlineForBattle:"No other students are currently online for battle.", online:"Online",
         customTimer:"Custom Timer", startTime:"Start Time", endTime:"End Time", setTimer:"Set Timer",
         hours:"Hours", minutes:"Minutes", seconds:"Seconds", customDuration:"Custom Duration",
         start:"Start", pause:"Pause", reset:"Reset", startEndHeading:"Start–End",
@@ -1761,8 +1771,8 @@
         joinOrCreateRooms:"انضم أو أنشئ غرف دراسة افتراضية",
         accessStudyMaterials:"الوصول إلى مواد ومصادر الدراسة",
         aboutTitle:"تمكين الطلاب من خلال التعلم التعاوني",
-        aboutDesc1:"دراسة شريك هي منصة ثورية مصممة لتغيير طريقة تعلم وتعاون الطلاب. مهمتنا هي كسر حواجز الدراسة التقليدية من خلال إنشاء مساحات افتراضية حيث يمكن للطلاب التواصل ومشاركة المعرفة وتحقيق التميز الأكاديمي معاً.",
-        aboutDesc2:"سواء كنت تستعد للامتحانات، أو تعمل على مشاريع جماعية، أو تبحث عن رفقاء دراسة، توفر دراسة شريك الأدوات والبيئة التي تحتاجها. من غرف الدردشة في الوقت الفعلي إلى المؤقتات التعاونية والمساحات الخاصة بالمواد، لقد بنينا كل شيء بهدف واحد: مساعدة الطلاب على النجاح معاً.",
+        aboutDesc1:"شريك دراسة هي منصة ثورية مصممة لتغيير طريقة تعلم وتعاون الطلاب. مهمتنا هي كسر حواجز الدراسة التقليدية من خلال إنشاء مساحات افتراضية حيث يمكن للطلاب التواصل ومشاركة المعرفة وتحقيق التميز الأكاديمي معاً.",
+        aboutDesc2:"سواء كنت تستعد للامتحانات، أو تعمل على مشاريع جماعية، أو تبحث عن رفقاء دراسة، توفر شريك دراسة الأدوات والبيئة التي تحتاجها. من غرف الدردشة في الوقت الفعلي إلى المؤقتات التعاونية والمساحات الخاصة بالمواد، لقد بنينا كل شيء بهدف واحد: مساعدة الطلاب على النجاح معاً.",
         aboutDesc3:"انضم إلى آلاف الطلاب الذين اكتشفوا قوة التعلم التعاوني. لأنه عندما ندرس معاً، ننجح معاً.",
         createdBy:"تم إنشاء وتطوير النظام بواسطة: نواف الملا",
         connecting:"جاري الاتصال...", challengeRequest:"طلب تحدي!", student:"طالب", gradeSubject:"الصف والمادة",
@@ -1771,6 +1781,16 @@
         opponent:"الخصم", pointsEarned:"النقاط المكتسبة", section:"القسم", novice:"مبتدئ", chooseBattleArena:"⚡ الخطوة 1: اختر ساحة المعركة",
         battleArena:"⚔️ ساحة المعركة", questionNumber:"السؤال 1 من 5", loadingQuestion:"جاري تحميل السؤال...",
         battleComplete:"اكتملت المعركة!", score:"النتيجة", accuracy:"الدقة",
+        incomingChallengeRequests:"🛡️ طلبات التحدي الواردة", noIncomingChallenges:"لا توجد تحديات واردة",
+        noWarriorsChallengedYet:"لم يتحداك أي محارب بعد. استمر في الدراسة لجذب المتحدين!",
+        fiveQuestions:"5 أسئلة", tenQuestions:"10 أسئلة", fifteenQuestions:"15 سؤال", twentyQuestions:"20 سؤال",
+        warriorsListRefreshed:"تم تحديث قائمة المحاربين!", challengeCancelled:"تم إلغاء التحدي",
+        challengeRequestsRefreshed:"تم تحديث طلبات التحدي!", challengeAccepted:"تم قبول التحدي! جاري تحضير المعركة...",
+        challengeDeclined:"تم رفض التحدي", failedToSendChallenge:"فشل في إرسال التحدي. يرجى المحاولة مرة أخرى.",
+        failedToAcceptChallenge:"فشل في قبول التحدي. يرجى المحاولة مرة أخرى.", failedToDeclineChallenge:"فشل في رفض التحدي. يرجى المحاولة مرة أخرى.",
+        completeAllSteps:"يرجى إكمال جميع الخطوات قبل إرسال التحدي", pendingChallenge:"يوجد تحدي معلق مع هذا الخصم. يرجى انتظار ردهم.",
+        challengeSentTo:"تم إرسال التحدي إلى", databaseNotAvailable:"قاعدة البيانات غير متاحة", interfaceError:"خطأ في الواجهة. يرجى المحاولة مرة أخرى.",
+        noWarriorsOnline:"لا يوجد محاربون متصلون", noStudentsOnlineForBattle:"لا يوجد طلاب آخرون متصلون للمعركة.", online:"متصل",
         customTimer:"مؤقت مخصص", startTime:"وقت البداية", endTime:"وقت النهاية", setTimer:"ضبط المؤقت",
         hours:"ساعات", minutes:"دقائق", seconds:"ثواني", customDuration:"مدة مخصصة",
         start:"بدء", pause:"إيقاف مؤقت", reset:"إعادة ضبط", startEndHeading:"من–إلى",
@@ -15356,8 +15376,8 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           usersList.innerHTML = `
             <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
               <div style="font-size: 2rem; margin-bottom: 1rem;">😴</div>
-              <h3>No Warriors Online</h3>
-              <p>No other students are currently online for battle.</p>
+              <h3>${translations[currentLanguage]['noWarriorsOnline'] || 'No Warriors Online'}</h3>
+              <p>${translations[currentLanguage]['noStudentsOnlineForBattle'] || 'No other students are currently online for battle.'}</p>
             </div>
           `;
           return;
@@ -15370,7 +15390,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
             </div>
             <div style="flex: 1;">
               <div style="font-weight: 500;">${escapeHtml(user.name)}</div>
-              <div style="font-size: 0.8rem; color: var(--text-secondary);">🟢 Online</div>
+              <div style="font-size: 0.8rem; color: var(--text-secondary);">🟢 ${translations[currentLanguage]['online'] || 'Online'}</div>
             </div>
             <div style="font-size: 1.5rem;">⚔️</div>
           </div>
@@ -15413,7 +15433,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
     async function sendChallengeRequest() {
       if (!challengeSetup.category || !challengeSetup.questionCount || !challengeSetup.opponent) {
-        toast('Please complete all steps before sending challenge', 'error');
+        toast(translations[currentLanguage]['completeAllSteps'] || 'Please complete all steps before sending challenge', 'error');
         return;
       }
 
@@ -15421,7 +15441,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       const sendButton = document.getElementById('send-challenge-btn');
       if (!sendButton) {
         console.error('Send challenge button not found');
-        toast('Interface error. Please try again.', 'error');
+        toast(translations[currentLanguage]['interfaceError'] || 'Interface error. Please try again.', 'error');
         return;
       }
       const originalText = sendButton.textContent;
@@ -15430,7 +15450,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
       try {
         if (!supabase) {
-          toast('Database not available', 'error');
+          toast(translations[currentLanguage]['databaseNotAvailable'] || 'Database not available', 'error');
           return;
         }
 
@@ -15458,7 +15478,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         if (error) {
           // Handle specific duplicate constraint error
           if (error.code === '23505') {
-            toast('A challenge with this opponent is already pending. Please wait for their response.', 'warning');
+            toast(translations[currentLanguage]['pendingChallenge'] || 'A challenge with this opponent is already pending. Please wait for their response.', 'warning');
             sendButton.textContent = originalText;
             sendButton.disabled = false;
             return;
@@ -15471,7 +15491,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         document.getElementById('challenge-status').style.display = 'block';
         document.getElementById('challenge-sent').style.display = 'block';
 
-        toast(`Challenge sent to ${challengeSetup.opponent.name}!`, 'success');
+        toast(`${translations[currentLanguage]['challengeSentTo'] || 'Challenge sent to'} ${challengeSetup.opponent.name}!`, 'success');
         console.log('Challenge request sent:', data);
 
         // Reset challenge setup after 3 seconds to allow new challenges
@@ -15481,7 +15501,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
       } catch (error) {
         console.error('Error sending challenge:', error);
-        toast('Failed to send challenge. Please try again.', 'error');
+        toast(translations[currentLanguage]['failedToSendChallenge'] || 'Failed to send challenge. Please try again.', 'error');
         sendButton.textContent = originalText;
         sendButton.disabled = false;
       }
@@ -15489,12 +15509,12 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
     function refreshOnlineUsers() {
       loadOnlineUsers();
-      toast('Warriors list refreshed!', 'info');
+      toast(translations[currentLanguage]['warriorsListRefreshed'] || 'Warriors list refreshed!', 'info');
     }
 
     function cancelChallenge() {
       resetChallengeInterface();
-      toast('Challenge cancelled', 'info');
+      toast(translations[currentLanguage]['challengeCancelled'] || 'Challenge cancelled', 'info');
     }
 
     function resetChallengeInterface() {
@@ -15547,8 +15567,8 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           challengesList.innerHTML = `
             <div style="text-align: center; padding: 2rem; color: var(--text-secondary); background: var(--bg-secondary); border-radius: 12px;">
               <div style="font-size: 2rem; margin-bottom: 1rem;">🛡️</div>
-              <h4>No Incoming Challenges</h4>
-              <p>No warriors have challenged you yet. Keep studying to attract challengers!</p>
+              <h4 data-translate="noIncomingChallenges">No Incoming Challenges</h4>
+              <p data-translate="noWarriorsChallengedYet">No warriors have challenged you yet. Keep studying to attract challengers!</p>
             </div>
           `;
           return;
@@ -15612,7 +15632,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         console.log('Accepting challenge:', challengeId);
 
         if (!supabase) {
-          toast('Database not available', 'error');
+          toast(translations[currentLanguage]['databaseNotAvailable'] || 'Database not available', 'error');
           return;
         }
 
@@ -15629,7 +15649,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         }
 
         console.log('Challenge status updated:', data);
-        toast('Challenge accepted! Preparing battle...', 'success');
+        toast(translations[currentLanguage]['challengeAccepted'] || 'Challenge accepted! Preparing battle...', 'success');
 
         // Reload incoming challenges
         loadIncomingChallenges();
@@ -15640,7 +15660,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
       } catch (error) {
         console.error('Error accepting challenge:', error);
-        toast('Failed to accept challenge. Please try again.', 'error');
+        toast(translations[currentLanguage]['failedToAcceptChallenge'] || 'Failed to accept challenge. Please try again.', 'error');
       }
     }
 
@@ -15649,7 +15669,7 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         console.log('Rejecting challenge:', challengeId);
 
         if (!supabase) {
-          toast('Database not available', 'error');
+          toast(translations[currentLanguage]['databaseNotAvailable'] || 'Database not available', 'error');
           return;
         }
 
@@ -15666,20 +15686,20 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         }
 
         console.log('Challenge rejected:', data);
-        toast('Challenge declined', 'info');
+        toast(translations[currentLanguage]['challengeDeclined'] || 'Challenge declined', 'info');
 
         // Reload incoming challenges
         loadIncomingChallenges();
 
       } catch (error) {
         console.error('Error rejecting challenge:', error);
-        toast('Failed to decline challenge. Please try again.', 'error');
+        toast(translations[currentLanguage]['failedToDeclineChallenge'] || 'Failed to decline challenge. Please try again.', 'error');
       }
     }
 
     function refreshChallengeRequests() {
       loadIncomingChallenges();
-      toast('Challenge requests refreshed!', 'info');
+      toast(translations[currentLanguage]['challengeRequestsRefreshed'] || 'Challenge requests refreshed!', 'info');
     }
 
     // -------- CHALLENGE NOTIFICATIONS --------
@@ -16491,7 +16511,7 @@ Generate questions appropriate for Grade ${grade} level that test understanding 
     async function startBattle(challengeId) {
       try {
         if (!supabase) {
-          toast('Database not available', 'error');
+          toast(translations[currentLanguage]['databaseNotAvailable'] || 'Database not available', 'error');
           return;
         }
 
