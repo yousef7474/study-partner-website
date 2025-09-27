@@ -14099,9 +14099,6 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
 
         if (error) throw error;
 
-        const roomsList = document.getElementById('active-rooms-list');
-        const noRoomsMessage = document.getElementById('no-rooms-message');
-
         if (!rooms || rooms.length === 0) {
           roomsList.style.display = 'none';
           noRoomsMessage.style.display = 'block';
