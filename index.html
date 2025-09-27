@@ -14082,8 +14082,8 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
         `;
         noRoomsMessage.style.display = 'none';
 
-        // Fetch rooms that are active and recently updated (within last 30 minutes)
-        const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+        // Fetch rooms that are active and recently created (within last 2 hours)
+        const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
 
         const { data: rooms, error } = await supabase
           .from('rooms')
@@ -14094,8 +14094,8 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
           `)
           .eq('is_active', true)
           .neq('host_id', currentUser?.id) // Don't show user's own rooms
-          .gte('updated_at', thirtyMinutesAgo) // Only show recently active rooms
-          .order('updated_at', { ascending: false }); // Show most recently active first
+          .gte('created_at', twoHoursAgo) // Only show recently created rooms
+          .order('created_at', { ascending: false }); // Show most recently created first
 
         if (error) throw error;
 
