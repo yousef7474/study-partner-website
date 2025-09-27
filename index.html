@@ -1581,7 +1581,12 @@
       <div id="active-rooms-container" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
           <h2 data-translate="activeStudyRooms">Active Study Rooms</h2>
-          <button class="btn btn-secondary" onclick="hideActiveRooms()" data-translate="back">Back</button>
+          <div style="display: flex; gap: 0.75rem;">
+            <button class="btn btn-secondary" onclick="refreshActiveRooms()" style="display: flex; align-items: center; gap: 0.5rem;">
+              🔄 <span data-translate="refresh">Refresh</span>
+            </button>
+            <button class="btn btn-secondary" onclick="hideActiveRooms()" data-translate="back">Back</button>
+          </div>
         </div>
 
         <div style="margin-bottom: 1.5rem;">
@@ -1635,7 +1640,7 @@
         createRoom:"Create Room", enterRoomCode:"Enter Room Code", leaveRoom:"Leave Room",
         browseActiveRooms:"Browse Active Rooms", browseActiveRoomsDesc:"Find and join existing study rooms",
         createOwnRoom:"Create Own Room", createOwnRoomDesc:"Start your own study session", create:"Create",
-        activeStudyRooms:"Active Study Rooms", searchRooms:"Search rooms...",
+        activeStudyRooms:"Active Study Rooms", searchRooms:"Search rooms...", refresh:"Refresh",
         noActiveRooms:"No Active Rooms", noActiveRoomsDesc:"Be the first to create a study room!",
         requestToJoin:"Request to Join", joinRequestSent:"Join Request Sent", pending:"Pending",
         joinRequests:"Join Requests", approveRequest:"Approve", rejectRequest:"Reject",
@@ -1653,7 +1658,7 @@
         aboutDesc1:"Study Partner is a revolutionary platform designed to transform the way students learn and collaborate. Our mission is to break down the barriers of traditional studying by creating virtual spaces where students can connect, share knowledge, and achieve academic excellence together.",
         aboutDesc2:"Whether you're preparing for exams, working on group projects, or simply seeking study companions, Study Partner provides the tools and environment you need. From real-time chat rooms to collaborative timers and subject-specific spaces, we've built everything with one goal in mind: helping students succeed together.",
         aboutDesc3:"Join thousands of students who have discovered the power of collaborative learning. Because when we study together, we succeed together.",
-        createdBy:"System created and developed by: نواف الملا",
+        createdBy:"System created and developed by: Nawaf Al-Mula",
         customTimer:"Custom Timer", startTime:"Start Time", endTime:"End Time", setTimer:"Set Timer",
         hours:"Hours", minutes:"Minutes", seconds:"Seconds", customDuration:"Custom Duration",
         start:"Start", pause:"Pause", reset:"Reset", startEndHeading:"Start–End",
@@ -1734,7 +1739,7 @@
         joinNow:"انضمام الآن", joinRoom:"انضم للغرفة", createRoom:"إنشاء غرفة",
         browseActiveRooms:"تصفح الغرف النشطة", browseActiveRoomsDesc:"اعثر على غرف الدراسة الموجودة وانضم إليها",
         createOwnRoom:"إنشاء غرفة خاصة", createOwnRoomDesc:"ابدأ جلسة دراسة خاصة بك", create:"إنشاء",
-        activeStudyRooms:"غرف الدراسة النشطة", searchRooms:"البحث في الغرف...",
+        activeStudyRooms:"غرف الدراسة النشطة", searchRooms:"البحث في الغرف...", refresh:"تحديث",
         noActiveRooms:"لا توجد غرف نشطة", noActiveRoomsDesc:"كن أول من ينشئ غرفة دراسة!",
         requestToJoin:"طلب الانضمام", joinRequestSent:"تم إرسال طلب الانضمام", pending:"قيد الانتظار",
         joinRequests:"طلبات الانضمام", approveRequest:"موافقة", rejectRequest:"رفض",
@@ -14028,24 +14033,69 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
     // -------- LOOK FOR A PARTNER FUNCTIONALITY --------
     async function showActiveRooms() {
       document.getElementById('active-rooms-container').style.display = 'block';
+
+      // Update user's last_seen to appear active for other users
+      updateLastSeen();
+
       await loadActiveRooms();
+
+      // Set up auto-refresh every 30 seconds when viewing active rooms
+      if (window.activeRoomsInterval) {
+        clearInterval(window.activeRoomsInterval);
+      }
+      window.activeRoomsInterval = setInterval(() => {
+        if (document.getElementById('active-rooms-container').style.display !== 'none') {
+          loadActiveRooms();
+        } else {
+          clearInterval(window.activeRoomsInterval);
+        }
+      }, 30000); // Refresh every 30 seconds
     }
 
     function hideActiveRooms() {
       document.getElementById('active-rooms-container').style.display = 'none';
+
+      // Clear auto-refresh interval
+      if (window.activeRoomsInterval) {
+        clearInterval(window.activeRoomsInterval);
+        window.activeRoomsInterval = null;
+      }
     }
 
     async function loadActiveRooms() {
       try {
+        if (!supabase) {
+          console.log('Supabase not available');
+          return;
+        }
+
+        // Show loading state
+        const roomsList = document.getElementById('active-rooms-list');
+        const noRoomsMessage = document.getElementById('no-rooms-message');
+
+        roomsList.innerHTML = `
+          <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">🔄</div>
+            <h3>${currentLanguage === 'ar' ? 'جاري التحميل...' : 'Loading...'}</h3>
+            <p>${currentLanguage === 'ar' ? 'البحث عن الغرف النشطة' : 'Searching for active rooms'}</p>
+          </div>
+        `;
+        noRoomsMessage.style.display = 'none';
+
+        // Fetch rooms that are active and recently updated (within last 30 minutes)
+        const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+
         const { data: rooms, error } = await supabase
           .from('rooms')
           .select(`
             *,
             room_participants!inner(count),
-            users!rooms_host_id_fkey(name, avatar_color)
+            users!rooms_host_id_fkey(name, avatar_color, last_seen)
           `)
           .eq('is_active', true)
-          .neq('host_id', currentUser?.id); // Don't show user's own rooms
+          .neq('host_id', currentUser?.id) // Don't show user's own rooms
+          .gte('updated_at', thirtyMinutesAgo) // Only show recently active rooms
+          .order('updated_at', { ascending: false }); // Show most recently active first
 
         if (error) throw error;
 
@@ -14116,10 +14166,22 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
       }
     }
 
+    function refreshActiveRooms() {
+      loadActiveRooms();
+      toast(currentLanguage === 'ar' ? 'تم تحديث قائمة الغرف!' : 'Rooms list refreshed!', 'info');
+    }
+
     function createRoomCard(room) {
       const hostName = room.users?.name || 'Unknown Host';
       const hostColor = room.users?.avatar_color || '#667eea';
       const subject = room.active_subjects || (currentLanguage === 'ar' ? 'غير محدد' : 'Not specified');
+
+      // Check if host is online (active within last 5 minutes)
+      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+      const isHostOnline = room.users?.last_seen && room.users.last_seen > fiveMinutesAgo;
+      const hostStatus = isHostOnline ?
+        (currentLanguage === 'ar' ? '🟢 متصل' : '🟢 Online') :
+        (currentLanguage === 'ar' ? '🟡 غير متصل' : '🟡 Offline');
 
       return `
         <div class="room-card" style="background: var(--bg-secondary); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-light); border: 1px solid var(--border-color);">
@@ -14132,9 +14194,14 @@ Make questions educational, appropriate for Grade 12 level, and relevant to the 
                 <div style="width: 24px; height: 24px; border-radius: 50%; background: ${hostColor}; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: 600;">
                   ${hostName.charAt(0).toUpperCase()}
                 </div>
-                <span class="room-host" style="color: var(--text-secondary); font-size: 0.9rem;">
-                  ${currentLanguage === 'ar' ? 'المضيف:' : 'Host:'} ${hostName}
-                </span>
+                <div style="flex: 1;">
+                  <span class="room-host" style="color: var(--text-secondary); font-size: 0.9rem;">
+                    ${currentLanguage === 'ar' ? 'المضيف:' : 'Host:'} ${hostName}
+                  </span>
+                  <div style="font-size: 0.8rem; margin-top: 0.25rem;">
+                    ${hostStatus}
+                  </div>
+                </div>
               </div>
               <div style="color: var(--text-secondary); font-size: 0.9rem;">
                 <div>${currentLanguage === 'ar' ? 'المادة:' : 'Subject:'} ${subject}</div>
