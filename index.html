@@ -315,6 +315,17 @@
       transform: scale(1.05);
       box-shadow: var(--shadow-light);
     }
+
+    .occasion-day {
+      position: relative;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .occasion-day:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
     .exam-day {
       background: linear-gradient(135deg, #ef4444, #dc2626);
       color: white;
@@ -1524,6 +1535,16 @@
           </div>
         </div>
 
+        <!-- Saudi National and Religious Occasions -->
+        <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 20px; box-shadow: var(--shadow-medium); margin-bottom: 3rem;">
+          <h3 style="margin-bottom: 2rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+            <span>🇸🇦</span>
+            <span data-translate="saudiOccasions">المناسبات الوطنية والدينية</span>
+            <span>🕌</span>
+          </h3>
+          <div id="saudi-occasions-container"></div>
+        </div>
+
         <!-- Academic Year Calendar -->
         <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 20px; box-shadow: var(--shadow-medium);">
           <h3 style="margin-bottom: 2rem; text-align: center;" data-translate="academicCalendar">Academic Year 2025-2026 Calendar</h3>
@@ -1596,6 +1617,7 @@
         goToSettings:"Go to Settings",
         // Academic Performance translations
         academicPerformance:"Academic Performance", refreshData:"🔄 Refresh Data", exportData:"📤 Export Data",
+        saudiOccasions:"National and Religious Occasions", daysLeft:"days left", nextOccasion:"Next Occasion",
         filterOptions:"Filter Options", selectSubject:"Select Subject", allSubjects:"All Subjects", performanceStatus:"Performance Status",
         allStatus:"All Status", passed:"Passed", needsImprovement:"Needs Improvement", notAttempted:"Not Attempted",
         detailedPerformance:"Detailed Performance by Chapter/Topic", subject:"Subject", chapter:"Chapter", topic:"Topic",
@@ -1802,6 +1824,7 @@
         goToSettings:"الذهاب للإعدادات",
         // Academic Performance Arabic translations
         academicPerformance:"الأداء الأكاديمي", refreshData:"🔄 تحديث البيانات", exportData:"📤 تصدير البيانات",
+        saudiOccasions:"المناسبات الوطنية والدينية", daysLeft:"يوم متبقي", nextOccasion:"المناسبة القادمة",
         filterOptions:"خيارات التصفية", selectSubject:"اختر المادة", allSubjects:"جميع المواد", performanceStatus:"حالة الأداء",
         allStatus:"جميع الحالات", passed:"نجح", needsImprovement:"يحتاج تحسين", notAttempted:"لم يحاول",
         detailedPerformance:"الأداء التفصيلي حسب الفصل/الموضوع", subject:"المادة", chapter:"الفصل", topic:"الموضوع",
@@ -8790,6 +8813,150 @@
       ]
     };
 
+    // -------- SAUDI OCCASIONS DATA --------
+    const saudiOccasions = {
+      2025: [
+        {
+          id: 'founding_day_2025',
+          nameAr: 'يوم التأسيس',
+          nameEn: 'Saudi Founding Day',
+          date: '2025-02-22',
+          type: 'national',
+          icon: '🇸🇦',
+          color: '#28a745'
+        },
+        {
+          id: 'national_day_2025',
+          nameAr: 'اليوم الوطني السعودي',
+          nameEn: 'Saudi National Day',
+          date: '2025-09-23',
+          type: 'national',
+          icon: '🇸🇦',
+          color: '#28a745'
+        },
+        {
+          id: 'flag_day_2025',
+          nameAr: 'يوم العلم',
+          nameEn: 'Flag Day',
+          date: '2025-03-11',
+          type: 'national',
+          icon: '🏴',
+          color: '#28a745'
+        },
+        {
+          id: 'world_day_2025',
+          nameAr: 'يوم المملكة العربية السعودية',
+          nameEn: 'Kingdom of Saudi Arabia Day',
+          date: '2025-05-20',
+          type: 'national',
+          icon: '👑',
+          color: '#28a745'
+        }
+      ],
+      2026: [
+        {
+          id: 'founding_day_2026',
+          nameAr: 'يوم التأسيس',
+          nameEn: 'Saudi Founding Day',
+          date: '2026-02-22',
+          type: 'national',
+          icon: '🇸🇦',
+          color: '#28a745'
+        },
+        {
+          id: 'national_day_2026',
+          nameAr: 'اليوم الوطني السعودي',
+          nameEn: 'Saudi National Day',
+          date: '2026-09-23',
+          type: 'national',
+          icon: '🇸🇦',
+          color: '#28a745'
+        },
+        {
+          id: 'flag_day_2026',
+          nameAr: 'يوم العلم',
+          nameEn: 'Flag Day',
+          date: '2026-03-11',
+          type: 'national',
+          icon: '🏴',
+          color: '#28a745'
+        },
+        {
+          id: 'world_day_2026',
+          nameAr: 'يوم المملكة العربية السعودية',
+          nameEn: 'Kingdom of Saudi Arabia Day',
+          date: '2026-05-20',
+          type: 'national',
+          icon: '👑',
+          color: '#28a745'
+        },
+        // Religious occasions (Islamic calendar - approximate dates)
+        {
+          id: 'muharram_2026',
+          nameAr: 'رأس السنة الهجرية',
+          nameEn: 'Islamic New Year',
+          date: '2026-07-07',
+          type: 'religious',
+          icon: '🌙',
+          color: '#6f42c1'
+        },
+        {
+          id: 'prophets_birthday_2026',
+          nameAr: 'المولد النبوي الشريف',
+          nameEn: 'Prophet Muhammad\'s Birthday',
+          date: '2026-09-15',
+          type: 'religious',
+          icon: '🕌',
+          color: '#6f42c1'
+        },
+        {
+          id: 'isra_miraj_2025',
+          nameAr: 'الإسراء والمعراج',
+          nameEn: 'Isra and Mi\'raj',
+          date: '2025-01-27',
+          type: 'religious',
+          icon: '✨',
+          color: '#6f42c1'
+        },
+        {
+          id: 'ramadan_start_2025',
+          nameAr: 'بداية شهر رمضان',
+          nameEn: 'Start of Ramadan',
+          date: '2025-02-28',
+          type: 'religious',
+          icon: '🌙',
+          color: '#17a2b8'
+        },
+        {
+          id: 'eid_fitr_2025',
+          nameAr: 'عيد الفطر المبارك',
+          nameEn: 'Eid al-Fitr',
+          date: '2025-03-30',
+          type: 'religious',
+          icon: '🎉',
+          color: '#ffc107'
+        },
+        {
+          id: 'arafat_day_2025',
+          nameAr: 'يوم عرفة',
+          nameEn: 'Day of Arafah',
+          date: '2025-06-06',
+          type: 'religious',
+          icon: '🕋',
+          color: '#dc3545'
+        },
+        {
+          id: 'eid_adha_2025',
+          nameAr: 'عيد الأضحى المبارك',
+          nameEn: 'Eid al-Adha',
+          date: '2025-06-07',
+          type: 'religious',
+          icon: '🐏',
+          color: '#dc3545'
+        }
+      ]
+    };
+
     // -------- DOM ELEMENTS --------
     const sidebar=document.getElementById('sidebar');
     const header=document.getElementById('header');
@@ -11066,6 +11233,20 @@ function setupRoomSubscriptions(){
           let dayStyle = '';
           let dayContent = day;
 
+          // Check for Saudi occasions
+          const currentYear = dayDate.getFullYear();
+          const allOccasions = [];
+          [currentYear, currentYear + 1].forEach(year => {
+            if (saudiOccasions[year]) {
+              allOccasions.push(...saudiOccasions[year]);
+            }
+          });
+
+          const dayOccasion = allOccasions.find(occasion => {
+            const occasionDate = new Date(occasion.date);
+            return occasionDate.toDateString() === dayDate.toDateString();
+          });
+
           // Highlight exam days
           if (dayDate.toDateString() === firstExamDate.toDateString()) {
             dayClasses += ' exam-day';
@@ -11073,6 +11254,11 @@ function setupRoomSubscriptions(){
           } else if (dayDate.toDateString() === secondExamDate.toDateString()) {
             dayClasses += ' exam-day second';
             dayContent = `${day}📝`;
+          } else if (dayOccasion) {
+            // Saudi occasion day
+            dayClasses += ' occasion-day';
+            dayStyle += ` background: ${dayOccasion.color}20; border: 2px solid ${dayOccasion.color}40; color: var(--text-primary);`;
+            dayContent = `${day}${dayOccasion.icon}`;
           } else if (dayDate >= startDate && dayDate <= endDate) {
             dayStyle += ' background: var(--bg-secondary); color: var(--text-primary);';
           } else {
@@ -11109,12 +11295,152 @@ function setupRoomSubscriptions(){
       calendarContainer.innerHTML = calendarHTML;
     }
 
+    // -------- SAUDI OCCASIONS FUNCTIONS --------
+    function generateSaudiOccasions() {
+      const container = document.getElementById('saudi-occasions-container');
+      if (!container) return;
+
+      const currentYear = new Date().getFullYear();
+      const allOccasions = [];
+
+      // Collect occasions from current and next year
+      [currentYear, currentYear + 1].forEach(year => {
+        if (saudiOccasions[year]) {
+          allOccasions.push(...saudiOccasions[year]);
+        }
+      });
+
+      // Sort occasions by date
+      allOccasions.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      // Filter to show only upcoming occasions (next 6 months)
+      const now = new Date();
+      const sixMonthsFromNow = new Date(now.getTime() + (6 * 30 * 24 * 60 * 60 * 1000));
+      const upcomingOccasions = allOccasions.filter(occasion => {
+        const occasionDate = new Date(occasion.date);
+        return occasionDate >= now && occasionDate <= sixMonthsFromNow;
+      });
+
+      // Take only the next 6 occasions
+      const nextOccasions = upcomingOccasions.slice(0, 6);
+
+      if (nextOccasions.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">📅</div>
+            <div>${currentLanguage === 'ar' ? 'لا توجد مناسبات قادمة في الأشهر الستة القادمة' : 'No upcoming occasions in the next 6 months'}</div>
+          </div>
+        `;
+        return;
+      }
+
+      let occasionsHTML = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">';
+
+      nextOccasions.forEach(occasion => {
+        const occasionName = currentLanguage === 'ar' ? occasion.nameAr : occasion.nameEn;
+        const occasionDate = new Date(occasion.date);
+        const formattedDate = occasionDate.toLocaleDateString(currentLanguage === 'ar' ? 'ar-SA' : 'en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+
+        occasionsHTML += `
+          <div class="countdown-card" style="border-left: 6px solid ${occasion.color};">
+            <h3 style="color: ${occasion.color}; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+              ${occasion.icon} <span>${occasionName}</span>
+            </h3>
+            <div style="font-size: 1rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-secondary);">
+              ${formattedDate}
+            </div>
+            <div id="occasion-countdown-${occasion.id}" class="countdown-number"></div>
+            <div style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">
+              ${occasion.type === 'national'
+                ? (currentLanguage === 'ar' ? 'مناسبة وطنية' : 'National Occasion')
+                : (currentLanguage === 'ar' ? 'مناسبة دينية' : 'Religious Occasion')
+              }
+            </div>
+          </div>
+        `;
+      });
+
+      occasionsHTML += '</div>';
+      container.innerHTML = occasionsHTML;
+
+      // Update countdowns immediately
+      updateOccasionsCountdowns();
+    }
+
+    function updateOccasionsCountdowns() {
+      const currentYear = new Date().getFullYear();
+      const allOccasions = [];
+
+      // Collect occasions from current and next year
+      [currentYear, currentYear + 1].forEach(year => {
+        if (saudiOccasions[year]) {
+          allOccasions.push(...saudiOccasions[year]);
+        }
+      });
+
+      const now = new Date();
+
+      allOccasions.forEach(occasion => {
+        const countdownElement = document.getElementById(`occasion-countdown-${occasion.id}`);
+        if (countdownElement) {
+          const occasionDate = new Date(occasion.date + 'T09:00:00');
+          const timeDiff = occasionDate - now;
+
+          if (timeDiff > 0) {
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+            if (days > 0) {
+              countdownElement.innerHTML = `
+                <span style="font-size: 1.5rem; font-weight: bold; color: ${occasion.color};">
+                  ${days} ${currentLanguage === 'ar' ? 'يوم' : (days === 1 ? 'day' : 'days')}
+                </span>
+                <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                  ${hours}h ${minutes}m
+                </div>
+              `;
+            } else if (hours > 0) {
+              countdownElement.innerHTML = `
+                <span style="font-size: 1.5rem; font-weight: bold; color: ${occasion.color};">
+                  ${hours}h ${minutes}m
+                </span>
+                <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                  ${currentLanguage === 'ar' ? 'اليوم!' : 'Today!'}
+                </div>
+              `;
+            } else {
+              countdownElement.innerHTML = `
+                <span style="font-size: 1.5rem; font-weight: bold; color: ${occasion.color};">
+                  ${currentLanguage === 'ar' ? 'الآن!' : 'Now!'}
+                </span>
+              `;
+            }
+          } else {
+            countdownElement.innerHTML = `
+              <span style="font-size: 1.2rem; color: var(--text-secondary);">
+                ${currentLanguage === 'ar' ? 'انتهت' : 'Passed'}
+              </span>
+            `;
+          }
+        }
+      });
+    }
+
     // Start countdown updates when page loads
     function initializeCalendar() {
       updateExamCountdowns();
+      generateSaudiOccasions();
       generateAcademicCalendar();
       // Update countdowns every minute
-      setInterval(updateExamCountdowns, 60000);
+      setInterval(() => {
+        updateExamCountdowns();
+        updateOccasionsCountdowns();
+      }, 60000);
     }
 
     // -------- EVENT LISTENERS --------
@@ -17951,7 +18277,15 @@ Format as JSON array:
     // Find topic info by unit ID
     function findTopicInfoByUnitId(unitId, subjectName) {
       const userGrade = currentUser?.grade || '10';
-      const subjects = subjectsByGrade[userGrade] || [];
+
+      // Get subjects based on education path
+      let subjects = [];
+      if (currentUser?.education_path === 'international') {
+        subjects = internationalSubjectsByGrade[userGrade] || [];
+      } else {
+        subjects = subjectsByGrade[userGrade] || [];
+      }
+
       const subjectData = subjects.find(s => s.name === subjectName);
 
       if (subjectData && subjectData.chapters) {
@@ -17984,7 +18318,14 @@ Format as JSON array:
       const userGrade = currentUser?.grade || '10';
 
       userSubjects.forEach(subjectName => {
-        const subjects = subjectsByGrade[userGrade] || [];
+        // Get subjects based on education path
+        let subjects = [];
+        if (currentUser?.education_path === 'international') {
+          subjects = internationalSubjectsByGrade[userGrade] || [];
+        } else {
+          subjects = subjectsByGrade[userGrade] || [];
+        }
+
         const subjectData = subjects.find(s => s.name === subjectName);
 
         if (subjectData && subjectData.chapters) {
