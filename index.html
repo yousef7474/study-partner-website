@@ -8851,6 +8851,52 @@
           type: 'national',
           icon: '👑',
           color: '#28a745'
+        },
+        // Religious occasions for 2025
+        {
+          id: 'isra_miraj_2025',
+          nameAr: 'الإسراء والمعراج',
+          nameEn: 'Isra and Mi\'raj',
+          date: '2025-01-27',
+          type: 'religious',
+          icon: '✨',
+          color: '#6f42c1'
+        },
+        {
+          id: 'ramadan_start_2025',
+          nameAr: 'بداية شهر رمضان',
+          nameEn: 'Start of Ramadan',
+          date: '2025-02-28',
+          type: 'religious',
+          icon: '🌙',
+          color: '#17a2b8'
+        },
+        {
+          id: 'eid_fitr_2025',
+          nameAr: 'عيد الفطر المبارك',
+          nameEn: 'Eid al-Fitr',
+          date: '2025-03-30',
+          type: 'religious',
+          icon: '🎉',
+          color: '#ffc107'
+        },
+        {
+          id: 'arafat_day_2025',
+          nameAr: 'يوم عرفة',
+          nameEn: 'Day of Arafah',
+          date: '2025-06-06',
+          type: 'religious',
+          icon: '🕋',
+          color: '#dc3545'
+        },
+        {
+          id: 'eid_adha_2025',
+          nameAr: 'عيد الأضحى المبارك',
+          nameEn: 'Eid al-Adha',
+          date: '2025-06-07',
+          type: 'religious',
+          icon: '🐏',
+          color: '#dc3545'
         }
       ],
       2026: [
@@ -8909,47 +8955,48 @@
           icon: '🕌',
           color: '#6f42c1'
         },
+        // Religious occasions for 2026
         {
-          id: 'isra_miraj_2025',
+          id: 'isra_miraj_2026',
           nameAr: 'الإسراء والمعراج',
           nameEn: 'Isra and Mi\'raj',
-          date: '2025-01-27',
+          date: '2026-01-16',
           type: 'religious',
           icon: '✨',
           color: '#6f42c1'
         },
         {
-          id: 'ramadan_start_2025',
+          id: 'ramadan_start_2026',
           nameAr: 'بداية شهر رمضان',
           nameEn: 'Start of Ramadan',
-          date: '2025-02-28',
+          date: '2026-02-17',
           type: 'religious',
           icon: '🌙',
           color: '#17a2b8'
         },
         {
-          id: 'eid_fitr_2025',
+          id: 'eid_fitr_2026',
           nameAr: 'عيد الفطر المبارك',
           nameEn: 'Eid al-Fitr',
-          date: '2025-03-30',
+          date: '2026-03-19',
           type: 'religious',
           icon: '🎉',
           color: '#ffc107'
         },
         {
-          id: 'arafat_day_2025',
+          id: 'arafat_day_2026',
           nameAr: 'يوم عرفة',
           nameEn: 'Day of Arafah',
-          date: '2025-06-06',
+          date: '2026-05-26',
           type: 'religious',
           icon: '🕋',
           color: '#dc3545'
         },
         {
-          id: 'eid_adha_2025',
+          id: 'eid_adha_2026',
           nameAr: 'عيد الأضحى المبارك',
           nameEn: 'Eid al-Adha',
-          date: '2025-06-07',
+          date: '2026-05-27',
           type: 'religious',
           icon: '🐏',
           color: '#dc3545'
@@ -11313,22 +11360,22 @@ function setupRoomSubscriptions(){
       // Sort occasions by date
       allOccasions.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-      // Filter to show only upcoming occasions (next 6 months)
+      // Filter to show only upcoming occasions (next 12 months)
       const now = new Date();
-      const sixMonthsFromNow = new Date(now.getTime() + (6 * 30 * 24 * 60 * 60 * 1000));
+      const twelveMonthsFromNow = new Date(now.getTime() + (12 * 30 * 24 * 60 * 60 * 1000));
       const upcomingOccasions = allOccasions.filter(occasion => {
         const occasionDate = new Date(occasion.date);
-        return occasionDate >= now && occasionDate <= sixMonthsFromNow;
+        return occasionDate >= now && occasionDate <= twelveMonthsFromNow;
       });
 
-      // Take only the next 6 occasions
-      const nextOccasions = upcomingOccasions.slice(0, 6);
+      // Take the next 8 occasions
+      const nextOccasions = upcomingOccasions.slice(0, 8);
 
       if (nextOccasions.length === 0) {
         container.innerHTML = `
           <div style="text-align: center; color: var(--text-secondary); padding: 2rem;">
             <div style="font-size: 2rem; margin-bottom: 1rem;">📅</div>
-            <div>${currentLanguage === 'ar' ? 'لا توجد مناسبات قادمة في الأشهر الستة القادمة' : 'No upcoming occasions in the next 6 months'}</div>
+            <div>${currentLanguage === 'ar' ? 'لا توجد مناسبات قادمة في الأشهر الإثني عشر القادمة' : 'No upcoming occasions in the next 12 months'}</div>
           </div>
         `;
         return;
